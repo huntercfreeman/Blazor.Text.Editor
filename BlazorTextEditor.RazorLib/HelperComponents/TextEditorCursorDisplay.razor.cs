@@ -1,5 +1,5 @@
-using BlazorTextEditor.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;

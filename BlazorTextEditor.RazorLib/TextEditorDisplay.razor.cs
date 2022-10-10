@@ -1,11 +1,11 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using BlazorTextEditor.ClassLib.Clipboard;
-using BlazorTextEditor.ClassLib.Keyboard;
-using BlazorTextEditor.ClassLib.Store.TextEditorCase;
-using BlazorTextEditor.ClassLib.TextEditor;
+using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Keyboard;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;

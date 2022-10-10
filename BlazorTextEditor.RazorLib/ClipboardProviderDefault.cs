@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.ClassLib.Clipboard;
+﻿using BlazorTextEditor.RazorLib.Clipboard;
 using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;

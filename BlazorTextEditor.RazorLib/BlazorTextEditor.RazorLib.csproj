@@ -9,10 +9,9 @@
         <PackageId>Blazor.Text.Editor</PackageId>
         <Version>1.0.0</Version>
         <Authors>Hunter Freeman</Authors>
-        <Company>Personal</Company>
+        <Company />
         <PackageTags>DotNet CSharp Blazor RazorComponents</PackageTags>
     </PropertyGroup>
-
 
     <ItemGroup>
         <SupportedPlatform Include="browser" />
@@ -21,10 +20,6 @@
     <ItemGroup>
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\BlazorTextEditor.ClassLib\BlazorTextEditor.ClassLib.csproj" />
     </ItemGroup>
 
 </Project>
