@@ -15,16 +15,19 @@
 
 
     <ItemGroup>
-        <SupportedPlatform Include="browser" />
+        <SupportedPlatform Include="browser"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxor.Blazor.Web" Version="5.5.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
+        <PackageReference Include="Fluxor.Blazor.Web" Version="5.5.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BlazorTextEditor.ClassLib\BlazorTextEditor.ClassLib.csproj" />
+        <ProjectReference Include="..\BlazorTextEditor.ClassLib\BlazorTextEditor.ClassLib.csproj">
+            <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+            <IncludeAssets>BlazorTextEditor.ClassLib.dll</IncludeAssets>
+        </ProjectReference>
     </ItemGroup>
 
 </Project>
