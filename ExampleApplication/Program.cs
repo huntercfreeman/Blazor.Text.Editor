@@ -12,6 +12,8 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddTextEditorRazorLibServices();
 
+builder.Services.AddTextEditorRazorLibServices();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

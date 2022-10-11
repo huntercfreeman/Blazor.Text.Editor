@@ -11,6 +11,52 @@
 ### Steps
 - Add a NuGet package reference to `Blazor.Text.Editor`
 
+- Add the library's css stylesheets to `Pages/_Layout.cshtml`. Every available stylesheet appears in the following child bulleted list. The entirety of an example _Layout.cshtml is shown as an html code snippet after the next step.
+    - REQUIRED [blazorTextEditor.css](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditor.css): `<link href="_content/Blazor.Text.Editor/blazorTextEditor.css" rel="stylesheet"/>`
+    - COLOR THEME :root [blazorTextEditorColors.css](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditorColors.css): `<link href="_content/Blazor.Text.Editor/blazorTextEditorColors.css" rel="stylesheet"/>`
+    - COLOR THEME .bte_dark-theme [blazorTextEditorDarkTheme.css](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorDarkTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorDarkTheme.css" rel="stylesheet"/>`
+    - COLOR THEME .bte_light-theme [blazorTextEditorLightTheme.css](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorLightTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorLightTheme.css" rel="stylesheet"/>`
+
+- Add the library's JavaScript to `Pages/_Layout.cshtml`. Every available JavaScript file appears in the following child bulleted list. The entirety of an example _Layout.cshtml is shown as an html code snippet after this step.
+    - REQUIRED [blazorTextEditor.js](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditor.js): `<script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>`
+
+- The following html code snippet is an example _Layout.cshtml
+
+```html
+@using Microsoft.AspNetCore.Components.Web
+@namespace BlazorApp1.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... left out unrelated markup for conciseness -->
+
+    <link href="_content/Blazor.Text.Editor/blazorTextEditor.css" rel="stylesheet"/>
+                
+        @* :root {} *@
+    <link href="_content/Blazor.Text.Editor/blazorTextEditorColors.css" rel="stylesheet"/>
+    
+    @* .bte_dark-theme {} *@
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorDarkTheme.css" rel="stylesheet"/>
+    
+    @* .bte_light-theme {} *@
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorLightTheme.css" rel="stylesheet"/>
+    
+    <!-- ... left out unrelated markup for conciseness -->
+</head>
+<body>
+
+<!-- ... left out unrelated markup for conciseness -->
+
+<script src="_framework/blazor.server.js"></script>
+
+<script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>
+
+</body>
+</html>
+```
+
 - Register the library's services by invoking the IServiceCollection extension method `AddTextEditorRazorLibServices()`
 
 ```csharp
