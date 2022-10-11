@@ -91,3 +91,92 @@ public partial class Index : ComponentBase, IDisposable
 
 > new [TextEditorBase](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/TextEditor/TextEditorBase.cs)(string.Empty, default([ILexer](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/Lexing/ILexer.cs)), default([IDecorationMapper](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/Decoration/IDecorationMapper.cs)))
 
+- The following code snippet is the entirety of an example Index.razor.cs
+
+```csharp
+// Full example of an Index.razor.cs
+
+using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.TextEditor;
+using Microsoft.AspNetCore.Components;
+
+namespace BlazorApp1.Pages;
+
+public partial class Index : ComponentBase, IDisposable
+{
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        TextEditorService.OnTextEditorStatesChanged += TextEditorServiceOnOnTextEditorStatesChanged;
+        
+        base.OnInitialized();
+    }
+
+    private async void TextEditorServiceOnOnTextEditorStatesChanged(object? sender, EventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void RegisterTextEditorOnClick()
+    {
+        TextEditorService.RegisterTextEditor(
+            new TextEditorBase(
+                string.Empty,
+                null,
+                null));
+    }
+    
+    public void Dispose()
+    {
+        TextEditorService.OnTextEditorStatesChanged -= TextEditorServiceOnOnTextEditorStatesChanged;
+    }
+}
+```
+
+- Next we need to modify Index.razor
+
+- Add a button to Index.razor that invokes the method `RegisterTextEditorOnClick` which is located in Index.razor.cs (see the following markup)
+
+```html
+<button class="btn btn-primary"
+        @onclick="RegisterTextEditorOnClick">
+    RegisterTextEditorOnClick
+</button>
+```
+
+- Add a using for `BlazorTextEditor.RazorLib` at the top of Index.razor (see the following markup)
+
+```html
+@using BlazorTextEditor.RazorLib
+```
+
+- At the bottom of Index.razor.cs add an unimplemented foreach loop that iterates over `TextEditorService.TextEditorStates.TextEditorList` (see the following markup)
+
+```html
+@foreach (var textEditor in TextEditorService.TextEditorStates.TextEditorList)
+{
+    <!-- No Implementation Yet -->
+}
+```
+
+
+
+- For the innards of the foreach loop render out a [TextEditorDisplay.razor.cs](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/TextEditorDisplay.razor.cs) foreach of the text editor instances (see the following markup)
+
+```html
+@foreach (var textEditor in TextEditorService.TextEditorStates.TextEditorList)
+{
+    <!-- @key is only used due to this being done within a foreach loop -->
+    <TextEditorDisplay @key="textEditor.Key" 
+                       TextEditorKey="textEditor.Key"
+                       StyleCssString="width: 400px; height: 400px;" />
+}
+```
+
+> **_NOTE:_** [TextEditorDisplay.razor.cs](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/TextEditorDisplay.razor.cs) has a Blazor parameter for applying css classes named `ClassCssString`
+
+---
+
+This is the end of the tutorial. In the future a tutorial for syntax highlighting will be written up and it will pick up from where this tutorial left off.
