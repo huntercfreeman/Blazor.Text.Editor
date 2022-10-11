@@ -28,10 +28,10 @@ public class TextEditorBase
     private readonly List<RichCharacter> _content = new();
     private readonly List<EditBlock> _editBlocks = new();
 
-    public TextEditorBase(string content, ILexer lexer, IDecorationMapper decorationMapper)
+    public TextEditorBase(string content, ILexer? lexer, IDecorationMapper? decorationMapper)
     {
-        Lexer = lexer;
-        DecorationMapper = decorationMapper;
+        Lexer = lexer ?? new LexerDefault();
+        DecorationMapper = decorationMapper ?? new DecorationMapperDefault();
         var rowIndex = 0;
         var previousCharacter = '\0';
 
@@ -93,7 +93,7 @@ public class TextEditorBase
         _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
     }
 
-    public TextEditorBase(string content, ILexer lexer, IDecorationMapper decorationMapper, TextEditorKey key)
+    public TextEditorBase(string content, ILexer? lexer, IDecorationMapper? decorationMapper, TextEditorKey key)
         : this(content, lexer, decorationMapper)
     {
         Key = key;
@@ -615,16 +615,16 @@ public class TextEditorBase
         return positionIndex - startOfRowPositionIndex;
     }
 
-    public void SetDecorationMapper(IDecorationMapper decorationMapper)
+    public void SetDecorationMapper(IDecorationMapper? decorationMapper)
     {
-        DecorationMapper = decorationMapper;
+        DecorationMapper = decorationMapper ?? new DecorationMapperDefault();
         
         // TODO: Invoke an event to reapply the CSS classes?
     }
     
-    public void SetLexerMapper(ILexer lexer)
+    public void SetLexerMapper(ILexer? lexer)
     {
-        Lexer = lexer;
+        Lexer = lexer ?? new LexerDefault();
         
         // TODO: Invoke an event to reapply the CSS classes?
     }
