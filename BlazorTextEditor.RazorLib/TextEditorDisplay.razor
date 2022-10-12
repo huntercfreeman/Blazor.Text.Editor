@@ -62,8 +62,8 @@
                 }
             </div>
 
-            @if (_characterWidthAndRowHeight is not null &&
-                 _textEditorWidthAndHeight is not null)
+            @if (CharacterWidthAndRowHeight is not null &&
+                 TextEditorWidthAndHeight is not null)
             {
                 var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
                 var spaceKeyOutput = "&nbsp;";
@@ -129,21 +129,30 @@
 
                         @if (GlobalShowNewlines)
                         {
-                            var rowEndingTuple = TextEditorStatesSelection.Value.RowEndingPositions[index];
+                            var localTextEditor = TextEditorStatesSelection.Value;
+                            
+                            var amountOfLeftInCharacterWidthUnits = virtualizedRow.LeftInPixels / CharacterWidthAndRowHeight.FontWidthInPixels;
 
-                            <span class="bte_newline">
-                                @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()
-                            </span>
+                            var lengthOfRow = localTextEditor.GetLengthOfRow(index, true);
+
+                            if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
+                            {
+                                var rowEndingTuple = TextEditorStatesSelection.Value.RowEndingPositions[index];
+
+                                <span class="bte_newline">
+                                    @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()
+                                </span>
+                            }
                         }
                     </div>
                 </VirtualizationDisplay>
             }
 
-            @if (_characterWidthAndRowHeight is not null)
+            @if (CharacterWidthAndRowHeight is not null)
             {
                 <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                          TextEditorCursor="PrimaryCursor"
-                                         FontWidthAndElementHeight="_characterWidthAndRowHeight"
+                                         FontWidthAndElementHeight="CharacterWidthAndRowHeight"
                                          TextEditor="TextEditorStatesSelection.Value"
                                          ScrollableContainerId="@TextEditorContentId"
                                          IsFocusTarget="true" />

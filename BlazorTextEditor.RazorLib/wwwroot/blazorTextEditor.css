@@ -44,7 +44,7 @@
     white-space: nowrap;
     position: absolute;
     display: flex;
-    box-shadow: -4px 0 0 var(--bte_text-editor-gutter-border-color) inset;
+    box-shadow: -2px 0 0 var(--bte_text-editor-gutter-border-color) inset;
     background-color: var(--bte_text-editor-gutter-background-color);
 }
 
