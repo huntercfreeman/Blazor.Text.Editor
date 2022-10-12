@@ -13,7 +13,9 @@ public record TextEditorStates(
     public TextEditorStates() 
         : this(ImmutableList<TextEditorBase>.Empty, new TextEditorOptions(
             20,
-            ThemeFacts.BlazorTextEditorLight))
+            ThemeFacts.BlazorTextEditorLight,
+            false,
+            true))
     {
     }
 }

@@ -8,12 +8,16 @@ namespace BlazorTextEditor.RazorLib.TextEditor;
 /// </summary>
 public record TextEditorOptions(
     int? FontSizeInPixels,
-    Theme? Theme)
+    Theme? Theme,
+    bool? ShowWhitespace,
+    bool? ShowNewlines)
 {
     public static TextEditorOptions UnsetTextEditorOptions()
     {
         return new(
             null, 
-            null);
+            null,
+            false,
+            false);
     }
 }

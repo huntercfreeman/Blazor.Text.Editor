@@ -43,8 +43,6 @@ public partial class TextEditorDisplay : ComponentBase
     private WidthAndHeightOfElement? _textEditorWidthAndHeight;
     private RelativeCoordinates? _relativeCoordinatesOnClick;
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
-    private bool _showNewlines = true;
-    private bool _showWhitespace;
     private bool _showGetAllTextEscaped;
     /// <summary>
     /// Do not select text just because the user has the Left Mouse Button down.
@@ -87,6 +85,12 @@ public partial class TextEditorDisplay : ComponentBase
         .GlobalTextEditorOptions
         .FontSizeInPixels!.Value
     + "px;"; 
+    
+    private bool GlobalShowNewlines => TextEditorService
+        .TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
+    
+    private bool GlobalShowWhitespace => TextEditorService
+        .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
 
     public TextEditorCursor PrimaryCursor { get; } = new();
 

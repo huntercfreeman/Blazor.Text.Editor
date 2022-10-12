@@ -68,7 +68,7 @@
                 var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
                 var spaceKeyOutput = "&nbsp;";
 
-                if (_showWhitespace)
+                if (GlobalShowWhitespace)
                 {
                     tabKeyOutput = "--->";
                     spaceKeyOutput = "·";
@@ -127,7 +127,7 @@
                             </span>
                         }
 
-                        @if (_showNewlines)
+                        @if (GlobalShowNewlines)
                         {
                             var rowEndingTuple = TextEditorStatesSelection.Value.RowEndingPositions[index];
 
