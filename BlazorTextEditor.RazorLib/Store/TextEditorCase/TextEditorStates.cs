@@ -5,9 +5,12 @@ using Fluxor;
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
 
 [FeatureState]
-public record TextEditorStates(ImmutableList<TextEditorBase> TextEditorList)
+public record TextEditorStates(
+    ImmutableList<TextEditorBase> TextEditorList,
+    TextEditorOptions GlobalTextEditorOptions)
 {
-    public TextEditorStates() : this(ImmutableList<TextEditorBase>.Empty)
+    public TextEditorStates() 
+        : this(ImmutableList<TextEditorBase>.Empty, new TextEditorOptions())
     {
     }
 }
