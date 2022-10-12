@@ -51,6 +51,7 @@ public partial class TextEditorDisplay : ComponentBase
     private bool _thinksLeftMouseButtonIsDown;
 
     private TextEditorKey? _previousTextEditorKey;
+    private int? _previousGlobalFontSizeInPixels; 
 
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
 
@@ -92,12 +93,28 @@ public partial class TextEditorDisplay : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        if (_previousTextEditorKey is null ||
-            _previousTextEditorKey != TextEditorKey)
+        var currentGlobalFontSizeInPixels = TextEditorService
+            .TextEditorStates
+            .GlobalTextEditorOptions
+            .FontSizeInPixels!
+            .Value;
+        
+        if (_previousGlobalFontSizeInPixels is null ||
+            _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels)
         {
+            _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
+            ShouldMeasureDimensions = true;
+            await InvokeAsync(StateHasChanged);
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
         
+        if (_previousTextEditorKey is null ||
+            _previousTextEditorKey != TextEditorKey)
+        {
+            _previousTextEditorKey = TextEditorKey;
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        }
+
         await base.OnParametersSetAsync();
     }
 
