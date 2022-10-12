@@ -109,7 +109,7 @@ public class TextEditorBase
     
     public int MostCharactersOnASingleRow { get; private set; }
 
-    public TextEditorOptions TextEditorOptions { get; } = new();
+    public TextEditorOptions TextEditorOptions { get; } = TextEditorOptions.UnsetTextEditorOptions();
 
     public ImmutableArray<(int positionIndex, RowEndingKind rowEndingKind)> RowEndingPositions =>
         _rowEndingPositions.ToImmutableArray();

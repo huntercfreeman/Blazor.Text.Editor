@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddTextEditorRazorLibServices(
         this IServiceCollection services,
-        Action<TextEditorOptions>? configure = null)
+        Action<TextEditorServiceOptions>? configure = null)
     {
         return services
             .AddTextEditorClassLibServices(
@@ -22,9 +22,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddTextEditorClassLibServices(
         this IServiceCollection services,
         Func<IServiceProvider, IClipboardProvider> clipboardProviderDefaultFactory,
-        Action<TextEditorOptions>? configure = null)
+        Action<TextEditorServiceOptions>? configure = null)
     {
-        var textEditorOptions = new TextEditorOptions();
+        var textEditorOptions = new TextEditorServiceOptions();
         configure?.Invoke(textEditorOptions);
 
         var clipboardProviderFactory = textEditorOptions.ClipboardProviderFactory
@@ -33,8 +33,8 @@ public static class ServiceCollectionExtensions
         if (textEditorOptions.InitializeFluxor)
         {
             services
-                .AddSingleton<ITextEditorOptions, ImmutableTextEditorOptions>(
-                    _ => new ImmutableTextEditorOptions(textEditorOptions))
+                .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
+                    _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
                 .AddScoped<IClipboardProvider>(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
                 .AddScoped<ITextEditorService, TextEditorService>()
                 .AddFluxor(options => options

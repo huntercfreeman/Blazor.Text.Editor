@@ -2,7 +2,7 @@
 
 namespace BlazorTextEditor.RazorLib;
 
-public class TextEditorOptions : ITextEditorOptions
+public class TextEditorServiceOptions : ITextEditorServiceOptions
 {
     public bool InitializeFluxor { get; set; } = true;
     /// <summary>

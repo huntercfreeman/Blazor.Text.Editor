@@ -1,6 +1,6 @@
 ﻿namespace BlazorTextEditor.RazorLib;
 
-public interface ITextEditorOptions
+public interface ITextEditorServiceOptions
 {
     /// <summary>
     /// If the consumer of the Nuget Package is

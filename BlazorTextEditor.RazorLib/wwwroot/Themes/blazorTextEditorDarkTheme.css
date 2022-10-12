@@ -1,0 +1,17 @@
+.bte_dark-theme {
+    --bte_primary-font-color: #A9B7C6;
+    --bte_text-editor-cursor-foreground-color: #BBBBBB;
+    --bte_text-selection-background-color: #35566E;
+    --bte_body-background-color: #2B2B2B;
+    --bte_text-editor-caret-row-border-color: #919157;
+    --bte_newline-foreground-color: #4e9a41;
+    --bte_newline-background-color: #424242;
+    --bte_method-foreground-color: #7CD578;
+    --bte_type-foreground-color: #6EA1E0;
+    --bte_parameter-foreground-color: #A98ED1;
+    --bte_string-literal-foreground-color: #D7A671;
+    --bte_keyword-foreground-color: #C47474;
+    --bte_comment-foreground-color: #808080;
+    --bte_text-editor-gutter-border-color: #273840;
+    --bte_text-editor-gutter-background-color: #1f2229;
+}

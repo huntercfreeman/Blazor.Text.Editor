@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @using BlazorTextEditor.RazorLib
+@using ExampleApplication.TextEditorOptionsCase
 
 <PageTitle>Index</PageTitle>
 
@@ -14,6 +15,12 @@ Welcome to your new app.
         @onclick="RegisterTextEditorOnClick">
     RegisterTextEditorOnClick
 </button>
+
+<div>
+    Global Settings
+    
+    <TextEditorOptionsDisplay TextEditorOptions="TextEditorService.TextEditorStates.GlobalTextEditorOptions" />
+</div>
 
 @foreach (var textEditor in TextEditorService.TextEditorStates.TextEditorList)
 {
