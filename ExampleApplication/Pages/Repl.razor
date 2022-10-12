@@ -15,36 +15,56 @@
 </div>
 
 <div class="ea_repl-code-run-history">
-    @if (_runCodeHistoryIndex is not null)
-    {
-        var codeRunHistoryEntry = _runCodeHistoryList[_runCodeHistoryIndex.Value];
-        
-        <div class="ea_repl-code-run-history-entry">
-            @codeRunHistoryEntry.input 
-            &nbsp;        
-            ->
-            &nbsp;
-            @if (codeRunHistoryEntry.evaluatorResult is not null)
-            {
-                <text>
-                    @codeRunHistoryEntry.evaluatorResult.ResultValue
-                    :
-                    @codeRunHistoryEntry.evaluatorResult.ResultType.Name
-                </text>
-            }
-            
-            <div class="ea_repl-code-run-history-entry-diagnostics">
-                @foreach (var diagnostic in @codeRunHistoryEntry.diagnostics)
-                {
-                    <div class="@MapDiagnosticLevelToCssClass(diagnostic.DiagnosticLevel)">
-                        <span style="font-weight: bold;">@diagnostic.DiagnosticLevel:</span>
-                        &nbsp;
-                        <span>@diagnostic.Message</span>
-                    </div>
-                }
+    <div class="ea_repl-code-run-history-index-display">
+        Showing history
+        @(((_runCodeHistoryIndex ?? 0) + 1).ToString())
+        of
+        @_runCodeHistoryList.Count
+    </div>
+    <div class="ea_repl-code-run-history-flex-row">
+        <div class="ea_repl-code-run-history-index-pager">
+            <div class="ea_repl-code-run-history-index-pager-button"
+                 @onclick="DecrementHistoryIndex">
+                Previous
+            </div>
+            <div class="ea_repl-code-run-history-index-pager-button"
+                 @onclick="IncrementHistoryIndex">
+                Next
             </div>
         </div>
-    }
+        <div class="ea_repl-code-run-history-display">
+            @if (_runCodeHistoryIndex is not null)
+            {
+                var codeRunHistoryEntry = _runCodeHistoryList[_runCodeHistoryIndex.Value];
+    
+                <div class="ea_repl-code-run-history-entry">
+                    @codeRunHistoryEntry.input
+                    &nbsp;
+                    ->
+                    &nbsp;
+                    @if (codeRunHistoryEntry.evaluatorResult is not null)
+                    {
+                        <text>
+                            @codeRunHistoryEntry.evaluatorResult.ResultValue
+                            :
+                            @codeRunHistoryEntry.evaluatorResult.ResultType.Name
+                        </text>
+                    }
+    
+                    <div class="ea_repl-code-run-history-entry-diagnostics">
+                        @foreach (var diagnostic in @codeRunHistoryEntry.diagnostics)
+                        {
+                            <div class="@MapDiagnosticLevelToCssClass(diagnostic.DiagnosticLevel)">
+                                <span style="font-weight: bold;">@diagnostic.DiagnosticLevel:</span>
+                                &nbsp;
+                                <span>@diagnostic.Message</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 <div class="ea_repl-toolbar">

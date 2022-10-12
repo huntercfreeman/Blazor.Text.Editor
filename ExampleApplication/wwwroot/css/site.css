@@ -96,9 +96,35 @@ a, .btn-link {
 
 .ea_repl-code-run-history {
     background-color: #d7d7ff;
+    height: 6.5rem;
+}
+
+.ea_repl-code-run-history-flex-row {
+    display: flex;
+}
+
+.ea_repl-code-run-history-display {
+    overflow: auto;
+    padding: 5px;
+    margin-left: 15px;
+}
+
+.ea_repl-code-run-history-index-display {
+    border-bottom: 2px solid black;
 }
     
-.ea_repl-code-run-history {
-    height: 4rem;
-    overflow: auto;
+.ea_repl-code-run-history-index-pager-button {
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #dfc6e5;
+    padding: 5px;
 }
+
+.ea_repl-code-run-history-index-pager-button:hover {
+    background-color: #1b0386;
+    color: white;
+}
+
+

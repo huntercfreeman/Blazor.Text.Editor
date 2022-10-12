@@ -74,10 +74,7 @@ public partial class Repl : ComponentBase, IDisposable
         {
             _runCodeHistoryList.Add(historyEntry);
 
-            if (_runCodeHistoryIndex is null)
-                _runCodeHistoryIndex = 0;
-            else
-                _runCodeHistoryIndex++;
+            IncrementHistoryIndex();
         }
         
         void ReportReplUsageError(string message, DiagnosticLevel diagnosticLevel)
@@ -156,5 +153,24 @@ public partial class Repl : ComponentBase, IDisposable
     public void Dispose()
     {
         TextEditorService.OnTextEditorStatesChanged -= TextEditorServiceOnOnTextEditorStatesChanged;
+    }
+
+    private void DecrementHistoryIndex()
+    {
+        if (_runCodeHistoryIndex > 0)
+            _runCodeHistoryIndex--;
+    }
+    
+    private void IncrementHistoryIndex()
+    {
+        if (_runCodeHistoryIndex is null &&
+            _runCodeHistoryList.Any())
+        {
+            _runCodeHistoryIndex = 0;
+        }
+        else if (_runCodeHistoryIndex < _runCodeHistoryList.Count - 1)
+        {
+            _runCodeHistoryIndex++;
+        }
     }
 }
