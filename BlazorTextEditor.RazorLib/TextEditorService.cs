@@ -1,10 +1,11 @@
 ﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
 namespace BlazorTextEditor.RazorLib;
 
-public class TextEditorService : ITextEditorService, IDisposable
+public class TextEditorService : ITextEditorService
 {
     private readonly IState<TextEditorStates> _textEditorStates;
     private readonly IDispatcher _dispatcher;
@@ -44,6 +45,12 @@ public class TextEditorService : ITextEditorService, IDisposable
     {
         _dispatcher.Dispatch(
             new TextEditorSetFontSizeAction(fontSizeInPixels));
+    }
+    
+    public void SetTheme(Theme theme)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetThemeAction(theme));
     }
     
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)

@@ -74,4 +74,21 @@ public class TextEditorStatesReducer
             GlobalTextEditorOptions = nextTextEditorOptions
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetThemeAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetThemeAction textEditorSetThemeAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                Theme = textEditorSetThemeAction.Theme
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions
+        };
+    }
 }

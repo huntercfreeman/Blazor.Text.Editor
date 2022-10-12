@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
                 .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
                     _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
                 .AddScoped<IClipboardProvider>(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
+                .AddScoped<IThemeService, ThemeService>()
                 .AddScoped<ITextEditorService, TextEditorService>()
                 .AddFluxor(options => options
                     .ScanAssemblies(typeof(ServiceCollectionExtensions).Assembly));

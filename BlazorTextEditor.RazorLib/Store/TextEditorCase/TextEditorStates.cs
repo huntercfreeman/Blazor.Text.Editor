@@ -13,7 +13,7 @@ public record TextEditorStates(
     public TextEditorStates() 
         : this(ImmutableList<TextEditorBase>.Empty, new TextEditorOptions(
             20,
-            ThemeFacts.BlazorTextEditorDark))
+            ThemeFacts.BlazorTextEditorLight))
     {
     }
 }

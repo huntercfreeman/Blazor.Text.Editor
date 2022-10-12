@@ -11,5 +11,12 @@
         @TextEditorOptions.FontSizeInPixels
     </div>
 
+    <select @onchange="SelectThemeOnChange">
+        @foreach (var theme in ThemeService.ThemeStates.Themes)
+        {
+            <option value="@theme.ThemeKey.Guid.ToString()">@theme.DisplayName</option>
+        }
+    </select>
+    
     <ThemeDisplay Theme="TextEditorOptions.Theme"/>
 </div>
