@@ -14,13 +14,39 @@
     </ul>
 </div>
 
+<div class="ea_repl-code-run-history">
+    @if (_runCodeHistoryIndex is not null)
+    {
+        var codeRunHistoryEntry = _runCodeHistoryList[_runCodeHistoryIndex.Value];
+        
+        <div class="ea_repl-code-run-history-entry">
+            @codeRunHistoryEntry.input 
+            &nbsp;        
+            ->
+            &nbsp;
+            @codeRunHistoryEntry.evaluatorResult.ResultValue:@codeRunHistoryEntry.evaluatorResult.ResultType.Name
+            
+            <div class="ea_repl-code-run-history-entry-diagnostics">
+                @foreach (var diagnostic in @codeRunHistoryEntry.diagnostics)
+                {
+                    <div class="@MapDiagnosticLevelToCssClass(diagnostic.DiagnosticLevel)">
+                        <span style="font-weight: bold;">@diagnostic.DiagnosticLevel:</span>
+                        &nbsp;
+                        <span>@diagnostic.Message</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
 
 <div class="ea_repl-toolbar">
-    <div class="ea_repl-toolbar-button">
+    <div class="ea_repl-toolbar-button"
+         tabindex="0"
+         @onclick="RunCodeOnClick">
         Run Code:&nbsp;
         <IconPlay/>
     </div>
-    
 </div>
 
 @{
@@ -28,7 +54,8 @@
 
     if (localReplTextEditor is not null)
     {
-        <TextEditorDisplay TextEditorKey="localReplTextEditor.Key"
+        <TextEditorDisplay @ref="_textEditorDisplay"
+                           TextEditorKey="localReplTextEditor.Key"
                            StyleCssString="height: 400px;" />
     }
 }

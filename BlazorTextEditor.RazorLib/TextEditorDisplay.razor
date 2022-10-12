@@ -30,12 +30,12 @@
             </div>
 
             <div class="bte_text-selection-group">
-                @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
-                     _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value !=
-                     _textEditorCursor.TextEditorSelection.EndingPositionIndex)
+                @if (PrimaryCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
+                     PrimaryCursor.TextEditorSelection.AnchorPositionIndex.Value !=
+                     PrimaryCursor.TextEditorSelection.EndingPositionIndex)
                 {
-                    var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value;
-                    var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
+                    var lowerBound = PrimaryCursor.TextEditorSelection.AnchorPositionIndex.Value;
+                    var upperBound = PrimaryCursor.TextEditorSelection.EndingPositionIndex;
 
                     if (lowerBound > upperBound)
                     {
@@ -142,7 +142,7 @@
             @if (_characterWidthAndRowHeight is not null)
             {
                 <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
-                                         TextEditorCursor="_textEditorCursor"
+                                         TextEditorCursor="PrimaryCursor"
                                          FontWidthAndElementHeight="_characterWidthAndRowHeight"
                                          TextEditor="TextEditorStatesSelection.Value"/>
             }

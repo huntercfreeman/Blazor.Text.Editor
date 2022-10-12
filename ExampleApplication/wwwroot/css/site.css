@@ -81,3 +81,15 @@ a, .btn-link {
 .ea_repl-toolbar-button:hover {
     background-color: #43b043;
 }
+
+.ea_diagnostic-level-info {
+    color: dodgerblue;
+}
+
+.ea_diagnostic-level-warning {
+    color: orange;
+}
+
+.ea_diagnostic-level-error {
+    color: red;
+}

@@ -196,4 +196,29 @@ public class TextEditorCursor
             textEditorCursor.TextEditorSelection.EndingPositionIndex = positionIndex;
         }
     }
+
+    public string? GetSelectedText(TextEditorBase textEditorBase)
+    {
+        if (TextEditorSelection.AnchorPositionIndex.HasValue &&
+            TextEditorSelection.AnchorPositionIndex.Value !=
+            TextEditorSelection.EndingPositionIndex)
+        {
+            var lowerBound = TextEditorSelection.AnchorPositionIndex.Value;
+            var upperBound = TextEditorSelection.EndingPositionIndex;
+
+            if (lowerBound > upperBound)
+            {
+                (lowerBound, upperBound) = (upperBound, lowerBound);
+            }
+
+            var result = textEditorBase.GetTextRange(lowerBound,
+                upperBound - lowerBound);
+
+            return result.Length != 0
+                ? result
+                : null;
+        }
+
+        return null;
+    }
 }

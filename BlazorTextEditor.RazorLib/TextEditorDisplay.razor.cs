@@ -40,7 +40,6 @@ public partial class TextEditorDisplay : ComponentBase
     private FontWidthAndElementHeight? _characterWidthAndRowHeight;
     private WidthAndHeightOfElement? _textEditorWidthAndHeight;
     private RelativeCoordinates? _relativeCoordinatesOnClick;
-    private TextEditorCursor _textEditorCursor = new();
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private bool _showNewlines = true;
     private bool _showWhitespace;
@@ -73,6 +72,8 @@ public partial class TextEditorDisplay : ComponentBase
         .Replace("\n", "\\n<br/>")
         .Replace("\t", "--->")
         .Replace(" ", "·");
+
+    public TextEditorCursor PrimaryCursor { get; } = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -137,31 +138,17 @@ public partial class TextEditorDisplay : ComponentBase
         {
             TextEditorCursor.MoveCursor(
                 keyboardEventArgs, 
-                _textEditorCursor, 
+                PrimaryCursor, 
                 TextEditorStatesSelection.Value);
         }
         else
         {
             if (keyboardEventArgs.Key == "c" && keyboardEventArgs.CtrlKey)
             {
-                if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
-                    _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value !=
-                    _textEditorCursor.TextEditorSelection.EndingPositionIndex)
-                {
-                    var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value;
-                    var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
-
-                    if (lowerBound > upperBound)
-                    {
-                        (lowerBound, upperBound) = (upperBound, lowerBound);
-                    }
-
-                    var result = TextEditorStatesSelection.Value.GetTextRange(lowerBound,
-                        upperBound - lowerBound);
-
-                    if (result.Length != 0)
-                        await ClipboardProvider.SetClipboard(result);
-                }
+                var result = PrimaryCursor.GetSelectedText(TextEditorStatesSelection.Value);
+                
+                if (result is not null)
+                    await ClipboardProvider.SetClipboard(result);
             }
             else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
             {
@@ -181,7 +168,7 @@ public partial class TextEditorDisplay : ComponentBase
                     Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
                         new (ImmutableTextEditorCursor, TextEditorCursor)[]
                         {
-                            (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                            (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
                         }.ToImmutableArray(),
                         new KeyboardEventArgs
                         {
@@ -196,7 +183,7 @@ public partial class TextEditorDisplay : ComponentBase
                 Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
                     new (ImmutableTextEditorCursor, TextEditorCursor)[]
                     {
-                        (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                        (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
                     }.ToImmutableArray(),
                     keyboardEventArgs,
                     CancellationToken.None));
@@ -210,16 +197,16 @@ public partial class TextEditorDisplay : ComponentBase
     {
         var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
 
-        _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-        _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+        PrimaryCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+        PrimaryCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
 
         _textEditorCursorDisplay?.PauseBlinkAnimation();
 
         var cursorPositionIndex = TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
         
-        _textEditorCursor.TextEditorSelection.AnchorPositionIndex = cursorPositionIndex;
+        PrimaryCursor.TextEditorSelection.AnchorPositionIndex = cursorPositionIndex;
 
-        _textEditorCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
+        PrimaryCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
         
         _thinksLeftMouseButtonIsDown = true;
     }
@@ -237,12 +224,12 @@ public partial class TextEditorDisplay : ComponentBase
         {
             var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
             
-            _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-            _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+            PrimaryCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+            PrimaryCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
 
             _textEditorCursorDisplay?.PauseBlinkAnimation();
             
-            _textEditorCursor.TextEditorSelection.EndingPositionIndex =
+            PrimaryCursor.TextEditorSelection.EndingPositionIndex =
                 TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
         }
         else
