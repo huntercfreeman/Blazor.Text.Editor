@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.TextEditor;
 using ExampleApplication.SyntaxHighlighting.CSharp;
+using ExampleApplication.SyntaxHighlighting.FictitiousLanguage;
 using Microsoft.AspNetCore.Components;
 
 namespace ExampleApplication.Pages;
@@ -16,8 +17,13 @@ public partial class Index : ComponentBase, IDisposable
     private static readonly TextEditorKey C_SHARP_SOURCE_CODE_TEXT_EDITOR_KEY = 
         TextEditorKey.NewTextEditorKey();
     
+    private static readonly TextEditorKey FICTITIOUS_LANGUAGE_SOURCE_CODE_TEXT_EDITOR_KEY = 
+        TextEditorKey.NewTextEditorKey();
+    
     private static readonly TextEditorKey MARY_HAD_A_LITTLE_LAMB_TEXT_EDITOR_KEY = 
         TextEditorKey.NewTextEditorKey();
+    
+
     
     private static readonly ImmutableArray<Func<Task<TextEditorBase>>> INITIAL_TEXT_EDITOR_CONSTRUCTS =
             new Func<Task<TextEditorBase>>[]
@@ -35,14 +41,14 @@ public partial class Index : ComponentBase, IDisposable
 
                     return textEditorBase;
                 },
-                // JavaScript source code with initial render Syntax Highlighting
+                // FictitiousLanguage source code with initial render Syntax Highlighting
                 async () =>
                 {
                     var textEditorBase = new TextEditorBase(
-                        SampleCSharpSourceCode,
-                        new TextEditorCSharpLexer(),
-                        new TextEditorCSharpDecorationMapper(),
-                        C_SHARP_SOURCE_CODE_TEXT_EDITOR_KEY);
+                        SampleFictitiousLanguageSourceCode,
+                        new TextEditorFictitiousLanguageLexer(),
+                        new TextEditorFictitiousLanguageDecorationMapper(),
+                        FICTITIOUS_LANGUAGE_SOURCE_CODE_TEXT_EDITOR_KEY);
 
                     await textEditorBase.ApplySyntaxHighlightingAsync();
 
@@ -185,6 +191,8 @@ public partial class Index : ComponentBase, IDisposable
         TextEditorService.OnTextEditorStatesChanged -= TextEditorServiceOnOnTextEditorStatesChanged;
     }";
 
+    private const string SampleFictitiousLanguageSourceCode = "var x; x = 2;";
+    
     private const string MaryHadALittleLamb = @"""Mary had a little lamb,""
 BY SARAH JOSEPHA HALE
 Mary had a little lamb,
@@ -206,196 +214,4 @@ Why does the lamb love Mary so?
 The eager children cry;
 Why, Mary loves the lamb, you know,
 The teacher did reply.";
-
-    private const string SampleJavaScriptSourceCode = @"window.blazorTextEditor = {
-    measureFontWidthAndElementHeightByElementId: function (elementId, amountOfCharactersRendered) {
-        let element = document.getElementById(elementId);
-        
-        let fontWidth = element.offsetWidth / amountOfCharactersRendered;
-        
-        return {
-            FontWidthInPixels: fontWidth,
-            ElementHeightInPixels: element.offsetHeight
-        }
-    },
-    measureWidthAndHeightByElementId: function (elementId) {
-        let element = document.getElementById(elementId);
-        
-        return {
-            WidthInPixels: element.offsetWidth,
-            HeightInPixels: element.offsetHeight
-        }
-    },
-    getRelativePosition: function (elementId, clientX, clientY) {
-        let element = document.getElementById(elementId);
-        
-        let bounds = element.getBoundingClientRect();
-        
-        let x = clientX - bounds.left;
-        let y = clientY - bounds.top;
-        
-        return {
-            RelativeX: x,
-            RelativeY: y,
-            RelativeScrollLeft: element.scrollLeft,
-            RelativeScrollTop: element.scrollTop
-        }
-    },
-    intersectionObserverMap: new Map(),
-    initializeIntersectionObserver: function (intersectionObserverMapKey,
-                                              virtualizationDisplayDotNetObjectReference,
-                                              scrollableParentFinder,
-                                              boundaryIds) {
-
-        let scrollableParent = scrollableParentFinder.parentElement;
-
-        scrollableParent.addEventListener(""scroll"", (event) => {
-            let hasIntersectingBoundary = false;
-
-            let intersectionObserverMapValue = this.intersectionObserverMap
-                .get(intersectionObserverMapKey);
-
-            for (let i = 0; i < intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples.length; i++) {
-                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples[i];
-
-                if (boundaryTuple.IsIntersecting) {
-                    hasIntersectingBoundary = true;
-                }
-            }
-
-            if (hasIntersectingBoundary) {
-                virtualizationDisplayDotNetObjectReference
-                    .invokeMethodAsync(""OnScrollEventAsync"", {
-                        ScrollLeftInPixels: scrollableParent.scrollLeft,
-                        ScrollTopInPixels: scrollableParent.scrollTop
-                    });
-            }
-        }, true);
-
-        let options = {
-            root: scrollableParent,
-            rootMargin: '0px',
-            threshold: 0
-        }
-
-        let intersectionObserver = new IntersectionObserver((entries) => {
-            let hasIntersectingBoundary = false;
-
-            let intersectionObserverMapValue = this.intersectionObserverMap
-                .get(intersectionObserverMapKey);
-
-            for (let i = 0; i < entries.length; i++) {
-
-                let entry = entries[i];
-
-                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples
-                    .find(x => x.BoundaryId === entry.target.id);
-
-                boundaryTuple.IsIntersecting = entry.isIntersecting;
-
-                if (boundaryTuple.IsIntersecting) {
-                    hasIntersectingBoundary = true;
-                }
-            }
-
-            if (hasIntersectingBoundary) {
-                virtualizationDisplayDotNetObjectReference
-                    .invokeMethodAsync(""OnScrollEventAsync"", {
-                        ScrollLeftInPixels: scrollableParent.scrollLeft,
-                        ScrollTopInPixels: scrollableParent.scrollTop
-                    });
-            }
-        }, options);
-
-        let boundaryIdIntersectionRatioTuples = [];
-
-        for (let i = 0; i < boundaryIds.length; i++) {
-
-            let boundaryElement = document.getElementById(boundaryIds[i]);
-
-            intersectionObserver.observe(boundaryElement);
-
-            boundaryIdIntersectionRatioTuples.push({
-                BoundaryId: boundaryIds[i],
-                IsIntersecting: false
-            });
-        }
-
-        this.intersectionObserverMap.set(intersectionObserverMapKey, {
-            IntersectionObserver: intersectionObserver,
-            BoundaryIdIntersectionRatioTuples: boundaryIdIntersectionRatioTuples
-        });
-
-        virtualizationDisplayDotNetObjectReference
-            .invokeMethodAsync(""OnScrollEventAsync"", {
-                ScrollLeftInPixels: scrollableParent.scrollLeft,
-                ScrollTopInPixels: scrollableParent.scrollTop
-            });
-    },
-    disposeIntersectionObserver: function (intersectionObserverMapKey) {
-
-        // TODO: Wrong
-
-        let intersectionObserver = this.intersectionObserverMap.get(intersectionObserverMapKey);
-
-        this.intersectionObserverMap.delete(intersectionObserverMapKey);
-
-        intersectionObserver.disconnect();
-    },
-    readClipboard: async function () {
-        // First, ask the Permissions API if we have some kind of access to
-        // the ""clipboard-read"" feature.
-
-        try {
-            return await navigator.permissions.query({ name: ""clipboard-read"" }).then(async (result) => {
-                // If permission to read the clipboard is granted or if the user will
-                // be prompted to allow it, we proceed.
-
-                if (result.state === ""granted"" || result.state === ""prompt"") {
-                    return await navigator.clipboard.readText().then((data) => {
-                        return data;
-                    });
-                }
-                else {
-                    return """";
-                }
-            });
-        }
-        catch (e) {
-            return """";
-        }
-    },
-    setClipboard: function (value) {
-        // Copies a string to the clipboard. Must be called from within an
-        // event handler such as click. May return false if it failed, but
-        // this is not always possible. Browser support for Chrome 43+,
-        // Firefox 42+, Safari 10+, Edge and Internet Explorer 10+.
-        // Internet Explorer: The clipboard feature may be disabled by
-        // an administrator. By default a prompt is shown the first
-        // time the clipboard is used (per session).
-        if (window.clipboardData && window.clipboardData.setData) {
-            // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
-            return window.clipboardData.setData(""Text"", text);
-
-        }
-        else if (document.queryCommandSupported && document.queryCommandSupported(""copy"")) {
-            var textarea = document.createElement(""textarea"");
-            textarea.textContent = value;
-            textarea.style.position = ""fixed"";  // Prevent scrolling to bottom of page in Microsoft Edge.
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                return document.execCommand(""copy"");  // Security exception may be thrown by some browsers.
-            }
-            catch (ex) {
-                console.warn(""Copy to clipboard failed."", ex);
-                return false;
-            }
-            finally {
-                document.body.removeChild(textarea);
-            }
-        }
-    }
-}
-";
 }

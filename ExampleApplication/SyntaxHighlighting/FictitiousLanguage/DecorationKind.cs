@@ -1,4 +1,4 @@
-﻿namespace ExampleApplication.SyntaxHighlighting.JavaScript;
+﻿namespace ExampleApplication.SyntaxHighlighting.FictitiousLanguage;
 
 public enum DecorationKind
 {

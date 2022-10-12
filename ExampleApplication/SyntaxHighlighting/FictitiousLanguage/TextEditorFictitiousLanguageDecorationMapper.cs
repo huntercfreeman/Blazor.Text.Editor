@@ -1,10 +1,8 @@
 ﻿using BlazorTextEditor.RazorLib.Decoration;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
 
-namespace ExampleApplication.SyntaxHighlighting.JavaScript;
+namespace ExampleApplication.SyntaxHighlighting.FictitiousLanguage;
 
-public class TextEditorJavaScriptDecorationMapper : IDecorationMapper
+public class TextEditorFictitiousLanguageDecorationMapper : IDecorationMapper
 {
     public string Map(byte decorationByte)
     {
