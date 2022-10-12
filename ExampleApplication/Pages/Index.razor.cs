@@ -65,6 +65,8 @@ public partial class Index : ComponentBase, IDisposable
                 }
             }.ToImmutableArray();
 
+    private bool _shouldRemeasureFlag;
+
     protected override void OnInitialized()
     {
         TextEditorService.OnTextEditorStatesChanged += TextEditorServiceOnOnTextEditorStatesChanged;

@@ -30,10 +30,12 @@ public partial class TextEditorDisplay : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorKey TextEditorKey { get; set; } = null!;
     [Parameter]
+    public bool ShouldRemeasureFlag { get; set; }
+    [Parameter]
     public string StyleCssString { get; set; } = null!;
     [Parameter]
     public string ClassCssString { get; set; } = null!;
-
+    
     private Guid _textEditorGuid = Guid.NewGuid();
     private ElementReference _textEditorDisplayElementReference;
     private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -52,6 +54,7 @@ public partial class TextEditorDisplay : ComponentBase
 
     private TextEditorKey? _previousTextEditorKey;
     private int? _previousGlobalFontSizeInPixels; 
+    private bool? _previousShouldRemeasureFlag; 
 
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
 
@@ -98,13 +101,21 @@ public partial class TextEditorDisplay : ComponentBase
             .GlobalTextEditorOptions
             .FontSizeInPixels!
             .Value;
+
+        var dirtyGlobalFontSizeInPixels = _previousGlobalFontSizeInPixels is null ||
+                                          _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
+
+        var dirtyShouldRemeasureFlag = _previousShouldRemeasureFlag is null ||
+                                       _previousShouldRemeasureFlag != ShouldRemeasureFlag;
         
-        if (_previousGlobalFontSizeInPixels is null ||
-            _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels)
+        if (dirtyGlobalFontSizeInPixels || dirtyShouldRemeasureFlag)
         {
             _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
+            _previousShouldRemeasureFlag = ShouldRemeasureFlag;
+            
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
+            
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
         
