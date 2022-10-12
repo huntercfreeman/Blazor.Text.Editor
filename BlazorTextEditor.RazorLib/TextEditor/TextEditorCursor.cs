@@ -19,6 +19,7 @@ public class TextEditorCursor
     public int PreferredColumnIndex { get; set; }
     public TextCursorKind TextCursorKind { get; set; }
     public TextEditorSelection TextEditorSelection { get; } = new();
+    public bool ShouldRevealCursor { get; set; }
     
     /// <summary>
     /// TODO: handle control modifier

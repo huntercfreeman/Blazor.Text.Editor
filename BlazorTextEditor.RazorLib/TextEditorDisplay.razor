@@ -144,7 +144,9 @@
                 <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                          TextEditorCursor="PrimaryCursor"
                                          FontWidthAndElementHeight="_characterWidthAndRowHeight"
-                                         TextEditor="TextEditorStatesSelection.Value"/>
+                                         TextEditor="TextEditorStatesSelection.Value"
+                                         ScrollableContainerId="@TextEditorContentId"
+                                         IsFocusTarget="true" />
             }
         </div>
     </div>

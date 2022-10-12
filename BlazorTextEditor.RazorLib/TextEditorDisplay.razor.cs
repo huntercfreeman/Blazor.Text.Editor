@@ -206,6 +206,8 @@ public partial class TextEditorDisplay : ComponentBase
             
             _virtualizationDisplay.InvokeEntriesProviderFunc();
         }
+        
+        PrimaryCursor.ShouldRevealCursor = true;
     }
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
