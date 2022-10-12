@@ -113,6 +113,10 @@ a, .btn-link {
     border-bottom: 2px solid black;
 }
     
+.ea_repl-code-run-history-index-pager {
+    border-right: 2px solid black;
+}
+
 .ea_repl-code-run-history-index-pager-button {
     height: 50%;
     display: flex;
@@ -120,6 +124,7 @@ a, .btn-link {
     align-items: center;
     background-color: #dfc6e5;
     padding: 5px;
+    cursor: pointer;
 }
 
 .ea_repl-code-run-history-index-pager-button:hover {
