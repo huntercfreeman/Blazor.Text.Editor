@@ -82,12 +82,12 @@
                     }
 
                     <div class="bte_gutter"
-                         style="@GetGutterStyleCss(index)">
+                         style="@GetGutterStyleCss(index, virtualizedRow.LeftInPixels)">
                         @(index + 1)
                     </div>
 
                     <div class="bte_row"
-                         style="@GetRowStyleCss(index)">
+                         style="@GetRowStyleCss(index, virtualizedRow.LeftInPixels)">
                         @if (row.Any())
                         {
                             var spanBuilder = new StringBuilder();

@@ -337,7 +337,7 @@ public partial class TextEditorDisplay : ComponentBase
         return localTextEditor.DecorationMapper.Map(decorationByte);
     }
 
-    private string GetRowStyleCss(int index)
+    private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         if (_characterWidthAndRowHeight is null)
             return string.Empty;
@@ -350,12 +350,12 @@ public partial class TextEditorDisplay : ComponentBase
             .Length;
         
         var widthOfGutterInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
-        var left = $"left: {widthOfGutterInPixels + TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels}px;";
+        var left = $"left: {widthOfGutterInPixels + TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels + virtualizedRowLeftInPixels}px;";
         
         return $"{top} {height} {left}";
     }
 
-    private string GetGutterStyleCss(int index)
+    private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         if (_characterWidthAndRowHeight is null)
             return string.Empty;
@@ -376,7 +376,9 @@ public partial class TextEditorDisplay : ComponentBase
         var paddingLeft = $"padding-left: {TextEditorBase.GutterPaddingLeftInPixels}px;";
         var paddingRight = $"padding-right: {TextEditorBase.GutterPaddingRightInPixels}px;";
         
-        return $"{top} {height} {width} {paddingLeft} {paddingRight}";
+        var left = $"left: {virtualizedRowLeftInPixels}px;";
+        
+        return $"{left} {top} {height} {width} {paddingLeft} {paddingRight}";
     }
 
     private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
