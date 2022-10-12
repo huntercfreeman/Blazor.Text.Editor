@@ -17,4 +17,9 @@
       <ProjectReference Include="..\FictitiousLanguage.ClassLib\FictitiousLanguage.ClassLib.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="TextEditorOptionsCase\TextEditorOptionsDisplay.razor" />
+      <AdditionalFiles Include="Themes\ThemeDisplay.razor" />
+    </ItemGroup>
+
 </Project>
