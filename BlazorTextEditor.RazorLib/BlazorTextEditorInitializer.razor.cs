@@ -5,5 +5,5 @@ namespace BlazorTextEditor.RazorLib;
 public partial  class BlazorTextEditorInitializer : ComponentBase
 {
     [Inject]
-    private ITextEditorOptions TextEditorOptions { get; set; } = null!;
+    private ITextEditorServiceOptions TextEditorServiceOptions { get; set; } = null!;
 }

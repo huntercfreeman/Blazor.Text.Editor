@@ -1,0 +1,50 @@
+﻿@page "/"
+
+@using BlazorTextEditor.RazorLib
+@using ReplApp.TextEditorOptionsCase
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?"/>
+
+<button class="btn btn-primary"
+        @onclick="RegisterTextEditorOnClick">
+    RegisterTextEditorOnClick
+</button>
+
+<div>
+    Global Settings
+    
+    <TextEditorOptionsDisplay TextEditorOptions="TextEditorService.TextEditorStates.GlobalTextEditorOptions" />
+</div>
+
+<div class="ea_change-text-editor-dimensions">
+    <div>
+        <input type="number"
+               @bind="TextEditorWidthInPixels" />
+        
+        <span>TextEditorWidthInPixels</span>
+    </div>
+    
+    <div>
+        <input type="number"
+               @bind="TextEditorHeightInPixels" />
+        
+        <span>TextEditorHeightInPixels</span>
+    </div>
+</div>
+
+@foreach (var textEditor in TextEditorService.TextEditorStates.TextEditorList)
+{
+    <TextEditorDisplay @key="textEditor.Key" 
+                       TextEditorKey="textEditor.Key"
+                       StyleCssString="@($"width: {TextEditorWidthInPixels}px; height: {TextEditorHeightInPixels}px; margin-bottom: 20px;")"
+                       ShouldRemeasureFlag="_shouldRemeasureFlag" />
+}
+
+
+

@@ -19,6 +19,8 @@ public partial class TextEditorDisplay : ComponentBase
     [Inject]
     private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
     [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
@@ -28,22 +30,17 @@ public partial class TextEditorDisplay : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorKey TextEditorKey { get; set; } = null!;
     [Parameter]
+    public bool ShouldRemeasureFlag { get; set; }
+    [Parameter]
     public string StyleCssString { get; set; } = null!;
     [Parameter]
     public string ClassCssString { get; set; } = null!;
-
+    
     private Guid _textEditorGuid = Guid.NewGuid();
     private ElementReference _textEditorDisplayElementReference;
-    private bool _shouldMeasureDimensions = true;
     private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
     private int _testStringRepeatCount = 6;
-    private FontWidthAndElementHeight? _characterWidthAndRowHeight;
-    private WidthAndHeightOfElement? _textEditorWidthAndHeight;
-    private RelativeCoordinates? _relativeCoordinatesOnClick;
-    private TextEditorCursor _textEditorCursor = new();
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
-    private bool _showNewlines = true;
-    private bool _showWhitespace;
     private bool _showGetAllTextEscaped;
     /// <summary>
     /// Do not select text just because the user has the Left Mouse Button down.
@@ -56,14 +53,16 @@ public partial class TextEditorDisplay : ComponentBase
     private bool _thinksLeftMouseButtonIsDown;
 
     private TextEditorKey? _previousTextEditorKey;
+    private int? _previousGlobalFontSizeInPixels; 
+    private bool? _previousShouldRemeasureFlag; 
 
-    private DateTime _onInitializedDateTime;
-    private DateTime _onAfterFirstRenderDateTime;
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
 
-    private TimeSpan TimeToFirstRender => _onAfterFirstRenderDateTime
-        .Subtract(_onInitializedDateTime);
-    
+    public bool ShouldMeasureDimensions { get; set; } = true;
+    public FontWidthAndElementHeight? CharacterWidthAndRowHeight { get; private set; }
+    public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
+    public WidthAndHeightOfElement? TextEditorWidthAndHeight { get; private set; }
+
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
     private MarkupString GetAllTextEscaped => (MarkupString) TextEditorStatesSelection.Value
@@ -74,21 +73,64 @@ public partial class TextEditorDisplay : ComponentBase
         .Replace("\t", "--->")
         .Replace(" ", "·");
 
+    private string GlobalThemeCssClassString => TextEditorService
+        .TextEditorStates
+        .GlobalTextEditorOptions
+        .Theme?
+        .CssClassString
+    ?? string.Empty; 
+    
+    private string GlobalFontSizeInPixelsStyling => "font-size: " + TextEditorService
+        .TextEditorStates
+        .GlobalTextEditorOptions
+        .FontSizeInPixels!.Value
+    + "px;"; 
+    
+    private bool GlobalShowNewlines => TextEditorService
+        .TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
+    
+    private bool GlobalShowWhitespace => TextEditorService
+        .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
+
+    public TextEditorCursor PrimaryCursor { get; } = new();
+
     protected override async Task OnParametersSetAsync()
     {
-        if (_previousTextEditorKey is null ||
-            _previousTextEditorKey != TextEditorKey)
+        var currentGlobalFontSizeInPixels = TextEditorService
+            .TextEditorStates
+            .GlobalTextEditorOptions
+            .FontSizeInPixels!
+            .Value;
+
+        var dirtyGlobalFontSizeInPixels = _previousGlobalFontSizeInPixels is null ||
+                                          _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
+
+        var dirtyShouldRemeasureFlag = _previousShouldRemeasureFlag is null ||
+                                       _previousShouldRemeasureFlag != ShouldRemeasureFlag;
+        
+        if (dirtyGlobalFontSizeInPixels || dirtyShouldRemeasureFlag)
         {
+            _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
+            _previousShouldRemeasureFlag = ShouldRemeasureFlag;
+            
+            ShouldMeasureDimensions = true;
+            await InvokeAsync(StateHasChanged);
+            
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
         
+        if (_previousTextEditorKey is null ||
+            _previousTextEditorKey != TextEditorKey)
+        {
+            _previousTextEditorKey = TextEditorKey;
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        }
+
         await base.OnParametersSetAsync();
     }
 
     protected override void OnInitialized()
     {
-        _onInitializedDateTime = DateTime.UtcNow;
-        
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .Single(x => x.Key == TextEditorKey));
@@ -100,24 +142,22 @@ public partial class TextEditorDisplay : ComponentBase
     {
         if (firstRender)
         {
-            _onAfterFirstRenderDateTime = DateTime.UtcNow;
-            
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
-        if (_shouldMeasureDimensions)
+        if (ShouldMeasureDimensions)
         {
-            _characterWidthAndRowHeight = await JsRuntime.InvokeAsync<FontWidthAndElementHeight>(
+            CharacterWidthAndRowHeight = await JsRuntime.InvokeAsync<FontWidthAndElementHeight>(
                 "blazorTextEditor.measureFontWidthAndElementHeightByElementId",
                 MeasureCharacterWidthAndRowHeightId,
                 _testStringRepeatCount * _testStringForMeasurement.Length);
             
-            _textEditorWidthAndHeight = await JsRuntime.InvokeAsync<WidthAndHeightOfElement>(
+            TextEditorWidthAndHeight = await JsRuntime.InvokeAsync<WidthAndHeightOfElement>(
                 "blazorTextEditor.measureWidthAndHeightByElementId",
                 TextEditorContentId);
 
             {
-                _shouldMeasureDimensions = false;
+                ShouldMeasureDimensions = false;
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -137,31 +177,17 @@ public partial class TextEditorDisplay : ComponentBase
         {
             TextEditorCursor.MoveCursor(
                 keyboardEventArgs, 
-                _textEditorCursor, 
+                PrimaryCursor, 
                 TextEditorStatesSelection.Value);
         }
         else
         {
             if (keyboardEventArgs.Key == "c" && keyboardEventArgs.CtrlKey)
             {
-                if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
-                    _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value !=
-                    _textEditorCursor.TextEditorSelection.EndingPositionIndex)
-                {
-                    var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value;
-                    var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
-
-                    if (lowerBound > upperBound)
-                    {
-                        (lowerBound, upperBound) = (upperBound, lowerBound);
-                    }
-
-                    var result = TextEditorStatesSelection.Value.GetTextRange(lowerBound,
-                        upperBound - lowerBound);
-
-                    if (result.Length != 0)
-                        await ClipboardProvider.SetClipboard(result);
-                }
+                var result = PrimaryCursor.GetSelectedText(TextEditorStatesSelection.Value);
+                
+                if (result is not null)
+                    await ClipboardProvider.SetClipboard(result);
             }
             else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
             {
@@ -181,7 +207,7 @@ public partial class TextEditorDisplay : ComponentBase
                     Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
                         new (ImmutableTextEditorCursor, TextEditorCursor)[]
                         {
-                            (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                            (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
                         }.ToImmutableArray(),
                         new KeyboardEventArgs
                         {
@@ -196,7 +222,7 @@ public partial class TextEditorDisplay : ComponentBase
                 Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
                     new (ImmutableTextEditorCursor, TextEditorCursor)[]
                     {
-                        (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                        (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
                     }.ToImmutableArray(),
                     keyboardEventArgs,
                     CancellationToken.None));
@@ -204,22 +230,24 @@ public partial class TextEditorDisplay : ComponentBase
             
             _virtualizationDisplay.InvokeEntriesProviderFunc();
         }
+        
+        PrimaryCursor.ShouldRevealCursor = true;
     }
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
 
-        _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-        _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+        PrimaryCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+        PrimaryCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
 
         _textEditorCursorDisplay?.PauseBlinkAnimation();
 
         var cursorPositionIndex = TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
         
-        _textEditorCursor.TextEditorSelection.AnchorPositionIndex = cursorPositionIndex;
+        PrimaryCursor.TextEditorSelection.AnchorPositionIndex = cursorPositionIndex;
 
-        _textEditorCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
+        PrimaryCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
         
         _thinksLeftMouseButtonIsDown = true;
     }
@@ -237,12 +265,12 @@ public partial class TextEditorDisplay : ComponentBase
         {
             var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
             
-            _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-            _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+            PrimaryCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+            PrimaryCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
 
             _textEditorCursorDisplay?.PauseBlinkAnimation();
             
-            _textEditorCursor.TextEditorSelection.EndingPositionIndex =
+            PrimaryCursor.TextEditorSelection.EndingPositionIndex =
                 TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
         }
         else
@@ -255,22 +283,22 @@ public partial class TextEditorDisplay : ComponentBase
     {
         var localTextEditor = TextEditorStatesSelection.Value;
         
-        _relativeCoordinatesOnClick = await JsRuntime.InvokeAsync<RelativeCoordinates>(
+        RelativeCoordinatesOnClick = await JsRuntime.InvokeAsync<RelativeCoordinates>(
             "blazorTextEditor.getRelativePosition",
             TextEditorContentId,
             mouseEventArgs.ClientX,
             mouseEventArgs.ClientY);
 
-        if (_characterWidthAndRowHeight is null)
+        if (CharacterWidthAndRowHeight is null)
             return (0, 0);
 
-        var positionX = _relativeCoordinatesOnClick.RelativeX;
-        var positionY = _relativeCoordinatesOnClick.RelativeY;
+        var positionX = RelativeCoordinatesOnClick.RelativeX;
+        var positionY = RelativeCoordinatesOnClick.RelativeY;
         
         // Scroll position offset
         {
-            positionX += _relativeCoordinatesOnClick.RelativeScrollLeft;
-            positionY += _relativeCoordinatesOnClick.RelativeScrollTop;
+            positionX += RelativeCoordinatesOnClick.RelativeScrollLeft;
+            positionY += RelativeCoordinatesOnClick.RelativeScrollTop;
         }
         
         // Gutter padding column offset
@@ -279,11 +307,11 @@ public partial class TextEditorDisplay : ComponentBase
                 (TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels);
         }
         
-        var columnIndexDouble = positionX / _characterWidthAndRowHeight.FontWidthInPixels;
+        var columnIndexDouble = positionX / CharacterWidthAndRowHeight.FontWidthInPixels;
 
         var columnIndexInt = (int)Math.Round(columnIndexDouble, MidpointRounding.AwayFromZero);
         
-        var rowIndex = (int) (positionY / _characterWidthAndRowHeight.ElementHeightInPixels);
+        var rowIndex = (int) (positionY / CharacterWidthAndRowHeight.ElementHeightInPixels);
 
         rowIndex = rowIndex > localTextEditor.RowCount - 1
             ? localTextEditor.RowCount - 1
@@ -335,37 +363,37 @@ public partial class TextEditorDisplay : ComponentBase
         return localTextEditor.DecorationMapper.Map(decorationByte);
     }
 
-    private string GetRowStyleCss(int index)
+    private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
-        if (_characterWidthAndRowHeight is null)
+        if (CharacterWidthAndRowHeight is null)
             return string.Empty;
         
-        var top = $"top: {index * _characterWidthAndRowHeight.ElementHeightInPixels}px;";
-        var height = $"height: {_characterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var top = $"top: {index * CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var height = $"height: {CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
 
         var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
             .ToString()
             .Length;
         
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
-        var left = $"left: {widthOfGutterInPixels + TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels}px;";
+        var widthOfGutterInPixels = mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.FontWidthInPixels;
+        var left = $"left: {widthOfGutterInPixels + TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels + virtualizedRowLeftInPixels}px;";
         
         return $"{top} {height} {left}";
     }
 
-    private string GetGutterStyleCss(int index)
+    private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
-        if (_characterWidthAndRowHeight is null)
+        if (CharacterWidthAndRowHeight is null)
             return string.Empty;
         
-        var top = $"top: {index * _characterWidthAndRowHeight.ElementHeightInPixels}px;";
-        var height = $"height: {_characterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var top = $"top: {index * CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var height = $"height: {CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
 
         var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
             .ToString()
             .Length;
 
-        var widthInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
+        var widthInPixels = mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.FontWidthInPixels;
 
         widthInPixels += TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels;
         
@@ -374,12 +402,14 @@ public partial class TextEditorDisplay : ComponentBase
         var paddingLeft = $"padding-left: {TextEditorBase.GutterPaddingLeftInPixels}px;";
         var paddingRight = $"padding-right: {TextEditorBase.GutterPaddingRightInPixels}px;";
         
-        return $"{top} {height} {width} {paddingLeft} {paddingRight}";
+        var left = $"left: {virtualizedRowLeftInPixels}px;";
+        
+        return $"{left} {top} {height} {width} {paddingLeft} {paddingRight}";
     }
 
     private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
     {
-        if (_characterWidthAndRowHeight is null ||
+        if (CharacterWidthAndRowHeight is null ||
             rowIndex >= TextEditorStatesSelection.Value.RowEndingPositions.Length)
         {
             return string.Empty;
@@ -410,21 +440,21 @@ public partial class TextEditorDisplay : ComponentBase
             fullWidthOfRowIsSelected = false;
         }
         
-        var top = $"top: {rowIndex * _characterWidthAndRowHeight.ElementHeightInPixels}px;";
-        var height = $"height: {_characterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var top = $"top: {rowIndex * CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var height = $"height: {CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
 
         var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
             .ToString()
             .Length;
         
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
+        var widthOfGutterInPixels = mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.FontWidthInPixels;
 
         var gutterSizeInPixels = widthOfGutterInPixels 
                 + TextEditorBase.GutterPaddingLeftInPixels 
                 + TextEditorBase.GutterPaddingRightInPixels;
         
         var selectionStartInPixels = selectionStartingColumnIndex 
-                                     * _characterWidthAndRowHeight.FontWidthInPixels;
+                                     * CharacterWidthAndRowHeight.FontWidthInPixels;
         
         // selectionStartInPixels offset from Tab keys a width of many characters
         {
@@ -437,13 +467,13 @@ public partial class TextEditorDisplay : ComponentBase
 
             var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
             
-            selectionStartInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * _characterWidthAndRowHeight.FontWidthInPixels);    
+            selectionStartInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * CharacterWidthAndRowHeight.FontWidthInPixels);    
         }
         
         var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
 
         var selectionWidthInPixels = selectionEndingColumnIndex 
-                                     * _characterWidthAndRowHeight.FontWidthInPixels
+                                     * CharacterWidthAndRowHeight.FontWidthInPixels
                                      - selectionStartInPixels;
         
         // Tab keys a width of many characters
@@ -457,7 +487,7 @@ public partial class TextEditorDisplay : ComponentBase
 
             var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
             
-            selectionWidthInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * _characterWidthAndRowHeight.FontWidthInPixels);    
+            selectionWidthInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * CharacterWidthAndRowHeight.FontWidthInPixels);    
         }
         
         var widthCssStyleString = "width: ";
@@ -513,8 +543,8 @@ public partial class TextEditorDisplay : ComponentBase
 
     private VirtualizationResult<List<RichCharacter>>? EntriesProvider(VirtualizationRequest request)
     {
-        if (_characterWidthAndRowHeight is null ||
-            _textEditorWidthAndHeight is null ||
+        if (CharacterWidthAndRowHeight is null ||
+            TextEditorWidthAndHeight is null ||
             request.CancellationToken.IsCancellationRequested)
         {
             return null;
@@ -524,11 +554,11 @@ public partial class TextEditorDisplay : ComponentBase
 
         var verticalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollTopInPixels
-            / _characterWidthAndRowHeight.ElementHeightInPixels);
+            / CharacterWidthAndRowHeight.ElementHeightInPixels);
 
         var verticalTake = (int)Math.Ceiling(
-            _textEditorWidthAndHeight.HeightInPixels 
-            / _characterWidthAndRowHeight.ElementHeightInPixels);
+            TextEditorWidthAndHeight.HeightInPixels 
+            / CharacterWidthAndRowHeight.ElementHeightInPixels);
 
         if (verticalStartingIndex + verticalTake > localTextEditor.RowEndingPositions.Length)
             verticalTake = localTextEditor.RowEndingPositions.Length - verticalStartingIndex;
@@ -537,11 +567,11 @@ public partial class TextEditorDisplay : ComponentBase
 
         var horizontalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollLeftInPixels
-            / _characterWidthAndRowHeight.FontWidthInPixels);
+            / CharacterWidthAndRowHeight.FontWidthInPixels);
 
         var horizontalTake = (int)Math.Ceiling(
-            _textEditorWidthAndHeight.WidthInPixels / 
-            _characterWidthAndRowHeight.FontWidthInPixels);
+            TextEditorWidthAndHeight.WidthInPixels / 
+            CharacterWidthAndRowHeight.FontWidthInPixels);
 
         var virtualizedEntries = localTextEditor
             .GetRows(verticalStartingIndex, verticalTake)
@@ -564,26 +594,26 @@ public partial class TextEditorDisplay : ComponentBase
                 return new VirtualizationEntry<List<RichCharacter>>(
                     index,
                     horizontallyVirtualizedRow,
-                    horizontallyVirtualizedRow.Count * _characterWidthAndRowHeight.FontWidthInPixels,
-                    _characterWidthAndRowHeight.ElementHeightInPixels,
-                    horizontalStartingIndex * _characterWidthAndRowHeight.FontWidthInPixels,
-                    index * _characterWidthAndRowHeight.ElementHeightInPixels);
+                    horizontallyVirtualizedRow.Count * CharacterWidthAndRowHeight.FontWidthInPixels,
+                    CharacterWidthAndRowHeight.ElementHeightInPixels,
+                    horizontalStartingIndex * CharacterWidthAndRowHeight.FontWidthInPixels,
+                    index * CharacterWidthAndRowHeight.ElementHeightInPixels);
             }).ToImmutableArray();
 
         var totalWidth = localTextEditor.MostCharactersOnASingleRow 
-                         * _characterWidthAndRowHeight.FontWidthInPixels;
+                         * CharacterWidthAndRowHeight.FontWidthInPixels;
 
         var totalHeight = localTextEditor.RowEndingPositions.Length * 
-                          _characterWidthAndRowHeight.ElementHeightInPixels;
+                          CharacterWidthAndRowHeight.ElementHeightInPixels;
         
         var leftBoundary = new VirtualizationBoundary(
-            WidthInPixels: horizontalStartingIndex * _characterWidthAndRowHeight.FontWidthInPixels,
+            WidthInPixels: horizontalStartingIndex * CharacterWidthAndRowHeight.FontWidthInPixels,
             HeightInPixels: null,
             LeftInPixels: 0,
             TopInPixels: 0);
 
         var rightBoundaryLeftInPixels = leftBoundary.WidthInPixels +
-                                        _characterWidthAndRowHeight.FontWidthInPixels * horizontalTake;
+                                        CharacterWidthAndRowHeight.FontWidthInPixels * horizontalTake;
         
         var rightBoundary = new VirtualizationBoundary(
             WidthInPixels: totalWidth - rightBoundaryLeftInPixels,
@@ -593,12 +623,12 @@ public partial class TextEditorDisplay : ComponentBase
         
         var topBoundary = new VirtualizationBoundary(
             WidthInPixels: null,
-            HeightInPixels: verticalStartingIndex * _characterWidthAndRowHeight.ElementHeightInPixels,
+            HeightInPixels: verticalStartingIndex * CharacterWidthAndRowHeight.ElementHeightInPixels,
             LeftInPixels: 0,
             TopInPixels: 0);
         
         var bottomBoundaryTopInPixels = topBoundary.HeightInPixels +
-                                        _characterWidthAndRowHeight.ElementHeightInPixels * verticalTake;
+                                        CharacterWidthAndRowHeight.ElementHeightInPixels * verticalTake;
         
         var bottomBoundary = new VirtualizationBoundary(
             WidthInPixels: null,

@@ -57,4 +57,72 @@ public class TextEditorStatesReducer
             TextEditorList = nextList
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetFontSizeAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetFontSizeAction textEditorSetFontSizeAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                FontSizeInPixels = textEditorSetFontSizeAction.FontSizeInPixels
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetThemeAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetThemeAction textEditorSetThemeAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                Theme = textEditorSetThemeAction.Theme
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetShowWhitespaceAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetShowWhitespaceAction textEditorSetShowWhitespaceAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                ShowWhitespace = textEditorSetShowWhitespaceAction.ShowWhitespace
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetShowNewlinesAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetShowNewlinesAction textEditorSetShowNewlinesAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                ShowNewlines = textEditorSetShowNewlinesAction.ShowNewlines
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions
+        };
+    }
 }

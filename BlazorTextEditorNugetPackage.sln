@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.RazorLib",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleApplication", "ExampleApplication\ExampleApplication.csproj", "{B64045D9-CB3C-4FCB-B735-3F70672F84DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FictitiousLanguage.ClassLib", "FictitiousLanguage.ClassLib\FictitiousLanguage.ClassLib.csproj", "{301EB902-C056-4FB8-9575-1FCDEECB0448}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FictitiousLanguage.Tests", "FictitiousLanguage.Tests\FictitiousLanguage.Tests.csproj", "{658BA428-0916-4CE2-A128-19E01A2BD7E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReplApp", "ReplApp\ReplApp.csproj", "{17A319DA-0420-4DCA-BE38-FD5265E223E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +30,17 @@ Global
 		{B64045D9-CB3C-4FCB-B735-3F70672F84DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B64045D9-CB3C-4FCB-B735-3F70672F84DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B64045D9-CB3C-4FCB-B735-3F70672F84DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{301EB902-C056-4FB8-9575-1FCDEECB0448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{301EB902-C056-4FB8-9575-1FCDEECB0448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{301EB902-C056-4FB8-9575-1FCDEECB0448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{301EB902-C056-4FB8-9575-1FCDEECB0448}.Release|Any CPU.Build.0 = Release|Any CPU
+		{658BA428-0916-4CE2-A128-19E01A2BD7E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{658BA428-0916-4CE2-A128-19E01A2BD7E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{658BA428-0916-4CE2-A128-19E01A2BD7E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{658BA428-0916-4CE2-A128-19E01A2BD7E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17A319DA-0420-4DCA-BE38-FD5265E223E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17A319DA-0420-4DCA-BE38-FD5265E223E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17A319DA-0420-4DCA-BE38-FD5265E223E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17A319DA-0420-4DCA-BE38-FD5265E223E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

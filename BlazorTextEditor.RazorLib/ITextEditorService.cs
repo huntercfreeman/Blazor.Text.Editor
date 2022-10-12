@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib;
@@ -12,4 +13,8 @@ public interface ITextEditorService : IDisposable
     public void RegisterTextEditor(TextEditorBase textEditorBase);
     public void EditTextEditor(EditTextEditorBaseAction editTextEditorBaseAction);
     public void DisposeTextEditor(TextEditorKey textEditorKey);
+    public void SetFontSize(int fontSizeInPixels);
+    public void SetTheme(Theme theme);
+    public void SetShowWhitespace(bool showWhitespace);
+    public void SetShowNewlines(bool showNewlines);
 }

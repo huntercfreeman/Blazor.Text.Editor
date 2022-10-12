@@ -8,6 +8,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BlazorTextEditor.RazorLib\BlazorTextEditor.RazorLib.csproj" />
+      <ProjectReference Include="..\FictitiousLanguage.ClassLib\FictitiousLanguage.ClassLib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0-2.final" />
     </ItemGroup>
 
 </Project>

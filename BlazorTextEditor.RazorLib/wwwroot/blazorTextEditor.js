@@ -1,4 +1,70 @@
 window.blazorTextEditor = {
+    cursorIntersectionObserverMap: new Map(),
+    initializeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey,
+                                                              scrollableContainerElementId,
+                                                              cursorElementId) {
+
+        let scrollableContainer = document.getElementById(scrollableContainerElementId);
+
+        let options = {
+            root: scrollableContainer,
+            rootMargin: '0px',
+            threshold: 0
+        }
+
+        let intersectionObserver = new IntersectionObserver((entries) => {
+            let intersectionObserverMapValue = this.cursorIntersectionObserverMap
+                .get(intersectionObserverMapKey);
+
+            for (let i = 0; i < entries.length; i++) {
+
+                let entry = entries[i];
+
+                let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
+                    .find(x => x.CursorElementId === entry.target.id);
+
+                cursorTuple.IsIntersecting = entry.isIntersecting;
+            }
+        }, options);
+
+        let cursorIsIntersectingTuples = [];
+
+        let cursorElement = document.getElementById(cursorElementId);
+
+        intersectionObserver.observe(cursorElement);
+
+        cursorIsIntersectingTuples.push({
+            CursorElementId: cursorElementId,
+            IsIntersecting: false
+        });
+
+        this.cursorIntersectionObserverMap.set(intersectionObserverMapKey, {
+            IntersectionObserver: intersectionObserver,
+            CursorIsIntersectingTuples: cursorIsIntersectingTuples
+        });
+    },
+    revealCursor: function (intersectionObserverMapKey,
+                            cursorElementId) {
+
+        let intersectionObserverMapValue = this.cursorIntersectionObserverMap
+            .get(intersectionObserverMapKey);
+
+        let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
+            .find(x => x.CursorElementId === cursorElementId);
+
+        if (!cursorTuple.IsIntersecting) {
+            let cursorElement = document.getElementById(cursorElementId);
+
+            cursorElement.scrollIntoView({
+                block: "nearest",
+                inline: "nearest"
+            });
+        }
+    },
+    disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
+
+        // TODO: Add dispose
+    },
     measureFontWidthAndElementHeightByElementId: function (elementId, amountOfCharactersRendered) {
         let element = document.getElementById(elementId);
         

@@ -1,0 +1,17 @@
+.bte_light-theme-visual-studio {
+    --bte_primary-font-color: #000000;
+    --bte_text-editor-cursor-foreground-color: #404040;
+    --bte_text-selection-background-color: #ADD6FF;
+    --bte_body-background-color: #FFFFFF;
+    --bte_text-editor-caret-row-border-color: #F8F8F8;
+    --bte_newline-foreground-color: #007F00;
+    --bte_newline-background-color: #faeee2;
+    --bte_method-foreground-color: #74531F;
+    --bte_type-foreground-color: #2B91AF;
+    --bte_parameter-foreground-color: #1F377F;
+    --bte_string-literal-foreground-color: #A31515;
+    --bte_keyword-foreground-color: #0000FF;
+    --bte_comment-foreground-color: #007F00;
+    --bte_text-editor-gutter-border-color: #accec1;
+    --bte_text-editor-gutter-background-color: #f0f0dc;
+}

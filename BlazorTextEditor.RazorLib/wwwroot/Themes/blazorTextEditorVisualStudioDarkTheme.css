@@ -1,12 +1,12 @@
-:root {
-    --bte_primary-font-color: #d2d2d2;
-    --bte_text-editor-cursor-foreground-color: #e6e6e6;
-    --bte_text-selection-background-color: #24557d;
+.bte_dark-theme-visual-studio {
+    --bte_primary-font-color: #DCDCDC;
+    --bte_text-editor-cursor-foreground-color: #BBBBBB;
+    --bte_text-selection-background-color: #245B82;
     --bte_body-background-color: #1E1E1E;
-    --bte_text-editor-caret-row-border-color: #a46c00;
+    --bte_text-editor-caret-row-border-color: #0F0F0F;
     --bte_newline-foreground-color: #4e9a41;
     --bte_newline-background-color: #424242;
-    --bte_method-foreground-color: #C9C96E;
+    --bte_method-foreground-color: #DCDCAA;
     --bte_type-foreground-color: #4EC9B0;
     --bte_parameter-foreground-color: #9CDCFE;
     --bte_string-literal-foreground-color: #D69D85;

@@ -1,0 +1,43 @@
+﻿@using ExampleApplication.Themes
+
+<div class="ea_text-editor-options-display">
+    
+    <div class="ea_input-font-size">
+        FontSizeInPixels:&nbsp;
+        
+        <input type="number"
+               @bind="FontSizeInPixels" />
+        
+        @TextEditorOptions.FontSizeInPixels
+    </div>
+
+    <select @onchange="SelectThemeOnChange">
+        @foreach (var theme in ThemeService.ThemeStates.Themes)
+        {
+            <option value="@theme.ThemeKey.Guid.ToString()"
+                    selected="@(TextEditorOptions.Theme.ThemeKey == theme.ThemeKey)">
+                @theme.DisplayName
+            </option>
+        }
+    </select>
+    
+    <ThemeDisplay Theme="TextEditorOptions.Theme"/>
+    
+    <div class="ea_toggle-boolean-options">
+        <div class="ea_show-whitespace-toggle-boolean-options">
+            <input type="checkbox"
+                   checked="@TextEditorOptions.ShowWhitespace"
+                   @onchange="ShowWhitespaceToggleOnChange" />
+            
+            <span>Show Whitespace?</span>
+        </div>
+        
+        <div class="ea_show-newlines-toggle-boolean-options">
+            <input type="checkbox"
+                   checked="@TextEditorOptions.ShowNewlines"
+                   @onchange="ShowNewlinesToggleOnChange" />
+            
+            <span>Show Newlines?</span>
+        </div>
+    </div>
+</div>
