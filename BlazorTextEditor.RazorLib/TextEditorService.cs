@@ -53,6 +53,18 @@ public class TextEditorService : ITextEditorService
             new TextEditorSetThemeAction(theme));
     }
     
+    public void SetShowWhitespace(bool showWhitespace)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetShowWhitespaceAction(showWhitespace));
+    }
+    
+    public void SetShowNewlines(bool showNewlines)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetShowNewlinesAction(showNewlines));
+    }
+    
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
     {
         OnTextEditorStatesChanged?.Invoke(sender, e);

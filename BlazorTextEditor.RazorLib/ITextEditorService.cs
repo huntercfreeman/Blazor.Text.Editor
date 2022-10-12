@@ -15,4 +15,6 @@ public interface ITextEditorService : IDisposable
     public void DisposeTextEditor(TextEditorKey textEditorKey);
     public void SetFontSize(int fontSizeInPixels);
     public void SetTheme(Theme theme);
+    public void SetShowWhitespace(bool showWhitespace);
+    public void SetShowNewlines(bool showNewlines);
 }

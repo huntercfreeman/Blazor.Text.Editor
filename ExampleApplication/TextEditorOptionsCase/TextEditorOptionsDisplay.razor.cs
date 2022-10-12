@@ -57,4 +57,14 @@ public partial class TextEditorOptionsDisplay : ComponentBase
             }
         }
     }
+
+    private void ShowWhitespaceToggleOnChange(ChangeEventArgs changeEventArgs)
+    {
+        TextEditorService.SetShowWhitespace((bool)(changeEventArgs.Value ?? false));
+    }
+
+    private void ShowNewlinesToggleOnChange(ChangeEventArgs changeEventArgs)
+    {
+        TextEditorService.SetShowNewlines((bool)(changeEventArgs.Value ?? false));
+    }
 }

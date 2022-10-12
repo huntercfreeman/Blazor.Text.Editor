@@ -2,7 +2,7 @@
 
 <div class="ea_text-editor-options-display">
     
-    <div>
+    <div class="ea_input-font-size">
         FontSizeInPixels:&nbsp;
         
         <input type="number"
@@ -22,4 +22,22 @@
     </select>
     
     <ThemeDisplay Theme="TextEditorOptions.Theme"/>
+    
+    <div class="ea_toggle-boolean-options">
+        <div class="ea_show-whitespace-toggle-boolean-options">
+            <input type="checkbox"
+                   checked="@TextEditorOptions.ShowWhitespace"
+                   @onchange="ShowWhitespaceToggleOnChange" />
+            
+            <span>Show Whitespace?</span>
+        </div>
+        
+        <div class="ea_show-newlines-toggle-boolean-options">
+            <input type="checkbox"
+                   checked="@TextEditorOptions.ShowNewlines"
+                   @onchange="ShowNewlinesToggleOnChange" />
+            
+            <span>Show Newlines?</span>
+        </div>
+    </div>
 </div>
