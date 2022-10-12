@@ -4,8 +4,8 @@
 @using BlazorTextEditor.RazorLib.TextEditor
 @using Microsoft.AspNetCore.Components
 
-<div style="@TextEditorStatesSelection.Value.TextEditorOptions.FontSizeInPixels @StyleCssString"
-     class=" @ClassCssString">
+<div style="@GlobalFontSizeInPixelsStyling @StyleCssString"
+     class="@GlobalThemeCssClassString @ClassCssString">
     
     <div @ref="_textEditorDisplayElementReference"
          @onclick="FocusTextEditorOnClickAsync"

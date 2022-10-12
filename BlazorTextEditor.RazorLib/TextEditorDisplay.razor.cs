@@ -81,6 +81,12 @@ public partial class TextEditorDisplay : ComponentBase
         .Theme?
         .CssClassString
     ?? string.Empty; 
+    
+    private string GlobalFontSizeInPixelsStyling => "font-size: " + TextEditorService
+        .TextEditorStates
+        .GlobalTextEditorOptions
+        .FontSizeInPixels!.Value
+    + "px;"; 
 
     public TextEditorCursor PrimaryCursor { get; } = new();
 
