@@ -1,0 +1,26 @@
+﻿@page "/repl"
+
+@using BlazorTextEditor.RazorLib
+
+<h3>REPL for FictitiousLanguage</h3>
+
+<hr/>
+
+<div>
+    Example Input:<br/>
+    <ul>
+        <li>3 + 2 * 4 <span style="color: green;">// answer is 11</span></li>
+        <li>(3 + 2) * 4 <span style="color: green;">// answer is 20</span></li>
+    </ul>
+</div>
+
+@{
+    var localReplTextEditor = ReplTextEditor;
+
+    if (localReplTextEditor is not null)
+    {
+        <TextEditorDisplay TextEditorKey="localReplTextEditor.Key"
+                           StyleCssString="width: 400px; height: 400px;" />
+    }
+}
+

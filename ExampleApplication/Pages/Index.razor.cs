@@ -23,8 +23,6 @@ public partial class Index : ComponentBase, IDisposable
     private static readonly TextEditorKey MARY_HAD_A_LITTLE_LAMB_TEXT_EDITOR_KEY = 
         TextEditorKey.NewTextEditorKey();
     
-
-    
     private static readonly ImmutableArray<Func<Task<TextEditorBase>>> INITIAL_TEXT_EDITOR_CONSTRUCTS =
             new Func<Task<TextEditorBase>>[]
             {
