@@ -93,3 +93,12 @@ a, .btn-link {
 .ea_diagnostic-level-error {
     color: red;
 }
+
+.ea_repl-code-run-history {
+    background-color: #d7d7ff;
+}
+    
+.ea_repl-code-run-history {
+    height: 4rem;
+    overflow: auto;
+}
