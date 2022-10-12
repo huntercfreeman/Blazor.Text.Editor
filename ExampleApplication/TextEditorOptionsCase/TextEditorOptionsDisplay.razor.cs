@@ -38,6 +38,7 @@ public partial class TextEditorOptionsDisplay : ComponentBase
     {
         _fontSizeInPixels = TextEditorOptions.FontSizeInPixels ?? MINIMUM_FONT_SIZE_IN_PIXELS;
         
+        
         base.OnInitialized();
     }
 

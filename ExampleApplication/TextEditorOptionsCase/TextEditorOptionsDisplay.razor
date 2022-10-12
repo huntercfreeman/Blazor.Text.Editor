@@ -14,7 +14,10 @@
     <select @onchange="SelectThemeOnChange">
         @foreach (var theme in ThemeService.ThemeStates.Themes)
         {
-            <option value="@theme.ThemeKey.Guid.ToString()">@theme.DisplayName</option>
+            <option value="@theme.ThemeKey.Guid.ToString()"
+                    selected="@(TextEditorOptions.Theme.ThemeKey == theme.ThemeKey)">
+                @theme.DisplayName
+            </option>
         }
     </select>
     
