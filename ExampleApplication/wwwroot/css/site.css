@@ -62,3 +62,22 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.ea_repl-toolbar {
+    background-color: silver;
+    height: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.ea_repl-toolbar-button {
+    cursor: pointer;
+    padding: 5px;
+    background-color: #dad774;
+}
+
+.ea_repl-toolbar-button:hover {
+    background-color: #43b043;
+}

@@ -14,13 +14,22 @@
     </ul>
 </div>
 
+
+<div class="ea_repl-toolbar">
+    <div class="ea_repl-toolbar-button">
+        Run Code:&nbsp;
+        <IconPlay/>
+    </div>
+    
+</div>
+
 @{
     var localReplTextEditor = ReplTextEditor;
 
     if (localReplTextEditor is not null)
     {
         <TextEditorDisplay TextEditorKey="localReplTextEditor.Key"
-                           StyleCssString="width: 400px; height: 400px;" />
+                           StyleCssString="height: 400px;" />
     }
 }
 
