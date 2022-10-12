@@ -1,6 +1,7 @@
 ﻿@page "/repl"
 
 @using BlazorTextEditor.RazorLib
+@using ReplApp.TextEditorOptionsCase
 
 <h3>REPL for FictitiousLanguage</h3>
 
@@ -12,6 +13,28 @@
         <li>3 + 2 * 4 <span style="color: green;">// answer is 11</span></li>
         <li>(3 + 2) * 4 <span style="color: green;">// answer is 20</span></li>
     </ul>
+</div>
+
+<div>
+    Global Settings
+    
+    <TextEditorOptionsDisplay TextEditorOptions="TextEditorService.TextEditorStates.GlobalTextEditorOptions" />
+</div>
+
+<div class="ea_change-text-editor-dimensions">
+    <div>
+        <input type="number"
+               @bind="TextEditorWidthInPixels" />
+        
+        <span>TextEditorWidthInPixels</span>
+    </div>
+    
+    <div>
+        <input type="number"
+               @bind="TextEditorHeightInPixels" />
+        
+        <span>TextEditorHeightInPixels</span>
+    </div>
 </div>
 
 <div class="ea_repl-code-run-history">
@@ -84,7 +107,8 @@
     {
         <TextEditorDisplay @ref="_textEditorDisplay"
                            TextEditorKey="localReplTextEditor.Key"
-                           StyleCssString="height: 400px;" />
+                           StyleCssString="@($"width: {TextEditorWidthInPixels}px; height: {TextEditorHeightInPixels}px; margin-bottom: 20px;")"
+                           ShouldRemeasureFlag="_shouldRemeasureFlag" />
     }
 }
 
