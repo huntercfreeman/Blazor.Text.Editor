@@ -1,7 +1,7 @@
 .bte_light-theme {
     --bte_primary-font-color: #000000;
     --bte_text-editor-cursor-foreground-color: #404040;
-    --bte_text-selection-background-color: #FFDCF0;
+    --bte_text-selection-background-color: #FADCF0;
     --bte_body-background-color: #FDFDFD;
     --bte_text-editor-caret-row-border-color: #F8F8F8;
     --bte_newline-foreground-color: #007F00;
@@ -9,7 +9,7 @@
     --bte_method-foreground-color: #109310;
     --bte_type-foreground-color: #3B74EF;
     --bte_parameter-foreground-color: #6A2FB0;
-    --bte_string-literal-foreground-color: #A31515;
+    --bte_string-literal-foreground-color: #D17700;
     --bte_keyword-foreground-color: #C00000;
     --bte_comment-foreground-color: #808080;
     --bte_text-editor-gutter-border-color: #accec1;
