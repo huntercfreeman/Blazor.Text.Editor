@@ -65,7 +65,39 @@ public partial class Index : ComponentBase, IDisposable
                 }
             }.ToImmutableArray();
 
+    private const int MINIMUM_TEXT_EDITOR_WIDTH_IN_PIXELS = 100;
+    private const int MINIMUM_TEXT_EDITOR_HEIGHT_IN_PIXELS = 100;
+
     private bool _shouldRemeasureFlag;
+    private int _textEditorWidthInPixels = 400;
+    private int _textEditorHeightInPixels = 400;
+
+    private int TextEditorWidthInPixels
+    {
+        get => _textEditorWidthInPixels;
+        set
+        {
+            if (value > MINIMUM_TEXT_EDITOR_WIDTH_IN_PIXELS)
+                _textEditorWidthInPixels = value;
+            else
+                _textEditorWidthInPixels = MINIMUM_TEXT_EDITOR_WIDTH_IN_PIXELS;
+
+            _shouldRemeasureFlag = !_shouldRemeasureFlag;
+        }
+    }
+    private int TextEditorHeightInPixels
+    {
+        get => _textEditorHeightInPixels;
+        set
+        {
+            if (value > MINIMUM_TEXT_EDITOR_HEIGHT_IN_PIXELS)
+                _textEditorHeightInPixels = value;
+            else
+                _textEditorHeightInPixels = MINIMUM_TEXT_EDITOR_HEIGHT_IN_PIXELS;
+
+            _shouldRemeasureFlag = !_shouldRemeasureFlag;
+        }
+    }
 
     protected override void OnInitialized()
     {
