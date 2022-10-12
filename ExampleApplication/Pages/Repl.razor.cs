@@ -29,8 +29,8 @@ public partial class Repl : ComponentBase, IDisposable
     private List<(
         string input, 
         ImmutableArray<ISyntaxToken> syntaxTokens,
-        ISyntaxNode rootSyntaxNode, 
-        EvaluatorResult evaluatorResult,
+        ISyntaxNode? rootSyntaxNode, 
+        EvaluatorResult? evaluatorResult,
         ImmutableArray<DiagnosticBlazorStudio> diagnostics)> _runCodeHistoryList = new();
 
     private int? _runCodeHistoryIndex;
@@ -65,16 +65,65 @@ public partial class Repl : ComponentBase, IDisposable
 
     private void RunCodeOnClick()
     {
+        void AddToReplHistory((
+            string input, 
+            ImmutableArray<ISyntaxToken> syntaxTokens,
+            ISyntaxNode? rootSyntaxNode, 
+            EvaluatorResult? evaluatorResult,
+            ImmutableArray<DiagnosticBlazorStudio> diagnostics) historyEntry)
+        {
+            _runCodeHistoryList.Add(historyEntry);
+
+            if (_runCodeHistoryIndex is null)
+                _runCodeHistoryIndex = 0;
+            else
+                _runCodeHistoryIndex++;
+        }
+        
+        void ReportReplUsageError(string message, DiagnosticLevel diagnosticLevel)
+        {
+            AddToReplHistory((
+                    "null",
+                    ImmutableArray<ISyntaxToken>.Empty, 
+                    null,
+                    null,
+                    new[]
+                    {
+                        new DiagnosticBlazorStudio(message, diagnosticLevel)
+                    }.ToImmutableArray()
+                ));
+        }
+
+        if (_textEditorDisplay is null)
+        {
+            ReportReplUsageError(
+                "_textEditorDisplay was null", 
+                DiagnosticLevel.Error);
+
+            return;
+        }
+        
         var localReplTextEditor = ReplTextEditor;
 
-        if (localReplTextEditor is null || 
-            _textEditorDisplay is null)
+        if (localReplTextEditor is null)
+        {
+            ReportReplUsageError(
+                "localReplTextEditor was null", 
+                DiagnosticLevel.Error);
+            
             return;
+        }
         
         var code = _textEditorDisplay.PrimaryCursor.GetSelectedText(localReplTextEditor);
 
         if (code is null)
-            return; 
+        {
+            ReportReplUsageError(
+                "select the text you want to run", 
+                DiagnosticLevel.Error);
+            
+            return;
+        } 
         
         Lexer lexer = new();
         var syntaxTokens = lexer.Lex(code);
@@ -90,12 +139,7 @@ public partial class Repl : ComponentBase, IDisposable
             .Union(evaluator.Diagnostics)
             .ToImmutableArray();
         
-        _runCodeHistoryList.Add((code, syntaxTokens, rootSyntaxNode, evaluatorResult, allDiagnostics));
-
-        if (_runCodeHistoryIndex is null)
-            _runCodeHistoryIndex = 0;
-        else
-            _runCodeHistoryIndex++;
+        AddToReplHistory((code, syntaxTokens, rootSyntaxNode, evaluatorResult, allDiagnostics));
     }
 
     private string MapDiagnosticLevelToCssClass(DiagnosticLevel diagnosticLevel)

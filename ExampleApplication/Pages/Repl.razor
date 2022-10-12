@@ -24,7 +24,14 @@
             &nbsp;        
             ->
             &nbsp;
-            @codeRunHistoryEntry.evaluatorResult.ResultValue:@codeRunHistoryEntry.evaluatorResult.ResultType.Name
+            @if (codeRunHistoryEntry.evaluatorResult is not null)
+            {
+                <text>
+                    @codeRunHistoryEntry.evaluatorResult.ResultValue
+                    :
+                    @codeRunHistoryEntry.evaluatorResult.ResultType.Name
+                </text>
+            }
             
             <div class="ea_repl-code-run-history-entry-diagnostics">
                 @foreach (var diagnostic in @codeRunHistoryEntry.diagnostics)
