@@ -57,4 +57,21 @@ public class TextEditorStatesReducer
             TextEditorList = nextList
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetFontSizeAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetFontSizeAction textEditorSetFontSizeAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                FontSizeInPixels = textEditorSetFontSizeAction.FontSizeInPixels
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions
+        };
+    }
 }

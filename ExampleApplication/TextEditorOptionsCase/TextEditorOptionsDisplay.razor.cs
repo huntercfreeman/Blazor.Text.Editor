@@ -11,4 +11,30 @@ public partial class TextEditorOptionsDisplay : ComponentBase
 
     [Parameter, EditorRequired]
     public TextEditorOptions TextEditorOptions { get; set; } = null!;
+
+    private const int MINIMUM_FONT_SIZE_IN_PIXELS = 5;
+    
+    private int _fontSizeInPixels;
+    
+
+    private int FontSizeInPixels
+    {
+        get => _fontSizeInPixels;
+        set
+        {
+            if (value > MINIMUM_FONT_SIZE_IN_PIXELS)
+                _fontSizeInPixels = value;
+            else
+                _fontSizeInPixels = MINIMUM_FONT_SIZE_IN_PIXELS;
+            
+            TextEditorService.SetFontSize(_fontSizeInPixels);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _fontSizeInPixels = TextEditorOptions.FontSizeInPixels ?? MINIMUM_FONT_SIZE_IN_PIXELS;
+        
+        base.OnInitialized();
+    }
 }

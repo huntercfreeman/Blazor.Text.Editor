@@ -39,6 +39,12 @@ public class TextEditorService : ITextEditorService, IDisposable
         _dispatcher.Dispatch(
             new DisposeTextEditorBaseAction(textEditorKey));
     }
+
+    public void SetFontSize(int fontSizeInPixels)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetFontSizeAction(fontSizeInPixels));
+    }
     
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
     {

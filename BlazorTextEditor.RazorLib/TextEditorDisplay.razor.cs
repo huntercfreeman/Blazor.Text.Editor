@@ -19,6 +19,8 @@ public partial class TextEditorDisplay : ComponentBase
     [Inject]
     private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
     [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
@@ -72,6 +74,13 @@ public partial class TextEditorDisplay : ComponentBase
         .Replace("\n", "\\n<br/>")
         .Replace("\t", "--->")
         .Replace(" ", "·");
+
+    private string GlobalThemeCssClassString => TextEditorService
+        .TextEditorStates
+        .GlobalTextEditorOptions
+        .Theme?
+        .CssClassString
+    ?? string.Empty; 
 
     public TextEditorCursor PrimaryCursor { get; } = new();
 

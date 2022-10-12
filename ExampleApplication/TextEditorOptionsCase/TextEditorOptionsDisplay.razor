@@ -3,7 +3,12 @@
 <div class="ea_text-editor-options-display">
     
     <div>
-        FontSizeInPixels:&nbsp;@TextEditorOptions.FontSizeInPixels
+        FontSizeInPixels:&nbsp;
+        
+        <input type="number"
+               @bind="FontSizeInPixels" />
+        
+        @TextEditorOptions.FontSizeInPixels
     </div>
 
     <ThemeDisplay Theme="TextEditorOptions.Theme"/>

@@ -12,4 +12,5 @@ public interface ITextEditorService : IDisposable
     public void RegisterTextEditor(TextEditorBase textEditorBase);
     public void EditTextEditor(EditTextEditorBaseAction editTextEditorBaseAction);
     public void DisposeTextEditor(TextEditorKey textEditorKey);
+    public void SetFontSize(int fontSizeInPixels);
 }
