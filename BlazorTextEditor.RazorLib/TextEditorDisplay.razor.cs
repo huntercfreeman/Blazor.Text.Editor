@@ -138,8 +138,12 @@ public partial class TextEditorDisplay : ComponentBase
             // that something bad will happen otherwise.
             {
                 PrimaryCursor.IndexCoordinates = (0, 0);
+                PrimaryCursor.TextEditorSelection.AnchorPositionIndex = null;
+                
                 _previousTextEditorKey = TextEditorKey;
+                
                 PrimaryCursor.IndexCoordinates = (0, 0);    
+                PrimaryCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
             
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
