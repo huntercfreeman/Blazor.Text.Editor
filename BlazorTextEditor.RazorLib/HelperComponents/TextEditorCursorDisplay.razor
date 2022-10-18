@@ -18,8 +18,8 @@
           @onmousemove:stopPropagation="true"
           class="bte_text-editor-context-menu"
           style="@ContextMenuStyleCss">
-          <CascadingValue Name="SetShouldDisplayContextMenu" 
-                          Value="new Action<bool>(SetShouldDisplayContextMenu)">
+          <CascadingValue Name="SetShouldDisplayContextMenuAsync" 
+                          Value="new Func<bool, Task>(SetShouldDisplayContextMenuAsync)">
                @OnContextMenuRenderFragment
           </CascadingValue>
      </div>   

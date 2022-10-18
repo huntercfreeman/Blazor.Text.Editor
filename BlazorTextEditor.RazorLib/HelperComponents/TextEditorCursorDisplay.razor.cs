@@ -209,10 +209,15 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         return _blinkingCursorCancellationTokenSource.Token;
     }
     
-    public void SetShouldDisplayContextMenu(bool value)
+    public async Task SetShouldDisplayContextMenuAsync(bool value)
     {
         _shouldDisplayContextMenu = value;
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
+
+        if (!_shouldDisplayContextMenu)
+        {
+            await FocusAsync();
+        }
     }
     
     public void Dispose()

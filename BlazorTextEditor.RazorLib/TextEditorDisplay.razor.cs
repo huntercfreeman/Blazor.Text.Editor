@@ -175,7 +175,7 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
-        _textEditorCursorDisplay?.SetShouldDisplayContextMenu(false);
+        _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(false);
         
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
@@ -186,7 +186,7 @@ public partial class TextEditorDisplay : ComponentBase
         }
         else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
         {
-            _textEditorCursorDisplay?.SetShouldDisplayContextMenu(true);
+            _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(true);
         }
         else
         {
@@ -244,7 +244,7 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
-        _textEditorCursorDisplay?.SetShouldDisplayContextMenu(false);
+        _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(false);
         
         var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
 
