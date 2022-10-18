@@ -32,6 +32,8 @@ public partial class TextEditorDisplay : ComponentBase
     [Parameter]
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
+    public Action<TextEditorBase>? OnSaveRequested { get; set; }
+    [Parameter]
     public bool ShouldRemeasureFlag { get; set; }
     [Parameter]
     public string StyleCssString { get; set; } = null!;
@@ -225,6 +227,10 @@ public partial class TextEditorDisplay : ComponentBase
                         CancellationToken.None));
                 }
             }
+            else if (keyboardEventArgs.Key == "s" && keyboardEventArgs.CtrlKey)
+            {
+                OnSaveRequested?.Invoke(TextEditorStatesSelection.Value);
+            }
             else
             {
                 Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
@@ -236,7 +242,7 @@ public partial class TextEditorDisplay : ComponentBase
                     CancellationToken.None));
             }
             
-            _virtualizationDisplay.InvokeEntriesProviderFunc();
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
         
         PrimaryCursor.ShouldRevealCursor = true;
