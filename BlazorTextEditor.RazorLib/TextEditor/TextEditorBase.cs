@@ -10,7 +10,7 @@ public class TextEditorBase
 {
     public const int TabWidth = 4;
     public const int GutterPaddingLeftInPixels = 5;
-    public const int GutterPaddingRightInPixels = 5;
+    public const int GutterPaddingRightInPixels = 15;
     public const int MaximumEditBlocks = 10;
 
     /// <summary>
