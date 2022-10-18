@@ -133,7 +133,15 @@ public partial class TextEditorDisplay : ComponentBase
         if (_previousTextEditorKey is null ||
             _previousTextEditorKey != TextEditorKey)
         {
-            _previousTextEditorKey = TextEditorKey;
+            // Setting IndexCoordinates to (0, 0) twice in this block
+            // due to a general feeling of unease
+            // that something bad will happen otherwise.
+            {
+                PrimaryCursor.IndexCoordinates = (0, 0);
+                _previousTextEditorKey = TextEditorKey;
+                PrimaryCursor.IndexCoordinates = (0, 0);    
+            }
+            
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
@@ -263,18 +271,23 @@ public partial class TextEditorDisplay : ComponentBase
         
         if (afterOnKeyDownAsync is not null)
         {
-            var textEditor = TextEditorStatesSelection.Value;
-            var immutableTextCursor = new ImmutableTextEditorCursor(PrimaryCursor);
+            var cursorDisplay = _textEditorCursorDisplay;
             
-            // Do not block UI thread with long running AfterOnKeyDownAsync 
-            _ = Task.Run(async () =>
+            if (cursorDisplay is not null)
             {
-                await afterOnKeyDownAsync.Invoke(
-                    textEditor,
-                    immutableTextCursor,
-                    keyboardEventArgs,
-                    _textEditorCursorDisplay.SetShouldDisplayMenuAsync);
-            });
+                var textEditor = TextEditorStatesSelection.Value;
+                var immutableTextCursor = new ImmutableTextEditorCursor(PrimaryCursor);
+            
+                // Do not block UI thread with long running AfterOnKeyDownAsync 
+                _ = Task.Run(async () =>
+                {
+                    await afterOnKeyDownAsync.Invoke(
+                        textEditor,
+                        immutableTextCursor,
+                        keyboardEventArgs,
+                        cursorDisplay.SetShouldDisplayMenuAsync);
+                });
+            }
         }
     }
     
