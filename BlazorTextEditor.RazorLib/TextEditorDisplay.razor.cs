@@ -35,8 +35,11 @@ public partial class TextEditorDisplay : ComponentBase
     public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
     [Parameter]
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
+    /// <summary>
+    /// (TextEditorBase textEditor, ImmutableTextEditorCursor immutablePrimaryCursor, KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
+    /// </summary>
     [Parameter]
-    public Func<(TextEditorBase textEditor, ImmutableTextEditorCursor immutablePrimaryCursor, KeyboardEventArgs keyboardEventArgs), Task>? AfterOnKeyDownAsync { get; set; }
+    public Func<TextEditorBase, ImmutableTextEditorCursor, KeyboardEventArgs, Func<TextEditorMenuKind, Task> , Task>? AfterOnKeyDownAsync { get; set; }
     [Parameter]
     public bool ShouldRemeasureFlag { get; set; }
     [Parameter]
@@ -235,6 +238,11 @@ public partial class TextEditorDisplay : ComponentBase
             {
                 OnSaveRequested?.Invoke(TextEditorStatesSelection.Value);
             }
+            else if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE &&
+                     keyboardEventArgs.CtrlKey)
+            {
+                
+            }
             else
             {
                 Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
@@ -261,10 +269,11 @@ public partial class TextEditorDisplay : ComponentBase
             // Do not block UI thread with long running AfterOnKeyDownAsync 
             _ = Task.Run(async () =>
             {
-                await afterOnKeyDownAsync.Invoke((
+                await afterOnKeyDownAsync.Invoke(
                     textEditor,
                     immutableTextCursor,
-                    keyboardEventArgs));
+                    keyboardEventArgs,
+                    _textEditorCursorDisplay.SetShouldDisplayMenuAsync);
             });
         }
     }
