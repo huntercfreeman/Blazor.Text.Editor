@@ -11,6 +11,8 @@
          @onclick="FocusTextEditorOnClickAsync"
          @onkeydown="HandleOnKeyDownAsync"
          @onkeydown:preventDefault="true"
+         @oncontextmenu="HandleOnContextMenuAsync"
+         @oncontextmenu:preventDefault="true"
          class="bte_text-editor">
 
         <div class="bte_text-editor-content bte_unselectable"

@@ -242,8 +242,22 @@ public partial class TextEditorDisplay : ComponentBase
         PrimaryCursor.ShouldRevealCursor = true;
     }
     
+    private void HandleOnContextMenuAsync()
+    {
+        _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(true);
+    }
+    
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
+        if ((mouseEventArgs.Buttons & 1) != 1 &&
+            PrimaryCursor.HasSelectedText())
+        {
+            // Not pressing the left mouse button
+            // so assume ContextMenu is desired result.
+
+            return;
+        }
+        
         _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(false);
         
         var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);

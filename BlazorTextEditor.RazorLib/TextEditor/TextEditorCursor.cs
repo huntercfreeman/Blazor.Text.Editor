@@ -222,4 +222,16 @@ public class TextEditorCursor
 
         return null;
     }
+
+    public bool HasSelectedText()
+    {
+        if (TextEditorSelection.AnchorPositionIndex.HasValue &&
+            TextEditorSelection.AnchorPositionIndex.Value !=
+            TextEditorSelection.EndingPositionIndex)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
