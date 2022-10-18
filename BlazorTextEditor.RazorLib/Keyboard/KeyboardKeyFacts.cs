@@ -229,6 +229,15 @@ public static class KeyboardKeyFacts
         return key == keyOne ||
                CheckIsAlternateContextMenuEvent(key, code, shiftWasPressed, altWasPressed);
     }
+    
+    public static bool CheckIsContextMenuEvent(KeyboardEventArgs keyboardEventArgs)
+    {
+        return CheckIsContextMenuEvent(
+            keyboardEventArgs.Key, 
+            keyboardEventArgs.Code, 
+            keyboardEventArgs.ShiftKey, 
+            keyboardEventArgs.AltKey);
+    }
 
     public static bool IsMovementKey(KeyDownEventRecord onKeyDownEventArgs)
     {

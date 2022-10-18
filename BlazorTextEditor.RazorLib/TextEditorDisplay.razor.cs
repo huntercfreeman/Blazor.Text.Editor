@@ -30,6 +30,8 @@ public partial class TextEditorDisplay : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorKey TextEditorKey { get; set; } = null!;
     [Parameter]
+    public RenderFragment? OnContextMenuRenderFragment { get; set; }
+    [Parameter]
     public bool ShouldRemeasureFlag { get; set; }
     [Parameter]
     public string StyleCssString { get; set; } = null!;
@@ -173,12 +175,18 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
+        _textEditorCursorDisplay?.SetShouldDisplayContextMenu(false);
+        
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
             TextEditorCursor.MoveCursor(
                 keyboardEventArgs, 
                 PrimaryCursor, 
                 TextEditorStatesSelection.Value);
+        }
+        else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
+        {
+            _textEditorCursorDisplay?.SetShouldDisplayContextMenu(true);
         }
         else
         {
@@ -236,6 +244,8 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
+        _textEditorCursorDisplay?.SetShouldDisplayContextMenu(false);
+        
         var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
 
         PrimaryCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
