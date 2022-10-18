@@ -32,7 +32,11 @@ public partial class TextEditorDisplay : ComponentBase
     [Parameter]
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
+    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
+    [Parameter]
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
+    [Parameter]
+    public Func<(TextEditorBase textEditor, ImmutableTextEditorCursor immutablePrimaryCursor, KeyboardEventArgs keyboardEventArgs), Task>? AfterOnKeyDownAsync { get; set; }
     [Parameter]
     public bool ShouldRemeasureFlag { get; set; }
     [Parameter]
@@ -177,7 +181,7 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
-        _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(false);
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
         
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
@@ -188,7 +192,7 @@ public partial class TextEditorDisplay : ComponentBase
         }
         else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
         {
-            _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(true);
+            _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
         }
         else
         {
@@ -246,11 +250,28 @@ public partial class TextEditorDisplay : ComponentBase
         }
         
         PrimaryCursor.ShouldRevealCursor = true;
+
+        var afterOnKeyDownAsync = AfterOnKeyDownAsync;
+        
+        if (afterOnKeyDownAsync is not null)
+        {
+            var textEditor = TextEditorStatesSelection.Value;
+            var immutableTextCursor = new ImmutableTextEditorCursor(PrimaryCursor);
+            
+            // Do not block UI thread with long running AfterOnKeyDownAsync 
+            _ = Task.Run(async () =>
+            {
+                await afterOnKeyDownAsync.Invoke((
+                    textEditor,
+                    immutableTextCursor,
+                    keyboardEventArgs));
+            });
+        }
     }
     
     private void HandleOnContextMenuAsync()
     {
-        _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(true);
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
     }
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
@@ -264,7 +285,7 @@ public partial class TextEditorDisplay : ComponentBase
             return;
         }
         
-        _textEditorCursorDisplay?.SetShouldDisplayContextMenuAsync(false);
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
         
         var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
 

@@ -10,17 +10,32 @@
      style="@CaretRowStyleCss">
 </div>
 
-@if (OnContextMenuRenderFragment is not null && 
-     _shouldDisplayContextMenu)
+@if (_textEditorMenuKind != TextEditorMenuKind.None)
 {
-     <div @onkeydown:stopPropagation="true"
-          @onmousedown:stopPropagation="true"
-          @onmousemove:stopPropagation="true"
-          class="bte_text-editor-context-menu"
-          style="@ContextMenuStyleCss">
-          <CascadingValue Name="SetShouldDisplayContextMenuAsync" 
-                          Value="new Func<bool, Task>(SetShouldDisplayContextMenuAsync)">
-               @OnContextMenuRenderFragment
-          </CascadingValue>
-     </div>   
+    <div @onkeydown:stopPropagation="true"
+         @onmousedown:stopPropagation="true"
+         @onmousemove:stopPropagation="true"
+         class="bte_text-editor-context-menu"
+         style="@MenuStyleCss">
+    
+        <CascadingValue Name="SetShouldDisplayMenuAsync"
+                        Value="new Func<TextEditorMenuKind, Task>(SetShouldDisplayMenuAsync)">
+            
+            @switch (_textEditorMenuKind)
+            {
+                case TextEditorMenuKind.ContextMenu:
+                    if (OnContextMenuRenderFragment is not null)
+                    {
+                        @OnContextMenuRenderFragment
+                    }
+                    break;
+                case TextEditorMenuKind.AutoCompleteMenu:
+                    if (AutoCompleteMenuRenderFragment is not null)
+                    {
+                        @AutoCompleteMenuRenderFragment
+                    }
+                    break;
+            }
+        </CascadingValue>
+    </div>    
 }

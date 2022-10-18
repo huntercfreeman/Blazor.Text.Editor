@@ -22,19 +22,21 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public bool IsFocusTarget { get; set; }
     [Parameter]
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
+    [Parameter]
+    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
 
     private ElementReference? _textEditorCursorDisplayElementReference;
-    private bool _shouldDisplayContextMenu;
     private bool _hasBlinkAnimation = true;
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
     private TimeSpan _blinkingCursorTaskDelay = TimeSpan.FromMilliseconds(1000);
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
+    private TextEditorMenuKind _textEditorMenuKind;
     
     public string TextEditorCursorDisplayId => $"bte_text-editor-cursor-display_{_intersectionObserverMapKey}";
     
     public string CursorStyleCss => GetCursorStyleCss();
     public string CaretRowStyleCss => GetCaretRowStyleCss();
-    public string ContextMenuStyleCss => GetContextMenuStyleCss();
+    public string MenuStyleCss => GetMenuStyleCss();
     public string BlinkAnimationCssClass => _hasBlinkAnimation
         ? "bte_blink"
         : string.Empty;
@@ -115,7 +117,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         return $"{top} {width} {height}";
     }
     
-    private string GetContextMenuStyleCss()
+    private string GetMenuStyleCss()
     {
         var leftInPixels = 0d;
         
@@ -209,12 +211,13 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         return _blinkingCursorCancellationTokenSource.Token;
     }
     
-    public async Task SetShouldDisplayContextMenuAsync(bool value)
+    public async Task SetShouldDisplayMenuAsync(TextEditorMenuKind textEditorMenuKind)
     {
-        _shouldDisplayContextMenu = value;
+        _textEditorMenuKind = textEditorMenuKind;
+    
         await InvokeAsync(StateHasChanged);
 
-        if (!_shouldDisplayContextMenu)
+        if (_textEditorMenuKind == TextEditorMenuKind.None)
         {
             await FocusAsync();
         }
