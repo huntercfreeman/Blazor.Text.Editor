@@ -74,7 +74,7 @@
     border: 2px solid var(--bte_text-editor-caret-row-border-color);
     position: absolute;
     left: 0;
-    width: 100%;
+    min-width: 100%;
 }
 
 .bte_text-editor-context-menu {
