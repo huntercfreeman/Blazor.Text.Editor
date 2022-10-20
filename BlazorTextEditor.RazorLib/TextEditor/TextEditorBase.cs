@@ -630,4 +630,9 @@ public class TextEditorBase
         
         // TODO: Invoke an event to reapply the CSS classes?
     }
+
+    public ImmutableArray<RichCharacter> GetAllRichCharacters()
+    {
+        return _content.ToImmutableArray();
+    }
 }
