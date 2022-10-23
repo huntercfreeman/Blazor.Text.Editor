@@ -436,6 +436,7 @@ public class TextEditorBase
                         startingIndexToRemoveRange = indexToRemove;
                     }
 
+                    countToRemove -= (lengthOfRowEnding - 1);
                     countToRemoveRange = lengthOfRowEnding;
                 }
                 else
