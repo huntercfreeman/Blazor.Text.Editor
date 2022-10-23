@@ -27,4 +27,16 @@ public class TextEditorSelection
 {
     public int? AnchorPositionIndex { get; set; }
     public int EndingPositionIndex { get; set; }
+    
+    public bool HasSelectedText()
+    {
+        if (AnchorPositionIndex.HasValue &&
+            AnchorPositionIndex.Value !=
+            EndingPositionIndex)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

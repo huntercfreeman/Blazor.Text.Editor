@@ -303,7 +303,7 @@ public partial class TextEditorDisplay : ComponentBase
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         if ((mouseEventArgs.Buttons & 1) != 1 &&
-            PrimaryCursor.HasSelectedText())
+            PrimaryCursor.TextEditorSelection.HasSelectedText())
         {
             // Not pressing the left mouse button
             // so assume ContextMenu is desired result.
