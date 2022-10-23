@@ -29,7 +29,11 @@ public class TextEditorCursor
         var localIndexCoordinates = textEditorCursor.IndexCoordinates;
         var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
 
-        var localTextEditorSelection = textEditorCursor.TextEditorSelection; 
+        var rememberTextEditorSelection = new TextEditorSelection
+        {
+            AnchorPositionIndex = textEditorCursor.TextEditorSelection.AnchorPositionIndex,
+            EndingPositionIndex = textEditorCursor.TextEditorSelection.EndingPositionIndex
+        };
 
         void MutateIndexCoordinatesAndPreferredColumnIndex(int columnIndex)
         {
@@ -39,25 +43,30 @@ public class TextEditorCursor
 
         if (keyboardEventArgs.ShiftKey)
         {
-            if (localTextEditorSelection.AnchorPositionIndex is null ||
-                localTextEditorSelection.EndingPositionIndex == localTextEditorSelection.AnchorPositionIndex)
+            if (textEditorCursor.TextEditorSelection.AnchorPositionIndex is null ||
+                textEditorCursor.TextEditorSelection.EndingPositionIndex == textEditorCursor.TextEditorSelection.AnchorPositionIndex)
             {
                 var positionIndex = textEditorBase.GetPositionIndex(
                     localIndexCoordinates.rowIndex,
                     localIndexCoordinates.columnIndex);
 
-                localTextEditorSelection.AnchorPositionIndex = positionIndex;
+                textEditorCursor.TextEditorSelection.AnchorPositionIndex = positionIndex;
             }    
         }
         else
         {
-            localTextEditorSelection.AnchorPositionIndex = null;
+            textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
         }
         
         switch (keyboardEventArgs.Key)
         {
             case KeyboardKeyFacts.MovementKeys.ARROW_LEFT:
             {
+                if (textEditorCursor.HasSelectedText())
+                {
+                    
+                }
+                
                 if (localIndexCoordinates.columnIndex == 0)
                 {
                     if (localIndexCoordinates.rowIndex != 0)
@@ -196,13 +205,7 @@ public class TextEditorCursor
                 localIndexCoordinates.rowIndex,
                 localIndexCoordinates.columnIndex);
 
-            localTextEditorSelection.EndingPositionIndex = positionIndex;
-            
-            textEditorCursor.TextEditorSelection.AnchorPositionIndex = 
-                localTextEditorSelection.AnchorPositionIndex;
-                
-            textEditorCursor.TextEditorSelection.EndingPositionIndex = 
-                localTextEditorSelection.EndingPositionIndex;
+            textEditorCursor.TextEditorSelection.EndingPositionIndex = positionIndex;
         }
     }
 
