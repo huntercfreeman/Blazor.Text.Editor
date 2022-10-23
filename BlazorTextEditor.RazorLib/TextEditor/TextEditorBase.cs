@@ -27,7 +27,8 @@ public class TextEditorBase
 
     private readonly List<RichCharacter> _content = new();
     private readonly List<EditBlock> _editBlocks = new();
-
+    private readonly List<(RowEndingKind rowEndingKind, int count)> _rowEndingKindCounts = new();
+    
     public TextEditorBase(string content, ILexer? lexer, IDecorationMapper? decorationMapper)
     {
         Lexer = lexer ?? new LexerDefault();
@@ -37,6 +38,10 @@ public class TextEditorBase
 
         var charactersOnRow = 0;
 
+        var carriageReturnCount = 0;
+        var linefeedCount = 0;
+        var carriageReturnLinefeedCount = 0;
+        
         for (var index = 0; index < content.Length; index++)
         {
             var character = content[index];
@@ -54,6 +59,8 @@ public class TextEditorBase
                 }
 
                 charactersOnRow = 0;
+                
+                carriageReturnCount++;
             }
             else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
             {
@@ -62,11 +69,14 @@ public class TextEditorBase
                     var lineEnding = _rowEndingPositions[rowIndex - 1];
 
                     _rowEndingPositions[rowIndex - 1] =
-                        (lineEnding.positionIndex + 1, RowEndingKind.CarriageReturnNewLine);
+                        (lineEnding.positionIndex + 1, RowEndingKind.CarriageReturnLinefeed);
+                    
+                    carriageReturnCount--;
+                    carriageReturnLinefeedCount++;
                 }
                 else
                 {
-                    _rowEndingPositions.Add((index + 1, RowEndingKind.NewLine));
+                    _rowEndingPositions.Add((index + 1, RowEndingKind.Linefeed));
                     rowIndex++;
                     
                     if (charactersOnRow > MostCharactersOnASingleRow)
@@ -75,6 +85,8 @@ public class TextEditorBase
                     }
 
                     charactersOnRow = 0;
+                    
+                    linefeedCount++;
                 }
             }
 
@@ -90,6 +102,15 @@ public class TextEditorBase
             });
         }
 
+        _rowEndingKindCounts.AddRange(new List<(RowEndingKind rowEndingKind, int count)>
+        {
+            (RowEndingKind.CarriageReturn, carriageReturnCount),
+            (RowEndingKind.Linefeed, linefeedCount),
+            (RowEndingKind.CarriageReturnLinefeed, carriageReturnLinefeedCount),
+        });
+
+        CheckRowEndingPositions(true);
+        
         _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
     }
 
@@ -104,6 +125,18 @@ public class TextEditorBase
 
     public ImmutableArray<EditBlock> EditBlocks => _editBlocks.ToImmutableArray();
 
+    /// <summary>
+    /// If there is a mixture of<br/>
+    ///     -Carriage Return<br/>
+    ///     -Linefeed<br/>
+    ///     -CRLF<br/>
+    /// Then <see cref="OnlyRowEndingKind"/> will be null.
+    /// <br/><br/>
+    /// If there are no line endings
+    /// then <see cref="OnlyRowEndingKind"/> will be null.
+    /// </summary>
+    public RowEndingKind? OnlyRowEndingKind { get; private set; }
+    public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
     
@@ -272,8 +305,12 @@ public class TextEditorBase
                 _content.Insert(cursorPositionIndex, richCharacterToInsert);
 
                 _rowEndingPositions.Insert(cursorTuple.immutableTextEditorCursor.RowIndex,
-                    (cursorPositionIndex + 1, RowEndingKind.NewLine));
+                    (cursorPositionIndex + 1, RowEndingKind.Linefeed));
 
+                MutateRowEndingKindCount(
+                    UsingRowEndingKind, 
+                    1);
+                
                 var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
 
                 cursorTuple.textEditorCursor.IndexCoordinates = (indexCoordinates.rowIndex + 1, 0);
@@ -461,6 +498,10 @@ public class TextEditorBase
 
                     countToRemove -= (lengthOfRowEnding - 1);
                     countToRemoveRange = lengthOfRowEnding;
+                    
+                    MutateRowEndingKindCount(
+                        rowEndingTuple.rowEndingKind, 
+                        -1);
                 }
                 else
                 {
@@ -544,6 +585,59 @@ public class TextEditorBase
         }
     }
 
+    private void MutateRowEndingKindCount(RowEndingKind rowEndingKind, int changeBy)
+    {
+        var indexOfRowEndingKindCount = _rowEndingKindCounts
+            .FindIndex(x => 
+                x.rowEndingKind == rowEndingKind);
+
+        var currentRowEndingKindCount = _rowEndingKindCounts[indexOfRowEndingKindCount]
+            .count;
+                    
+        _rowEndingKindCounts[indexOfRowEndingKindCount] = 
+            (rowEndingKind, currentRowEndingKindCount + changeBy);
+                    
+        CheckRowEndingPositions(false);
+    }
+    
+    private void CheckRowEndingPositions(bool setUsingRowEndingKind)
+    {
+        var existingRowEndings = _rowEndingKindCounts
+            .Where(x => x.count > 0)
+            .ToArray();
+
+        if (!existingRowEndings.Any())
+        {
+            OnlyRowEndingKind = RowEndingKind.Unset;
+            UsingRowEndingKind = RowEndingKind.Linefeed;
+        }
+        else
+        {
+            if (existingRowEndings.Length == 1)
+            {
+                var rowEndingKind = existingRowEndings
+                    .Single()
+                    .rowEndingKind;
+
+                if (setUsingRowEndingKind)
+                    UsingRowEndingKind = rowEndingKind;
+
+                OnlyRowEndingKind = rowEndingKind;
+            }
+            else
+            {
+                if (setUsingRowEndingKind)
+                {
+                    UsingRowEndingKind = existingRowEndings
+                        .MaxBy(x => x.count)
+                        .rowEndingKind;
+                }
+                
+                OnlyRowEndingKind = null;
+            }
+        }
+    }
+    
     /// <summary>
     /// If applying syntax highlighting it may be preferred to use
     /// <see cref="ApplySyntaxHighlightingAsync"/>. It is effectively
