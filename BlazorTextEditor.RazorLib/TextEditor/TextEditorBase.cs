@@ -361,7 +361,7 @@ public class TextEditorBase
             // Cannot calculate this after text was deleted - it would be wrong
             int? selectionUpperBoundRowIndex = null;
             // Needed for when text selection is deleted
-            (int, int)? selectionLowerBoundIndexCoordinates = null;
+            (int rowIndex, int columnIndex)? selectionLowerBoundIndexCoordinates = null;
 
             if (cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection.HasSelectedText())
             {
@@ -510,7 +510,7 @@ public class TextEditorBase
 
             if (selectionUpperBoundRowIndex.HasValue)
             {
-                firstRowIndexToModify = selectionUpperBoundRowIndex.Value - rowsRemovedCount;
+                firstRowIndexToModify = selectionLowerBoundIndexCoordinates!.Value.rowIndex;
                 
                 cursorTuple.textEditorCursor.IndexCoordinates = 
                     selectionLowerBoundIndexCoordinates!.Value;
