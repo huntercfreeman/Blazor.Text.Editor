@@ -490,6 +490,11 @@ public class TextEditorBase
                 {
                     rowsRemovedCount++;
 
+                    // rep.positionIndex == indexToRemove + 1
+                    //     ^is for backspace
+                    //
+                    // rep.positionIndex == indexToRemove + 2
+                    //     ^is for delete
                     var rowEndingTupleIndex = _rowEndingPositions
                         .FindIndex(rep =>
                             rep.positionIndex == indexToRemove + 1 ||
