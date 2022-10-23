@@ -251,9 +251,11 @@ public partial class TextEditorDisplay : ComponentBase
                 OnSaveRequested?.Invoke(TextEditorStatesSelection.Value);
             }
             else if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE &&
-                     keyboardEventArgs.CtrlKey)
+                     keyboardEventArgs.CtrlKey ||
+                     keyboardEventArgs.AltKey &&
+                     keyboardEventArgs.Key == "a")
             {
-                
+                // Short term hack to avoid autocomplete keybind being typed.
             }
             else
             {
