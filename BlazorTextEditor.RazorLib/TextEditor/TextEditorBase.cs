@@ -295,18 +295,26 @@ public class TextEditorBase
                                editTextEditorBaseAction.KeyboardEventArgs.Code;
             }
 
-            var richCharacterToInsert = new RichCharacter
-            {
-                Value = characterValueToInsert,
-                DecorationByte = default(byte)
-            };
+            var characterCountInserted = 1;
 
             if (wasEnterCode)
             {
-                _content.Insert(cursorPositionIndex, richCharacterToInsert);
-
+                var rowEndingKindToInsert = UsingRowEndingKind;
+                
+                var richCharacters = rowEndingKindToInsert
+                    .AsCharacters()
+                    .Select(character => new RichCharacter
+                    {
+                        Value = character,
+                        DecorationByte = default(byte)
+                    });
+                
+                characterCountInserted = rowEndingKindToInsert.AsCharacters().Length;
+                
+                _content.InsertRange(cursorPositionIndex, richCharacters);
+                
                 _rowEndingPositions.Insert(cursorTuple.immutableTextEditorCursor.RowIndex,
-                    (cursorPositionIndex + 1, UsingRowEndingKind));
+                    (cursorPositionIndex + characterCountInserted, rowEndingKindToInsert));
 
                 MutateRowEndingKindCount(
                     UsingRowEndingKind, 
@@ -341,6 +349,12 @@ public class TextEditorBase
                         _tabKeyPositions.Insert(index, cursorPositionIndex);
                     }
                 }
+                
+                var richCharacterToInsert = new RichCharacter
+                {
+                    Value = characterValueToInsert,
+                    DecorationByte = default(byte)
+                };
 
                 _content.Insert(cursorPositionIndex, richCharacterToInsert);
 
@@ -360,7 +374,7 @@ public class TextEditorBase
             {
                 var rowEndingTuple = _rowEndingPositions[i];
 
-                _rowEndingPositions[i] = (rowEndingTuple.positionIndex + 1, rowEndingTuple.rowEndingKind);
+                _rowEndingPositions[i] = (rowEndingTuple.positionIndex + characterCountInserted, rowEndingTuple.rowEndingKind);
             }
 
             if (!wasTabCode)
@@ -372,7 +386,7 @@ public class TextEditorBase
                 {
                     for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
                     {
-                        _tabKeyPositions[i]++;
+                        _tabKeyPositions[i] += characterCountInserted;
                     }
                 }
             }
