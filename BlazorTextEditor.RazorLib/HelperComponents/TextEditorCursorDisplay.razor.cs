@@ -20,6 +20,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public string ScrollableContainerId { get; set; } = null!;
     [Parameter, EditorRequired]
     public bool IsFocusTarget { get; set; }
+    [Parameter, EditorRequired]
+    public int TabIndex { get; set; }
     [Parameter]
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
@@ -221,6 +223,14 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         {
             await FocusAsync();
         }
+    }
+    
+    private int GetTabIndex()
+    {
+        if (!IsFocusTarget)
+            return -1;
+
+        return TabIndex;
     }
     
     public void Dispose()

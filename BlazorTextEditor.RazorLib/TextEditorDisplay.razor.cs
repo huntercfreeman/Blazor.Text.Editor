@@ -46,6 +46,17 @@ public partial class TextEditorDisplay : ComponentBase
     public string StyleCssString { get; set; } = null!;
     [Parameter]
     public string ClassCssString { get; set; } = null!;
+    /// <summary>
+    /// TabIndex is used for the html attribute: 'tabindex'
+    /// <br/><br/>
+    /// tabindex of -1 means one can only set focus to the
+    /// text editor by clicking on it.
+    /// <br/><br/>
+    /// tabindex of 0 means one can both use the tab key to set focus to the
+    /// text editor or click on it.
+    /// </summary>
+    [Parameter]
+    public int TabIndex { get; set; } = -1;
     
     private Guid _textEditorGuid = Guid.NewGuid();
     private ElementReference _textEditorDisplayElementReference;

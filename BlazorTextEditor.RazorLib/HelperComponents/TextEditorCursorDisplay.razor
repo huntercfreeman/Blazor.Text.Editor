@@ -1,7 +1,7 @@
 <textarea @ref="_textEditorCursorDisplayElementReference"
           @onkeydown="HandleOnKeyDown"
           id="@TextEditorCursorDisplayId"
-          tabindex="-1"
+          tabindex="@GetTabIndex()"
           class="bte_text-editor-cursor @BlinkAnimationCssClass"
           style="@CursorStyleCss">
 </textarea>
