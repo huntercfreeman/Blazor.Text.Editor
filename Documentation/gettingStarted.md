@@ -227,4 +227,89 @@ public partial class Index : ComponentBase, IDisposable
     - `Blazor.Text.Editor.Lexer.CSharp` [(see on nuget.org)](https://www.nuget.org/packages/Blazor.Text.Editor.Lexer.CSharp/)
     - `Blazor.Text.Editor.Lexer.HTML` [(see on nuget.org)](https://www.nuget.org/packages/Blazor.Text.Editor.Lexer.HTML)
 
+- In Index.razor.cs
+- Add two TextEditorKeys
+
+```csharp
+private static readonly TextEditorKey _cSharpTextEditorKey = TextEditorKey.NewTextEditorKey();
+private static readonly TextEditorKey _htmlTextEditorKey = TextEditorKey.NewTextEditorKey();
+```
+
+In override OnInitialized() register two text editors using the two keys and pass in the corresponding ILexer and IDecorationMapper
+
+```csharp
+protected override void OnInitialized()
+{
+    TextEditorService.OnTextEditorStatesChanged += TextEditorServiceOnOnTextEditorStatesChanged;
+    
+    TextEditorService.RegisterTextEditor(
+        new TextEditorBase(
+            string.Empty,
+            new TextEditorCSharpLexer(),
+            new TextEditorCSharpDecorationMapper(),
+            _cSharpTextEditorKey));
+    
+    TextEditorService.RegisterTextEditor(
+        new TextEditorBase(
+            string.Empty,
+            new TextEditorHtmlLexer(),
+            new TextEditorHtmlDecorationMapper(),
+            _htmlTextEditorKey));
+    
+    base.OnInitialized();
+}
+```
+
+Add the following method to apply syntax highlighting as the user types
+
+```csharp
+private async Task OnAfterOnKeyDownAsync(
+        TextEditorBase textEditor, 
+        ImmutableTextEditorCursor immutableTextEditorCursor, 
+        KeyboardEventArgs keyboardEventArgs, 
+        Func<TextEditorMenuKind, Task> displayMenuFunc)
+    {
+        if (keyboardEventArgs.Key == ";" ||
+            KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code))
+        {
+            await textEditor.ApplySyntaxHighlightingAsync();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+```
+
+In Index.razor add the following markup
+
+```html
+@{
+    var cSharpTextEditor = TextEditorService.TextEditorStates.TextEditorList
+        .FirstOrDefault(x => x.Key == _cSharpTextEditorKey);
+
+    if (cSharpTextEditor is not null)
+    {
+        <h3>C# Text Editor</h3>
+         <TextEditorDisplay @ref="_cSharpTextEditorDisplay"
+                            TextEditorKey="_cSharpTextEditorKey"
+                            StyleCssString="width: 400px; height: 400px;"
+                            AfterOnKeyDownAsync="OnAfterOnKeyDownAsync"/>
+    }
+}
+
+@{
+    var htmlTextEditor = TextEditorService.TextEditorStates.TextEditorList
+        .FirstOrDefault(x => x.Key == _htmlTextEditorKey);
+
+    if (htmlTextEditor is not null)
+    {
+        <h3>HTML Text Editor</h3>
+         <TextEditorDisplay @ref="_htmlTextEditorDisplay"
+                            TextEditorKey="_htmlTextEditorKey"
+                            StyleCssString="width: 400px; height: 400px;"
+                            AfterOnKeyDownAsync="OnAfterOnKeyDownAsync" />
+    }
+}
+```
+
+
 
