@@ -358,6 +358,11 @@ public class TextEditorBase
             int countToRemove;
             bool moveBackwards;
 
+            // Cannot calculate this after text was deleted - it would be wrong
+            int? selectionUpperBoundRowIndex = null;
+            // Needed for when text selection is deleted
+            (int, int)? selectionLowerBoundIndexCoordinates = null;
+
             if (cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection.HasSelectedText())
             {
                 var lowerBound = cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection
@@ -369,6 +374,24 @@ public class TextEditorBase
                 if (lowerBound > upperBound)
                     (lowerBound, upperBound) = (upperBound, lowerBound);
                 
+                var lowerRowMetaData = 
+                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                        lowerBound);
+                
+                var upperRowMetaData = 
+                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                        upperBound);
+
+                // Value is needed when knowing what row ending positions
+                // to update after deletion is done
+                selectionUpperBoundRowIndex = upperRowMetaData.rowIndex;
+                
+                // Value is needed when knowing where to position the
+                // cursor after deletion is done
+                selectionLowerBoundIndexCoordinates = 
+                    (lowerRowMetaData.rowIndex,
+                        lowerBound - lowerRowMetaData.rowStartPositionIndex);
+
                 startingPositionIndexToRemoveInclusive = upperBound - 1;
                 countToRemove = upperBound - lowerBound;
                 moveBackwards = true;
@@ -462,7 +485,7 @@ public class TextEditorBase
                 return;
             }
             
-            if (moveBackwards)
+            if (moveBackwards && !selectionUpperBoundRowIndex.HasValue)
             {
                 var modifyRowsBy = -1 * rowsRemovedCount;
 
@@ -484,11 +507,19 @@ public class TextEditorBase
             }
             
             int firstRowIndexToModify;
-        
-            if (moveBackwards)
+
+            if (selectionUpperBoundRowIndex.HasValue)
+            {
+                firstRowIndexToModify = selectionUpperBoundRowIndex.Value - rowsRemovedCount;
+            }
+            else if (moveBackwards)
+            {
                 firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex - rowsRemovedCount;
+            }
             else
+            {
                 firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex;
+            }
             
             for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
             {
