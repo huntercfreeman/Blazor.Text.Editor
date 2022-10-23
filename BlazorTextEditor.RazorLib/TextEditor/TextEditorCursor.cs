@@ -29,6 +29,8 @@ public class TextEditorCursor
         var localIndexCoordinates = textEditorCursor.IndexCoordinates;
         var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
 
+        var localTextEditorSelection = textEditorCursor.TextEditorSelection; 
+
         void MutateIndexCoordinatesAndPreferredColumnIndex(int columnIndex)
         {
             localIndexCoordinates.columnIndex = columnIndex;
@@ -37,19 +39,19 @@ public class TextEditorCursor
 
         if (keyboardEventArgs.ShiftKey)
         {
-            if (textEditorCursor.TextEditorSelection.AnchorPositionIndex is null ||
-                textEditorCursor.TextEditorSelection.EndingPositionIndex == textEditorCursor.TextEditorSelection.AnchorPositionIndex)
+            if (localTextEditorSelection.AnchorPositionIndex is null ||
+                localTextEditorSelection.EndingPositionIndex == localTextEditorSelection.AnchorPositionIndex)
             {
                 var positionIndex = textEditorBase.GetPositionIndex(
                     localIndexCoordinates.rowIndex,
                     localIndexCoordinates.columnIndex);
 
-                textEditorCursor.TextEditorSelection.AnchorPositionIndex = positionIndex;
+                localTextEditorSelection.AnchorPositionIndex = positionIndex;
             }    
         }
         else
         {
-            textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
+            localTextEditorSelection.AnchorPositionIndex = null;
         }
         
         switch (keyboardEventArgs.Key)
@@ -194,7 +196,13 @@ public class TextEditorCursor
                 localIndexCoordinates.rowIndex,
                 localIndexCoordinates.columnIndex);
 
-            textEditorCursor.TextEditorSelection.EndingPositionIndex = positionIndex;
+            localTextEditorSelection.EndingPositionIndex = positionIndex;
+            
+            textEditorCursor.TextEditorSelection.AnchorPositionIndex = 
+                localTextEditorSelection.AnchorPositionIndex;
+                
+            textEditorCursor.TextEditorSelection.EndingPositionIndex = 
+                localTextEditorSelection.EndingPositionIndex;
         }
     }
 
