@@ -511,6 +511,9 @@ public class TextEditorBase
             if (selectionUpperBoundRowIndex.HasValue)
             {
                 firstRowIndexToModify = selectionUpperBoundRowIndex.Value - rowsRemovedCount;
+                
+                cursorTuple.textEditorCursor.IndexCoordinates = 
+                    selectionLowerBoundIndexCoordinates!.Value;
             }
             else if (moveBackwards)
             {
