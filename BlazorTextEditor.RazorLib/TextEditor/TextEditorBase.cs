@@ -358,7 +358,24 @@ public class TextEditorBase
             int countToRemove;
             bool moveBackwards;
 
-            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key)
+            if (cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection.HasSelectedText())
+            {
+                var lowerBound = cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection
+                    .AnchorPositionIndex ?? 0; 
+                
+                var upperBound = cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection
+                    .EndingPositionIndex;
+
+                if (lowerBound > upperBound)
+                    (lowerBound, upperBound) = (upperBound, lowerBound);
+                
+                startingPositionIndexToRemoveInclusive = upperBound - 1;
+                countToRemove = upperBound - lowerBound;
+                moveBackwards = true;
+
+                cursorTuple.textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
+            }
+            else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key)
             {
                 startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
                 countToRemove = 1;

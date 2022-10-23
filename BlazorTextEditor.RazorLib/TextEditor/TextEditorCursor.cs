@@ -69,9 +69,7 @@ public class TextEditorCursor
                     var upperBound = rememberTextEditorSelection.EndingPositionIndex;
 
                     if (lowerBound > upperBound)
-                    {
                         (lowerBound, upperBound) = (upperBound, lowerBound);
-                    }
                     
                     var lowerRowMetaData = textEditorBase
                         .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
@@ -164,9 +162,7 @@ public class TextEditorCursor
                     var upperBound = rememberTextEditorSelection.EndingPositionIndex;
 
                     if (lowerBound > upperBound)
-                    {
                         (lowerBound, upperBound) = (upperBound, lowerBound);
-                    }
                     
                     var upperRowMetaData = textEditorBase
                         .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
