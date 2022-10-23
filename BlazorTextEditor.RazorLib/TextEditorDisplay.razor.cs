@@ -129,7 +129,7 @@ public partial class TextEditorDisplay : ComponentBase
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
             
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            ReloadVirtualizationDisplay();
         }
         
         if (_previousTextEditorKey is null ||
@@ -148,7 +148,7 @@ public partial class TextEditorDisplay : ComponentBase
                 PrimaryCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
             
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            ReloadVirtualizationDisplay();
         }
 
         await base.OnParametersSetAsync();
@@ -169,7 +169,7 @@ public partial class TextEditorDisplay : ComponentBase
     {
         if (firstRender)
         {
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            ReloadVirtualizationDisplay();
         }
 
         if (ShouldMeasureDimensions)
@@ -190,6 +190,11 @@ public partial class TextEditorDisplay : ComponentBase
         }
         
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void ReloadVirtualizationDisplay()
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
     private async Task FocusTextEditorOnClickAsync()
@@ -225,19 +230,28 @@ public partial class TextEditorDisplay : ComponentBase
             else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
             {
                 var clipboard = await ClipboardProvider.ReadClipboard();
-                
+
+                var previousCharacterWasCarriageReturn = false;
+        
                 foreach (var character in clipboard)
                 {
+                    if (previousCharacterWasCarriageReturn &&
+                        character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
+                    {
+                        previousCharacterWasCarriageReturn = false;
+                        continue;
+                    }
+            
                     var code = character switch
                     {
-                        '\r' => KeyboardKeyFacts.WhitespaceCodes.CARRIAGE_RETURN_CODE,
+                        '\r' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
                         '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
                         '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
                         ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
                         _ => character.ToString()
                     };
-                    
-                    Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
+ 
+                    TextEditorService.EditTextEditor(new EditTextEditorBaseAction(TextEditorKey,
                         new (ImmutableTextEditorCursor, TextEditorCursor)[]
                         {
                             (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
@@ -248,7 +262,12 @@ public partial class TextEditorDisplay : ComponentBase
                             Key = character.ToString()
                         },
                         CancellationToken.None));
+
+                    previousCharacterWasCarriageReturn = KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN
+                                                         == character;
                 }
+
+                ReloadVirtualizationDisplay();
             }
             else if (keyboardEventArgs.Key == "s" && keyboardEventArgs.CtrlKey)
             {
@@ -271,8 +290,8 @@ public partial class TextEditorDisplay : ComponentBase
                     keyboardEventArgs,
                     CancellationToken.None));
             }
-            
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+
+            ReloadVirtualizationDisplay();
         }
         
         CursorsChanged?.Invoke();
@@ -733,12 +752,3 @@ public partial class TextEditorDisplay : ComponentBase
             bottomBoundary);
     }
 }
-
-
-
-
-
-
-
-
-
