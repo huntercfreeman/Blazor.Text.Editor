@@ -122,6 +122,7 @@ public class TextEditorBase
 
     public TextEditorKey Key { get; } = TextEditorKey.NewTextEditorKey();
     public int RowCount => _rowEndingPositions.Count;
+    public int DocumentLength => _content.Count;
 
     public ImmutableArray<EditBlock> EditBlocks => _editBlocks.ToImmutableArray();
 
@@ -305,7 +306,7 @@ public class TextEditorBase
                 _content.Insert(cursorPositionIndex, richCharacterToInsert);
 
                 _rowEndingPositions.Insert(cursorTuple.immutableTextEditorCursor.RowIndex,
-                    (cursorPositionIndex + 1, RowEndingKind.Linefeed));
+                    (cursorPositionIndex + 1, UsingRowEndingKind));
 
                 MutateRowEndingKindCount(
                     UsingRowEndingKind, 
@@ -775,6 +776,12 @@ public class TextEditorBase
         Lexer = lexer ?? new LexerDefault();
         
         // TODO: Invoke an event to reapply the CSS classes?
+    }
+    
+    public TextEditorBase SetUsingRowEndingKind(RowEndingKind rowEndingKind)
+    {
+        UsingRowEndingKind = rowEndingKind;
+        return this;
     }
 
     public ImmutableArray<RichCharacter> GetAllRichCharacters()

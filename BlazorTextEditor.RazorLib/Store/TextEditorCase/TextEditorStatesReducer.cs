@@ -125,4 +125,25 @@ public class TextEditorStatesReducer
             GlobalTextEditorOptions = nextTextEditorOptions
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetUsingRowEndingKindAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetUsingRowEndingKindAction textEditorSetUsingRowEndingKindAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => 
+                x.Key == textEditorSetUsingRowEndingKindAction.TextEditorKey);
+
+        var nextTextEditor = textEditor
+            .SetUsingRowEndingKind(textEditorSetUsingRowEndingKindAction.RowEndingKind);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList
+        };
+    }
 }

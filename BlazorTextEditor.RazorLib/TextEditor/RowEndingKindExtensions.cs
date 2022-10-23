@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
 public static class RowEndingKindExtensions
@@ -31,5 +33,29 @@ public static class RowEndingKindExtensions
             RowEndingKind.EndOfFile => "EOF",
             _ => throw new ApplicationException($"Unexpected {nameof(RowEndingKind)} of: {rowEndingKind}")
         };
+    }
+    
+    public static string AsFriendlyName(this RowEndingKind rowEndingKind)
+    {
+        return rowEndingKind switch
+        {
+            RowEndingKind.CarriageReturn => "CR",
+            RowEndingKind.Linefeed => "LF",
+            RowEndingKind.CarriageReturnLinefeed => "CRLF",
+            RowEndingKind.Unset => "Unset",
+            RowEndingKind.StartOfFile => "SOF",
+            RowEndingKind.EndOfFile => "EOF",
+            _ => throw new ApplicationException($"Unexpected {nameof(RowEndingKind)} of: {rowEndingKind}")
+        };
+    }
+    
+    public static ImmutableArray<RowEndingKind> GetRowEndingsUserAllowedToUse(this RowEndingKind rowEndingKind)
+    {
+        return new[]
+        {
+            RowEndingKind.CarriageReturn,
+            RowEndingKind.Linefeed,
+            RowEndingKind.CarriageReturnLinefeed,
+        }.ToImmutableArray();
     }
 }

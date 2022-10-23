@@ -104,6 +104,8 @@ public partial class TextEditorDisplay : ComponentBase
         .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
 
     public TextEditorCursor PrimaryCursor { get; } = new();
+    
+    public event Action? CursorsChanged;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -157,6 +159,8 @@ public partial class TextEditorDisplay : ComponentBase
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .Single(x => x.Key == TextEditorKey));
+        
+        CursorsChanged?.Invoke();
         
         base.OnInitialized();
     }
@@ -271,6 +275,8 @@ public partial class TextEditorDisplay : ComponentBase
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
         
+        CursorsChanged?.Invoke();
+        
         PrimaryCursor.ShouldRevealCursor = true;
 
         var afterOnKeyDownAsync = AfterOnKeyDownAsync;
@@ -329,6 +335,8 @@ public partial class TextEditorDisplay : ComponentBase
         PrimaryCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
         
         _thinksLeftMouseButtonIsDown = true;
+        
+        CursorsChanged?.Invoke();
     }
     
     /// <summary>
@@ -356,6 +364,8 @@ public partial class TextEditorDisplay : ComponentBase
         {
             _thinksLeftMouseButtonIsDown = false;
         }
+        
+        CursorsChanged?.Invoke();
     }
     
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(MouseEventArgs mouseEventArgs)
