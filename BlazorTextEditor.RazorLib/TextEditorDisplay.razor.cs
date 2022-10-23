@@ -30,11 +30,33 @@ public partial class TextEditorDisplay : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorKey TextEditorKey { get; set; } = null!;
     [Parameter]
+    public RenderFragment? OnContextMenuRenderFragment { get; set; }
+    [Parameter]
+    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
+    [Parameter]
+    public Action<TextEditorBase>? OnSaveRequested { get; set; }
+    /// <summary>
+    /// (TextEditorBase textEditor, ImmutableTextEditorCursor immutablePrimaryCursor, KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
+    /// </summary>
+    [Parameter]
+    public Func<TextEditorBase, ImmutableTextEditorCursor, KeyboardEventArgs, Func<TextEditorMenuKind, Task> , Task>? AfterOnKeyDownAsync { get; set; }
+    [Parameter]
     public bool ShouldRemeasureFlag { get; set; }
     [Parameter]
     public string StyleCssString { get; set; } = null!;
     [Parameter]
     public string ClassCssString { get; set; } = null!;
+    /// <summary>
+    /// TabIndex is used for the html attribute: 'tabindex'
+    /// <br/><br/>
+    /// tabindex of -1 means one can only set focus to the
+    /// text editor by clicking on it.
+    /// <br/><br/>
+    /// tabindex of 0 means one can both use the tab key to set focus to the
+    /// text editor or click on it.
+    /// </summary>
+    [Parameter]
+    public int TabIndex { get; set; } = -1;
     
     private Guid _textEditorGuid = Guid.NewGuid();
     private ElementReference _textEditorDisplayElementReference;
@@ -93,6 +115,8 @@ public partial class TextEditorDisplay : ComponentBase
         .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
 
     public TextEditorCursor PrimaryCursor { get; } = new();
+    
+    public event Action? CursorsChanged;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -116,14 +140,26 @@ public partial class TextEditorDisplay : ComponentBase
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
             
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            ReloadVirtualizationDisplay();
         }
         
         if (_previousTextEditorKey is null ||
             _previousTextEditorKey != TextEditorKey)
         {
-            _previousTextEditorKey = TextEditorKey;
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            // Setting IndexCoordinates to (0, 0) twice in this block
+            // due to a general feeling of unease
+            // that something bad will happen otherwise.
+            {
+                PrimaryCursor.IndexCoordinates = (0, 0);
+                PrimaryCursor.TextEditorSelection.AnchorPositionIndex = null;
+                
+                _previousTextEditorKey = TextEditorKey;
+                
+                PrimaryCursor.IndexCoordinates = (0, 0);    
+                PrimaryCursor.TextEditorSelection.AnchorPositionIndex = null;
+            }
+            
+            ReloadVirtualizationDisplay();
         }
 
         await base.OnParametersSetAsync();
@@ -135,6 +171,8 @@ public partial class TextEditorDisplay : ComponentBase
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .Single(x => x.Key == TextEditorKey));
         
+        CursorsChanged?.Invoke();
+        
         base.OnInitialized();
     }
 
@@ -142,7 +180,7 @@ public partial class TextEditorDisplay : ComponentBase
     {
         if (firstRender)
         {
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            ReloadVirtualizationDisplay();
         }
 
         if (ShouldMeasureDimensions)
@@ -165,6 +203,11 @@ public partial class TextEditorDisplay : ComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    public void ReloadVirtualizationDisplay()
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+    }
+
     private async Task FocusTextEditorOnClickAsync()
     {
         if (_textEditorCursorDisplay is not null) 
@@ -173,12 +216,18 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+        
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
             TextEditorCursor.MoveCursor(
                 keyboardEventArgs, 
                 PrimaryCursor, 
                 TextEditorStatesSelection.Value);
+        }
+        else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
+        {
+            _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
         }
         else
         {
@@ -192,19 +241,28 @@ public partial class TextEditorDisplay : ComponentBase
             else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
             {
                 var clipboard = await ClipboardProvider.ReadClipboard();
-                
+
+                var previousCharacterWasCarriageReturn = false;
+        
                 foreach (var character in clipboard)
                 {
+                    if (previousCharacterWasCarriageReturn &&
+                        character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
+                    {
+                        previousCharacterWasCarriageReturn = false;
+                        continue;
+                    }
+            
                     var code = character switch
                     {
-                        '\r' => KeyboardKeyFacts.WhitespaceCodes.CARRIAGE_RETURN_CODE,
+                        '\r' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
                         '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
                         '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
                         ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
                         _ => character.ToString()
                     };
-                    
-                    Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
+ 
+                    TextEditorService.EditTextEditor(new EditTextEditorBaseAction(TextEditorKey,
                         new (ImmutableTextEditorCursor, TextEditorCursor)[]
                         {
                             (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
@@ -215,7 +273,23 @@ public partial class TextEditorDisplay : ComponentBase
                             Key = character.ToString()
                         },
                         CancellationToken.None));
+
+                    previousCharacterWasCarriageReturn = KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN
+                                                         == character;
                 }
+
+                ReloadVirtualizationDisplay();
+            }
+            else if (keyboardEventArgs.Key == "s" && keyboardEventArgs.CtrlKey)
+            {
+                OnSaveRequested?.Invoke(TextEditorStatesSelection.Value);
+            }
+            else if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE &&
+                     keyboardEventArgs.CtrlKey ||
+                     keyboardEventArgs.AltKey &&
+                     keyboardEventArgs.Key == "a")
+            {
+                // Short term hack to avoid autocomplete keybind being typed.
             }
             else
             {
@@ -227,15 +301,56 @@ public partial class TextEditorDisplay : ComponentBase
                     keyboardEventArgs,
                     CancellationToken.None));
             }
-            
-            _virtualizationDisplay.InvokeEntriesProviderFunc();
+
+            ReloadVirtualizationDisplay();
         }
         
+        CursorsChanged?.Invoke();
+        
         PrimaryCursor.ShouldRevealCursor = true;
+
+        var afterOnKeyDownAsync = AfterOnKeyDownAsync;
+        
+        if (afterOnKeyDownAsync is not null)
+        {
+            var cursorDisplay = _textEditorCursorDisplay;
+            
+            if (cursorDisplay is not null)
+            {
+                var textEditor = TextEditorStatesSelection.Value;
+                var immutableTextCursor = new ImmutableTextEditorCursor(PrimaryCursor);
+            
+                // Do not block UI thread with long running AfterOnKeyDownAsync 
+                _ = Task.Run(async () =>
+                {
+                    await afterOnKeyDownAsync.Invoke(
+                        textEditor,
+                        immutableTextCursor,
+                        keyboardEventArgs,
+                        cursorDisplay.SetShouldDisplayMenuAsync);
+                });
+            }
+        }
+    }
+    
+    private void HandleOnContextMenuAsync()
+    {
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
     }
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
+        if ((mouseEventArgs.Buttons & 1) != 1 &&
+            PrimaryCursor.TextEditorSelection.HasSelectedText())
+        {
+            // Not pressing the left mouse button
+            // so assume ContextMenu is desired result.
+
+            return;
+        }
+        
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+        
         var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
 
         PrimaryCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
@@ -250,6 +365,8 @@ public partial class TextEditorDisplay : ComponentBase
         PrimaryCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
         
         _thinksLeftMouseButtonIsDown = true;
+        
+        CursorsChanged?.Invoke();
     }
     
     /// <summary>
@@ -277,6 +394,8 @@ public partial class TextEditorDisplay : ComponentBase
         {
             _thinksLeftMouseButtonIsDown = false;
         }
+        
+        CursorsChanged?.Invoke();
     }
     
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(MouseEventArgs mouseEventArgs)
@@ -644,12 +763,3 @@ public partial class TextEditorDisplay : ComponentBase
             bottomBoundary);
     }
 }
-
-
-
-
-
-
-
-
-

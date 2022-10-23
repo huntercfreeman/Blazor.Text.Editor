@@ -28,6 +28,10 @@
     color: var(--bte_comment-foreground-color);
 }
 
+.bte_tag-name {
+    color: var(--bte_tag-name-foreground-color);
+}
+
 .bte_measure-character-width-and-row-height {
     top: 0;
     left: 0;
@@ -74,7 +78,15 @@
     border: 2px solid var(--bte_text-editor-caret-row-border-color);
     position: absolute;
     left: 0;
-    width: 100%;
+    min-width: 100%;
+}
+
+.bte_text-editor-context-menu {
+    position: absolute;
+    z-index: 5;
+    background-color: var(--bte_secondary-background-color);
+    color: var(--bte_secondary-font-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
 }
 
 .bte_blink {
@@ -107,3 +119,4 @@
 .bte_virtualization-boundary-display {
     position: absolute;
 }
+

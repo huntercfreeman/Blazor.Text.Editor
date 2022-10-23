@@ -22,6 +22,21 @@ public class TextEditorService : ITextEditorService
 
     public TextEditorStates TextEditorStates => _textEditorStates.Value;
     
+    public string GlobalThemeCssClassString => TextEditorStates
+                                                   .GlobalTextEditorOptions
+                                                   .Theme?
+                                                   .CssClassString
+                                               ?? string.Empty; 
+    
+    public string GlobalFontSizeInPixelsStyling => "font-size: " + TextEditorStates
+                                                                     .GlobalTextEditorOptions
+                                                                     .FontSizeInPixels!.Value
+                                                                 + "px;"; 
+    
+    public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
+    
+    public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
+    
     public event EventHandler? OnTextEditorStatesChanged;
 
     public void RegisterTextEditor(TextEditorBase textEditorBase)
@@ -63,6 +78,12 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(
             new TextEditorSetShowNewlinesAction(showNewlines));
+    }
+    
+    public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetUsingRowEndingKindAction(textEditorKey, rowEndingKind));
     }
     
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)

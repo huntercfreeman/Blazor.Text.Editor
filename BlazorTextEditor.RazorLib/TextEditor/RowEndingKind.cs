@@ -3,8 +3,9 @@ namespace BlazorTextEditor.RazorLib.TextEditor;
 public enum RowEndingKind
 {
     CarriageReturn,
-    NewLine,
-    CarriageReturnNewLine,
+    Linefeed,
+    CarriageReturnLinefeed,
     EndOfFile,
-    StartOfFile
+    StartOfFile,
+    Unset
 }

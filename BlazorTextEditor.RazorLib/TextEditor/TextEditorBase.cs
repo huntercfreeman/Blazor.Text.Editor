@@ -10,7 +10,7 @@ public class TextEditorBase
 {
     public const int TabWidth = 4;
     public const int GutterPaddingLeftInPixels = 5;
-    public const int GutterPaddingRightInPixels = 5;
+    public const int GutterPaddingRightInPixels = 15;
     public const int MaximumEditBlocks = 10;
 
     /// <summary>
@@ -27,7 +27,8 @@ public class TextEditorBase
 
     private readonly List<RichCharacter> _content = new();
     private readonly List<EditBlock> _editBlocks = new();
-
+    private readonly List<(RowEndingKind rowEndingKind, int count)> _rowEndingKindCounts = new();
+    
     public TextEditorBase(string content, ILexer? lexer, IDecorationMapper? decorationMapper)
     {
         Lexer = lexer ?? new LexerDefault();
@@ -37,6 +38,10 @@ public class TextEditorBase
 
         var charactersOnRow = 0;
 
+        var carriageReturnCount = 0;
+        var linefeedCount = 0;
+        var carriageReturnLinefeedCount = 0;
+        
         for (var index = 0; index < content.Length; index++)
         {
             var character = content[index];
@@ -54,6 +59,8 @@ public class TextEditorBase
                 }
 
                 charactersOnRow = 0;
+                
+                carriageReturnCount++;
             }
             else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
             {
@@ -62,11 +69,14 @@ public class TextEditorBase
                     var lineEnding = _rowEndingPositions[rowIndex - 1];
 
                     _rowEndingPositions[rowIndex - 1] =
-                        (lineEnding.positionIndex + 1, RowEndingKind.CarriageReturnNewLine);
+                        (lineEnding.positionIndex + 1, RowEndingKind.CarriageReturnLinefeed);
+                    
+                    carriageReturnCount--;
+                    carriageReturnLinefeedCount++;
                 }
                 else
                 {
-                    _rowEndingPositions.Add((index + 1, RowEndingKind.NewLine));
+                    _rowEndingPositions.Add((index + 1, RowEndingKind.Linefeed));
                     rowIndex++;
                     
                     if (charactersOnRow > MostCharactersOnASingleRow)
@@ -75,6 +85,8 @@ public class TextEditorBase
                     }
 
                     charactersOnRow = 0;
+                    
+                    linefeedCount++;
                 }
             }
 
@@ -90,6 +102,15 @@ public class TextEditorBase
             });
         }
 
+        _rowEndingKindCounts.AddRange(new List<(RowEndingKind rowEndingKind, int count)>
+        {
+            (RowEndingKind.CarriageReturn, carriageReturnCount),
+            (RowEndingKind.Linefeed, linefeedCount),
+            (RowEndingKind.CarriageReturnLinefeed, carriageReturnLinefeedCount),
+        });
+
+        CheckRowEndingPositions(true);
+        
         _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
     }
 
@@ -101,9 +122,22 @@ public class TextEditorBase
 
     public TextEditorKey Key { get; } = TextEditorKey.NewTextEditorKey();
     public int RowCount => _rowEndingPositions.Count;
+    public int DocumentLength => _content.Count;
 
     public ImmutableArray<EditBlock> EditBlocks => _editBlocks.ToImmutableArray();
 
+    /// <summary>
+    /// If there is a mixture of<br/>
+    ///     -Carriage Return<br/>
+    ///     -Linefeed<br/>
+    ///     -CRLF<br/>
+    /// Then <see cref="OnlyRowEndingKind"/> will be null.
+    /// <br/><br/>
+    /// If there are no line endings
+    /// then <see cref="OnlyRowEndingKind"/> will be null.
+    /// </summary>
+    public RowEndingKind? OnlyRowEndingKind { get; private set; }
+    public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
     
@@ -261,19 +295,31 @@ public class TextEditorBase
                                editTextEditorBaseAction.KeyboardEventArgs.Code;
             }
 
-            var richCharacterToInsert = new RichCharacter
-            {
-                Value = characterValueToInsert,
-                DecorationByte = default(byte)
-            };
+            var characterCountInserted = 1;
 
             if (wasEnterCode)
             {
-                _content.Insert(cursorPositionIndex, richCharacterToInsert);
-
+                var rowEndingKindToInsert = UsingRowEndingKind;
+                
+                var richCharacters = rowEndingKindToInsert
+                    .AsCharacters()
+                    .Select(character => new RichCharacter
+                    {
+                        Value = character,
+                        DecorationByte = default(byte)
+                    });
+                
+                characterCountInserted = rowEndingKindToInsert.AsCharacters().Length;
+                
+                _content.InsertRange(cursorPositionIndex, richCharacters);
+                
                 _rowEndingPositions.Insert(cursorTuple.immutableTextEditorCursor.RowIndex,
-                    (cursorPositionIndex + 1, RowEndingKind.NewLine));
+                    (cursorPositionIndex + characterCountInserted, rowEndingKindToInsert));
 
+                MutateRowEndingKindCount(
+                    UsingRowEndingKind, 
+                    1);
+                
                 var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
 
                 cursorTuple.textEditorCursor.IndexCoordinates = (indexCoordinates.rowIndex + 1, 0);
@@ -303,6 +349,12 @@ public class TextEditorBase
                         _tabKeyPositions.Insert(index, cursorPositionIndex);
                     }
                 }
+                
+                var richCharacterToInsert = new RichCharacter
+                {
+                    Value = characterValueToInsert,
+                    DecorationByte = default(byte)
+                };
 
                 _content.Insert(cursorPositionIndex, richCharacterToInsert);
 
@@ -322,7 +374,7 @@ public class TextEditorBase
             {
                 var rowEndingTuple = _rowEndingPositions[i];
 
-                _rowEndingPositions[i] = (rowEndingTuple.positionIndex + 1, rowEndingTuple.rowEndingKind);
+                _rowEndingPositions[i] = (rowEndingTuple.positionIndex + characterCountInserted, rowEndingTuple.rowEndingKind);
             }
 
             if (!wasTabCode)
@@ -334,7 +386,7 @@ public class TextEditorBase
                 {
                     for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
                     {
-                        _tabKeyPositions[i]++;
+                        _tabKeyPositions[i] += characterCountInserted;
                     }
                 }
             }
@@ -358,7 +410,47 @@ public class TextEditorBase
             int countToRemove;
             bool moveBackwards;
 
-            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key)
+            // Cannot calculate this after text was deleted - it would be wrong
+            int? selectionUpperBoundRowIndex = null;
+            // Needed for when text selection is deleted
+            (int rowIndex, int columnIndex)? selectionLowerBoundIndexCoordinates = null;
+
+            if (cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection.HasSelectedText())
+            {
+                var lowerBound = cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection
+                    .AnchorPositionIndex ?? 0; 
+                
+                var upperBound = cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection
+                    .EndingPositionIndex;
+
+                if (lowerBound > upperBound)
+                    (lowerBound, upperBound) = (upperBound, lowerBound);
+                
+                var lowerRowMetaData = 
+                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                        lowerBound);
+                
+                var upperRowMetaData = 
+                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                        upperBound);
+
+                // Value is needed when knowing what row ending positions
+                // to update after deletion is done
+                selectionUpperBoundRowIndex = upperRowMetaData.rowIndex;
+                
+                // Value is needed when knowing where to position the
+                // cursor after deletion is done
+                selectionLowerBoundIndexCoordinates = 
+                    (lowerRowMetaData.rowIndex,
+                        lowerBound - lowerRowMetaData.rowStartPositionIndex);
+
+                startingPositionIndexToRemoveInclusive = upperBound - 1;
+                countToRemove = upperBound - lowerBound;
+                moveBackwards = true;
+
+                cursorTuple.textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
+            }
+            else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key)
             {
                 startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
                 countToRemove = 1;
@@ -398,6 +490,11 @@ public class TextEditorBase
                 {
                     rowsRemovedCount++;
 
+                    // rep.positionIndex == indexToRemove + 1
+                    //     ^is for backspace
+                    //
+                    // rep.positionIndex == indexToRemove + 2
+                    //     ^is for delete
                     var rowEndingTupleIndex = _rowEndingPositions
                         .FindIndex(rep =>
                             rep.positionIndex == indexToRemove + 1 ||
@@ -419,7 +516,12 @@ public class TextEditorBase
                         startingIndexToRemoveRange = indexToRemove;
                     }
 
+                    countToRemove -= (lengthOfRowEnding - 1);
                     countToRemoveRange = lengthOfRowEnding;
+                    
+                    MutateRowEndingKindCount(
+                        rowEndingTuple.rowEndingKind, 
+                        -1);
                 }
                 else
                 {
@@ -444,7 +546,7 @@ public class TextEditorBase
                 return;
             }
             
-            if (moveBackwards)
+            if (moveBackwards && !selectionUpperBoundRowIndex.HasValue)
             {
                 var modifyRowsBy = -1 * rowsRemovedCount;
 
@@ -466,11 +568,22 @@ public class TextEditorBase
             }
             
             int firstRowIndexToModify;
-        
-            if (moveBackwards)
+
+            if (selectionUpperBoundRowIndex.HasValue)
+            {
+                firstRowIndexToModify = selectionLowerBoundIndexCoordinates!.Value.rowIndex;
+                
+                cursorTuple.textEditorCursor.IndexCoordinates = 
+                    selectionLowerBoundIndexCoordinates!.Value;
+            }
+            else if (moveBackwards)
+            {
                 firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex - rowsRemovedCount;
+            }
             else
+            {
                 firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex;
+            }
             
             for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
             {
@@ -492,6 +605,59 @@ public class TextEditorBase
         }
     }
 
+    private void MutateRowEndingKindCount(RowEndingKind rowEndingKind, int changeBy)
+    {
+        var indexOfRowEndingKindCount = _rowEndingKindCounts
+            .FindIndex(x => 
+                x.rowEndingKind == rowEndingKind);
+
+        var currentRowEndingKindCount = _rowEndingKindCounts[indexOfRowEndingKindCount]
+            .count;
+                    
+        _rowEndingKindCounts[indexOfRowEndingKindCount] = 
+            (rowEndingKind, currentRowEndingKindCount + changeBy);
+                    
+        CheckRowEndingPositions(false);
+    }
+    
+    private void CheckRowEndingPositions(bool setUsingRowEndingKind)
+    {
+        var existingRowEndings = _rowEndingKindCounts
+            .Where(x => x.count > 0)
+            .ToArray();
+
+        if (!existingRowEndings.Any())
+        {
+            OnlyRowEndingKind = RowEndingKind.Unset;
+            UsingRowEndingKind = RowEndingKind.Linefeed;
+        }
+        else
+        {
+            if (existingRowEndings.Length == 1)
+            {
+                var rowEndingKind = existingRowEndings
+                    .Single()
+                    .rowEndingKind;
+
+                if (setUsingRowEndingKind)
+                    UsingRowEndingKind = rowEndingKind;
+
+                OnlyRowEndingKind = rowEndingKind;
+            }
+            else
+            {
+                if (setUsingRowEndingKind)
+                {
+                    UsingRowEndingKind = existingRowEndings
+                        .MaxBy(x => x.count)
+                        .rowEndingKind;
+                }
+                
+                OnlyRowEndingKind = null;
+            }
+        }
+    }
+    
     /// <summary>
     /// If applying syntax highlighting it may be preferred to use
     /// <see cref="ApplySyntaxHighlightingAsync"/>. It is effectively
@@ -629,5 +795,21 @@ public class TextEditorBase
         Lexer = lexer ?? new LexerDefault();
         
         // TODO: Invoke an event to reapply the CSS classes?
+    }
+    
+    public TextEditorBase SetUsingRowEndingKind(RowEndingKind rowEndingKind)
+    {
+        UsingRowEndingKind = rowEndingKind;
+        return this;
+    }
+
+    public ImmutableArray<RichCharacter> GetAllRichCharacters()
+    {
+        return _content.ToImmutableArray();
+    }
+    
+    public void ClearEditBlocks()
+    {
+        _editBlocks.Clear();
     }
 }

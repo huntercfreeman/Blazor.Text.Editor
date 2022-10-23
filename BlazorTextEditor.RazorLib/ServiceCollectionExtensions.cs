@@ -30,14 +30,16 @@ public static class ServiceCollectionExtensions
         var clipboardProviderFactory = textEditorOptions.ClipboardProviderFactory
                                        ?? clipboardProviderDefaultFactory;
         
+        services
+            .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
+                _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
+            .AddScoped<IClipboardProvider>(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
+            .AddScoped<IThemeService, ThemeService>()
+            .AddScoped<ITextEditorService, TextEditorService>();
+        
         if (textEditorOptions.InitializeFluxor)
         {
             services
-                .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
-                    _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
-                .AddScoped<IClipboardProvider>(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
-                .AddScoped<IThemeService, ThemeService>()
-                .AddScoped<ITextEditorService, TextEditorService>()
                 .AddFluxor(options => options
                     .ScanAssemblies(typeof(ServiceCollectionExtensions).Assembly));
         }

@@ -1,13 +1,41 @@
 <textarea @ref="_textEditorCursorDisplayElementReference"
           @onkeydown="HandleOnKeyDown"
           id="@TextEditorCursorDisplayId"
-          tabindex="-1"
+          tabindex="@GetTabIndex()"
           class="bte_text-editor-cursor @BlinkAnimationCssClass"
           style="@CursorStyleCss">
-    
 </textarea>
 
 <div class="bte_text-editor-caret-row"
      style="@CaretRowStyleCss">
-    
 </div>
+
+@if (_textEditorMenuKind != TextEditorMenuKind.None)
+{
+    <div @onkeydown:stopPropagation="true"
+         @onmousedown:stopPropagation="true"
+         @onmousemove:stopPropagation="true"
+         class="bte_text-editor-context-menu"
+         style="@MenuStyleCss">
+    
+        <CascadingValue Name="SetShouldDisplayMenuAsync"
+                        Value="new Func<TextEditorMenuKind, Task>(SetShouldDisplayMenuAsync)">
+            
+            @switch (_textEditorMenuKind)
+            {
+                case TextEditorMenuKind.ContextMenu:
+                    if (OnContextMenuRenderFragment is not null)
+                    {
+                        @OnContextMenuRenderFragment
+                    }
+                    break;
+                case TextEditorMenuKind.AutoCompleteMenu:
+                    if (AutoCompleteMenuRenderFragment is not null)
+                    {
+                        @AutoCompleteMenuRenderFragment
+                    }
+                    break;
+            }
+        </CascadingValue>
+    </div>    
+}

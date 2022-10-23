@@ -8,6 +8,11 @@ public interface ITextEditorService : IDisposable
 {
     public TextEditorStates TextEditorStates { get; }
     
+    public string GlobalThemeCssClassString { get; }
+    public string GlobalFontSizeInPixelsStyling { get; }
+    public bool GlobalShowNewlines { get; }
+    public bool GlobalShowWhitespace  { get; }
+    
     public event EventHandler? OnTextEditorStatesChanged;
 
     public void RegisterTextEditor(TextEditorBase textEditorBase);
@@ -17,4 +22,5 @@ public interface ITextEditorService : IDisposable
     public void SetTheme(Theme theme);
     public void SetShowWhitespace(bool showWhitespace);
     public void SetShowNewlines(bool showNewlines);
+    public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind);
 }
