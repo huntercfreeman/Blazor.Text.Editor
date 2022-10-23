@@ -687,4 +687,9 @@ public class TextEditorBase
     {
         return _content.ToImmutableArray();
     }
+    
+    public void ClearEditBlocks()
+    {
+        _editBlocks.Clear();
+    }
 }
