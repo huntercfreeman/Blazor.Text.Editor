@@ -13,6 +13,7 @@
     --bte_keyword-foreground-color: #0000FF;
     --bte_comment-foreground-color: #007F00;
     --bte_tag-name-foreground-color: #0000FF;
+    --bte_injected-language-fragment-color: red;
     --bte_text-editor-gutter-border-color: #accec1;
     --bte_text-editor-gutter-background-color: #f0f0dc;
     --bte_secondary-font-color: #d1d2ca;

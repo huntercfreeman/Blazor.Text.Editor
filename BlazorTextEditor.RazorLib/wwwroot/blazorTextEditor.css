@@ -32,6 +32,10 @@
     color: var(--bte_tag-name-foreground-color);
 }
 
+.bte_injected-language-fragment {
+    color: var(--bte_injected-language-fragment-color);
+}
+
 .bte_measure-character-width-and-row-height {
     top: 0;
     left: 0;
