@@ -676,17 +676,19 @@ public class TextEditorBase
     
     public async Task ApplySyntaxHighlightingAsync(bool clearSyntaxHighlightingBeforeApplication = true)
     {
-        if (clearSyntaxHighlightingBeforeApplication)
-        {
-            ApplyDecorationRange(new []
-            {
-                new TextEditorTextSpan(
-                    0,
-                    _content.Count,
-                    // 0 is decoration none
-                    0)
-            });
-        }
+        // TODO: this did not work out it caused flashing colors to occur find other way to clear old syntax highlighting
+        //
+        // if (clearSyntaxHighlightingBeforeApplication)
+        // {
+        //     ApplyDecorationRange(new []
+        //     {
+        //         new TextEditorTextSpan(
+        //             0,
+        //             _content.Count,
+        //             // 0 is decoration none
+        //             0)
+        //     });
+        // }
         
         var textEditorTextSpans = await Lexer.Lex(GetAllText());
 
