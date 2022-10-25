@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Keyboard;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
@@ -12,3 +15,120 @@ public class TextEditorKeymap : ITextEditorKeymap
 
     public Func<KeyboardEventArgs, TextEditorCommand> KeymapFunc { get; }
 }
+
+public static class TextEditorCommandFacts
+{
+    public static readonly TextEditorCommand Copy = new TextEditorCommand(
+        async textEditorCommandParameter =>
+        {
+            var result = textEditorCommandParameter
+                .PrimaryCursorSnapshot
+                .ImmutableCursor
+                .ImmutableTextEditorSelection
+                .GetSelectedText(
+                    textEditorCommandParameter.TextEditor);
+
+            if (result is not null)
+            {
+                await textEditorCommandParameter
+                    .ClipboardProvider
+                    .SetClipboard(
+                        result);
+            }
+        },
+        "Copy",
+        "defaults_copy");
+    
+    public static readonly TextEditorCommand Paste = new TextEditorCommand(
+        async textEditorCommandParameter =>
+        {
+            var clipboard = await textEditorCommandParameter
+                .ClipboardProvider
+                .ReadClipboard();
+
+            var previousCharacterWasCarriageReturn = false;
+    
+            foreach (var character in clipboard)
+            {
+                if (previousCharacterWasCarriageReturn &&
+                    character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
+                {
+                    previousCharacterWasCarriageReturn = false;
+                    continue;
+                }
+        
+                var code = character switch
+                {
+                    '\r' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
+                    '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
+                    '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
+                    ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
+                    _ => character.ToString()
+                };
+
+                textEditorCommandParameter.TextEditorService
+                    .EditTextEditor(
+                        new EditTextEditorBaseAction(
+                            textEditorCommandParameter.TextEditor.Key,
+                            textEditorCommandParameter.CursorSnapshots,
+                        new KeyboardEventArgs
+                        {
+                            Code = code,
+                            Key = character.ToString()
+                        },
+                        CancellationToken.None));
+
+                previousCharacterWasCarriageReturn = 
+                    KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN 
+                        == character;
+            }
+
+            textEditorCommandParameter
+                .ReloadVirtualizationDisplay
+                .Invoke();
+        },
+        "Paste",
+        "defaults_paste",
+        TextEditKind.Other,
+        "defaults_paste");
+    
+    public static readonly TextEditorCommand Save = new TextEditorCommand(
+        async textEditorCommandParameter =>
+        {
+            textEditorCommandParameter
+                .OnSaveRequested?
+                .Invoke(
+                    textEditorCommandParameter.TextEditor);
+        },
+        "Save",
+        "defaults_save");
+}
+
+public class TextEditorKeymapDefault : ITextEditorKeymap
+{
+    public Func<KeyboardEventArgs, TextEditorCommand?> KeymapFunc { get; } = keyboardEventArgs =>
+    {
+        if (keyboardEventArgs.Key == "c" && keyboardEventArgs.CtrlKey)
+        {
+            return TextEditorCommandFacts.Copy;
+        }
+        else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
+        {
+            return TextEditorCommandFacts.Paste;
+        }
+        else if (keyboardEventArgs.Key == "s" && keyboardEventArgs.CtrlKey)
+        {
+            return TextEditorCommandFacts.Save;
+        }
+        else if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE &&
+                 keyboardEventArgs.CtrlKey ||
+                 keyboardEventArgs.AltKey &&
+                 keyboardEventArgs.Key == "a")
+        {
+            // Short term hack to avoid autocomplete keybind being typed.
+        }
+        
+        return null;
+    };
+}
+

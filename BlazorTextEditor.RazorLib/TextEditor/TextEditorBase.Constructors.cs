@@ -11,10 +11,12 @@ public partial class TextEditorBase
     public TextEditorBase(
         string content, 
         ILexer? lexer, 
-        IDecorationMapper? decorationMapper)
+        IDecorationMapper? decorationMapper,
+        ITextEditorKeymap? textEditorKeymap)
     {
         Lexer = lexer ?? new LexerDefault();
         DecorationMapper = decorationMapper ?? new DecorationMapperDefault();
+        TextEditorKeymap = textEditorKeymap ?? new TextEditorKeymapDefault();
         var rowIndex = 0;
         var previousCharacter = '\0';
 

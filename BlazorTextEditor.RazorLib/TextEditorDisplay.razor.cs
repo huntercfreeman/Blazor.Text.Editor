@@ -114,7 +114,10 @@ public partial class TextEditorDisplay : ComponentBase
     private bool GlobalShowWhitespace => TextEditorService
         .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
 
-    public TextEditorCursor PrimaryCursor { get; } = new();
+    public TextEditorCursor PrimaryCursor { get; } = new()
+    {
+        IsPrimaryCursor = true
+    };
     
     public event Action? CursorsChanged;
 
@@ -231,66 +234,9 @@ public partial class TextEditorDisplay : ComponentBase
         }
         else
         {
-            if (keyboardEventArgs.Key == "c" && keyboardEventArgs.CtrlKey)
-            {
-                var result = PrimaryCursor.GetSelectedText(TextEditorStatesSelection.Value);
-                
-                if (result is not null)
-                    await ClipboardProvider.SetClipboard(result);
-            }
-            else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
-            {
-                var clipboard = await ClipboardProvider.ReadClipboard();
-
-                var previousCharacterWasCarriageReturn = false;
-        
-                foreach (var character in clipboard)
-                {
-                    if (previousCharacterWasCarriageReturn &&
-                        character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
-                    {
-                        previousCharacterWasCarriageReturn = false;
-                        continue;
-                    }
+            var command = 
             
-                    var code = character switch
-                    {
-                        '\r' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
-                        '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
-                        '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
-                        ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
-                        _ => character.ToString()
-                    };
- 
-                    TextEditorService.EditTextEditor(new EditTextEditorBaseAction(TextEditorKey,
-                        new (ImmutableTextEditorCursor, TextEditorCursor)[]
-                        {
-                            (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
-                        }.ToImmutableArray(),
-                        new KeyboardEventArgs
-                        {
-                            Code = code,
-                            Key = character.ToString()
-                        },
-                        CancellationToken.None));
-
-                    previousCharacterWasCarriageReturn = KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN
-                                                         == character;
-                }
-
-                ReloadVirtualizationDisplay();
-            }
-            else if (keyboardEventArgs.Key == "s" && keyboardEventArgs.CtrlKey)
-            {
-                OnSaveRequested?.Invoke(TextEditorStatesSelection.Value);
-            }
-            else if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE &&
-                     keyboardEventArgs.CtrlKey ||
-                     keyboardEventArgs.AltKey &&
-                     keyboardEventArgs.Key == "a")
-            {
-                // Short term hack to avoid autocomplete keybind being typed.
-            }
+            
             else
             {
                 Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,

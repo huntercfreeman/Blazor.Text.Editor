@@ -49,6 +49,7 @@ public partial class TextEditorBase
     public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
+    public ITextEditorKeymap? TextEditorKeymap { get; private set; }
     
     public int MostCharactersOnASingleRow { get; private set; }
 
