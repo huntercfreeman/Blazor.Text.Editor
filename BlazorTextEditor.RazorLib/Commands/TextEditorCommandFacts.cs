@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Cursor;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
@@ -33,6 +34,8 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Paste = new TextEditorCommand(
         async textEditorCommandParameter =>
         {
+            var primaryCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
+            
             var clipboard = await textEditorCommandParameter
                 .ClipboardProvider
                 .ReadClipboard();
@@ -47,6 +50,15 @@ public static class TextEditorCommandFacts
                     previousCharacterWasCarriageReturn = false;
                     continue;
                 }
+
+                // need innerCursorSnapshots because need
+                // after every loop of the foreach that the
+                // cursor snapshots are updated
+                var innerCursorSnapshots = new TextEditorCursorSnapshot[]
+                {
+                    new TextEditorCursorSnapshot(
+                        primaryCursor)
+                }.ToImmutableArray();
         
                 var code = character switch
                 {
@@ -61,7 +73,7 @@ public static class TextEditorCommandFacts
                     .EditTextEditor(
                         new EditTextEditorBaseAction(
                             textEditorCommandParameter.TextEditor.Key,
-                            textEditorCommandParameter.CursorSnapshots,
+                            innerCursorSnapshots,
                             new KeyboardEventArgs
                             {
                                 Code = code,
