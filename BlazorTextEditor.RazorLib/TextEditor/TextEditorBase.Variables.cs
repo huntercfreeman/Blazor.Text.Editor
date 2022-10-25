@@ -1,9 +1,11 @@
 ﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
-using BlazorTextEditor.RazorLib.MoveThese;
+using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
@@ -51,7 +53,7 @@ public partial class TextEditorBase
     public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
-    public ITextEditorKeymap? TextEditorKeymap { get; private set; }
+    public ITextEditorKeymap TextEditorKeymap { get; private set; }
     
     public int MostCharactersOnASingleRow { get; private set; }
 

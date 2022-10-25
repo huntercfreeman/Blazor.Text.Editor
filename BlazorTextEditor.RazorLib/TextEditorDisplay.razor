@@ -1,7 +1,8 @@
 ﻿@using System.Text
+@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.Virtualization
 @using BlazorTextEditor.RazorLib.HelperComponents
-@using BlazorTextEditor.RazorLib.MoveThese
+@using BlazorTextEditor.RazorLib.Row
 @using BlazorTextEditor.RazorLib.TextEditor
 @using Microsoft.AspNetCore.Components
 
@@ -31,35 +32,43 @@
                     </text>
                 }
             </div>
+            
             @{
                 var safeTextEditorReference = TextEditorStatesSelection.Value;
 
+                var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+                
                 <div class="bte_text-selection-group">
-                    @if (PrimaryCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
-                         PrimaryCursor.TextEditorSelection.AnchorPositionIndex.Value !=
-                         PrimaryCursor.TextEditorSelection.EndingPositionIndex)
+                    @if (TextEditorSelectionHelper.HasSelectedText(
+                            primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
                     {
-                        var lowerBound = PrimaryCursor.TextEditorSelection.AnchorPositionIndex.Value;
-                        var upperBound = PrimaryCursor.TextEditorSelection.EndingPositionIndex;
-
-                        if (lowerBound > upperBound)
-                        {
-                            (lowerBound, upperBound) = (upperBound, lowerBound);
-                        }
-
-                        var selectionIndex = lowerBound;
-
-                        var firstRowToSelectData = safeTextEditorReference.FindRowIndexRowStartRowEndingTupleFromPositionIndex(selectionIndex);
-                        var lastRowToSelectData = safeTextEditorReference.FindRowIndexRowStartRowEndingTupleFromPositionIndex(upperBound);
+                        var selectionBounds = TextEditorSelectionHelper
+                            .GetSelectionBounds(
+                                primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
+                        
+                        var firstRowToSelectData = 
+                            safeTextEditorReference
+                                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                                    selectionBounds.lowerBound);
+                        
+                        var lastRowToSelectData = 
+                            safeTextEditorReference
+                                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                                    selectionBounds.upperBound);
 
                         List<int> rowIndicesToSelect = new();
 
-                        for (int i = firstRowToSelectData.rowIndex; i <= lastRowToSelectData.rowIndex; i++)
+                        for (int i = firstRowToSelectData.rowIndex;
+                             i <= lastRowToSelectData.rowIndex; 
+                             i++)
                         {
                             var rowIndex = i;
 
                             <div class="bte_text-selection"
-                                 style="@GetTextSelectionStyleCss(lowerBound, upperBound, rowIndex)">
+                                 style="@GetTextSelectionStyleCss(
+                                            selectionBounds.lowerBound, 
+                                            selectionBounds.upperBound, 
+                                            rowIndex)">
                             </div>
                         }
                     }
@@ -77,7 +86,8 @@
                         spaceKeyOutput = "·";
                     }
 
-                    <VirtualizationDisplay @ref="_virtualizationDisplay" EntriesProviderFunc="EntriesProvider"
+                    <VirtualizationDisplay @ref="_virtualizationDisplay" 
+                                           EntriesProviderFunc="EntriesProvider"
                                            Context="virtualizedRow">
                         @{
                             var index = virtualizedRow.Index;
@@ -132,13 +142,19 @@
 
                             @if (GlobalShowNewlines)
                             {
-                                var amountOfLeftInCharacterWidthUnits = virtualizedRow.LeftInPixels / CharacterWidthAndRowHeight.FontWidthInPixels;
+                                var amountOfLeftInCharacterWidthUnits = 
+                                    virtualizedRow.LeftInPixels / 
+                                    CharacterWidthAndRowHeight.FontWidthInPixels;
 
-                                var lengthOfRow = safeTextEditorReference.GetLengthOfRow(index, true);
+                                var lengthOfRow = safeTextEditorReference
+                                    .GetLengthOfRow(
+                                        index, 
+                                        true);
 
                                 if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
                                 {
-                                    var rowEndingTuple = TextEditorStatesSelection.Value.RowEndingPositions[index];
+                                    var rowEndingTuple = safeTextEditorReference
+                                        .RowEndingPositions[index];
 
                                     <span class="bte_newline">
                                         @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()
@@ -154,7 +170,7 @@
                     <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                              TextEditorCursor="PrimaryCursor"
                                              FontWidthAndElementHeight="CharacterWidthAndRowHeight"
-                                             TextEditor="TextEditorStatesSelection.Value"
+                                             TextEditor="safeTextEditorReference"
                                              ScrollableContainerId="@TextEditorContentId"
                                              IsFocusTarget="true"
                                              TabIndex="TabIndex"

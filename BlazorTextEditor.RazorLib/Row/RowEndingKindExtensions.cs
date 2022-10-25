@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace BlazorTextEditor.RazorLib.MoveThese;
+namespace BlazorTextEditor.RazorLib.Row;
 
 public static class RowEndingKindExtensions
 {

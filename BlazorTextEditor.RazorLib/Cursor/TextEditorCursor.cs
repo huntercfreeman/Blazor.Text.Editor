@@ -2,12 +2,26 @@ using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.MoveThese;
+namespace BlazorTextEditor.RazorLib.Cursor;
 
 public class TextEditorCursorSnapshot
 {
-    public ImmutableTextEditorCursor ImmutableCursor { get; set; }
-    public TextEditorCursor UserCursor { get; set; }
+    public TextEditorCursorSnapshot( 
+        TextEditorCursor userCursor)
+        : this(new ImmutableTextEditorCursor(userCursor), userCursor)
+    {
+    }
+    
+    public TextEditorCursorSnapshot(
+        ImmutableTextEditorCursor immutableCursor, 
+        TextEditorCursor userCursor)
+    {
+        ImmutableCursor = immutableCursor;
+        UserCursor = userCursor;
+    }
+
+    public ImmutableTextEditorCursor ImmutableCursor { get; }
+    public TextEditorCursor UserCursor { get; }
 }
 
 public class TextEditorCursor
@@ -70,24 +84,21 @@ public class TextEditorCursor
         {
             case KeyboardKeyFacts.MovementKeys.ARROW_LEFT:
             {
-                if (rememberTextEditorSelection.HasSelectedText() &&
+                if (TextEditorSelectionHelper.HasSelectedText(rememberTextEditorSelection) &&
                     !keyboardEventArgs.ShiftKey)
                 {
-                    var lowerBound = rememberTextEditorSelection.AnchorPositionIndex ?? 0; 
-                    var upperBound = rememberTextEditorSelection.EndingPositionIndex;
+                    var selectionBounds = TextEditorSelectionHelper
+                        .GetSelectionBounds(rememberTextEditorSelection);
 
-                    if (lowerBound > upperBound)
-                        (lowerBound, upperBound) = (upperBound, lowerBound);
-                    
                     var lowerRowMetaData = textEditorBase
                         .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                            lowerBound);
+                            selectionBounds.lowerBound);
 
                     localIndexCoordinates.rowIndex = 
                         lowerRowMetaData.rowIndex;
                     
                     localIndexCoordinates.columnIndex = 
-                        lowerBound - lowerRowMetaData.rowStartPositionIndex;
+                        selectionBounds.lowerBound - lowerRowMetaData.rowStartPositionIndex;
                 }
                 else
                 {
@@ -163,24 +174,21 @@ public class TextEditorCursor
             }
             case KeyboardKeyFacts.MovementKeys.ARROW_RIGHT:
             {
-                if (rememberTextEditorSelection.HasSelectedText() &&
+                if (TextEditorSelectionHelper.HasSelectedText(rememberTextEditorSelection) &&
                     !keyboardEventArgs.ShiftKey)
                 {
-                    var lowerBound = rememberTextEditorSelection.AnchorPositionIndex ?? 0; 
-                    var upperBound = rememberTextEditorSelection.EndingPositionIndex;
-
-                    if (lowerBound > upperBound)
-                        (lowerBound, upperBound) = (upperBound, lowerBound);
+                    var selectionBounds = TextEditorSelectionHelper
+                        .GetSelectionBounds(rememberTextEditorSelection);
                     
                     var upperRowMetaData = textEditorBase
                         .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                            upperBound);
+                            selectionBounds.upperBound);
 
                     localIndexCoordinates.rowIndex = 
                         upperRowMetaData.rowIndex;
                     
                     localIndexCoordinates.columnIndex = 
-                        upperBound - upperRowMetaData.rowStartPositionIndex;
+                        selectionBounds.upperBound - upperRowMetaData.rowStartPositionIndex;
                 }
                 else
                 {

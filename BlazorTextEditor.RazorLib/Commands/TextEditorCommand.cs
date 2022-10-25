@@ -1,4 +1,6 @@
-﻿namespace BlazorTextEditor.RazorLib.MoveThese;
+﻿using BlazorTextEditor.RazorLib.Editing;
+
+namespace BlazorTextEditor.RazorLib.Commands;
 
 public class TextEditorCommand
 {

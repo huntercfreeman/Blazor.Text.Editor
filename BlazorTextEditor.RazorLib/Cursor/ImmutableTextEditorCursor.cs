@@ -1,4 +1,4 @@
-namespace BlazorTextEditor.RazorLib.MoveThese;
+namespace BlazorTextEditor.RazorLib.Cursor;
 
 public record ImmutableTextEditorCursor(
     int RowIndex,

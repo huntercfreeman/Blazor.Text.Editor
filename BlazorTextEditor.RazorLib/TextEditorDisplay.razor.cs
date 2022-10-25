@@ -1,10 +1,12 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Keyboard;
-using BlazorTextEditor.RazorLib.MoveThese;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
@@ -37,10 +39,10 @@ public partial class TextEditorDisplay : ComponentBase
     [Parameter]
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
     /// <summary>
-    /// (TextEditorBase textEditor, ImmutableTextEditorCursor immutablePrimaryCursor, KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
+    /// (TextEditorBase textEditor, ImmutableArray&lt;TextEditorCursorSnapshot&gt; textEditorCursorSnapshots, KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
     /// </summary>
     [Parameter]
-    public Func<TextEditorBase, ImmutableTextEditorCursor, KeyboardEventArgs, Func<TextEditorMenuKind, Task> , Task>? AfterOnKeyDownAsync { get; set; }
+    public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs, Func<TextEditorMenuKind, Task> , Task>? AfterOnKeyDownAsync { get; set; }
     [Parameter]
     public bool ShouldRemeasureFlag { get; set; }
     [Parameter]
@@ -223,6 +225,11 @@ public partial class TextEditorDisplay : ComponentBase
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+
+        var cursorSnapshots = new TextEditorCursorSnapshot[]
+        {
+            new TextEditorCursorSnapshot(PrimaryCursor)
+        }.ToImmutableArray();
         
         _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
         
@@ -239,21 +246,31 @@ public partial class TextEditorDisplay : ComponentBase
         }
         else
         {
-            var command = safeTextEditorReference
-            
-            
+            var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
+                .Invoke(keyboardEventArgs);
+
+            if (command is not null)
+            {
+                await command.DoAsyncFunc.Invoke(
+                    new TextEditorCommandParameter(
+                        safeTextEditorReference,
+                        cursorSnapshots,
+                        ClipboardProvider,
+                        TextEditorService,
+                        ReloadVirtualizationDisplay,
+                        OnSaveRequested));
+            }
             else
             {
-                Dispatcher.Dispatch(new EditTextEditorBaseAction(TextEditorKey,
-                    new (ImmutableTextEditorCursor, TextEditorCursor)[]
-                    {
-                        (new ImmutableTextEditorCursor(PrimaryCursor), PrimaryCursor)
-                    }.ToImmutableArray(),
-                    keyboardEventArgs,
-                    CancellationToken.None));
+                Dispatcher.Dispatch(
+                    new EditTextEditorBaseAction(
+                        TextEditorKey,
+                        cursorSnapshots,
+                        keyboardEventArgs,
+                        CancellationToken.None));
+                
+                ReloadVirtualizationDisplay();
             }
-
-            ReloadVirtualizationDisplay();
         }
         
         CursorsChanged?.Invoke();
@@ -269,14 +286,13 @@ public partial class TextEditorDisplay : ComponentBase
             if (cursorDisplay is not null)
             {
                 var textEditor = safeTextEditorReference;
-                var immutableTextCursor = new ImmutableTextEditorCursor(PrimaryCursor);
             
                 // Do not block UI thread with long running AfterOnKeyDownAsync 
                 _ = Task.Run(async () =>
                 {
                     await afterOnKeyDownAsync.Invoke(
                         textEditor,
-                        immutableTextCursor,
+                        cursorSnapshots,
                         keyboardEventArgs,
                         cursorDisplay.SetShouldDisplayMenuAsync);
                 });
@@ -292,9 +308,11 @@ public partial class TextEditorDisplay : ComponentBase
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
         
         if ((mouseEventArgs.Buttons & 1) != 1 &&
-            PrimaryCursor.TextEditorSelection.HasSelectedText())
+            TextEditorSelectionHelper.HasSelectedText(
+                primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
         {
             // Not pressing the left mouse button
             // so assume ContextMenu is desired result.

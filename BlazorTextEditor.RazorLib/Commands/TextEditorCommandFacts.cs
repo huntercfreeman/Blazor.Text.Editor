@@ -1,8 +1,9 @@
-﻿using BlazorTextEditor.RazorLib.Keyboard;
+﻿using BlazorTextEditor.RazorLib.Editing;
+using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.MoveThese;
+namespace BlazorTextEditor.RazorLib.Commands;
 
 public static class TextEditorCommandFacts
 {

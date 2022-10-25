@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.MoveThese;
+﻿using BlazorTextEditor.RazorLib.Commands;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap;

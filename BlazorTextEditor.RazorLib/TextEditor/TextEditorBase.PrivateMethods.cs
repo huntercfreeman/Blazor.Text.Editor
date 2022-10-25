@@ -1,8 +1,12 @@
 using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
-using BlazorTextEditor.RazorLib.MoveThese;
+using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
@@ -190,7 +194,8 @@ public partial class TextEditorBase
             // Needed for when text selection is deleted
             (int rowIndex, int columnIndex)? selectionLowerBoundIndexCoordinates = null;
 
-            if (cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection.HasSelectedText())
+            if (TextEditorSelectionHelper.HasSelectedText(
+                    cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
             {
                 var lowerBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
                     .AnchorPositionIndex ?? 0; 
