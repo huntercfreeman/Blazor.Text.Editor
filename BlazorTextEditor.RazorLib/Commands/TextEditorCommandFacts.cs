@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Editing;
+﻿using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using Microsoft.AspNetCore.Components.Web;
@@ -10,19 +11,20 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Copy = new TextEditorCommand(
         async textEditorCommandParameter =>
         {
-            var result = textEditorCommandParameter
-                .PrimaryCursorSnapshot
-                .ImmutableCursor
-                .ImmutableTextEditorSelection
+            var selectedText = TextEditorSelectionHelper
                 .GetSelectedText(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection,
                     textEditorCommandParameter.TextEditor);
 
-            if (result is not null)
+            if (selectedText is not null)
             {
                 await textEditorCommandParameter
                     .ClipboardProvider
                     .SetClipboard(
-                        result);
+                        selectedText);
             }
         },
         "Copy",
