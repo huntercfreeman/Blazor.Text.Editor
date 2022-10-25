@@ -9,6 +9,13 @@ namespace BlazorTextEditor.RazorLib.Commands;
 
 public static class TextEditorCommandFacts
 {
+    public static readonly TextEditorCommand DoNothingDiscard = new TextEditorCommand(
+        async textEditorCommandParameter =>
+        {
+        },
+        "Do Nothing",
+        "defaults_do-nothing");
+    
     public static readonly TextEditorCommand Copy = new TextEditorCommand(
         async textEditorCommandParameter =>
         {
@@ -51,7 +58,7 @@ public static class TextEditorCommandFacts
                     continue;
                 }
 
-                // need innerCursorSnapshots because need
+                // Need innerCursorSnapshots because need
                 // after every loop of the foreach that the
                 // cursor snapshots are updated
                 var innerCursorSnapshots = new TextEditorCursorSnapshot[]
@@ -105,4 +112,19 @@ public static class TextEditorCommandFacts
         },
         "Save",
         "defaults_save");
+    
+    public static readonly TextEditorCommand SelectAll = new TextEditorCommand(
+        async textEditorCommandParameter =>
+        {
+            var primaryCursor = textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor;
+
+            primaryCursor.TextEditorSelection.AnchorPositionIndex = 
+                0;
+            
+            primaryCursor.TextEditorSelection.EndingPositionIndex = 
+                textEditorCommandParameter.TextEditor.DocumentLength;
+        },
+        "Select All",
+        "defaults_select-all");
 }
