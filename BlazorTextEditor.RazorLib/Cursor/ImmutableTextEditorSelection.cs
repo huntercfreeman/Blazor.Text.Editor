@@ -1,4 +1,6 @@
-﻿namespace BlazorTextEditor.RazorLib.TextEditor;
+﻿using BlazorTextEditor.RazorLib.TextEditor;
+
+namespace BlazorTextEditor.RazorLib.MoveThese;
 
 public record ImmutableTextEditorSelection(
     int? AnchorPositionIndex,

@@ -1,4 +1,6 @@
-namespace BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.TextEditor;
+
+namespace BlazorTextEditor.RazorLib.MoveThese;
 
 /// <summary>
 /// To select the first character in a TextEditor one would

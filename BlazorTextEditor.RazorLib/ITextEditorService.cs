@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+﻿using BlazorTextEditor.RazorLib.MoveThese;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 

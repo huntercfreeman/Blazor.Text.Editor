@@ -1,6 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Store.ThemeCase;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.MoveThese;
 
 /// <summary>
 /// Any property on <see cref="TextEditorServiceOptions"/> will be equal to

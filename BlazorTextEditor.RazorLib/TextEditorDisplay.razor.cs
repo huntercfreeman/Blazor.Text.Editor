@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Keyboard;
+using BlazorTextEditor.RazorLib.MoveThese;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;

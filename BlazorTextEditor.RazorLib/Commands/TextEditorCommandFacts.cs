@@ -1,20 +1,8 @@
-﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Keyboard;
+﻿using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
-
-public class TextEditorKeymap : ITextEditorKeymap
-{
-    public TextEditorKeymap(
-        Func<KeyboardEventArgs, TextEditorCommand> keymapFunc)
-    {
-        KeymapFunc = keymapFunc;
-    }
-
-    public Func<KeyboardEventArgs, TextEditorCommand> KeymapFunc { get; }
-}
+namespace BlazorTextEditor.RazorLib.MoveThese;
 
 public static class TextEditorCommandFacts
 {
@@ -71,16 +59,16 @@ public static class TextEditorCommandFacts
                         new EditTextEditorBaseAction(
                             textEditorCommandParameter.TextEditor.Key,
                             textEditorCommandParameter.CursorSnapshots,
-                        new KeyboardEventArgs
-                        {
-                            Code = code,
-                            Key = character.ToString()
-                        },
-                        CancellationToken.None));
+                            new KeyboardEventArgs
+                            {
+                                Code = code,
+                                Key = character.ToString()
+                            },
+                            CancellationToken.None));
 
                 previousCharacterWasCarriageReturn = 
                     KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN 
-                        == character;
+                    == character;
             }
 
             textEditorCommandParameter
@@ -103,32 +91,3 @@ public static class TextEditorCommandFacts
         "Save",
         "defaults_save");
 }
-
-public class TextEditorKeymapDefault : ITextEditorKeymap
-{
-    public Func<KeyboardEventArgs, TextEditorCommand?> KeymapFunc { get; } = keyboardEventArgs =>
-    {
-        if (keyboardEventArgs.Key == "c" && keyboardEventArgs.CtrlKey)
-        {
-            return TextEditorCommandFacts.Copy;
-        }
-        else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
-        {
-            return TextEditorCommandFacts.Paste;
-        }
-        else if (keyboardEventArgs.Key == "s" && keyboardEventArgs.CtrlKey)
-        {
-            return TextEditorCommandFacts.Save;
-        }
-        else if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE &&
-                 keyboardEventArgs.CtrlKey ||
-                 keyboardEventArgs.AltKey &&
-                 keyboardEventArgs.Key == "a")
-        {
-            // Short term hack to avoid autocomplete keybind being typed.
-        }
-        
-        return null;
-    };
-}
-

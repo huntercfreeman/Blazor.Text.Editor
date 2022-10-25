@@ -1,4 +1,4 @@
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.MoveThese;
 
 public enum TextEditKind
 {

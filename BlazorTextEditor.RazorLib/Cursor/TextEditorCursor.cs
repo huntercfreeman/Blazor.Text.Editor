@@ -1,8 +1,8 @@
-using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Keyboard;
+using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.MoveThese;
 
 public class TextEditorCursorSnapshot
 {

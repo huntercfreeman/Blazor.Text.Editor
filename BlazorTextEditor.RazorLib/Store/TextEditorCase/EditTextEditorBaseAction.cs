@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.MoveThese;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 

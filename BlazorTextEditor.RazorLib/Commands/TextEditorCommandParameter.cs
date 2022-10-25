@@ -1,7 +1,8 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorTextEditor.RazorLib.TextEditor;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.MoveThese;
 
 public class TextEditorCommandParameter : ITextEditorCommandParameter
 {
