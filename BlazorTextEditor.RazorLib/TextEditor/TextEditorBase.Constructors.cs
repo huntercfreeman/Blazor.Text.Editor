@@ -104,8 +104,13 @@ public partial class TextEditorBase
         string content, 
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
-        TextEditorKey key)
-            : this(content, lexer, decorationMapper)
+        TextEditorKey key,
+        ITextEditorKeymap? textEditorKeymap)
+            : this(
+                content,
+                lexer,
+                decorationMapper,
+                textEditorKeymap)
     {
         Key = key;
     }
