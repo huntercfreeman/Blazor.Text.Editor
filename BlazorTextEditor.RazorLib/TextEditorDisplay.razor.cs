@@ -67,7 +67,6 @@ public partial class TextEditorDisplay : ComponentBase
     private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
     private int _testStringRepeatCount = 6;
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
-    private bool _showGetAllTextEscaped;
 
     /// <summary>
     /// Do not select text just because the user has the Left Mouse Button down.

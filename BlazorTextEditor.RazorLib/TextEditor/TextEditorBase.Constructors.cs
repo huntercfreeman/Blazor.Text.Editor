@@ -1,11 +1,9 @@
-﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Character;
+﻿using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 

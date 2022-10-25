@@ -9,10 +9,7 @@ namespace BlazorTextEditor.RazorLib.Commands;
 
 public static class TextEditorCommandFacts
 {
-    public static readonly TextEditorCommand DoNothingDiscard = new TextEditorCommand(
-        async textEditorCommandParameter =>
-        {
-        },
+    public static readonly TextEditorCommand DoNothingDiscard = new TextEditorCommand(textEditorCommandParameter => { return Task.CompletedTask; },
         "Do Nothing",
         "defaults_do-nothing");
     
@@ -102,19 +99,18 @@ public static class TextEditorCommandFacts
         TextEditKind.Other,
         "defaults_paste");
     
-    public static readonly TextEditorCommand Save = new TextEditorCommand(
-        async textEditorCommandParameter =>
+    public static readonly TextEditorCommand Save = new TextEditorCommand(textEditorCommandParameter =>
         {
             textEditorCommandParameter
                 .OnSaveRequested?
                 .Invoke(
                     textEditorCommandParameter.TextEditor);
+            return Task.CompletedTask;
         },
         "Save",
         "defaults_save");
     
-    public static readonly TextEditorCommand SelectAll = new TextEditorCommand(
-        async textEditorCommandParameter =>
+    public static readonly TextEditorCommand SelectAll = new TextEditorCommand(textEditorCommandParameter =>
         {
             var primaryCursor = textEditorCommandParameter
                 .PrimaryCursorSnapshot.UserCursor;
@@ -124,6 +120,7 @@ public static class TextEditorCommandFacts
             
             primaryCursor.TextEditorSelection.EndingPositionIndex = 
                 textEditorCommandParameter.TextEditor.DocumentLength;
+            return Task.CompletedTask;
         },
         "Select All",
         "defaults_select-all");

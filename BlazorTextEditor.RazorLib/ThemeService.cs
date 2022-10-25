@@ -1,5 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
+﻿using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using Fluxor;
 
 namespace BlazorTextEditor.RazorLib;

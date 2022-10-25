@@ -80,7 +80,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
     }
 
     [JSInvokable]
-    public async Task OnScrollEventAsync(VirtualizationScrollPosition scrollPosition)
+    public Task OnScrollEventAsync(VirtualizationScrollPosition scrollPosition)
     {
         _scrollEventCancellationTokenSource.Cancel();
         _scrollEventCancellationTokenSource = new();
@@ -90,6 +90,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
             _scrollEventCancellationTokenSource.Token);
         
         InvokeEntriesProviderFunc();
+        return Task.CompletedTask;
     }
 
     public void InvokeEntriesProviderFunc()
