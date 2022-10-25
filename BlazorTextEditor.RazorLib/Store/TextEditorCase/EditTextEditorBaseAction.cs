@@ -6,6 +6,6 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
 
 public record EditTextEditorBaseAction(
     TextEditorKey TextEditorKey,
-    ImmutableArray<(ImmutableTextEditorCursor immutableTextEditorCursor, TextEditorCursor textEditorCursor)> TextCursorTuples,
+    ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots,
     KeyboardEventArgs KeyboardEventArgs,
     CancellationToken CancellationToken);

@@ -244,8 +244,17 @@ public class TextEditorBase
         return this;
     }
 
-    private void EnsureUndoPoint(TextEditKind textEditKind)
+    private void EnsureUndoPoint(
+        TextEditKind textEditKind,
+        string? otherTextEditKindIdentifier = null)
     {
+        if (textEditKind == TextEditKind.Other &&
+            otherTextEditKindIdentifier is null)
+        {
+            TextEditorCommand.ThrowOtherTextEditKindIdentifierWasExpectedException(
+                textEditKind);
+        }
+        
         var mostRecentEditBlock = _editBlocks.LastOrDefault();
 
         if (mostRecentEditBlock is null ||
@@ -254,7 +263,8 @@ public class TextEditorBase
             _editBlocks.Add(new EditBlock(
                 textEditKind,
                 textEditKind.ToString(),
-                GetAllText()));
+                GetAllText(),
+                otherTextEditKindIdentifier));
         }
 
         while (_editBlocks.Count > MaximumEditBlocks &&
@@ -268,14 +278,14 @@ public class TextEditorBase
     {
         EnsureUndoPoint(TextEditKind.Insertion);
 
-        foreach (var cursorTuple in editTextEditorBaseAction.TextCursorTuples)
+        foreach (var cursorSnapshot in editTextEditorBaseAction.CursorSnapshots)
         {
             var startOfRowPositionIndex =
-                GetStartOfRowTuple(cursorTuple.immutableTextEditorCursor.RowIndex)
+                GetStartOfRowTuple(cursorSnapshot.ImmutableCursor.RowIndex)
                     .positionIndex;
 
             var cursorPositionIndex =
-                startOfRowPositionIndex + cursorTuple.immutableTextEditorCursor.ColumnIndex;
+                startOfRowPositionIndex + cursorSnapshot.ImmutableCursor.ColumnIndex;
 
             var wasTabCode = false;
             var wasEnterCode = false;
@@ -313,19 +323,19 @@ public class TextEditorBase
                 
                 _content.InsertRange(cursorPositionIndex, richCharacters);
                 
-                _rowEndingPositions.Insert(cursorTuple.immutableTextEditorCursor.RowIndex,
+                _rowEndingPositions.Insert(cursorSnapshot.ImmutableCursor.RowIndex,
                     (cursorPositionIndex + characterCountInserted, rowEndingKindToInsert));
 
                 MutateRowEndingKindCount(
                     UsingRowEndingKind, 
                     1);
                 
-                var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
+                var indexCoordinates = cursorSnapshot.UserCursor.IndexCoordinates;
 
-                cursorTuple.textEditorCursor.IndexCoordinates = (indexCoordinates.rowIndex + 1, 0);
+                cursorSnapshot.UserCursor.IndexCoordinates = (indexCoordinates.rowIndex + 1, 0);
 
-                cursorTuple.textEditorCursor.PreferredColumnIndex =
-                    cursorTuple.textEditorCursor.IndexCoordinates.columnIndex;
+                cursorSnapshot.UserCursor.PreferredColumnIndex =
+                    cursorSnapshot.UserCursor.IndexCoordinates.columnIndex;
             }
             else
             {
@@ -358,17 +368,17 @@ public class TextEditorBase
 
                 _content.Insert(cursorPositionIndex, richCharacterToInsert);
 
-                var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
+                var indexCoordinates = cursorSnapshot.UserCursor.IndexCoordinates;
 
-                cursorTuple.textEditorCursor.IndexCoordinates =
+                cursorSnapshot.UserCursor.IndexCoordinates =
                     (indexCoordinates.rowIndex, indexCoordinates.columnIndex + 1);
-                cursorTuple.textEditorCursor.PreferredColumnIndex =
-                    cursorTuple.textEditorCursor.IndexCoordinates.columnIndex;
+                cursorSnapshot.UserCursor.PreferredColumnIndex =
+                    cursorSnapshot.UserCursor.IndexCoordinates.columnIndex;
             }
 
             var firstRowIndexToModify = wasEnterCode
-                ? cursorTuple.immutableTextEditorCursor.RowIndex + 1
-                : cursorTuple.immutableTextEditorCursor.RowIndex;
+                ? cursorSnapshot.ImmutableCursor.RowIndex + 1
+                : cursorSnapshot.ImmutableCursor.RowIndex;
 
             for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
             {
@@ -397,14 +407,14 @@ public class TextEditorBase
     {
         EnsureUndoPoint(TextEditKind.Deletion);
 
-        foreach (var cursorTuple in editTextEditorBaseAction.TextCursorTuples)
+        foreach (var cursorSnapshot in editTextEditorBaseAction.CursorSnapshots)
         {
             var startOfRowPositionIndex =
-                GetStartOfRowTuple(cursorTuple.immutableTextEditorCursor.RowIndex)
+                GetStartOfRowTuple(cursorSnapshot.ImmutableCursor.RowIndex)
                     .positionIndex;
 
             var cursorPositionIndex =
-                startOfRowPositionIndex + cursorTuple.immutableTextEditorCursor.ColumnIndex;
+                startOfRowPositionIndex + cursorSnapshot.ImmutableCursor.ColumnIndex;
 
             int startingPositionIndexToRemoveInclusive;
             int countToRemove;
@@ -415,12 +425,12 @@ public class TextEditorBase
             // Needed for when text selection is deleted
             (int rowIndex, int columnIndex)? selectionLowerBoundIndexCoordinates = null;
 
-            if (cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection.HasSelectedText())
+            if (cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection.HasSelectedText())
             {
-                var lowerBound = cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection
+                var lowerBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
                     .AnchorPositionIndex ?? 0; 
                 
-                var upperBound = cursorTuple.immutableTextEditorCursor.ImmutableTextEditorSelection
+                var upperBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
                     .EndingPositionIndex;
 
                 if (lowerBound > upperBound)
@@ -448,7 +458,7 @@ public class TextEditorBase
                 countToRemove = upperBound - lowerBound;
                 moveBackwards = true;
 
-                cursorTuple.textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
+                cursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
             else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key)
             {
@@ -551,7 +561,7 @@ public class TextEditorBase
                 var modifyRowsBy = -1 * rowsRemovedCount;
 
                 var startOfCurrentRowPositionIndex = GetStartOfRowTuple(
-                        cursorTuple.immutableTextEditorCursor.RowIndex + modifyRowsBy)
+                        cursorSnapshot.ImmutableCursor.RowIndex + modifyRowsBy)
                     .positionIndex;
 
                 var modifyPositionIndexBy = -1 * charactersRemovedCount;
@@ -560,9 +570,9 @@ public class TextEditorBase
 
                 var columnIndex = endingPositionIndex - startOfCurrentRowPositionIndex;
             
-                var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
+                var indexCoordinates = cursorSnapshot.UserCursor.IndexCoordinates;
             
-                cursorTuple.textEditorCursor.IndexCoordinates = 
+                cursorSnapshot.UserCursor.IndexCoordinates = 
                     (indexCoordinates.rowIndex + modifyRowsBy, 
                         columnIndex);
             }
@@ -573,16 +583,16 @@ public class TextEditorBase
             {
                 firstRowIndexToModify = selectionLowerBoundIndexCoordinates!.Value.rowIndex;
                 
-                cursorTuple.textEditorCursor.IndexCoordinates = 
+                cursorSnapshot.UserCursor.IndexCoordinates = 
                     selectionLowerBoundIndexCoordinates!.Value;
             }
             else if (moveBackwards)
             {
-                firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex - rowsRemovedCount;
+                firstRowIndexToModify = cursorSnapshot.ImmutableCursor.RowIndex - rowsRemovedCount;
             }
             else
             {
-                firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex;
+                firstRowIndexToModify = cursorSnapshot.ImmutableCursor.RowIndex;
             }
             
             for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)

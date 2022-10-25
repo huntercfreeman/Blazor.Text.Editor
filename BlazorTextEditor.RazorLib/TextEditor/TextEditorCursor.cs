@@ -1,7 +1,14 @@
+using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Keyboard;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
+
+public class TextEditorCursorSnapshot
+{
+    public ImmutableTextEditorCursor ImmutableCursor { get; set; }
+    public TextEditorCursor UserCursor { get; set; }
+}
 
 public class TextEditorCursor
 {
