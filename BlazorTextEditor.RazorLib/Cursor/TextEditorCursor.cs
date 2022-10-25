@@ -174,21 +174,36 @@ public class TextEditorCursor
             }
             case KeyboardKeyFacts.MovementKeys.ARROW_RIGHT:
             {
-                if (TextEditorSelectionHelper.HasSelectedText(rememberTextEditorSelection) &&
+                if (TextEditorSelectionHelper
+                        .HasSelectedText(rememberTextEditorSelection) &&
                     !keyboardEventArgs.ShiftKey)
                 {
                     var selectionBounds = TextEditorSelectionHelper
                         .GetSelectionBounds(rememberTextEditorSelection);
                     
-                    var upperRowMetaData = textEditorBase
-                        .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                            selectionBounds.upperBound);
+                    var upperRowMetaData = 
+                        textEditorBase
+                            .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                                selectionBounds.upperBound);
 
                     localIndexCoordinates.rowIndex = 
                         upperRowMetaData.rowIndex;
+
+                    if (localIndexCoordinates.rowIndex >= textEditorBase.RowCount)
+                    {
+                        localIndexCoordinates.rowIndex = textEditorBase.RowCount - 1;
                     
-                    localIndexCoordinates.columnIndex = 
-                        selectionBounds.upperBound - upperRowMetaData.rowStartPositionIndex;
+                        var upperRowLength = textEditorBase
+                            .GetLengthOfRow(localIndexCoordinates.rowIndex);
+
+                        localIndexCoordinates.columnIndex = upperRowLength;
+                    }
+                    else
+                    {
+                        localIndexCoordinates.columnIndex = 
+                            selectionBounds.upperBound - 
+                            upperRowMetaData.rowStartPositionIndex;    
+                    }
                 }
                 else
                 {
