@@ -1,4 +1,4 @@
-﻿namespace BlazorTextEditor.RazorLib.TextEditor;
+﻿namespace BlazorTextEditor.RazorLib.Cursor;
 
 public record ImmutableTextEditorSelection(
     int? AnchorPositionIndex,
@@ -9,17 +9,5 @@ public record ImmutableTextEditorSelection(
             textEditorSelection.AnchorPositionIndex, 
             textEditorSelection.EndingPositionIndex)
     {
-    }
-
-    public bool HasSelectedText()
-    {
-        if (AnchorPositionIndex.HasValue &&
-            AnchorPositionIndex.Value !=
-            EndingPositionIndex)
-        {
-            return true;
-        }
-
-        return false;
     }
 }

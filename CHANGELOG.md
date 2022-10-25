@@ -52,7 +52,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ILexer API allows one to breakdown the string text within a TextEditorBase into TextEditorTextSpan(s) where each TextEditorTextSpan is the location of a token within the editor and a byte to indicate what color to make that location of the editor.
 - IDecorationMapper API allows one to map a byte named 'DecorationByte' that exists on TextEditorTextSpan to a string that represents a CSS class to put on the rendered content.
 
+## [3.2.0]
+### Bug Was Erroneously Added
+- A bug was erroneously added where when user selected the last character of the document and then pressed ArrowRight. The cursor would move 1 character out of the document. Then you get an index out of bounds exception if you hit arrow right 1 more time.
 
-
-
+## [4.0.0]
+### Bug Fix
+- Exception was being thrown when user selected the last character of the document and then pressed ArrowRight.
+    - This bug was occurring starting 3.2.0
 

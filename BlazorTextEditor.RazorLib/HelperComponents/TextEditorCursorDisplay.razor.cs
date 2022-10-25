@@ -1,3 +1,4 @@
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;

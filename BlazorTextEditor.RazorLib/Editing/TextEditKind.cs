@@ -1,7 +1,8 @@
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.Editing;
 
 public enum TextEditKind
 {
+    None,
     Other,
     Insertion,
     Deletion

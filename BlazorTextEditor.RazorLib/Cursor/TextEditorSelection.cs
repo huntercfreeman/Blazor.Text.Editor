@@ -1,4 +1,4 @@
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.Cursor;
 
 /// <summary>
 /// To select the first character in a TextEditor one would
@@ -27,16 +27,4 @@ public class TextEditorSelection
 {
     public int? AnchorPositionIndex { get; set; }
     public int EndingPositionIndex { get; set; }
-    
-    public bool HasSelectedText()
-    {
-        if (AnchorPositionIndex.HasValue &&
-            AnchorPositionIndex.Value !=
-            EndingPositionIndex)
-        {
-            return true;
-        }
-
-        return false;
-    }
 }

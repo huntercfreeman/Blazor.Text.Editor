@@ -1,6 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Keyboard;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.Character;
 
 public static class RichCharacterExtensions
 {
