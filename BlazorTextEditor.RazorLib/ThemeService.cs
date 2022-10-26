@@ -20,7 +20,7 @@ public class ThemeService : IThemeService
 
     public ThemeStates ThemeStates => _themeStates.Value;
 
-    public event EventHandler? OnThemeStatesChanged;
+    public event Action? OnThemeStatesChanged;
 
     public void RegisterTheme(Theme theme)
     {
@@ -39,6 +39,6 @@ public class ThemeService : IThemeService
 
     private void ThemeStatesOnStateChanged(object? sender, EventArgs e)
     {
-        OnThemeStatesChanged?.Invoke(sender, e);
+        OnThemeStatesChanged?.Invoke();
     }
 }

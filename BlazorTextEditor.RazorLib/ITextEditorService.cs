@@ -14,7 +14,7 @@ public interface ITextEditorService : IDisposable
     public bool GlobalShowNewlines { get; }
     public bool GlobalShowWhitespace { get; }
 
-    public event EventHandler? OnTextEditorStatesChanged;
+    public event Action? OnTextEditorStatesChanged;
 
     public void RegisterTextEditor(TextEditorBase textEditorBase);
     public void EditTextEditor(EditTextEditorBaseAction editTextEditorBaseAction);

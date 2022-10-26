@@ -38,7 +38,7 @@ public class TextEditorService : ITextEditorService
 
     public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
 
-    public event EventHandler? OnTextEditorStatesChanged;
+    public event Action? OnTextEditorStatesChanged;
 
     public void RegisterTextEditor(TextEditorBase textEditorBase)
     {
@@ -94,6 +94,6 @@ public class TextEditorService : ITextEditorService
 
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
     {
-        OnTextEditorStatesChanged?.Invoke(sender, e);
+        OnTextEditorStatesChanged?.Invoke();
     }
 }
