@@ -3,8 +3,8 @@
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
 /// <summary>
-/// Any property on <see cref="TextEditorServiceOptions"/> will be equal to
-/// the 
+///     Any property on <see cref="TextEditorServiceOptions" /> will be equal to
+///     the
 /// </summary>
 public record TextEditorOptions(
     int? FontSizeInPixels,
@@ -14,8 +14,8 @@ public record TextEditorOptions(
 {
     public static TextEditorOptions UnsetTextEditorOptions()
     {
-        return new(
-            null, 
+        return new TextEditorOptions(
+            null,
             null,
             false,
             false);

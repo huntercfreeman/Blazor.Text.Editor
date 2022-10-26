@@ -7,31 +7,29 @@ public static class TextEditorSelectionHelper
     public static bool HasSelectedText(TextEditorSelection textEditorSelection)
     {
         return HasSelectedText(
-            textEditorSelection.AnchorPositionIndex, 
+            textEditorSelection.AnchorPositionIndex,
             textEditorSelection.EndingPositionIndex);
     }
-    
+
     public static bool HasSelectedText(ImmutableTextEditorSelection immutableTextEditorSelection)
     {
         return HasSelectedText(
-            immutableTextEditorSelection.AnchorPositionIndex, 
+            immutableTextEditorSelection.AnchorPositionIndex,
             immutableTextEditorSelection.EndingPositionIndex);
     }
-    
+
     public static bool HasSelectedText(int? anchorPositionIndex, int endingPositionIndex)
     {
         if (anchorPositionIndex.HasValue &&
             anchorPositionIndex.Value !=
             endingPositionIndex)
-        {
             return true;
-        }
 
         return false;
     }
-    
+
     public static string? GetSelectedText(
-        TextEditorSelection textEditorSelection, 
+        TextEditorSelection textEditorSelection,
         TextEditorBase textEditorBase)
     {
         return GetSelectedText(
@@ -39,7 +37,7 @@ public static class TextEditorSelectionHelper
             textEditorSelection.EndingPositionIndex,
             textEditorBase);
     }
-    
+
     public static string? GetSelectedText(
         ImmutableTextEditorSelection immutableTextEditorSelection,
         TextEditorBase textEditorBase)
@@ -49,10 +47,10 @@ public static class TextEditorSelectionHelper
             immutableTextEditorSelection.EndingPositionIndex,
             textEditorBase);
     }
-    
+
     public static string? GetSelectedText(
-        int? anchorPositionIndex, 
-        int endingPositionIndex, 
+        int? anchorPositionIndex,
+        int endingPositionIndex,
         TextEditorBase textEditorBase)
     {
         if (HasSelectedText(
@@ -62,17 +60,9 @@ public static class TextEditorSelectionHelper
             var selectionBounds = GetSelectionBounds(
                 anchorPositionIndex,
                 endingPositionIndex);
-            
-            var lowerBound = anchorPositionIndex.Value;
-            var upperBound = endingPositionIndex;
 
-            if (lowerBound > upperBound)
-            {
-                (lowerBound, upperBound) = (upperBound, lowerBound);
-            }
-
-            var result = textEditorBase.GetTextRange(lowerBound,
-                upperBound - lowerBound);
+            var result = textEditorBase.GetTextRange(selectionBounds.lowerBound,
+                selectionBounds.upperBound - selectionBounds.lowerBound);
 
             return result.Length != 0
                 ? result
@@ -89,7 +79,7 @@ public static class TextEditorSelectionHelper
             textEditorSelection.AnchorPositionIndex,
             textEditorSelection.EndingPositionIndex);
     }
-    
+
     public static (int lowerBound, int upperBound) GetSelectionBounds(
         ImmutableTextEditorSelection immutableTextEditorSelection)
     {
@@ -97,7 +87,7 @@ public static class TextEditorSelectionHelper
             immutableTextEditorSelection.AnchorPositionIndex,
             immutableTextEditorSelection.EndingPositionIndex);
     }
-    
+
     public static (int lowerBound, int upperBound) GetSelectionBounds(
         int? anchorPositionIndex,
         int endingPositionIndex)
@@ -107,15 +97,13 @@ public static class TextEditorSelectionHelper
             throw new ApplicationException(
                 $"{nameof(anchorPositionIndex)} was null.");
         }
-        
+
         var lowerBound = anchorPositionIndex.Value;
         var upperBound = endingPositionIndex;
 
         if (lowerBound > upperBound)
-        {
             // Swap the values around
             (lowerBound, upperBound) = (upperBound, lowerBound);
-        }
 
         return (lowerBound, upperBound);
     }

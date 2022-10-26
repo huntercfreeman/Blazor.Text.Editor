@@ -5,5 +5,5 @@ public enum TextEditKind
     None,
     Other,
     Insertion,
-    Deletion
+    Deletion,
 }

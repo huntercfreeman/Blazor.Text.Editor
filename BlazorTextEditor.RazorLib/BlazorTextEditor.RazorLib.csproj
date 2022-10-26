@@ -9,24 +9,24 @@
         <PackageId>Blazor.Text.Editor</PackageId>
         <Version>4.1.0</Version>
         <Authors>Hunter Freeman</Authors>
-        <Company />
+        <Company/>
         <PackageTags>DotNet CSharp Blazor RazorComponents</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes>CHANGELOG.md</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
-        <SupportedPlatform Include="browser" />
+        <SupportedPlatform Include="browser"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fluxor.Blazor.Web" Version="5.5.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
+        <PackageReference Include="Fluxor.Blazor.Web" Version="5.5.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath="\" />
-        <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
-    
+
 </Project>

@@ -19,7 +19,7 @@ public class ClipboardProviderDefault : IClipboardProvider
             return await _jsRuntime.InvokeAsync<string>(
                 "blazorTextEditor.readClipboard");
         }
-        catch (TaskCanceledException e)
+        catch (TaskCanceledException)
         {
             return string.Empty;
         }
@@ -33,7 +33,7 @@ public class ClipboardProviderDefault : IClipboardProvider
                 "blazorTextEditor.setClipboard",
                 value);
         }
-        catch (TaskCanceledException e)
+        catch (TaskCanceledException)
         {
         }
     }

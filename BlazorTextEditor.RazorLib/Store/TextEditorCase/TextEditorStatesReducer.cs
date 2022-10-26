@@ -12,16 +12,16 @@ public class TextEditorStatesReducer
         if (previousTextEditorStates.TextEditorList
             .Any(x => x.Key == registerTextEditorBaseAction.TextEditorBase.Key))
             return previousTextEditorStates;
-        
+
         var nextList = previousTextEditorStates.TextEditorList
             .Add(registerTextEditorBaseAction.TextEditorBase);
 
         return previousTextEditorStates with
         {
-            TextEditorList = nextList
+            TextEditorList = nextList,
         };
     }
-    
+
     [ReducerMethod]
     public static TextEditorStates ReduceEditTextEditorBaseAction(
         TextEditorStates previousTextEditorStates,
@@ -37,10 +37,10 @@ public class TextEditorStatesReducer
 
         return previousTextEditorStates with
         {
-            TextEditorList = nextList
+            TextEditorList = nextList,
         };
     }
-    
+
     [ReducerMethod]
     public static TextEditorStates ReduceDisposeTextEditorBaseAction(
         TextEditorStates previousTextEditorStates,
@@ -51,13 +51,13 @@ public class TextEditorStatesReducer
 
         var nextList = previousTextEditorStates.TextEditorList
             .Remove(textEditor);
-        
+
         return previousTextEditorStates with
         {
-            TextEditorList = nextList
+            TextEditorList = nextList,
         };
     }
-    
+
     [ReducerMethod]
     public static TextEditorStates ReduceTextEditorSetFontSizeAction(
         TextEditorStates previousTextEditorStates,
@@ -66,15 +66,15 @@ public class TextEditorStatesReducer
         var nextTextEditorOptions = previousTextEditorStates
                 .GlobalTextEditorOptions with
             {
-                FontSizeInPixels = textEditorSetFontSizeAction.FontSizeInPixels
+                FontSizeInPixels = textEditorSetFontSizeAction.FontSizeInPixels,
             };
 
         return previousTextEditorStates with
         {
-            GlobalTextEditorOptions = nextTextEditorOptions
+            GlobalTextEditorOptions = nextTextEditorOptions,
         };
     }
-    
+
     [ReducerMethod]
     public static TextEditorStates ReduceTextEditorSetThemeAction(
         TextEditorStates previousTextEditorStates,
@@ -83,15 +83,15 @@ public class TextEditorStatesReducer
         var nextTextEditorOptions = previousTextEditorStates
                 .GlobalTextEditorOptions with
             {
-                Theme = textEditorSetThemeAction.Theme
+                Theme = textEditorSetThemeAction.Theme,
             };
 
         return previousTextEditorStates with
         {
-            GlobalTextEditorOptions = nextTextEditorOptions
+            GlobalTextEditorOptions = nextTextEditorOptions,
         };
     }
-    
+
     [ReducerMethod]
     public static TextEditorStates ReduceTextEditorSetShowWhitespaceAction(
         TextEditorStates previousTextEditorStates,
@@ -100,15 +100,15 @@ public class TextEditorStatesReducer
         var nextTextEditorOptions = previousTextEditorStates
                 .GlobalTextEditorOptions with
             {
-                ShowWhitespace = textEditorSetShowWhitespaceAction.ShowWhitespace
+                ShowWhitespace = textEditorSetShowWhitespaceAction.ShowWhitespace,
             };
 
         return previousTextEditorStates with
         {
-            GlobalTextEditorOptions = nextTextEditorOptions
+            GlobalTextEditorOptions = nextTextEditorOptions,
         };
     }
-    
+
     [ReducerMethod]
     public static TextEditorStates ReduceTextEditorSetShowNewlinesAction(
         TextEditorStates previousTextEditorStates,
@@ -117,22 +117,22 @@ public class TextEditorStatesReducer
         var nextTextEditorOptions = previousTextEditorStates
                 .GlobalTextEditorOptions with
             {
-                ShowNewlines = textEditorSetShowNewlinesAction.ShowNewlines
+                ShowNewlines = textEditorSetShowNewlinesAction.ShowNewlines,
             };
 
         return previousTextEditorStates with
         {
-            GlobalTextEditorOptions = nextTextEditorOptions
+            GlobalTextEditorOptions = nextTextEditorOptions,
         };
     }
-    
+
     [ReducerMethod]
     public static TextEditorStates ReduceTextEditorSetUsingRowEndingKindAction(
         TextEditorStates previousTextEditorStates,
         TextEditorSetUsingRowEndingKindAction textEditorSetUsingRowEndingKindAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => 
+            .Single(x =>
                 x.Key == textEditorSetUsingRowEndingKindAction.TextEditorKey);
 
         var nextTextEditor = textEditor
@@ -143,7 +143,7 @@ public class TextEditorStatesReducer
 
         return previousTextEditorStates with
         {
-            TextEditorList = nextList
+            TextEditorList = nextList,
         };
     }
 }

@@ -67,9 +67,9 @@ window.blazorTextEditor = {
     },
     measureFontWidthAndElementHeightByElementId: function (elementId, amountOfCharactersRendered) {
         let element = document.getElementById(elementId);
-        
+
         let fontWidth = element.offsetWidth / amountOfCharactersRendered;
-        
+
         return {
             FontWidthInPixels: fontWidth,
             ElementHeightInPixels: element.offsetHeight
@@ -77,7 +77,7 @@ window.blazorTextEditor = {
     },
     measureWidthAndHeightByElementId: function (elementId) {
         let element = document.getElementById(elementId);
-        
+
         return {
             WidthInPixels: element.offsetWidth,
             HeightInPixels: element.offsetHeight
@@ -85,12 +85,12 @@ window.blazorTextEditor = {
     },
     getRelativePosition: function (elementId, clientX, clientY) {
         let element = document.getElementById(elementId);
-        
+
         let bounds = element.getBoundingClientRect();
-        
+
         let x = clientX - bounds.left;
         let y = clientY - bounds.top;
-        
+
         return {
             RelativeX: x,
             RelativeY: y,
@@ -204,7 +204,7 @@ window.blazorTextEditor = {
         // the "clipboard-read" feature.
 
         try {
-            return await navigator.permissions.query({ name: "clipboard-read" }).then(async (result) => {
+            return await navigator.permissions.query({name: "clipboard-read"}).then(async (result) => {
                 // If permission to read the clipboard is granted or if the user will
                 // be prompted to allow it, we proceed.
 
@@ -212,13 +212,11 @@ window.blazorTextEditor = {
                     return await navigator.clipboard.readText().then((data) => {
                         return data;
                     });
-                }
-                else {
+                } else {
                     return "";
                 }
             });
-        }
-        catch (e) {
+        } catch (e) {
             return "";
         }
     },
@@ -234,8 +232,7 @@ window.blazorTextEditor = {
             // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
             return window.clipboardData.setData("Text", text);
 
-        }
-        else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+        } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
             var textarea = document.createElement("textarea");
             textarea.textContent = value;
             textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
@@ -243,12 +240,10 @@ window.blazorTextEditor = {
             textarea.select();
             try {
                 return document.execCommand("copy");  // Security exception may be thrown by some browsers.
-            }
-            catch (ex) {
+            } catch (ex) {
                 console.warn("Copy to clipboard failed.", ex);
                 return false;
-            }
-            finally {
+            } finally {
                 document.body.removeChild(textarea);
             }
         }

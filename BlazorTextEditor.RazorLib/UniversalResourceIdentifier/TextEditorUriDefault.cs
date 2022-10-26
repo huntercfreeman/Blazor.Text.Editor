@@ -6,6 +6,6 @@ public class TextEditorUriDefault : ITextEditorUri
     {
         Path = path;
     }
-    
+
     public string Path { get; }
 }

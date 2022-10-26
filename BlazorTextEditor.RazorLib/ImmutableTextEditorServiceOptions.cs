@@ -6,6 +6,6 @@ public class ImmutableTextEditorServiceOptions : ITextEditorServiceOptions
     {
         InitializeFluxor = textEditorServiceOptions.InitializeFluxor;
     }
-    
+
     public bool InitializeFluxor { get; }
 }

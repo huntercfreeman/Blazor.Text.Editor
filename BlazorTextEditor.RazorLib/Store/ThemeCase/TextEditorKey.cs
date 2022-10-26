@@ -4,6 +4,6 @@ public record ThemeKey(Guid Guid)
 {
     public static ThemeKey NewThemeKey()
     {
-        return new(Guid.NewGuid());
+        return new ThemeKey(Guid.NewGuid());
     }
 }

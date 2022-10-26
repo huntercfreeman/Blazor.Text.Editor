@@ -5,8 +5,8 @@ namespace BlazorTextEditor.RazorLib;
 public interface IThemeService : IDisposable
 {
     public ThemeStates ThemeStates { get; }
-    
-    public event EventHandler? OnThemeStatesChanged;
+
+    public event Action? OnThemeStatesChanged;
 
     public void RegisterTheme(Theme theme);
     public void DisposeTheme(ThemeKey themeKey);

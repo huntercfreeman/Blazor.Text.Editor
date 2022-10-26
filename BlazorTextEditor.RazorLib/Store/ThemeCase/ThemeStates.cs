@@ -8,7 +8,7 @@ public record ThemeStates(ImmutableArray<Theme> Themes)
 {
     public ThemeStates() : this(ImmutableArray<Theme>.Empty)
     {
-        Themes = Themes.AddRange(new []
+        Themes = Themes.AddRange(new[]
         {
             ThemeFacts.BlazorTextEditorDark,
             ThemeFacts.BlazorTextEditorLight,

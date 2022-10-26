@@ -17,10 +17,10 @@
          @onmousemove:stopPropagation="true"
          class="bte_text-editor-context-menu"
          style="@MenuStyleCss">
-    
+
         <CascadingValue Name="SetShouldDisplayMenuAsync"
                         Value="new Func<TextEditorMenuKind, Task>(SetShouldDisplayMenuAsync)">
-            
+
             @switch (_textEditorMenuKind)
             {
                 case TextEditorMenuKind.ContextMenu:
@@ -37,5 +37,5 @@
                     break;
             }
         </CascadingValue>
-    </div>    
+    </div>
 }

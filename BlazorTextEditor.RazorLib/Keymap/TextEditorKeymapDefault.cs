@@ -6,12 +6,12 @@ namespace BlazorTextEditor.RazorLib.Keymap;
 
 public class TextEditorKeymapDefault : ITextEditorKeymap
 {
-    public Func<KeyboardEventArgs, TextEditorCommand?> KeymapFunc { get; } = 
+    public Func<KeyboardEventArgs, TextEditorCommand?> KeymapFunc { get; } =
         keyboardEventArgs =>
         {
             if (keyboardEventArgs.CtrlKey)
                 return CtrlModifiedKeymap(keyboardEventArgs);
-            
+
             if (keyboardEventArgs.AltKey)
                 return AltModifiedKeymap(keyboardEventArgs);
 
@@ -30,7 +30,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "v" => TextEditorCommandFacts.Paste,
             "s" => TextEditorCommandFacts.Save,
             "a" => TextEditorCommandFacts.SelectAll,
-            _ => null
+            _ => null,
         };
 
         if (command is null)
@@ -38,24 +38,24 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             command = keyboardEventArgs.Code switch
             {
                 KeyboardKeyFacts.WhitespaceCodes
-                        .SPACE_CODE => null,
-                _ => null
-            };  
+                    .SPACE_CODE => null,
+                _ => null,
+            };
         }
 
         return command;
     }
-    
+
     /// <summary>
-    /// Do not go from <see cref="AltModifiedKeymap"/> to
-    /// <see cref="CtrlAltModifiedKeymap"/>
-    /// <br/><br/>
-    /// Code in this method should only be here if it
-    /// does not include a Ctrl key being pressed.
-    /// <br/><br/>
-    /// As otherwise, we'd have to permute over
-    /// all the possible keyboard modifier
-    /// keys and have a method for each permutation.
+    ///     Do not go from <see cref="AltModifiedKeymap" /> to
+    ///     <see cref="CtrlAltModifiedKeymap" />
+    ///     <br /><br />
+    ///     Code in this method should only be here if it
+    ///     does not include a Ctrl key being pressed.
+    ///     <br /><br />
+    ///     As otherwise, we'd have to permute over
+    ///     all the possible keyboard modifier
+    ///     keys and have a method for each permutation.
     /// </summary>
     private static TextEditorCommand? AltModifiedKeymap(
         KeyboardEventArgs keyboardEventArgs)
@@ -64,10 +64,10 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         {
             // Short term hack to avoid autocomplete keybind being typed.
         }
-        
+
         return null;
     }
-    
+
     private static TextEditorCommand? CtrlAltModifiedKeymap(
         KeyboardEventArgs keyboardEventArgs)
     {

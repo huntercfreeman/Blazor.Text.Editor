@@ -4,5 +4,5 @@ public enum TextEditorMenuKind
 {
     None,
     ContextMenu,
-    AutoCompleteMenu
+    AutoCompleteMenu,
 }

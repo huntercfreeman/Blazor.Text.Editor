@@ -1,11 +1,8 @@
 ﻿@using System.Text
 @using BlazorTextEditor.RazorLib.Cursor
-@using BlazorTextEditor.RazorLib.Virtualization
 @using BlazorTextEditor.RazorLib.HelperComponents
 @using BlazorTextEditor.RazorLib.Row
-@using BlazorTextEditor.RazorLib.TextEditor
-@using Microsoft.AspNetCore.Components
-
+@using BlazorTextEditor.RazorLib.Virtualization
 <div style="@GlobalFontSizeInPixelsStyling @StyleCssString"
      class="@GlobalThemeCssClassString @ClassCssString">
 
@@ -25,50 +22,45 @@
             <div class="bte_measure-character-width-and-row-height bte_row"
                  id="@MeasureCharacterWidthAndRowHeightId">
 
-                @for (int i = 0; i < _testStringRepeatCount; i++)
+                @for (var i = 0; i < _testStringRepeatCount; i++)
                 {
                     <text>
                         @_testStringForMeasurement
                     </text>
                 }
             </div>
-            
+
             @{
                 var safeTextEditorReference = TextEditorStatesSelection.Value;
 
                 var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
-                
+
                 <div class="bte_text-selection-group">
                     @if (TextEditorSelectionHelper.HasSelectedText(
-                            primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+                        primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
                     {
                         var selectionBounds = TextEditorSelectionHelper
                             .GetSelectionBounds(
                                 primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
-                        
-                        var firstRowToSelectData = 
+
+                        var firstRowToSelectData =
                             safeTextEditorReference
                                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                                     selectionBounds.lowerBound);
-                        
-                        var lastRowToSelectData = 
+
+                        var lastRowToSelectData =
                             safeTextEditorReference
                                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                                     selectionBounds.upperBound);
 
-                        List<int> rowIndicesToSelect = new();
-
-                        for (int i = firstRowToSelectData.rowIndex;
-                             i <= lastRowToSelectData.rowIndex; 
-                             i++)
+                        for (var i = firstRowToSelectData.rowIndex;
+                            i <= lastRowToSelectData.rowIndex;
+                            i++)
                         {
                             var rowIndex = i;
 
                             <div class="bte_text-selection"
-                                 style="@GetTextSelectionStyleCss(
-                                            selectionBounds.lowerBound, 
-                                            selectionBounds.upperBound, 
-                                            rowIndex)">
+                                 style="@GetTextSelectionStyleCss(selectionBounds.lowerBound, selectionBounds.upperBound, rowIndex)">
                             </div>
                         }
                     }
@@ -86,7 +78,7 @@
                         spaceKeyOutput = "·";
                     }
 
-                    <VirtualizationDisplay @ref="_virtualizationDisplay" 
+                    <VirtualizationDisplay @ref="_virtualizationDisplay"
                                            EntriesProviderFunc="EntriesProvider"
                                            Context="virtualizedRow">
                         @{
@@ -142,13 +134,13 @@
 
                             @if (GlobalShowNewlines)
                             {
-                                var amountOfLeftInCharacterWidthUnits = 
-                                    virtualizedRow.LeftInPixels / 
+                                var amountOfLeftInCharacterWidthUnits =
+                                    virtualizedRow.LeftInPixels /
                                     CharacterWidthAndRowHeight.FontWidthInPixels;
 
                                 var lengthOfRow = safeTextEditorReference
                                     .GetLengthOfRow(
-                                        index, 
+                                        index,
                                         true);
 
                                 if (amountOfLeftInCharacterWidthUnits < lengthOfRow)

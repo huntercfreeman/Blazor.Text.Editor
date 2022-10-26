@@ -6,7 +6,7 @@ public record ImmutableTextEditorSelection(
 {
     public ImmutableTextEditorSelection(TextEditorSelection textEditorSelection)
         : this(
-            textEditorSelection.AnchorPositionIndex, 
+            textEditorSelection.AnchorPositionIndex,
             textEditorSelection.EndingPositionIndex)
     {
     }

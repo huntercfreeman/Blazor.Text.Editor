@@ -13,12 +13,12 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddTextEditorClassLibServices(
-                (serviceProvider) => 
+                serviceProvider =>
                     new ClipboardProviderDefault(
                         serviceProvider.GetRequiredService<IJSRuntime>()),
                 configure);
     }
-    
+
     public static IServiceCollection AddTextEditorClassLibServices(
         this IServiceCollection services,
         Func<IServiceProvider, IClipboardProvider> clipboardProviderDefaultFactory,
@@ -29,14 +29,14 @@ public static class ServiceCollectionExtensions
 
         var clipboardProviderFactory = textEditorOptions.ClipboardProviderFactory
                                        ?? clipboardProviderDefaultFactory;
-        
+
         services
             .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
                 _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
-            .AddScoped<IClipboardProvider>(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
+            .AddScoped(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
             .AddScoped<IThemeService, ThemeService>()
             .AddScoped<ITextEditorService, TextEditorService>();
-        
+
         if (textEditorOptions.InitializeFluxor)
         {
             services

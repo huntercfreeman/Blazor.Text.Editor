@@ -12,26 +12,26 @@ public class ThemeStatesReducer
         return previousThemeStates with
         {
             Themes = previousThemeStates.Themes
-                .Add(registerThemeAction.Theme)
+                .Add(registerThemeAction.Theme),
         };
     }
-    
+
     [ReducerMethod]
     public static ThemeStates ReduceDisposeThemeAction(
         ThemeStates previousThemeStates,
         DisposeThemeAction disposeThemeAction)
     {
         var theme = previousThemeStates.Themes
-            .FirstOrDefault(t => 
+            .FirstOrDefault(t =>
                 t.ThemeKey == disposeThemeAction.ThemeKey);
 
         if (theme is null)
             return previousThemeStates;
-        
+
         return previousThemeStates with
         {
             Themes = previousThemeStates.Themes
-                .Remove(theme)
+                .Remove(theme),
         };
     }
 }
