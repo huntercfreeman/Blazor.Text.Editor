@@ -17,14 +17,14 @@ public record VirtualizationScrollPosition(
 public record VirtualizationRequest(
     VirtualizationScrollPosition ScrollPosition,
     CancellationToken CancellationToken);
-    
+
 public record VirtualizationResult<T>(
     ImmutableArray<VirtualizationEntry<T>> Entries,
     VirtualizationBoundary LeftVirtualizationBoundary,
     VirtualizationBoundary RightVirtualizationBoundary,
     VirtualizationBoundary TopVirtualizationBoundary,
     VirtualizationBoundary BottomVirtualizationBoundary);
-    
+
 public record VirtualizationBoundary(
     double? WidthInPixels,
     double? HeightInPixels,

@@ -20,7 +20,7 @@ public partial class TextEditorBase
             TextEditorCommand.ThrowOtherTextEditKindIdentifierWasExpectedException(
                 textEditKind);
         }
-        
+
         var mostRecentEditBlock = _editBlocks.LastOrDefault();
 
         if (mostRecentEditBlock is null ||
@@ -33,11 +33,9 @@ public partial class TextEditorBase
                 otherTextEditKindIdentifier));
         }
 
-        while (_editBlocks.Count > MaximumEditBlocks &&
+        while (_editBlocks.Count > MAXIMUM_EDIT_BLOCKS &&
                _editBlocks.Count != 0)
-        {
             _editBlocks.RemoveAt(0);
-        }
     }
 
     private void PerformInsertions(EditTextEditorBaseAction editTextEditorBaseAction)
@@ -76,26 +74,26 @@ public partial class TextEditorBase
             if (wasEnterCode)
             {
                 var rowEndingKindToInsert = UsingRowEndingKind;
-                
+
                 var richCharacters = rowEndingKindToInsert
                     .AsCharacters()
                     .Select(character => new RichCharacter
                     {
                         Value = character,
-                        DecorationByte = default(byte)
+                        DecorationByte = default,
                     });
-                
+
                 characterCountInserted = rowEndingKindToInsert.AsCharacters().Length;
-                
+
                 _content.InsertRange(cursorPositionIndex, richCharacters);
-                
+
                 _rowEndingPositions.Insert(cursorSnapshot.ImmutableCursor.RowIndex,
                     (cursorPositionIndex + characterCountInserted, rowEndingKindToInsert));
 
                 MutateRowEndingKindCount(
-                    UsingRowEndingKind, 
+                    UsingRowEndingKind,
                     1);
-                
+
                 var indexCoordinates = cursorSnapshot.UserCursor.IndexCoordinates;
 
                 cursorSnapshot.UserCursor.IndexCoordinates = (indexCoordinates.rowIndex + 1, 0);
@@ -112,24 +110,19 @@ public partial class TextEditorBase
                             x >= cursorPositionIndex);
 
                     if (index == -1)
-                    {
                         _tabKeyPositions.Add(cursorPositionIndex);
-                    }
                     else
                     {
-                        for (int i = index; i < _tabKeyPositions.Count; i++)
-                        {
-                            _tabKeyPositions[i]++;
-                        }
+                        for (var i = index; i < _tabKeyPositions.Count; i++) _tabKeyPositions[i]++;
 
                         _tabKeyPositions.Insert(index, cursorPositionIndex);
                     }
                 }
-                
+
                 var richCharacterToInsert = new RichCharacter
                 {
                     Value = characterValueToInsert,
-                    DecorationByte = default(byte)
+                    DecorationByte = default,
                 };
 
                 _content.Insert(cursorPositionIndex, richCharacterToInsert);
@@ -146,11 +139,12 @@ public partial class TextEditorBase
                 ? cursorSnapshot.ImmutableCursor.RowIndex + 1
                 : cursorSnapshot.ImmutableCursor.RowIndex;
 
-            for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
+            for (var i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
             {
                 var rowEndingTuple = _rowEndingPositions[i];
 
-                _rowEndingPositions[i] = (rowEndingTuple.positionIndex + characterCountInserted, rowEndingTuple.rowEndingKind);
+                _rowEndingPositions[i] = (rowEndingTuple.positionIndex + characterCountInserted,
+                    rowEndingTuple.rowEndingKind);
             }
 
             if (!wasTabCode)
@@ -160,10 +154,8 @@ public partial class TextEditorBase
 
                 if (firstTabKeyPositionIndexToModify != -1)
                 {
-                    for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
-                    {
+                    for (var i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
                         _tabKeyPositions[i] += characterCountInserted;
-                    }
                 }
             }
         }
@@ -195,29 +187,29 @@ public partial class TextEditorBase
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
             {
                 var lowerBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
-                    .AnchorPositionIndex ?? 0; 
-                
+                    .AnchorPositionIndex ?? 0;
+
                 var upperBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
                     .EndingPositionIndex;
 
                 if (lowerBound > upperBound)
                     (lowerBound, upperBound) = (upperBound, lowerBound);
-                
-                var lowerRowMetaData = 
+
+                var lowerRowMetaData =
                     FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                         lowerBound);
-                
-                var upperRowMetaData = 
+
+                var upperRowMetaData =
                     FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                         upperBound);
 
                 // Value is needed when knowing what row ending positions
                 // to update after deletion is done
                 selectionUpperBoundRowIndex = upperRowMetaData.rowIndex;
-                
+
                 // Value is needed when knowing where to position the
                 // cursor after deletion is done
-                selectionLowerBoundIndexCoordinates = 
+                selectionLowerBoundIndexCoordinates =
                     (lowerRowMetaData.rowIndex,
                         lowerBound - lowerRowMetaData.rowStartPositionIndex);
 
@@ -245,8 +237,8 @@ public partial class TextEditorBase
                     $"The keyboard key: {editTextEditorBaseAction.KeyboardEventArgs.Key} was not recognized");
             }
 
-            int charactersRemovedCount = 0;
-            int rowsRemovedCount = 0;
+            var charactersRemovedCount = 0;
+            var rowsRemovedCount = 0;
 
             var indexToRemove = startingPositionIndexToRemoveInclusive;
 
@@ -254,9 +246,7 @@ public partial class TextEditorBase
             {
                 if (indexToRemove < 0 ||
                     indexToRemove > _content.Count - 1)
-                {
                     break;
-                }
 
                 var characterToDelete = _content[indexToRemove];
 
@@ -285,19 +275,15 @@ public partial class TextEditorBase
                         .AsCharacters().Length;
 
                     if (moveBackwards)
-                    {
                         startingIndexToRemoveRange = indexToRemove - (lengthOfRowEnding - 1);
-                    }
                     else
-                    {
                         startingIndexToRemoveRange = indexToRemove;
-                    }
 
-                    countToRemove -= (lengthOfRowEnding - 1);
+                    countToRemove -= lengthOfRowEnding - 1;
                     countToRemoveRange = lengthOfRowEnding;
-                    
+
                     MutateRowEndingKindCount(
-                        rowEndingTuple.rowEndingKind, 
+                        rowEndingTuple.rowEndingKind,
                         -1);
                 }
                 else
@@ -316,13 +302,11 @@ public partial class TextEditorBase
                 if (moveBackwards)
                     indexToRemove -= countToRemoveRange;
             }
-            
+
             if (charactersRemovedCount == 0 &&
                 rowsRemovedCount == 0)
-            {
                 return;
-            }
-            
+
             if (moveBackwards && !selectionUpperBoundRowIndex.HasValue)
             {
                 var modifyRowsBy = -1 * rowsRemovedCount;
@@ -336,48 +320,43 @@ public partial class TextEditorBase
                 var endingPositionIndex = cursorPositionIndex + modifyPositionIndexBy;
 
                 var columnIndex = endingPositionIndex - startOfCurrentRowPositionIndex;
-            
+
                 var indexCoordinates = cursorSnapshot.UserCursor.IndexCoordinates;
-            
-                cursorSnapshot.UserCursor.IndexCoordinates = 
-                    (indexCoordinates.rowIndex + modifyRowsBy, 
+
+                cursorSnapshot.UserCursor.IndexCoordinates =
+                    (indexCoordinates.rowIndex + modifyRowsBy,
                         columnIndex);
             }
-            
+
             int firstRowIndexToModify;
 
             if (selectionUpperBoundRowIndex.HasValue)
             {
                 firstRowIndexToModify = selectionLowerBoundIndexCoordinates!.Value.rowIndex;
-                
-                cursorSnapshot.UserCursor.IndexCoordinates = 
+
+                cursorSnapshot.UserCursor.IndexCoordinates =
                     selectionLowerBoundIndexCoordinates!.Value;
             }
             else if (moveBackwards)
-            {
                 firstRowIndexToModify = cursorSnapshot.ImmutableCursor.RowIndex - rowsRemovedCount;
-            }
             else
-            {
                 firstRowIndexToModify = cursorSnapshot.ImmutableCursor.RowIndex;
-            }
-            
-            for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
+
+            for (var i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
             {
                 var rowEndingTuple = _rowEndingPositions[i];
-            
-                _rowEndingPositions[i] = (rowEndingTuple.positionIndex - charactersRemovedCount, rowEndingTuple.rowEndingKind);
+
+                _rowEndingPositions[i] = (rowEndingTuple.positionIndex - charactersRemovedCount,
+                    rowEndingTuple.rowEndingKind);
             }
-            
+
             var firstTabKeyPositionIndexToModify = _tabKeyPositions
                 .FindIndex(x => x >= startingPositionIndexToRemoveInclusive);
 
             if (firstTabKeyPositionIndexToModify != -1)
             {
-                for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
-                {
+                for (var i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
                     _tabKeyPositions[i] -= charactersRemovedCount;
-                }
             }
         }
     }
@@ -385,18 +364,18 @@ public partial class TextEditorBase
     private void MutateRowEndingKindCount(RowEndingKind rowEndingKind, int changeBy)
     {
         var indexOfRowEndingKindCount = _rowEndingKindCounts
-            .FindIndex(x => 
+            .FindIndex(x =>
                 x.rowEndingKind == rowEndingKind);
 
         var currentRowEndingKindCount = _rowEndingKindCounts[indexOfRowEndingKindCount]
             .count;
-                    
-        _rowEndingKindCounts[indexOfRowEndingKindCount] = 
+
+        _rowEndingKindCounts[indexOfRowEndingKindCount] =
             (rowEndingKind, currentRowEndingKindCount + changeBy);
-                    
+
         CheckRowEndingPositions(false);
     }
-    
+
     private void CheckRowEndingPositions(bool setUsingRowEndingKind)
     {
         var existingRowEndings = _rowEndingKindCounts
@@ -429,7 +408,7 @@ public partial class TextEditorBase
                         .MaxBy(x => x.count)
                         .rowEndingKind;
                 }
-                
+
                 OnlyRowEndingKind = null;
             }
         }

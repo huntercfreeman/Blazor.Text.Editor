@@ -8,11 +8,11 @@ namespace BlazorTextEditor.RazorLib.Commands;
 public class TextEditorCommandParameter : ITextEditorCommandParameter
 {
     public TextEditorCommandParameter(
-        TextEditorBase textEditor, 
-        ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots, 
-        IClipboardProvider clipboardProvider, 
-        ITextEditorService textEditorService, 
-        Action reloadVirtualizationDisplay, 
+        TextEditorBase textEditor,
+        ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots,
+        IClipboardProvider clipboardProvider,
+        ITextEditorService textEditorService,
+        Action reloadVirtualizationDisplay,
         Action<TextEditorBase>? onSaveRequested)
     {
         TextEditor = textEditor;
@@ -24,10 +24,10 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
     }
 
     public TextEditorBase TextEditor { get; }
-    
+
     public TextEditorCursorSnapshot PrimaryCursorSnapshot => CursorSnapshots
         .First(x => x.UserCursor.IsPrimaryCursor);
-    
+
     public ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots { get; }
     public IClipboardProvider ClipboardProvider { get; }
     public ITextEditorService TextEditorService { get; }

@@ -7,5 +7,5 @@ public enum RowEndingKind
     CarriageReturnLinefeed,
     EndOfFile,
     StartOfFile,
-    Unset
+    Unset,
 }

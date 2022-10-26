@@ -10,7 +10,7 @@ public record TextEditorStates(
     ImmutableList<TextEditorBase> TextEditorList,
     TextEditorOptions GlobalTextEditorOptions)
 {
-    public TextEditorStates() 
+    public TextEditorStates()
         : this(ImmutableList<TextEditorBase>.Empty, new TextEditorOptions(
             20,
             ThemeFacts.BlazorTextEditorDark,

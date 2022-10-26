@@ -7,7 +7,7 @@ public record ImmutableTextEditorCursor(
     TextCursorKind TextCursorKind,
     ImmutableTextEditorSelection ImmutableTextEditorSelection)
 {
-    public ImmutableTextEditorCursor(TextEditorCursor textEditorCursor) 
+    public ImmutableTextEditorCursor(TextEditorCursor textEditorCursor)
         : this(
             textEditorCursor.IndexCoordinates.rowIndex,
             textEditorCursor.IndexCoordinates.columnIndex,

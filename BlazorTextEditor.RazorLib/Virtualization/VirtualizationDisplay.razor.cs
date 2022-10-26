@@ -6,43 +6,55 @@ namespace BlazorTextEditor.RazorLib.Virtualization;
 
 public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 {
+    private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
+    private VirtualizationRequest _request = null!;
+
+    private VirtualizationResult<T> _result = new(
+        ImmutableArray<VirtualizationEntry<T>>.Empty,
+        new VirtualizationBoundary(0, 0, 0, 0),
+        new VirtualizationBoundary(0, 0, 0, 0),
+        new VirtualizationBoundary(0, 0, 0, 0),
+        new VirtualizationBoundary(0, 0, 0, 0));
+
+    private ElementReference _scrollableParentFinder;
+
+    private CancellationTokenSource _scrollEventCancellationTokenSource = new();
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
-    
-    [Parameter, EditorRequired]
+
+    [Parameter]
+    [EditorRequired]
     public Func<VirtualizationRequest, VirtualizationResult<T>?> EntriesProviderFunc { get; set; } = null!;
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public RenderFragment<VirtualizationEntry<T>> ChildContent { get; set; } = null!;
 
     [Parameter]
     public bool UseHorizontalVirtualization { get; set; } = true;
     [Parameter]
     public bool UseVerticalVirtualization { get; set; } = true;
-    
-    private ElementReference _scrollableParentFinder;
-    private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
-
-    private VirtualizationResult<T> _result = new VirtualizationResult<T>(
-        ImmutableArray<VirtualizationEntry<T>>.Empty, 
-        new VirtualizationBoundary(0, 0, 0, 0),
-        new VirtualizationBoundary(0, 0, 0, 0),
-        new VirtualizationBoundary(0, 0, 0, 0),
-        new VirtualizationBoundary(0, 0, 0, 0));
-
-    private CancellationTokenSource _scrollEventCancellationTokenSource = new();
-    private VirtualizationRequest _request = null!;
 
     private string LeftVirtualizationBoundaryDisplayId =>
         $"bte_left-virtualization-boundary-display-{_intersectionObserverMapKey}";
-    
+
     private string RightVirtualizationBoundaryDisplayId =>
         $"bte_right-virtualization-boundary-display-{_intersectionObserverMapKey}";
-    
+
     private string TopVirtualizationBoundaryDisplayId =>
         $"bte_top-virtualization-boundary-display-{_intersectionObserverMapKey}";
-    
+
     private string BottomVirtualizationBoundaryDisplayId =>
         $"bte_bottom-virtualization-boundary-display-{_intersectionObserverMapKey}";
+
+    public void Dispose()
+    {
+        _scrollEventCancellationTokenSource.Cancel();
+
+        _ = Task.Run(async () =>
+            await JsRuntime.InvokeVoidAsync(
+                "blazorTextEditor.disposeIntersectionObserver",
+                _intersectionObserverMapKey.ToString()));
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -52,22 +64,22 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 
             if (UseHorizontalVirtualization)
             {
-                boundaryIds.AddRange(new []
+                boundaryIds.AddRange(new[]
                 {
                     LeftVirtualizationBoundaryDisplayId,
-                    RightVirtualizationBoundaryDisplayId
+                    RightVirtualizationBoundaryDisplayId,
                 });
             }
-            
+
             if (UseVerticalVirtualization)
             {
-                boundaryIds.AddRange(new []
+                boundaryIds.AddRange(new[]
                 {
                     TopVirtualizationBoundaryDisplayId,
-                    BottomVirtualizationBoundaryDisplayId
+                    BottomVirtualizationBoundaryDisplayId,
                 });
             }
-            
+
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.initializeIntersectionObserver",
                 _intersectionObserverMapKey.ToString(),
@@ -75,7 +87,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
                 _scrollableParentFinder,
                 boundaryIds);
         }
-        
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -83,12 +95,12 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
     public Task OnScrollEventAsync(VirtualizationScrollPosition scrollPosition)
     {
         _scrollEventCancellationTokenSource.Cancel();
-        _scrollEventCancellationTokenSource = new();
+        _scrollEventCancellationTokenSource = new CancellationTokenSource();
 
         _request = new VirtualizationRequest(
             scrollPosition,
             _scrollEventCancellationTokenSource.Token);
-        
+
         InvokeEntriesProviderFunc();
         return Task.CompletedTask;
     }
@@ -103,15 +115,5 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 
             InvokeAsync(StateHasChanged);
         }
-    }
-    
-    public void Dispose()
-    {
-        _scrollEventCancellationTokenSource.Cancel();
-        
-        _ = Task.Run(async () => 
-            await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.disposeIntersectionObserver",
-                _intersectionObserverMapKey.ToString()));
     }
 }

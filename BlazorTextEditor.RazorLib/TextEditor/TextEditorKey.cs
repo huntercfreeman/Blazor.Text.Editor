@@ -2,10 +2,10 @@ namespace BlazorTextEditor.RazorLib.TextEditor;
 
 public record TextEditorKey(Guid Guid)
 {
-    public static TextEditorKey Empty { get; } = new TextEditorKey(Guid.Empty);
-    
+    public static TextEditorKey Empty { get; } = new(Guid.Empty);
+
     public static TextEditorKey NewTextEditorKey()
     {
-        return new(Guid.NewGuid());
+        return new TextEditorKey(Guid.NewGuid());
     }
 }

@@ -4,5 +4,5 @@ public enum ContrastKind
 {
     High,
     Default,
-    Low
+    Low,
 }

@@ -10,8 +10,8 @@ namespace BlazorTextEditor.RazorLib.TextEditor;
 public partial class TextEditorBase
 {
     public TextEditorBase(
-        string content, 
-        ILexer? lexer, 
+        string content,
+        ILexer? lexer,
         IDecorationMapper? decorationMapper,
         ITextEditorKeymap? textEditorKeymap)
     {
@@ -26,7 +26,7 @@ public partial class TextEditorBase
         var carriageReturnCount = 0;
         var linefeedCount = 0;
         var carriageReturnLinefeedCount = 0;
-        
+
         for (var index = 0; index < content.Length; index++)
         {
             var character = content[index];
@@ -38,13 +38,10 @@ public partial class TextEditorBase
                 _rowEndingPositions.Add((index + 1, RowEndingKind.CarriageReturn));
                 rowIndex++;
 
-                if (charactersOnRow > MostCharactersOnASingleRow)
-                {
-                    MostCharactersOnASingleRow = charactersOnRow;
-                }
+                if (charactersOnRow > MostCharactersOnASingleRow) MostCharactersOnASingleRow = charactersOnRow;
 
                 charactersOnRow = 0;
-                
+
                 carriageReturnCount++;
             }
             else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
@@ -55,7 +52,7 @@ public partial class TextEditorBase
 
                     _rowEndingPositions[rowIndex - 1] =
                         (lineEnding.positionIndex + 1, RowEndingKind.CarriageReturnLinefeed);
-                    
+
                     carriageReturnCount--;
                     carriageReturnLinefeedCount++;
                 }
@@ -63,14 +60,11 @@ public partial class TextEditorBase
                 {
                     _rowEndingPositions.Add((index + 1, RowEndingKind.Linefeed));
                     rowIndex++;
-                    
-                    if (charactersOnRow > MostCharactersOnASingleRow)
-                    {
-                        MostCharactersOnASingleRow = charactersOnRow;
-                    }
+
+                    if (charactersOnRow > MostCharactersOnASingleRow) MostCharactersOnASingleRow = charactersOnRow;
 
                     charactersOnRow = 0;
-                    
+
                     linefeedCount++;
                 }
             }
@@ -83,7 +77,7 @@ public partial class TextEditorBase
             _content.Add(new RichCharacter
             {
                 Value = character,
-                DecorationByte = default
+                DecorationByte = default,
             });
         }
 
@@ -95,21 +89,21 @@ public partial class TextEditorBase
         });
 
         CheckRowEndingPositions(true);
-        
+
         _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
     }
 
     public TextEditorBase(
-        string content, 
+        string content,
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
         ITextEditorKeymap? textEditorKeymap,
         TextEditorKey key)
-            : this(
-                content,
-                lexer,
-                decorationMapper,
-                textEditorKeymap)
+        : this(
+            content,
+            lexer,
+            decorationMapper,
+            textEditorKeymap)
     {
         Key = key;
     }

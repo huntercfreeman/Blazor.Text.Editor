@@ -7,5 +7,5 @@ public enum TextCursorKind
     Replace,
     AlternateBeam,
     AlternateBlock,
-    AlternateReplace
+    AlternateReplace,
 }

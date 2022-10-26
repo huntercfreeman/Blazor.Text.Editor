@@ -5,15 +5,17 @@ namespace BlazorTextEditor.RazorLib.Virtualization;
 
 public partial class VirtualizationBoundaryDisplay : ComponentBase
 {
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public VirtualizationBoundary VirtualizationBoundary { get; set; } = null!;
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public string VirtualizationBoundaryDisplayId { get; set; } = null!;
 
     private string GetStyleCssString()
     {
         var styleBuilder = new StringBuilder();
-        
+
         // Width
         {
             if (VirtualizationBoundary.WidthInPixels is null)
@@ -21,7 +23,7 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
             else
                 styleBuilder.Append($" width: {VirtualizationBoundary.WidthInPixels}px;");
         }
-        
+
         // Height
         {
             if (VirtualizationBoundary.HeightInPixels is null)
@@ -29,7 +31,7 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
             else
                 styleBuilder.Append($" height: {VirtualizationBoundary.HeightInPixels}px;");
         }
-        
+
         // Left
         {
             if (VirtualizationBoundary.LeftInPixels is null)
@@ -37,7 +39,7 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
             else
                 styleBuilder.Append($" left: {VirtualizationBoundary.LeftInPixels}px;");
         }
-        
+
         // Top
         {
             if (VirtualizationBoundary.TopInPixels is null)

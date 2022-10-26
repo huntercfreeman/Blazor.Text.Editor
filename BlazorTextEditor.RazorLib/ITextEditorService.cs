@@ -8,12 +8,12 @@ namespace BlazorTextEditor.RazorLib;
 public interface ITextEditorService : IDisposable
 {
     public TextEditorStates TextEditorStates { get; }
-    
+
     public string GlobalThemeCssClassString { get; }
     public string GlobalFontSizeInPixelsStyling { get; }
     public bool GlobalShowNewlines { get; }
-    public bool GlobalShowWhitespace  { get; }
-    
+    public bool GlobalShowWhitespace { get; }
+
     public event EventHandler? OnTextEditorStatesChanged;
 
     public void RegisterTextEditor(TextEditorBase textEditorBase);

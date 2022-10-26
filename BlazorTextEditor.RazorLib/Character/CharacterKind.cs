@@ -4,5 +4,5 @@ public enum CharacterKind
 {
     LetterOrDigit,
     Whitespace,
-    Punctuation
+    Punctuation,
 }

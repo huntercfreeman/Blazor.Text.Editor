@@ -3,5 +3,5 @@
 public enum ColorKind
 {
     Dark,
-    Light
+    Light,
 }

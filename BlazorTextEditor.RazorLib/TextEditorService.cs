@@ -8,11 +8,11 @@ namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
-    private readonly IState<TextEditorStates> _textEditorStates;
     private readonly IDispatcher _dispatcher;
+    private readonly IState<TextEditorStates> _textEditorStates;
 
     public TextEditorService(
-        IState<TextEditorStates> textEditorStates, 
+        IState<TextEditorStates> textEditorStates,
         IDispatcher dispatcher)
     {
         _textEditorStates = textEditorStates;
@@ -22,22 +22,22 @@ public class TextEditorService : ITextEditorService
     }
 
     public TextEditorStates TextEditorStates => _textEditorStates.Value;
-    
+
     public string GlobalThemeCssClassString => TextEditorStates
                                                    .GlobalTextEditorOptions
                                                    .Theme?
                                                    .CssClassString
-                                               ?? string.Empty; 
-    
+                                               ?? string.Empty;
+
     public string GlobalFontSizeInPixelsStyling => "font-size: " + TextEditorStates
                                                                      .GlobalTextEditorOptions
                                                                      .FontSizeInPixels!.Value
-                                                                 + "px;"; 
-    
+                                                                 + "px;";
+
     public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
-    
+
     public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
-    
+
     public event EventHandler? OnTextEditorStatesChanged;
 
     public void RegisterTextEditor(TextEditorBase textEditorBase)
@@ -45,12 +45,12 @@ public class TextEditorService : ITextEditorService
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
     }
-    
+
     public void EditTextEditor(EditTextEditorBaseAction editTextEditorBaseAction)
     {
         _dispatcher.Dispatch(editTextEditorBaseAction);
     }
-    
+
     public void DisposeTextEditor(TextEditorKey textEditorKey)
     {
         _dispatcher.Dispatch(
@@ -62,38 +62,38 @@ public class TextEditorService : ITextEditorService
         _dispatcher.Dispatch(
             new TextEditorSetFontSizeAction(fontSizeInPixels));
     }
-    
+
     public void SetTheme(Theme theme)
     {
         _dispatcher.Dispatch(
             new TextEditorSetThemeAction(theme));
     }
-    
+
     public void SetShowWhitespace(bool showWhitespace)
     {
         _dispatcher.Dispatch(
             new TextEditorSetShowWhitespaceAction(showWhitespace));
     }
-    
+
     public void SetShowNewlines(bool showNewlines)
     {
         _dispatcher.Dispatch(
             new TextEditorSetShowNewlinesAction(showNewlines));
     }
-    
+
     public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind)
     {
         _dispatcher.Dispatch(
             new TextEditorSetUsingRowEndingKindAction(textEditorKey, rowEndingKind));
     }
-    
-    private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
-    {
-        OnTextEditorStatesChanged?.Invoke(sender, e);
-    }
 
     public void Dispose()
     {
         _textEditorStates.StateChanged -= TextEditorStatesOnStateChanged;
+    }
+
+    private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
+    {
+        OnTextEditorStatesChanged?.Invoke(sender, e);
     }
 }

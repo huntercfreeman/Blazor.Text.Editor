@@ -19,8 +19,8 @@ public partial class TextEditorBase
     }
 
     /// <summary>
-    /// Returns the Length of a row however it does not include the line ending characters by default.
-    /// To include line ending characters the parameter <see cref="includeLineEndingCharacters"/> must be true.
+    ///     Returns the Length of a row however it does not include the line ending characters by default.
+    ///     To include line ending characters the parameter <see cref="includeLineEndingCharacters" /> must be true.
     /// </summary>
     public int GetLengthOfRow(
         int rowIndex,
@@ -29,7 +29,7 @@ public partial class TextEditorBase
         if (!_rowEndingPositions.Any())
             return 0;
 
-        (int positionIndex, RowEndingKind rowEndingKind) startOfRowTupleInclusive = GetStartOfRowTuple(rowIndex);
+        var startOfRowTupleInclusive = GetStartOfRowTuple(rowIndex);
 
         var endOfRowTupleExclusive = _rowEndingPositions[rowIndex];
 
@@ -56,7 +56,7 @@ public partial class TextEditorBase
 
         var rows = new List<List<RichCharacter>>();
 
-        for (int i = startingRowIndex;
+        for (var i = startingRowIndex;
              i < endingRowIndexExclusive;
              i++)
         {
@@ -95,34 +95,28 @@ public partial class TextEditorBase
         {
             if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key ||
                 KeyboardKeyFacts.MetaKeys.DELETE == editTextEditorBaseAction.KeyboardEventArgs.Key)
-            {
                 PerformDeletions(editTextEditorBaseAction);
-            }
         }
         else
-        {
             PerformInsertions(editTextEditorBaseAction);
-        }
 
         return this;
     }
-    
+
     /// <summary>
-    /// If applying syntax highlighting it may be preferred to use
-    /// <see cref="ApplySyntaxHighlightingAsync"/>. It is effectively
-    /// just invoking the lexer and then <see cref="ApplyDecorationRange"/>
+    ///     If applying syntax highlighting it may be preferred to use
+    ///     <see cref="ApplySyntaxHighlightingAsync" />. It is effectively
+    ///     just invoking the lexer and then <see cref="ApplyDecorationRange" />
     /// </summary>
     public void ApplyDecorationRange(IEnumerable<TextEditorTextSpan> textEditorTextSpans)
     {
         foreach (var textEditorTextSpan in textEditorTextSpans)
         {
-            for (int i = textEditorTextSpan.StartingIndexInclusive; i < textEditorTextSpan.EndingIndexExclusive; i++)
-            {
+            for (var i = textEditorTextSpan.StartingIndexInclusive; i < textEditorTextSpan.EndingIndexExclusive; i++)
                 _content[i].DecorationByte = textEditorTextSpan.DecorationByte;
-            }
         }
     }
-    
+
     public async Task ApplySyntaxHighlightingAsync(bool clearSyntaxHighlightingBeforeApplication = true)
     {
         // TODO: this did not work out it caused flashing colors to occur find other way to clear old syntax highlighting
@@ -138,7 +132,7 @@ public partial class TextEditorBase
         //             0)
         //     });
         // }
-        
+
         var textEditorTextSpans = await Lexer.Lex(GetAllText());
 
         ApplyDecorationRange(textEditorTextSpans);
@@ -150,14 +144,14 @@ public partial class TextEditorBase
             .Select(rc => rc.Value)
             .ToArray());
     }
-    
+
     public int GetCursorPositionIndex(TextEditorCursor textEditorCursor)
     {
         return GetPositionIndex(
             textEditorCursor.IndexCoordinates.rowIndex,
             textEditorCursor.IndexCoordinates.columnIndex);
     }
-    
+
     public int GetPositionIndex(int rowIndex, int columnIndex)
     {
         var startOfRowPositionIndex =
@@ -166,7 +160,7 @@ public partial class TextEditorBase
 
         return startOfRowPositionIndex + columnIndex;
     }
-    
+
     public string GetTextRange(int startingPositionIndex, int count)
     {
         return new string(_content
@@ -175,19 +169,21 @@ public partial class TextEditorBase
             .Select(rc => rc.Value)
             .ToArray());
     }
-    
-    public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple) 
+
+    public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple)
         FindRowIndexRowStartRowEndingTupleFromPositionIndex(int positionIndex)
     {
-        for (int i = _rowEndingPositions.Count - 1; i >= 0; i--)
+        for (var i = _rowEndingPositions.Count - 1; i >= 0; i--)
         {
             var rowEndingTuple = _rowEndingPositions[i];
-            
+
             if (positionIndex >= rowEndingTuple.positionIndex)
-                return (i + 1, rowEndingTuple.positionIndex, 
+            {
+                return (i + 1, rowEndingTuple.positionIndex,
                     i == _rowEndingPositions.Count - 1
                         ? rowEndingTuple
                         : _rowEndingPositions[i + 1]);
+            }
         }
 
         return (0, 0, _rowEndingPositions[0]);
@@ -195,20 +191,20 @@ public partial class TextEditorBase
 
     /// <returns>Will return -1 if no valid result was found.</returns>
     public int GetColumnIndexOfCharacterWithDifferingKind(
-        int rowIndex, 
-        int columnIndex, 
+        int rowIndex,
+        int columnIndex,
         bool moveBackwards)
     {
         var iterateBy = moveBackwards
             ? -1
             : 1;
-        
+
         var startOfRowPositionIndex = GetStartOfRowTuple(
-            rowIndex)
+                rowIndex)
             .positionIndex;
 
         var lastPositionIndexOnRow = _rowEndingPositions[rowIndex].positionIndex - 1;
-        
+
         var positionIndex = GetPositionIndex(rowIndex, columnIndex);
 
         if (moveBackwards)
@@ -218,18 +214,16 @@ public partial class TextEditorBase
 
             positionIndex -= 1;
         }
-        
+
         var startingCharacterKind = _content[positionIndex].GetCharacterKind();
-        
+
         while (true)
         {
             if (positionIndex >= _content.Count ||
                 positionIndex > lastPositionIndexOnRow ||
                 positionIndex < startOfRowPositionIndex)
-            {
                 return -1;
-            }
-            
+
             var currentCharacterKind = _content[positionIndex].GetCharacterKind();
 
             if (currentCharacterKind != startingCharacterKind)
@@ -237,11 +231,8 @@ public partial class TextEditorBase
 
             positionIndex += iterateBy;
         }
-        
-        if (moveBackwards)
-        {
-            positionIndex += 1;
-        }
+
+        if (moveBackwards) positionIndex += 1;
 
         return positionIndex - startOfRowPositionIndex;
     }
@@ -249,17 +240,17 @@ public partial class TextEditorBase
     public void SetDecorationMapper(IDecorationMapper? decorationMapper)
     {
         DecorationMapper = decorationMapper ?? new DecorationMapperDefault();
-        
+
         // TODO: Invoke an event to reapply the CSS classes?
     }
-    
+
     public void SetLexerMapper(ILexer? lexer)
     {
         Lexer = lexer ?? new LexerDefault();
-        
+
         // TODO: Invoke an event to reapply the CSS classes?
     }
-    
+
     public TextEditorBase SetUsingRowEndingKind(RowEndingKind rowEndingKind)
     {
         UsingRowEndingKind = rowEndingKind;
@@ -270,7 +261,7 @@ public partial class TextEditorBase
     {
         return _content.ToImmutableArray();
     }
-    
+
     public void ClearEditBlocks()
     {
         _editBlocks.Clear();

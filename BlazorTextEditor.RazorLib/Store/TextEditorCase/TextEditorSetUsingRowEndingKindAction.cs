@@ -4,5 +4,5 @@ using BlazorTextEditor.RazorLib.TextEditor;
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
 
 public record TextEditorSetUsingRowEndingKindAction(
-    TextEditorKey TextEditorKey, 
+    TextEditorKey TextEditorKey,
     RowEndingKind RowEndingKind);
