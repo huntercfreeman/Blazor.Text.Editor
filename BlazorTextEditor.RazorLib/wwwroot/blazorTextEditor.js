@@ -7,7 +7,6 @@ window.blazorTextEditor = {
         let scrollableContainer = document.getElementById(scrollableContainerElementId);
 
         let options = {
-            root: scrollableContainer,
             rootMargin: '0px',
             threshold: 0
         }

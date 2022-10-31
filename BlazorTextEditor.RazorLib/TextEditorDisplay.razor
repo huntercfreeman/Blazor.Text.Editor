@@ -132,7 +132,8 @@
                                 </span>
                             }
 
-                            @if (GlobalShowNewlines)
+                            @if (GlobalShowNewlines && 
+                                 index < safeTextEditorReference.RowCount - 1)
                             {
                                 var amountOfLeftInCharacterWidthUnits =
                                     virtualizedRow.LeftInPixels /
