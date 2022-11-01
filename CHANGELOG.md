@@ -68,10 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The cursor would move 1 character out of the document. Then you get an index out of bounds exception if you hit arrow
   right 1 more time.
 
-## [4.0.0]
+## [4.1.0]
 
 ### Bug Fix
 
 - Exception was being thrown when user selected the last character of the document and then pressed ArrowRight.
     - This bug was occurring starting 3.2.0
-
