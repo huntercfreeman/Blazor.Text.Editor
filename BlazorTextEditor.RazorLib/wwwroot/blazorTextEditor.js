@@ -63,7 +63,14 @@ window.blazorTextEditor = {
     },
     disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
 
-        // TODO: Add dispose
+        let intersectionObserverMapValue = this.cursorIntersectionObserverMap
+            .get(intersectionObserverMapKey);
+        
+        let intersectionObserver = intersectionObserverMapValue.IntersectionObserver;
+
+        this.cursorIntersectionObserverMap.delete(intersectionObserverMapKey);
+
+        intersectionObserver.disconnect();
     },
     measureCharacterWidthAndRowHeight: function (elementId, amountOfCharactersRendered) {
         let element = document.getElementById(elementId);
@@ -98,8 +105,8 @@ window.blazorTextEditor = {
             RelativeScrollTop: element.scrollTop
         }
     },
-    intersectionObserverMap: new Map(),
-    initializeIntersectionObserver: function (intersectionObserverMapKey,
+    virtualizationIntersectionObserverMap: new Map(),
+    initializeVirtualizationIntersectionObserver: function (intersectionObserverMapKey,
                                               virtualizationDisplayDotNetObjectReference,
                                               scrollableParentFinder,
                                               boundaryIds) {
@@ -109,11 +116,11 @@ window.blazorTextEditor = {
         scrollableParent.addEventListener("scroll", (event) => {
             let hasIntersectingBoundary = false;
 
-            let intersectionObserverMapValue = this.intersectionObserverMap
+            let intersectionObserverMapValue = this.virtualizationIntersectionObserverMap
                 .get(intersectionObserverMapKey);
 
-            for (let i = 0; i < intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples.length; i++) {
-                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples[i];
+            for (let i = 0; i < intersectionObserverMapValue.BoundaryIdIsIntersectingTuples.length; i++) {
+                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIsIntersectingTuples[i];
 
                 if (boundaryTuple.IsIntersecting) {
                     hasIntersectingBoundary = true;
@@ -138,14 +145,14 @@ window.blazorTextEditor = {
         let intersectionObserver = new IntersectionObserver((entries) => {
             let hasIntersectingBoundary = false;
 
-            let intersectionObserverMapValue = this.intersectionObserverMap
+            let intersectionObserverMapValue = this.virtualizationIntersectionObserverMap
                 .get(intersectionObserverMapKey);
 
             for (let i = 0; i < entries.length; i++) {
 
                 let entry = entries[i];
 
-                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples
+                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIsIntersectingTuples
                     .find(x => x.BoundaryId === entry.target.id);
 
                 boundaryTuple.IsIntersecting = entry.isIntersecting;
@@ -164,7 +171,7 @@ window.blazorTextEditor = {
             }
         }, options);
 
-        let boundaryIdIntersectionRatioTuples = [];
+        let boundaryIdIsIntersectingTuples = [];
 
         for (let i = 0; i < boundaryIds.length; i++) {
 
@@ -172,15 +179,15 @@ window.blazorTextEditor = {
 
             intersectionObserver.observe(boundaryElement);
 
-            boundaryIdIntersectionRatioTuples.push({
+            boundaryIdIsIntersectingTuples.push({
                 BoundaryId: boundaryIds[i],
                 IsIntersecting: false
             });
         }
 
-        this.intersectionObserverMap.set(intersectionObserverMapKey, {
+        this.virtualizationIntersectionObserverMap.set(intersectionObserverMapKey, {
             IntersectionObserver: intersectionObserver,
-            BoundaryIdIntersectionRatioTuples: boundaryIdIntersectionRatioTuples
+            BoundaryIdIsIntersectingTuples: boundaryIdIsIntersectingTuples
         });
 
         virtualizationDisplayDotNetObjectReference
@@ -189,13 +196,14 @@ window.blazorTextEditor = {
                 ScrollTopInPixels: scrollableParent.scrollTop
             });
     },
-    disposeIntersectionObserver: function (intersectionObserverMapKey) {
+    disposeVirtualizationIntersectionObserver: function (intersectionObserverMapKey) {
+        
+        let intersectionObserverMapValue = this.virtualizationIntersectionObserverMap
+            .get(intersectionObserverMapKey);
 
-        // TODO: Wrong
+        let intersectionObserver = intersectionObserverMapValue.IntersectionObserver;
 
-        let intersectionObserver = this.intersectionObserverMap.get(intersectionObserverMapKey);
-
-        this.intersectionObserverMap.delete(intersectionObserverMapKey);
+        this.virtualizationIntersectionObserverMap.delete(intersectionObserverMapKey);
 
         intersectionObserver.disconnect();
     },

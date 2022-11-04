@@ -70,7 +70,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
             }
 
             await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.initializeIntersectionObserver",
+                "blazorTextEditor.initializeVirtualizationIntersectionObserver",
                 _intersectionObserverMapKey.ToString(),
                 DotNetObjectReference.Create(this),
                 _scrollableParentFinder,
@@ -112,7 +112,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 
         _ = Task.Run(async () =>
             await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.disposeIntersectionObserver",
+                "blazorTextEditor.disposeVirtualizationIntersectionObserver",
                 _intersectionObserverMapKey.ToString()));
     }
 }

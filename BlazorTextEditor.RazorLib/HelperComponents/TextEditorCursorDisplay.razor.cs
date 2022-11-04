@@ -51,21 +51,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         ? "bte_blink"
         : string.Empty;
 
-    public void Dispose()
-    {
-        _blinkingCursorCancellationTokenSource.Cancel();
-
-        if (IsFocusTarget)
-        {
-            _ = Task.Run(async () =>
-            {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                    _intersectionObserverMapKey.ToString());
-            });
-        }
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -256,5 +241,20 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             return -1;
 
         return TabIndex;
+    }
+    
+    public void Dispose()
+    {
+        _blinkingCursorCancellationTokenSource.Cancel();
+
+        if (IsFocusTarget)
+        {
+            _ = Task.Run(async () =>
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
+                    _intersectionObserverMapKey.ToString());
+            });
+        }
     }
 }
