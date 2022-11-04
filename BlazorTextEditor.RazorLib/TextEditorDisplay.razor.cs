@@ -225,8 +225,8 @@ public partial class TextEditorDisplay : ComponentBase
 
     private async Task FocusTextEditorOnClickAsync()
     {
-        // if (_textEditorCursorDisplay is not null)
-        //     await _textEditorCursorDisplay.FocusAsync();   
+        if (_textEditorCursorDisplay is not null)
+            await _textEditorCursorDisplay.FocusAsync();   
     }
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)

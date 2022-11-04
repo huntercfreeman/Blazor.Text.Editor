@@ -222,6 +222,17 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     public async Task SetShouldDisplayMenuAsync(TextEditorMenuKind textEditorMenuKind)
     {
+        if (_textEditorMenuKind == TextEditorMenuKind.None &&
+            textEditorMenuKind == TextEditorMenuKind.None)
+        {
+            // This early return to do nothing is done for
+            //
+            // If one onmousedown the TextEditor while the cursor is out of
+            // view, a janky scroll to where the cursor current is and where it
+            // will be occurs and it is confusing and bugs the cursor out.
+            return;
+        }
+        
         _textEditorMenuKind = textEditorMenuKind;
 
         await InvokeAsync(StateHasChanged);
