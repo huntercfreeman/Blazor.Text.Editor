@@ -11,23 +11,17 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public TextEditorBase TextEditor { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public string ScrollableContainerId { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public bool IsFocusTarget { get; set; }
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public int TabIndex { get; set; }
     [Parameter]
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
@@ -68,7 +62,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         if (TextEditorCursor.ShouldRevealCursor)
         {
             TextEditorCursor.ShouldRevealCursor = false;
-
+        
             await ScrollIntoViewIfNotVisibleAsync();
         }
 
