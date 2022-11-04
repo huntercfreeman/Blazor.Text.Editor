@@ -6,6 +6,19 @@ namespace BlazorTextEditor.RazorLib.Virtualization;
 
 public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 {
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public Func<VirtualizationRequest, VirtualizationResult<T>?> EntriesProviderFunc { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public RenderFragment<VirtualizationEntry<T>> ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public bool UseHorizontalVirtualization { get; set; } = true;
+    [Parameter]
+    public bool UseVerticalVirtualization { get; set; } = true;
+    
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private VirtualizationRequest _request = null!;
 
@@ -19,20 +32,6 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
     private ElementReference _scrollableParentFinder;
 
     private CancellationTokenSource _scrollEventCancellationTokenSource = new();
-    [Inject]
-    private IJSRuntime JsRuntime { get; set; } = null!;
-
-    [Parameter]
-    [EditorRequired]
-    public Func<VirtualizationRequest, VirtualizationResult<T>?> EntriesProviderFunc { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
-    public RenderFragment<VirtualizationEntry<T>> ChildContent { get; set; } = null!;
-
-    [Parameter]
-    public bool UseHorizontalVirtualization { get; set; } = true;
-    [Parameter]
-    public bool UseVerticalVirtualization { get; set; } = true;
 
     private string LeftVirtualizationBoundaryDisplayId =>
         $"bte_left-virtualization-boundary-display-{_intersectionObserverMapKey}";
@@ -45,16 +44,6 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 
     private string BottomVirtualizationBoundaryDisplayId =>
         $"bte_bottom-virtualization-boundary-display-{_intersectionObserverMapKey}";
-
-    public void Dispose()
-    {
-        _scrollEventCancellationTokenSource.Cancel();
-
-        _ = Task.Run(async () =>
-            await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.disposeIntersectionObserver",
-                _intersectionObserverMapKey.ToString()));
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -115,5 +104,15 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 
             InvokeAsync(StateHasChanged);
         }
+    }
+    
+    public void Dispose()
+    {
+        _scrollEventCancellationTokenSource.Cancel();
+
+        _ = Task.Run(async () =>
+            await JsRuntime.InvokeVoidAsync(
+                "blazorTextEditor.disposeIntersectionObserver",
+                _intersectionObserverMapKey.ToString()));
     }
 }

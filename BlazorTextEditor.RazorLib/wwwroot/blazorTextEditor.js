@@ -1,12 +1,13 @@
 window.blazorTextEditor = {
     cursorIntersectionObserverMap: new Map(),
     initializeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey,
-                                                              scrollableContainerElementId,
+                                                              scrollableParentElementId,
                                                               cursorElementId) {
 
-        let scrollableContainer = document.getElementById(scrollableContainerElementId);
+        let scrollableParent = document.getElementById(scrollableParentElementId);
 
         let options = {
+            root: scrollableParent,
             rootMargin: '0px',
             threshold: 0
         }
@@ -64,17 +65,17 @@ window.blazorTextEditor = {
 
         // TODO: Add dispose
     },
-    measureFontWidthAndElementHeightByElementId: function (elementId, amountOfCharactersRendered) {
+    measureCharacterWidthAndRowHeight: function (elementId, amountOfCharactersRendered) {
         let element = document.getElementById(elementId);
 
         let fontWidth = element.offsetWidth / amountOfCharactersRendered;
 
         return {
-            FontWidthInPixels: fontWidth,
-            ElementHeightInPixels: element.offsetHeight
+            CharacterWidthInPixels: fontWidth,
+            RowHeightInPixels: element.offsetHeight
         }
     },
-    measureWidthAndHeightByElementId: function (elementId) {
+    measureWidthAndHeightOfTextEditor: function (elementId) {
         let element = document.getElementById(elementId);
 
         return {

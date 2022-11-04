@@ -5,11 +5,9 @@ namespace BlazorTextEditor.RazorLib.Virtualization;
 
 public partial class VirtualizationBoundaryDisplay : ComponentBase
 {
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public VirtualizationBoundary VirtualizationBoundary { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
+    [Parameter, EditorRequired]
     public string VirtualizationBoundaryDisplayId { get; set; } = null!;
 
     private string GetStyleCssString()

@@ -1,6 +1,6 @@
 namespace BlazorTextEditor.RazorLib.JavaScriptObjects;
 
-public class WidthAndHeightOfElement
+public class WidthAndHeightOfTextEditor
 {
     public double WidthInPixels { get; set; }
     public double HeightInPixels { get; set; }
