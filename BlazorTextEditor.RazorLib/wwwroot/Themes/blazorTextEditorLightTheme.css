@@ -1,19 +1,19 @@
 .bte_light-theme {
     --bte_primary-font-color: #000000;
     --bte_text-editor-cursor-foreground-color: #404040;
-    --bte_text-selection-background-color: #FADCF0;
+    --bte_text-selection-background-color: #ADD6FF;
     --bte_body-background-color: #FDFDFD;
     --bte_text-editor-caret-row-border-color: #c8c864;
     --bte_newline-foreground-color: #007F00;
     --bte_newline-background-color: #faeee2;
-    --bte_method-foreground-color: #109310;
-    --bte_type-foreground-color: #3B74EF;
-    --bte_parameter-foreground-color: #6A2FB0;
-    --bte_string-literal-foreground-color: #D17700;
-    --bte_keyword-foreground-color: #C00000;
-    --bte_comment-foreground-color: #808080;
+    --bte_method-foreground-color: #B77D00;
+    --bte_type-foreground-color: #2B91AF;
+    --bte_parameter-foreground-color: #1F377F;
+    --bte_string-literal-foreground-color: #A31515;
+    --bte_keyword-foreground-color: #0000FF;
+    --bte_comment-foreground-color: #007F00;
     --bte_tag-name-foreground-color: #0000FF;
-    --bte_injected-language-fragment-color: red;
+    --bte_injected-language-fragment-color: #c509db;
     --bte_text-editor-gutter-border-color: #accec1;
     --bte_text-editor-gutter-background-color: #F9F9EF;
     --bte_secondary-font-color: var(--bte_primary-font-color);
