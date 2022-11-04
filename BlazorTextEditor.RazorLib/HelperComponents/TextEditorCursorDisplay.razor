@@ -19,7 +19,7 @@
          style="@MenuStyleCss">
 
         <CascadingValue Name="SetShouldDisplayMenuAsync"
-                        Value="new Func<TextEditorMenuKind, Task>(SetShouldDisplayMenuAsync)">
+                        Value="new Func<TextEditorMenuKind, bool, Task>(SetShouldDisplayMenuAsync)">
 
             @switch (_textEditorMenuKind)
             {

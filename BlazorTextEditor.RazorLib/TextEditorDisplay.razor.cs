@@ -44,7 +44,7 @@ public partial class TextEditorDisplay : ComponentBase
     /// </summary>
     [Parameter]
     public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs,
-        Func<TextEditorMenuKind, Task>, Task>? AfterOnKeyDownAsync { get; set; }
+        Func<TextEditorMenuKind, bool, Task>, Task>? AfterOnKeyDownAsync { get; set; }
     [Parameter]
     public bool ShouldRemeasureFlag { get; set; }
     [Parameter]
@@ -323,7 +323,9 @@ public partial class TextEditorDisplay : ComponentBase
             // so assume ContextMenu is desired result.
             return;
 
-        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(
+            TextEditorMenuKind.None,
+            false);
 
         var rowAndColumnIndex =
             await DetermineRowAndColumnIndex(mouseEventArgs);
