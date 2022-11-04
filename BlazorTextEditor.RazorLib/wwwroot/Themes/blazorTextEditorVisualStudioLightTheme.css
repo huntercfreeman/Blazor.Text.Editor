@@ -16,7 +16,7 @@
     --bte_injected-language-fragment-color: red;
     --bte_text-editor-gutter-border-color: #accec1;
     --bte_text-editor-gutter-background-color: #f0f0dc;
-    --bte_secondary-font-color: #d1d2ca;
-    --bte_secondary-background-color: #2d2f34;
-    --bte_primary-overlay-box-shadow-color: #ffffff;
+    --bte_secondary-font-color: var(--bte_primary-font-color);
+    --bte_secondary-background-color: #e6e6e6;
+    --bte_primary-overlay-box-shadow-color: #000000;
 }
