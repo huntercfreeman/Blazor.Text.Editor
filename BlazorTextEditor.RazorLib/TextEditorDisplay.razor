@@ -132,11 +132,12 @@
                                 </span>
                             }
 
-                            @if (GlobalShowNewlines)
+                            @if (GlobalShowNewlines && 
+                                 index < safeTextEditorReference.RowCount - 1)
                             {
                                 var amountOfLeftInCharacterWidthUnits =
                                     virtualizedRow.LeftInPixels /
-                                    CharacterWidthAndRowHeight.FontWidthInPixels;
+                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                                 var lengthOfRow = safeTextEditorReference
                                     .GetLengthOfRow(
@@ -161,7 +162,7 @@
                 {
                     <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                              TextEditorCursor="PrimaryCursor"
-                                             FontWidthAndElementHeight="CharacterWidthAndRowHeight"
+                                             CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
                                              TextEditor="safeTextEditorReference"
                                              ScrollableContainerId="@TextEditorContentId"
                                              IsFocusTarget="true"

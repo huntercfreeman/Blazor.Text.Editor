@@ -19,6 +19,50 @@ namespace BlazorTextEditor.RazorLib;
 
 public partial class TextEditorDisplay : ComponentBase
 {
+    [Inject]
+    private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+    [Inject]
+    private IClipboardProvider ClipboardProvider { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public TextEditorKey TextEditorKey { get; set; } = null!;
+    [Parameter]
+    public RenderFragment? OnContextMenuRenderFragment { get; set; }
+    [Parameter]
+    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
+    [Parameter]
+    public Action<TextEditorBase>? OnSaveRequested { get; set; }
+    /// <summary>
+    ///     (TextEditorBase textEditor, ImmutableArray&lt;TextEditorCursorSnapshot&gt; textEditorCursorSnapshots,
+    ///     KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
+    /// </summary>
+    [Parameter]
+    public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs,
+        Func<TextEditorMenuKind, bool, Task>, Task>? AfterOnKeyDownAsync { get; set; }
+    [Parameter]
+    public bool ShouldRemeasureFlag { get; set; }
+    [Parameter]
+    public string StyleCssString { get; set; } = null!;
+    [Parameter]
+    public string ClassCssString { get; set; } = null!;
+    /// <summary>
+    ///     TabIndex is used for the html attribute: 'tabindex'
+    ///     <br /><br />
+    ///     tabindex of -1 means one can only set focus to the
+    ///     text editor by clicking on it.
+    ///     <br /><br />
+    ///     tabindex of 0 means one can both use the tab key to set focus to the
+    ///     text editor or click on it.
+    /// </summary>
+    [Parameter]
+    public int TabIndex { get; set; } = -1;
+    
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
 
@@ -41,55 +85,11 @@ public partial class TextEditorDisplay : ComponentBase
     private bool _thinksLeftMouseButtonIsDown;
 
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
-    [Inject]
-    private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
-    [Inject]
-    private ITextEditorService TextEditorService { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
-    [Inject]
-    private IJSRuntime JsRuntime { get; set; } = null!;
-    [Inject]
-    private IClipboardProvider ClipboardProvider { get; set; } = null!;
-
-    [Parameter]
-    [EditorRequired]
-    public TextEditorKey TextEditorKey { get; set; } = null!;
-    [Parameter]
-    public RenderFragment? OnContextMenuRenderFragment { get; set; }
-    [Parameter]
-    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
-    [Parameter]
-    public Action<TextEditorBase>? OnSaveRequested { get; set; }
-    /// <summary>
-    ///     (TextEditorBase textEditor, ImmutableArray&lt;TextEditorCursorSnapshot&gt; textEditorCursorSnapshots,
-    ///     KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
-    /// </summary>
-    [Parameter]
-    public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs,
-        Func<TextEditorMenuKind, Task>, Task>? AfterOnKeyDownAsync { get; set; }
-    [Parameter]
-    public bool ShouldRemeasureFlag { get; set; }
-    [Parameter]
-    public string StyleCssString { get; set; } = null!;
-    [Parameter]
-    public string ClassCssString { get; set; } = null!;
-    /// <summary>
-    ///     TabIndex is used for the html attribute: 'tabindex'
-    ///     <br /><br />
-    ///     tabindex of -1 means one can only set focus to the
-    ///     text editor by clicking on it.
-    ///     <br /><br />
-    ///     tabindex of 0 means one can both use the tab key to set focus to the
-    ///     text editor or click on it.
-    /// </summary>
-    [Parameter]
-    public int TabIndex { get; set; } = -1;
 
     public bool ShouldMeasureDimensions { get; set; } = true;
-    public FontWidthAndElementHeight? CharacterWidthAndRowHeight { get; private set; }
+    public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
-    public WidthAndHeightOfElement? TextEditorWidthAndHeight { get; private set; }
+    public WidthAndHeightOfTextEditor? TextEditorWidthAndHeight { get; private set; }
 
     public TextEditorBase MutableReferenceToTextEditor => TextEditorStatesSelection.Value;
 
@@ -199,14 +199,14 @@ public partial class TextEditorDisplay : ComponentBase
         if (ShouldMeasureDimensions)
         {
             CharacterWidthAndRowHeight = await JsRuntime
-                .InvokeAsync<FontWidthAndElementHeight>(
-                    "blazorTextEditor.measureFontWidthAndElementHeightByElementId",
+                .InvokeAsync<CharacterWidthAndRowHeight>(
+                    "blazorTextEditor.measureCharacterWidthAndRowHeight",
                     MeasureCharacterWidthAndRowHeightId,
                     _testStringRepeatCount * _testStringForMeasurement.Length);
 
             TextEditorWidthAndHeight = await JsRuntime
-                .InvokeAsync<WidthAndHeightOfElement>(
-                    "blazorTextEditor.measureWidthAndHeightByElementId",
+                .InvokeAsync<WidthAndHeightOfTextEditor>(
+                    "blazorTextEditor.measureWidthAndHeightOfTextEditor",
                     TextEditorContentId);
 
             {
@@ -226,7 +226,7 @@ public partial class TextEditorDisplay : ComponentBase
     private async Task FocusTextEditorOnClickAsync()
     {
         if (_textEditorCursorDisplay is not null)
-            await _textEditorCursorDisplay.FocusAsync();
+            await _textEditorCursorDisplay.FocusAsync();   
     }
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
@@ -323,7 +323,9 @@ public partial class TextEditorDisplay : ComponentBase
             // so assume ContextMenu is desired result.
             return;
 
-        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(
+            TextEditorMenuKind.None,
+            false);
 
         var rowAndColumnIndex =
             await DetermineRowAndColumnIndex(mouseEventArgs);
@@ -414,13 +416,13 @@ public partial class TextEditorDisplay : ComponentBase
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
         }
 
-        var columnIndexDouble = positionX / CharacterWidthAndRowHeight.FontWidthInPixels;
+        var columnIndexDouble = positionX / CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var columnIndexInt = (int)Math.Round(
             columnIndexDouble,
             MidpointRounding.AwayFromZero);
 
-        var rowIndex = (int)(positionY / CharacterWidthAndRowHeight.ElementHeightInPixels);
+        var rowIndex = (int)(positionY / CharacterWidthAndRowHeight.RowHeightInPixels);
 
         rowIndex = rowIndex > safeTextEditorReference.RowCount - 1
             ? safeTextEditorReference.RowCount - 1
@@ -480,16 +482,16 @@ public partial class TextEditorDisplay : ComponentBase
             return string.Empty;
 
         var top =
-            $"top:{index * CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+            $"top:{index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
         var height =
-            $"height: {CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
             .ToString()
             .Length;
 
         var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.FontWidthInPixels;
+                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var leftInPixels = widthOfGutterInPixels +
                            virtualizedRowLeftInPixels +
@@ -509,16 +511,16 @@ public partial class TextEditorDisplay : ComponentBase
             return string.Empty;
 
         var top =
-            $"top: {index * CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+            $"top: {index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
         var height =
-            $"height: {CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
             .ToString()
             .Length;
 
         var widthInPixels = mostDigitsInARowLineNumber *
-                            CharacterWidthAndRowHeight.FontWidthInPixels;
+                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
@@ -569,16 +571,16 @@ public partial class TextEditorDisplay : ComponentBase
         }
 
         var top =
-            $"top: {rowIndex * CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+            $"top: {rowIndex * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
         var height =
-            $"height: {CharacterWidthAndRowHeight.ElementHeightInPixels}px;";
+            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
             .ToString()
             .Length;
 
         var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.FontWidthInPixels;
+                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var gutterSizeInPixels =
             widthOfGutterInPixels +
@@ -587,7 +589,7 @@ public partial class TextEditorDisplay : ComponentBase
 
         var selectionStartInPixels =
             selectionStartingColumnIndex *
-            CharacterWidthAndRowHeight.FontWidthInPixels;
+            CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         // selectionStartInPixels offset from Tab keys a width of many characters
         {
@@ -602,14 +604,14 @@ public partial class TextEditorDisplay : ComponentBase
 
             selectionStartInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.FontWidthInPixels;
+                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
 
         var selectionWidthInPixels =
             selectionEndingColumnIndex *
-            CharacterWidthAndRowHeight.FontWidthInPixels -
+            CharacterWidthAndRowHeight.CharacterWidthInPixels -
             selectionStartInPixels;
 
         // Tab keys a width of many characters
@@ -625,7 +627,7 @@ public partial class TextEditorDisplay : ComponentBase
 
             selectionWidthInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.FontWidthInPixels;
+                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         var widthCssStyleString = "width: ";
@@ -692,11 +694,11 @@ public partial class TextEditorDisplay : ComponentBase
 
         var verticalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollTopInPixels /
-            CharacterWidthAndRowHeight.ElementHeightInPixels);
+            CharacterWidthAndRowHeight.RowHeightInPixels);
 
         var verticalTake = (int)Math.Ceiling(
             TextEditorWidthAndHeight.HeightInPixels /
-            CharacterWidthAndRowHeight.ElementHeightInPixels);
+            CharacterWidthAndRowHeight.RowHeightInPixels);
 
         if (verticalStartingIndex + verticalTake >
             safeTextEditorReference.RowEndingPositions.Length)
@@ -709,11 +711,11 @@ public partial class TextEditorDisplay : ComponentBase
 
         var horizontalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollLeftInPixels /
-            CharacterWidthAndRowHeight.FontWidthInPixels);
+            CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var horizontalTake = (int)Math.Ceiling(
             TextEditorWidthAndHeight.WidthInPixels /
-            CharacterWidthAndRowHeight.FontWidthInPixels);
+            CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var virtualizedEntries = safeTextEditorReference
             .GetRows(verticalStartingIndex, verticalTake)
@@ -735,36 +737,36 @@ public partial class TextEditorDisplay : ComponentBase
 
                 var widthInPixels =
                     horizontallyVirtualizedRow.Count *
-                    CharacterWidthAndRowHeight.FontWidthInPixels;
+                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                 var leftInPixels =
                     horizontalStartingIndex *
-                    CharacterWidthAndRowHeight.FontWidthInPixels;
+                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                 var topInPixels =
                     index *
-                    CharacterWidthAndRowHeight.ElementHeightInPixels;
+                    CharacterWidthAndRowHeight.RowHeightInPixels;
 
                 return new VirtualizationEntry<List<RichCharacter>>(
                     index,
                     horizontallyVirtualizedRow,
                     widthInPixels,
-                    CharacterWidthAndRowHeight.ElementHeightInPixels,
+                    CharacterWidthAndRowHeight.RowHeightInPixels,
                     leftInPixels,
                     topInPixels);
             }).ToImmutableArray();
 
         var totalWidth =
             safeTextEditorReference.MostCharactersOnASingleRow *
-            CharacterWidthAndRowHeight.FontWidthInPixels;
+            CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var totalHeight =
             safeTextEditorReference.RowEndingPositions.Length *
-            CharacterWidthAndRowHeight.ElementHeightInPixels;
+            CharacterWidthAndRowHeight.RowHeightInPixels;
 
         var leftBoundaryWidthInPixels =
             horizontalStartingIndex *
-            CharacterWidthAndRowHeight.FontWidthInPixels;
+            CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var leftBoundary = new VirtualizationBoundary(
             leftBoundaryWidthInPixels,
@@ -774,7 +776,7 @@ public partial class TextEditorDisplay : ComponentBase
 
         var rightBoundaryLeftInPixels =
             leftBoundary.WidthInPixels +
-            CharacterWidthAndRowHeight.FontWidthInPixels *
+            CharacterWidthAndRowHeight.CharacterWidthInPixels *
             horizontalTake;
 
         var rightBoundaryWidthInPixels =
@@ -789,7 +791,7 @@ public partial class TextEditorDisplay : ComponentBase
 
         var topBoundaryHeightInPixels =
             verticalStartingIndex *
-            CharacterWidthAndRowHeight.ElementHeightInPixels;
+            CharacterWidthAndRowHeight.RowHeightInPixels;
 
         var topBoundary = new VirtualizationBoundary(
             null,
@@ -799,7 +801,7 @@ public partial class TextEditorDisplay : ComponentBase
 
         var bottomBoundaryTopInPixels =
             topBoundary.HeightInPixels +
-            CharacterWidthAndRowHeight.ElementHeightInPixels *
+            CharacterWidthAndRowHeight.RowHeightInPixels *
             verticalTake;
 
         var bottomBoundaryHeightInPixels =

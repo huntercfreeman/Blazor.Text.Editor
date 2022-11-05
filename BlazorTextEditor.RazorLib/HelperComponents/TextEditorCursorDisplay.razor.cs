@@ -8,6 +8,26 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 
 public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 {
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public TextEditorBase TextEditor { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public TextEditorCursor TextEditorCursor { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public string ScrollableContainerId { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public bool IsFocusTarget { get; set; }
+    [Parameter, EditorRequired]
+    public int TabIndex { get; set; }
+    [Parameter]
+    public RenderFragment? OnContextMenuRenderFragment { get; set; }
+    [Parameter]
+    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
+    
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
     private TimeSpan _blinkingCursorTaskDelay = TimeSpan.FromMilliseconds(1000);
@@ -15,31 +35,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
-    [Inject]
-    private IJSRuntime JsRuntime { get; set; } = null!;
-
-    [Parameter]
-    [EditorRequired]
-    public TextEditorBase TextEditor { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
-    public TextEditorCursor TextEditorCursor { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
-    public FontWidthAndElementHeight FontWidthAndElementHeight { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
-    public string ScrollableContainerId { get; set; } = null!;
-    [Parameter]
-    [EditorRequired]
-    public bool IsFocusTarget { get; set; }
-    [Parameter]
-    [EditorRequired]
-    public int TabIndex { get; set; }
-    [Parameter]
-    public RenderFragment? OnContextMenuRenderFragment { get; set; }
-    [Parameter]
-    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
 
     public string TextEditorCursorDisplayId => $"bte_text-editor-cursor-display_{_intersectionObserverMapKey}";
 
@@ -49,21 +44,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public string BlinkAnimationCssClass => _hasBlinkAnimation
         ? "bte_blink"
         : string.Empty;
-
-    public void Dispose()
-    {
-        _blinkingCursorCancellationTokenSource.Cancel();
-
-        if (IsFocusTarget)
-        {
-            _ = Task.Run(async () =>
-            {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                    _intersectionObserverMapKey.ToString());
-            });
-        }
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -82,7 +62,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         if (TextEditorCursor.ShouldRevealCursor)
         {
             TextEditorCursor.ShouldRevealCursor = false;
-
+        
             await ScrollIntoViewIfNotVisibleAsync();
         }
 
@@ -111,7 +91,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
-                            FontWidthAndElementHeight.FontWidthInPixels;
+                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         // Line number column offset
@@ -120,15 +100,15 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                 .ToString()
                 .Length;
 
-            leftInPixels += mostDigitsInARowLineNumber * FontWidthAndElementHeight.FontWidthInPixels;
+            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        leftInPixels += FontWidthAndElementHeight.FontWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
         var top =
-            $"top: {FontWidthAndElementHeight.ElementHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {FontWidthAndElementHeight.ElementHeightInPixels}px;";
+            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
+        var height = $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         return $"{left} {top} {height}";
     }
@@ -136,10 +116,10 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private string GetCaretRowStyleCss()
     {
         var top =
-            $"top: {FontWidthAndElementHeight.ElementHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {FontWidthAndElementHeight.ElementHeightInPixels}px;";
+            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
+        var height = $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var width = $"width: {TextEditor.MostCharactersOnASingleRow * FontWidthAndElementHeight.FontWidthInPixels}px;";
+        var width = $"width: {TextEditor.MostCharactersOnASingleRow * CharacterWidthAndRowHeight.CharacterWidthInPixels}px;";
 
         return $"{top} {width} {height}";
     }
@@ -166,7 +146,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
-                            FontWidthAndElementHeight.FontWidthInPixels;
+                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         // Line number column offset
@@ -175,19 +155,19 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                 .ToString()
                 .Length;
 
-            leftInPixels += mostDigitsInARowLineNumber * FontWidthAndElementHeight.FontWidthInPixels;
+            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        leftInPixels += FontWidthAndElementHeight.FontWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
 
         // Top is 1 row further than the cursor so it does not cover text at cursor position.
         var top =
-            $"top: {FontWidthAndElementHeight.ElementHeightInPixels * (TextEditorCursor.IndexCoordinates.rowIndex + 1)}px;";
+            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * (TextEditorCursor.IndexCoordinates.rowIndex + 1)}px;";
 
-        var minWidth = $"min-Width: {FontWidthAndElementHeight.FontWidthInPixels * 16}px;";
-        var minHeight = $"min-height: {FontWidthAndElementHeight.ElementHeightInPixels * 4}px;";
+        var minWidth = $"min-Width: {CharacterWidthAndRowHeight.CharacterWidthInPixels * 16}px;";
+        var minHeight = $"min-height: {CharacterWidthAndRowHeight.RowHeightInPixels * 4}px;";
 
         return $"{left} {top} {minWidth} {minHeight}";
     }
@@ -240,13 +220,16 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         return _blinkingCursorCancellationTokenSource.Token;
     }
 
-    public async Task SetShouldDisplayMenuAsync(TextEditorMenuKind textEditorMenuKind)
+    public async Task SetShouldDisplayMenuAsync(
+        TextEditorMenuKind textEditorMenuKind,
+        bool shouldFocusCursor = true)
     {
         _textEditorMenuKind = textEditorMenuKind;
 
         await InvokeAsync(StateHasChanged);
 
-        if (_textEditorMenuKind == TextEditorMenuKind.None) await FocusAsync();
+        if (shouldFocusCursor && _textEditorMenuKind == TextEditorMenuKind.None) 
+            await FocusAsync();
     }
 
     private int GetTabIndex()
@@ -255,5 +238,20 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             return -1;
 
         return TabIndex;
+    }
+    
+    public void Dispose()
+    {
+        _blinkingCursorCancellationTokenSource.Cancel();
+
+        if (IsFocusTarget)
+        {
+            _ = Task.Run(async () =>
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
+                    _intersectionObserverMapKey.ToString());
+            });
+        }
     }
 }
