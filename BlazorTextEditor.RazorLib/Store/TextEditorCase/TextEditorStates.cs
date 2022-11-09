@@ -15,7 +15,7 @@ public record TextEditorStates(
             20,
             ThemeFacts.BlazorTextEditorDark,
             false,
-            true))
+            false))
     {
     }
 }

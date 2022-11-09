@@ -55,10 +55,10 @@ window.blazorTextEditor = {
         if (!cursorTuple.IsIntersecting) {
             let cursorElement = document.getElementById(cursorElementId);
 
-            // cursorElement.scrollIntoView({
-            //     block: "nearest",
-            //     inline: "nearest"
-            // });
+            cursorElement.scrollIntoView({
+                block: "nearest",
+                inline: "nearest"
+            });
         }
     },
     disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
