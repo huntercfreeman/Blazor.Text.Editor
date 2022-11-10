@@ -29,10 +29,13 @@ public class TextEditorService : ITextEditorService
                                                    .CssClassString
                                                ?? string.Empty;
 
-    public string GlobalFontSizeInPixelsStyling => "font-size: " + TextEditorStates
-                                                                     .GlobalTextEditorOptions
-                                                                     .FontSizeInPixels!.Value
-                                                                 + "px;";
+    public string GlobalFontSizeInPixelsStyling => "font-size: " + 
+                                                   GlobalFontSizeInPixelsValue +
+                                                   "px;";
+    
+    public int GlobalFontSizeInPixelsValue => TextEditorStates
+        .GlobalTextEditorOptions
+        .FontSizeInPixels!.Value;
 
     public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
 

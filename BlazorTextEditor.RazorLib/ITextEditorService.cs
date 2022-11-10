@@ -11,6 +11,7 @@ public interface ITextEditorService : IDisposable
 
     public string GlobalThemeCssClassString { get; }
     public string GlobalFontSizeInPixelsStyling { get; }
+    public int GlobalFontSizeInPixelsValue { get; }
     public bool GlobalShowNewlines { get; }
     public bool GlobalShowWhitespace { get; }
 

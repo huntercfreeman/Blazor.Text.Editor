@@ -1,0 +1,15 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div class="bte_text-editor-input-font-size @TextEditorService.GlobalThemeCssClassString">
+    Text Editor font-size:&nbsp;
+    <input type="number"
+           @bind="TextEditorFontSize"
+           class="@InputElementCssClassString" />
+    
+    <div>
+        icon-size&nbsp;value:&nbsp;
+        <em class="@EmElementCssClassString">
+            @(TextEditorService.GlobalFontSizeInPixelsValue)px
+        </em>
+    </div>
+</div>
