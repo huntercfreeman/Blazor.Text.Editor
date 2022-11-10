@@ -130,3 +130,23 @@
     position: absolute;
 }
 
+.bte_text-editor-footer {
+    font-size: .8em;
+    display: flex;
+    height: var(--bte_text-editor-footer-height);
+    align-items: center;
+    overflow: auto;
+    white-space: nowrap;
+    border-top: 2px solid var(--bte_text-editor-gutter-border-color);
+    color: var(--bte_primary-font-color);
+    background-color: var(--bte_text-editor-gutter-background-color);
+}
+
+.bte_text-editor-footer-entry {
+    padding-right: 5px;
+}
+
+.bte_text-editor-footer-entry:not(:last-child) {
+    border-right: 2px solid var(--bte_text-editor-caret-row-border-color);
+    margin-right: 5px;
+}
