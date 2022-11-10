@@ -17,10 +17,12 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
-public partial class TextEditorDisplay : ComponentBase
+public partial class TextEditorDisplay : ComponentBase, IDisposable
 {
     [Inject]
     private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
+    [Inject]
+    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     [Inject]
@@ -65,6 +67,7 @@ public partial class TextEditorDisplay : ComponentBase
     
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
+    private TextEditorOptions? _previousGlobalTextEditorOptions;
 
     private TextEditorKey? _previousTextEditorKey;
     private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -183,6 +186,8 @@ public partial class TextEditorDisplay : ComponentBase
 
     protected override void OnInitialized()
     {
+        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
+        
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .Single(x => x.Key == TextEditorKey));
@@ -216,6 +221,16 @@ public partial class TextEditorDisplay : ComponentBase
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+    
+    private void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        if (_previousGlobalTextEditorOptions is null ||
+            _previousGlobalTextEditorOptions != TextEditorStatesWrap.Value.GlobalTextEditorOptions)
+        {
+            _previousGlobalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
+            InvokeAsync(StateHasChanged);
+        }
     }
 
     public void ReloadVirtualizationDisplay()
@@ -820,5 +835,10 @@ public partial class TextEditorDisplay : ComponentBase
             rightBoundary,
             topBoundary,
             bottomBoundary);
+    }
+
+    public void Dispose()
+    {
+        TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
     }
 }
