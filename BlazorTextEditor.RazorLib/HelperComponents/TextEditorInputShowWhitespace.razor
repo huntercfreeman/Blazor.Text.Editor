@@ -1,0 +1,6 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div class="bte_text-editor-input bte_text-editor-input-new-lines @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
+    Show Whitespace:&nbsp;
+    <input class="@InputElementCssClassString" type="checkbox" @bind="GlobalShowWhitespace" />
+</div>

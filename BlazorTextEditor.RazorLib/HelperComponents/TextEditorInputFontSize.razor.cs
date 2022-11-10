@@ -9,7 +9,11 @@ public partial class TextEditorInputFontSize : FluxorComponent
     private ITextEditorService TextEditorService { get; set; } = null!;
 
     [Parameter, EditorRequired]
+    public string TopLevelDivElementCssClassString { get; set; } = string.Empty;
+    [Parameter, EditorRequired]
     public string InputElementCssClassString { get; set; } = string.Empty;
+    [Parameter, EditorRequired]
+    public string ValueWrappingDivElementCssClassString { get; set; } = string.Empty;
     [Parameter, EditorRequired]
     public string EmElementCssClassString { get; set; } = string.Empty;
 
