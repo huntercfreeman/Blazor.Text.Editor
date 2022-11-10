@@ -7,6 +7,8 @@ namespace BlazorTextEditor.RazorLib;
 
 public interface ITextEditorService : IDisposable
 {
+    public static string LocalStorageGlobalTextEditorOptionsKey { get; } = "bte_text-editor-options";
+    
     public TextEditorStates TextEditorStates { get; }
 
     public string GlobalThemeCssClassString { get; }
@@ -25,4 +27,7 @@ public interface ITextEditorService : IDisposable
     public void SetShowWhitespace(bool showWhitespace);
     public void SetShowNewlines(bool showNewlines);
     public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind);
+    
+    public Task SetTextEditorOptionsFromLocalStorageAsync();
+    public void WriteGlobalTextEditorOptionsToLocalStorage();
 }

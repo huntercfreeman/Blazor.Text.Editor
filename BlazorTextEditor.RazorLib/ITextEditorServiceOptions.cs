@@ -12,4 +12,5 @@ public interface ITextEditorServiceOptions
     ///     not be rendered from within the Nuget Package
     /// </summary>
     public bool InitializeFluxor { get; }
+    public bool UseLocalStorageForSettings { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -11,4 +12,5 @@ public class TextEditorServiceOptions : ITextEditorServiceOptions
     /// </summary>
     public Func<IServiceProvider, IClipboardProvider>? ClipboardProviderFactory { get; set; }
     public bool InitializeFluxor { get; set; } = true;
+    public bool UseLocalStorageForSettings { get; set; }
 }
