@@ -255,5 +255,11 @@ window.blazorTextEditor = {
                 document.body.removeChild(textarea);
             }
         }
-    }
+    },
+    localStorageSetItem: function (key, value) {
+        localStorage.setItem(key, value);
+    },
+    localStorageGetItem: function (key, value) {
+        return localStorage.getItem(key);
+    },
 }
