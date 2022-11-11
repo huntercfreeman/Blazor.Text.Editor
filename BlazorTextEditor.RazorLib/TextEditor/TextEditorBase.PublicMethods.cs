@@ -188,7 +188,11 @@ public partial class TextEditorBase
 
         return (0, 0, _rowEndingPositions[0]);
     }
-
+    
+    /// <summary>
+    /// <see cref="moveBackwards"/> is to mean earlier in the document
+    /// (lower column index or lower row index depending on position) 
+    /// </summary>
     /// <returns>Will return -1 if no valid result was found.</returns>
     public int GetColumnIndexOfCharacterWithDifferingKind(
         int rowIndex,

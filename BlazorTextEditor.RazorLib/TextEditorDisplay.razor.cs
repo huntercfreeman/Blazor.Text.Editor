@@ -20,7 +20,7 @@ namespace BlazorTextEditor.RazorLib;
 public partial class TextEditorDisplay : ComponentBase, IDisposable
 {
     [Inject]
-    private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
+    private IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
     [Inject]
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
@@ -94,20 +94,21 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
     public WidthAndHeightOfTextEditor? TextEditorWidthAndHeight { get; private set; }
 
-    public TextEditorBase MutableReferenceToTextEditor => TextEditorStatesSelection.Value;
+    public TextEditorBase? MutableReferenceToTextEditor => TextEditorStatesSelection.Value;
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
 
     private string MeasureCharacterWidthAndRowHeightId =>
         $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
 
-    private MarkupString GetAllTextEscaped => (MarkupString)MutableReferenceToTextEditor
+    private MarkupString GetAllTextEscaped => (MarkupString)(MutableReferenceToTextEditor?
         .GetAllText()
         .Replace("\r\n", "\\r\\n<br/>")
         .Replace("\r", "\\r<br/>")
         .Replace("\n", "\\n<br/>")
         .Replace("\t", "--->")
-        .Replace(" ", "·");
+        .Replace(" ", "·")
+            ?? string.Empty);
 
     private string GlobalThemeCssClassString => TextEditorService
                                                     .TextEditorStates
@@ -187,10 +188,10 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     protected override void OnInitialized()
     {
         TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
-        
+
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
-                .Single(x => x.Key == TextEditorKey));
+                .SingleOrDefault(x => x.Key == TextEditorKey));
 
         CursorsChanged?.Invoke();
 
@@ -247,6 +248,10 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+
+        if (safeTextEditorReference is null)
+            return;
+        
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
         var cursorSnapshots = new TextEditorCursorSnapshot[]
@@ -326,9 +331,84 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
     }
 
+    private async Task HandleContentOnDoubleClickAsync(MouseEventArgs mouseEventArgs)
+    {
+        var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return;
+        
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+
+        if ((mouseEventArgs.Buttons & 1) != 1 &&
+            TextEditorSelectionHelper.HasSelectedText(
+                primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+            // Not pressing the left mouse button
+            // so assume ContextMenu is desired result.
+            return;
+        
+        if (mouseEventArgs.ShiftKey)
+            // Do not expand selection if user is holding shift
+            return;
+
+        var rowAndColumnIndex =
+            await DetermineRowAndColumnIndex(mouseEventArgs);
+
+        var lowerColumnIndexExpansion = safeTextEditorReference
+            .GetColumnIndexOfCharacterWithDifferingKind(
+                rowAndColumnIndex.rowIndex,
+                rowAndColumnIndex.columnIndex,
+                true);
+        
+        var higherColumnIndexExpansion = safeTextEditorReference
+            .GetColumnIndexOfCharacterWithDifferingKind(
+                rowAndColumnIndex.rowIndex,
+                rowAndColumnIndex.columnIndex,
+                false);
+        
+        // Move user's cursor position to the higher expansion
+        {
+            primaryCursorSnapshot.UserCursor.IndexCoordinates =
+                (rowAndColumnIndex.rowIndex, higherColumnIndexExpansion);
+            
+            primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
+                rowAndColumnIndex.columnIndex;
+        }
+
+        // Set text selection ending to higher expansion
+        {
+            var cursorPositionOfHigherExpansion = safeTextEditorReference
+                .GetPositionIndex(
+                    rowAndColumnIndex.rowIndex, 
+                    higherColumnIndexExpansion);
+
+            primaryCursorSnapshot
+                    .UserCursor.TextEditorSelection.EndingPositionIndex =
+                cursorPositionOfHigherExpansion;
+        }
+        
+        // Set text selection anchor to lower expansion
+        {
+            var cursorPositionOfLowerExpansion = safeTextEditorReference
+                .GetPositionIndex(
+                    rowAndColumnIndex.rowIndex, 
+                    lowerColumnIndexExpansion);
+
+            primaryCursorSnapshot
+                    .UserCursor.TextEditorSelection.AnchorPositionIndex =
+                cursorPositionOfLowerExpansion;
+        }
+
+        CursorsChanged?.Invoke();
+    }
+    
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return;
+        
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
@@ -356,8 +436,32 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             .GetCursorPositionIndex(
                 new TextEditorCursor(rowAndColumnIndex, false));
 
-        primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
-            cursorPositionIndex;
+        if (mouseEventArgs.ShiftKey)
+        {
+            if (!TextEditorSelectionHelper.HasSelectedText(
+                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+            {
+                // If user does not yet have a selection
+                // then place the text selection anchor were they were
+                
+                var cursorPositionPriorToMovementOccurring = safeTextEditorReference
+                    .GetPositionIndex(
+                        primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
+            
+                primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                    cursorPositionPriorToMovementOccurring;
+            }
+            
+            // If user ALREADY has a selection
+            // then do not modify the text selection anchor
+        }
+        else
+        {
+            primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                cursorPositionIndex;
+        }
+        
         primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
             cursorPositionIndex;
 
@@ -373,6 +477,10 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private async Task HandleContentOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return;
+        
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
         // Buttons is a bit flag
@@ -405,6 +513,9 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return (0, 0);
 
         RelativeCoordinatesOnClick = await JsRuntime
             .InvokeAsync<RelativeCoordinates>(
@@ -485,6 +596,9 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private string GetCssClass(byte decorationByte)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return string.Empty;
 
         return safeTextEditorReference.DecorationMapper.Map(decorationByte);
     }
@@ -492,6 +606,9 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return string.Empty;
 
         if (CharacterWidthAndRowHeight is null)
             return string.Empty;
@@ -521,6 +638,9 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return string.Empty;
 
         if (CharacterWidthAndRowHeight is null)
             return string.Empty;
@@ -556,6 +676,9 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
 
+        if (safeTextEditorReference is null)
+            return string.Empty;
+        
         if (CharacterWidthAndRowHeight is null ||
             rowIndex >= safeTextEditorReference.RowEndingPositions.Length)
             return string.Empty;
@@ -706,6 +829,16 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             return null;
 
         var safeTextEditorReference = TextEditorStatesSelection.Value;
+
+        if (safeTextEditorReference is null)
+        {
+            return new(
+                ImmutableArray<VirtualizationEntry<List<RichCharacter>>>.Empty,
+                new(0,0,0,0),
+                new(0,0,0,0),
+                new(0,0,0,0),
+                new(0,0,0,0));
+        }
 
         var verticalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollTopInPixels /
