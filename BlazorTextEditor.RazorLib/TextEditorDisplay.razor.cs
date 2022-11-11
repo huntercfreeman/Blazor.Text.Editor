@@ -65,6 +65,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     [Parameter]
     public int TabIndex { get; set; } = -1;
     
+    private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
+    
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
@@ -968,6 +970,48 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             rightBoundary,
             topBoundary,
             bottomBoundary);
+    }
+    
+    /// <summary>
+    /// Default implementation so Syntax Highlighting
+    /// can be done with less setup.
+    /// <br/><br/>
+    /// One can further customize this method however
+    /// by passing in to the Func their own version.
+    /// </summary>
+    public async Task HandleAfterOnKeyDownAsync(
+        TextEditorBase textEditor,
+        ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots,
+        KeyboardEventArgs keyboardEventArgs,
+        Func<TextEditorMenuKind, bool, Task> setTextEditorMenuKind)
+    {
+        var primaryCursorSnapshot = cursorSnapshots
+            .First(x =>
+                x.UserCursor.IsPrimaryCursor);
+
+        if (keyboardEventArgs.Key == ";" ||
+            KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
+            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v"))
+        {
+            // Syntax Highlighting
+
+            var success = await _afterOnKeyDownSyntaxHighlightingSemaphoreSlim
+                .WaitAsync(TimeSpan.Zero);
+
+            if (!success)
+                return;
+
+            try
+            {
+                await textEditor.ApplySyntaxHighlightingAsync();
+
+                await InvokeAsync(StateHasChanged);
+            }
+            finally
+            {
+                _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
+            }
+        }
     }
 
     public void Dispose()
