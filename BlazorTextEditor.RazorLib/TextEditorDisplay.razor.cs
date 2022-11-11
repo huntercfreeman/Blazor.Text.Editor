@@ -365,8 +365,32 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             .GetCursorPositionIndex(
                 new TextEditorCursor(rowAndColumnIndex, false));
 
-        primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
-            cursorPositionIndex;
+        if (mouseEventArgs.ShiftKey)
+        {
+            if (!TextEditorSelectionHelper.HasSelectedText(
+                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+            {
+                // If user does not yet have a selection
+                // then place the text selection anchor were they were
+                
+                var cursorPositionPriorToMovementOccurring = safeTextEditorReference
+                    .GetPositionIndex(
+                        primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
+            
+                primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                    cursorPositionPriorToMovementOccurring;
+            }
+            
+            // If user ALREADY has a selection
+            // then do not modify the text selection anchor
+        }
+        else
+        {
+            primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                cursorPositionIndex;
+        }
+        
         primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
             cursorPositionIndex;
 
