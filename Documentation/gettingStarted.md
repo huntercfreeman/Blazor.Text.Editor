@@ -13,45 +13,46 @@
 
 - Add the library's css stylesheets to `Pages/_Layout.cshtml`. Every available stylesheet appears in the following child bulleted list. The entirety of an example _Layout.cshtml is shown as an html code snippet after the next step.
     - REQUIRED [blazorTextEditor.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditor.css): `<link href="_content/Blazor.Text.Editor/blazorTextEditor.css" rel="stylesheet"/>`
+    - REQUIRED [blazorTextEditorSizes.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditorSizes.css): `<link href="_content/Blazor.Text.Editor/blazorTextEditorSizes.css" rel="stylesheet"/>`
     - COLOR THEME :root [blazorTextEditorDefaultColors.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditorDefaultColors.css): `<link href="_content/Blazor.Text.Editor/blazorTextEditorDefaultColors.css" rel="stylesheet"/>`
     - COLOR THEME .bte_dark-theme-visual-studio [blazorTextEditorVisualStudioDarkTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorVisualStudioDarkTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioDarkTheme.css" rel="stylesheet"/>`
-    - COLOR THEME .bte_light-theme-visual-studio [blazorTextEditorVisualStudioLightTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorVisualStudioLightTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioDarkTheme.css" rel="stylesheet"/>`
+    - COLOR THEME .bte_light-theme-visual-studio [blazorTextEditorVisualStudioLightTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorVisualStudioLightTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioLightTheme.css" rel="stylesheet"/>`
     - COLOR THEME .bte_dark-theme [blazorTextEditorDarkTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorDarkTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorDarkTheme.css" rel="stylesheet"/>`
     - COLOR THEME .bte_light-theme [blazorTextEditorLightTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorLightTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorLightTheme.css" rel="stylesheet"/>`
 
 - Add the library's JavaScript to `Pages/_Layout.cshtml`. Every available JavaScript file appears in the following child bulleted list. The entirety of an example _Layout.cshtml is shown as an html code snippet after this step.
     - REQUIRED [blazorTextEditor.js](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditor.js): `<script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>`
 
-- The following html code snippet is an example _Layout.cshtml
+- The following html code snippet is an example index.html with unrelated things ommitted for brevity.
 
 ```html
-@using Microsoft.AspNetCore.Components.Web
-@namespace BlazorApp1.Pages
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <!-- ... left out unrelated markup for conciseness -->
-
-    <!-- Required .css -->
+    <!-- Blazor.Text.Editor Nuget Package | required css -->
     <link href="_content/Blazor.Text.Editor/blazorTextEditor.css" rel="stylesheet"/>
+    <link href="_content/Blazor.Text.Editor/blazorTextEditorSizes.css" rel="stylesheet"/>
 
-    <!-- Optional theme css variables for :root -->
+    <!-- Blazor.Text.Editor Nuget Package | optional color themes -->
     <link href="_content/Blazor.Text.Editor/blazorTextEditorDefaultColors.css" rel="stylesheet"/>
-    
-    <!-- ... left out unrelated markup for conciseness -->
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioDarkTheme.css" rel="stylesheet"/>
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioLightTheme.css" rel="stylesheet"/>
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorDarkTheme.css" rel="stylesheet"/>
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorLightTheme.css" rel="stylesheet"/>
 </head>
+
 <body>
+    
+    <script src="_framework/blazor.webassembly.js"></script>
 
-<!-- ... left out unrelated markup for conciseness -->
-
-<script src="_framework/blazor.server.js"></script>
-
-<script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>
+    <!-- Blazor.Text.Editor Nuget Package | required JavaScript -->
+    <script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>
 
 </body>
+
 </html>
+
 ```
 
 - Register the library's services by invoking the IServiceCollection extension method `AddTextEditorRazorLibServices()`
@@ -87,20 +88,19 @@ var app = builder.Build();
 private ITextEditorService TextEditorService { get; set; } = null!;
 ```
 
-- Subscribe to the event handler `TextEditorService.OnTextEditorStatesChanged` with a method that calls `InvokeAsync(StateHasChanged)`. (see the following code snippet and child bullet points).
+- Subscribe to the event Action `TextEditorService.OnTextEditorStatesChanged` with a method that calls `InvokeAsync(StateHasChanged)`. (see the following code snippet and child bullet points).
     - Implement `IDisposable`
     - In the `Dispose()` method use `-=` to unsubscribe. This avoids a memory leak.
     - In the Blazor lifecycle method `OnInitialized()` use `+=` to subscribe.
-    - An example of a method one can subscribe with is `void OnTextEditorStatesChanged(object? sender, EventArgs e)`
+    - An example of a method one can subscribe with is `void TextEditorServiceOnOnTextEditorStatesChanged()`
 
 ```csharp
 // In Index.razor.cs
 
-// ... the other using statements
 using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.TextEditor;
+using Microsoft.AspNetCore.Components;
 
-namespace BlazorApp1.Pages;
+namespace BlazorTextEditorDemo.Pages;
 
 public partial class Index : ComponentBase, IDisposable
 {
@@ -114,9 +114,9 @@ public partial class Index : ComponentBase, IDisposable
         base.OnInitialized();
     }
 
-    private async void TextEditorServiceOnOnTextEditorStatesChanged(object? sender, EventArgs e)
+    private void TextEditorServiceOnOnTextEditorStatesChanged()
     {
-        await InvokeAsync(StateHasChanged);
+        InvokeAsync(StateHasChanged);
     }
     
     public void Dispose()
