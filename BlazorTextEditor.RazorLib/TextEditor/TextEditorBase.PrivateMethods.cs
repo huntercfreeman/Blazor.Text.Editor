@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
@@ -44,6 +45,39 @@ public partial class TextEditorBase
 
         foreach (var cursorSnapshot in editTextEditorBaseAction.CursorSnapshots)
         {
+            if (TextEditorSelectionHelper.HasSelectedText(
+                    cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+            {
+                PerformDeletions(editTextEditorBaseAction);
+
+                var selectionBounds = TextEditorSelectionHelper.GetSelectionBounds(
+                    cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
+
+                var lowerRowData = 
+                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                        selectionBounds.lowerBound);
+
+                var lowerColumnIndex = selectionBounds.lowerBound -
+                                       lowerRowData.rowStartPositionIndex;
+
+                // Move cursor to lower bound of text selection
+                cursorSnapshot.UserCursor.IndexCoordinates = 
+                    (lowerRowData.rowIndex, lowerColumnIndex);
+                
+                var nextEdit = editTextEditorBaseAction with
+                {
+                    CursorSnapshots = new []
+                    {
+                        new TextEditorCursorSnapshot(cursorSnapshot.UserCursor)
+                    }.ToImmutableArray()
+                };
+
+                // cannot move reference of foreach variable
+                // have to invoke the method again with different parameters
+                PerformInsertions(nextEdit);
+                return;
+            }
+            
             var startOfRowPositionIndex =
                 GetStartOfRowTuple(cursorSnapshot.ImmutableCursor.RowIndex)
                     .positionIndex;
