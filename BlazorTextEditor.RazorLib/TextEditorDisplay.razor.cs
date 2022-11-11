@@ -331,6 +331,77 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
     }
 
+    private async Task HandleContentOnDoubleClickAsync(MouseEventArgs mouseEventArgs)
+    {
+        var safeTextEditorReference = MutableReferenceToTextEditor;
+        
+        if (safeTextEditorReference is null)
+            return;
+        
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+
+        if ((mouseEventArgs.Buttons & 1) != 1 &&
+            TextEditorSelectionHelper.HasSelectedText(
+                primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+            // Not pressing the left mouse button
+            // so assume ContextMenu is desired result.
+            return;
+        
+        if (mouseEventArgs.ShiftKey)
+            // Do not expand selection if user is holding shift
+            return;
+
+        var rowAndColumnIndex =
+            await DetermineRowAndColumnIndex(mouseEventArgs);
+
+        var lowerColumnIndexExpansion = safeTextEditorReference
+            .GetColumnIndexOfCharacterWithDifferingKind(
+                rowAndColumnIndex.rowIndex,
+                rowAndColumnIndex.columnIndex,
+                true);
+        
+        var higherColumnIndexExpansion = safeTextEditorReference
+            .GetColumnIndexOfCharacterWithDifferingKind(
+                rowAndColumnIndex.rowIndex,
+                rowAndColumnIndex.columnIndex,
+                false);
+        
+        // Move user's cursor position to the higher expansion
+        {
+            primaryCursorSnapshot.UserCursor.IndexCoordinates =
+                (rowAndColumnIndex.rowIndex, higherColumnIndexExpansion);
+            
+            primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
+                rowAndColumnIndex.columnIndex;
+        }
+
+        // Set text selection ending to higher expansion
+        {
+            var cursorPositionOfHigherExpansion = safeTextEditorReference
+                .GetPositionIndex(
+                    rowAndColumnIndex.rowIndex, 
+                    higherColumnIndexExpansion);
+
+            primaryCursorSnapshot
+                    .UserCursor.TextEditorSelection.EndingPositionIndex =
+                cursorPositionOfHigherExpansion;
+        }
+        
+        // Set text selection anchor to lower expansion
+        {
+            var cursorPositionOfLowerExpansion = safeTextEditorReference
+                .GetPositionIndex(
+                    rowAndColumnIndex.rowIndex, 
+                    lowerColumnIndexExpansion);
+
+            primaryCursorSnapshot
+                    .UserCursor.TextEditorSelection.AnchorPositionIndex =
+                cursorPositionOfLowerExpansion;
+        }
+
+        CursorsChanged?.Invoke();
+    }
+    
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
