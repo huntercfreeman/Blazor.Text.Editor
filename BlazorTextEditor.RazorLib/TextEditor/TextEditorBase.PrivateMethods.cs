@@ -447,4 +447,97 @@ public partial class TextEditorBase
             }
         }
     }
+
+    private void SetContent(string content)
+    {
+        ResetState();
+        
+        var rowIndex = 0;
+        var previousCharacter = '\0';
+
+        var charactersOnRow = 0;
+
+        var carriageReturnCount = 0;
+        var linefeedCount = 0;
+        var carriageReturnLinefeedCount = 0;
+
+        for (var index = 0; index < content.Length; index++)
+        {
+            var character = content[index];
+
+            charactersOnRow++;
+
+            if (character == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
+            {
+                _rowEndingPositions.Add((index + 1, RowEndingKind.CarriageReturn));
+                rowIndex++;
+
+                if (charactersOnRow > MostCharactersOnASingleRow) 
+                    MostCharactersOnASingleRow = charactersOnRow;
+
+                charactersOnRow = 0;
+
+                carriageReturnCount++;
+            }
+            else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
+            {
+                if (previousCharacter == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
+                {
+                    var lineEnding = _rowEndingPositions[rowIndex - 1];
+
+                    _rowEndingPositions[rowIndex - 1] =
+                        (lineEnding.positionIndex + 1, RowEndingKind.CarriageReturnLinefeed);
+
+                    carriageReturnCount--;
+                    carriageReturnLinefeedCount++;
+                }
+                else
+                {
+                    _rowEndingPositions.Add((index + 1, RowEndingKind.Linefeed));
+                    rowIndex++;
+
+                    if (charactersOnRow > MostCharactersOnASingleRow) 
+                        MostCharactersOnASingleRow = charactersOnRow;
+
+                    charactersOnRow = 0;
+
+                    linefeedCount++;
+                }
+            }
+
+            if (character == KeyboardKeyFacts.WhitespaceCharacters.TAB)
+                _tabKeyPositions.Add(index);
+
+            previousCharacter = character;
+
+            _content.Add(new RichCharacter
+            {
+                Value = character,
+                DecorationByte = default,
+            });
+        }
+
+        _rowEndingKindCounts.AddRange(new List<(RowEndingKind rowEndingKind, int count)>
+        {
+            (RowEndingKind.CarriageReturn, carriageReturnCount),
+            (RowEndingKind.Linefeed, linefeedCount),
+            (RowEndingKind.CarriageReturnLinefeed, carriageReturnLinefeedCount),
+        });
+
+        CheckRowEndingPositions(true);
+
+        _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
+    }
+
+    private void ResetState()
+    {
+        _content.Clear();
+        _editBlocks.Clear();
+        EditBlockIndex = 0;
+        _rowEndingKindCounts.Clear();
+        _rowEndingPositions.Clear();
+        _tabKeyPositions.Clear();
+        OnlyRowEndingKind = null;
+        UsingRowEndingKind = RowEndingKind.Unset;
+    }
 }

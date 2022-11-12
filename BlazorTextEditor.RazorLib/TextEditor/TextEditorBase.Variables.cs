@@ -52,8 +52,9 @@ public partial class TextEditorBase
     public ILexer Lexer { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
     public ITextEditorKeymap TextEditorKeymap { get; }
+    public int EditBlockIndex { get; private set; }
 
-    public int MostCharactersOnASingleRow { get; }
+    public int MostCharactersOnASingleRow { get; private set; }
 
     public TextEditorOptions TextEditorOptions { get; } = TextEditorOptions.UnsetTextEditorOptions();
 

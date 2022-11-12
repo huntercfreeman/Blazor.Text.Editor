@@ -31,6 +31,8 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "v" => TextEditorCommandFacts.Paste,
             "s" => TextEditorCommandFacts.Save,
             "a" => TextEditorCommandFacts.SelectAll,
+            "z" => TextEditorCommandFacts.Undo,
+            "y" => TextEditorCommandFacts.Redo,
             _ => null,
         };
 

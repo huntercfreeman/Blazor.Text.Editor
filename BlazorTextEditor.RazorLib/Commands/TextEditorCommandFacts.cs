@@ -161,4 +161,22 @@ public static class TextEditorCommandFacts
         },
         "Select All",
         "defaults_select-all");
+    
+    public static readonly TextEditorCommand Undo = new(textEditorCommandParameter =>
+        {
+            textEditorCommandParameter.TextEditor.UndoEdit();
+            
+            return Task.CompletedTask;
+        },
+        "Undo",
+        "defaults_undo");
+    
+    public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
+        {
+            textEditorCommandParameter.TextEditor.RedoEdit();
+            
+            return Task.CompletedTask;
+        },
+        "Redo",
+        "defaults_redo");
 }

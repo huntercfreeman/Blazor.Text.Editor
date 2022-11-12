@@ -268,6 +268,19 @@ public partial class TextEditorBase
 
     public void ClearEditBlocks()
     {
+        EditBlockIndex = 0;
         _editBlocks.Clear();
+    }
+    
+    public void UndoEdit()
+    {
+        if (EditBlockIndex > 0)
+            EditBlockIndex--;
+    }
+    
+    public void RedoEdit()
+    {
+        if (EditBlockIndex < _editBlocks.Count - 1)
+            EditBlockIndex++;
     }
 }
