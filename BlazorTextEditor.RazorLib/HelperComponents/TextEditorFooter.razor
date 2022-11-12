@@ -1,52 +1,57 @@
 ﻿@using BlazorTextEditor.RazorLib.Row
+
 <div class="bte_text-editor-footer @TextEditorService.GlobalThemeCssClassString">
-    @if (TextEditor is not null)
-    {
-        <div class="bte_text-editor-footer-entry">
-            @(FileExtension ?? "in-memory")
-        </div>
+    @{
+        var textEditor = TextEditorStatesSelection.Value;
 
-        <div class="bte_text-editor-footer-entry">
-            length:@($"{TextEditor.DocumentLength}")
-            &nbsp;
-            lines:@($"{TextEditor.RowCount}")
-        </div>
-
-        if (TextEditorDisplay is not null)
+        if (textEditor is not null)
         {
             <div class="bte_text-editor-footer-entry">
-                Ln:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.rowIndex}")
+                @(FileExtension ?? "in-memory")
+            </div>
+
+            <div class="bte_text-editor-footer-entry">
+                length:@($"{textEditor.DocumentLength}")
                 &nbsp;
-                Col:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.columnIndex}")
+                lines:@($"{textEditor.RowCount}")
+            </div>
+
+            if (TextEditorDisplay is not null)
+            {
+                <div class="bte_text-editor-footer-entry">
+                    Ln:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.rowIndex}")
+                    &nbsp;
+                    Col:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.columnIndex}")
+                </div>
+            }
+
+            <div class="bte_text-editor-footer-entry">
+                @if (textEditor.OnlyRowEndingKind is null)
+                {
+                    <text>has:mixed </text>
+                }
+                else
+                {
+                    <text>has:@textEditor.OnlyRowEndingKind.Value.AsFriendlyName() </text>
+                }
+
+                use:
+                <select @onchange="SelectRowEndingKindOnChange">
+                    @foreach (var rowEndingKind in RowEndingKind.Linefeed.GetRowEndingsUserAllowedToUse())
+                    {
+                        <option value="@rowEndingKind.ToString()"
+                                selected="@(textEditor.UsingRowEndingKind == rowEndingKind)">
+                            @rowEndingKind.AsFriendlyName()
+                        </option>
+                    }
+                </select>
             </div>
         }
-
-        <div class="bte_text-editor-footer-entry">
-            @if (TextEditor.OnlyRowEndingKind is null)
-            {
-                <text>has:mixed </text>
-            }
-            else
-            {
-                <text>has:@TextEditor.OnlyRowEndingKind.Value.AsFriendlyName() </text>
-            }
-
-            use:
-            <select @onchange="SelectRowEndingKindOnChange">
-                @foreach (var rowEndingKind in RowEndingKind.Linefeed.GetRowEndingsUserAllowedToUse())
-                {
-                    <option value="@rowEndingKind.ToString()"
-                            selected="@(TextEditor.UsingRowEndingKind == rowEndingKind)">
-                        @rowEndingKind.AsFriendlyName()
-                    </option>
-                }
-            </select>
-        </div>
-    }
-    else
-    {
-        <div class="bte_text-editor-footer-entry bte_text-editor-footer-file-sizing">
-            TextEditor is null
-        </div>
+        else
+        {
+            <div class="bte_text-editor-footer-entry bte_text-editor-footer-file-sizing">
+                textEditor is null
+            </div>
+        }
     }
 </div>

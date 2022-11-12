@@ -32,9 +32,9 @@
             </div>
 
             @{
-                var safeTextEditorReference = TextEditorStatesSelection.Value;
+                var textEditor = TextEditorStatesSelection.Value;
 
-                if (safeTextEditorReference is not null)
+                if (textEditor is not null)
                 {
                     var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
@@ -47,12 +47,12 @@
                                     primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
 
                             var firstRowToSelectData =
-                                safeTextEditorReference
+                                textEditor
                                     .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                                         selectionBounds.lowerBound);
 
                             var lastRowToSelectData =
-                                safeTextEditorReference
+                                textEditor
                                     .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                                         selectionBounds.upperBound);
 
@@ -136,20 +136,20 @@
                                 }
 
                                 @if (GlobalShowNewlines &&
-                                     index < safeTextEditorReference.RowCount - 1)
+                                     index < textEditor.RowCount - 1)
                                 {
                                     var amountOfLeftInCharacterWidthUnits =
                                         virtualizedRow.LeftInPixels /
                                         CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
-                                    var lengthOfRow = safeTextEditorReference
+                                    var lengthOfRow = textEditor
                                         .GetLengthOfRow(
                                             index,
                                             true);
 
                                     if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
                                     {
-                                        var rowEndingTuple = safeTextEditorReference
+                                        var rowEndingTuple = textEditor
                                             .RowEndingPositions[index];
 
                                         <span class="bte_newline">
@@ -166,7 +166,7 @@
                         <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                                  TextEditorCursor="PrimaryCursor"
                                                  CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
-                                                 TextEditor="safeTextEditorReference"
+                                                 TextEditor="textEditor"
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
                                                  TabIndex="TabIndex"
