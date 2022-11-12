@@ -64,6 +64,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     /// </summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;
+    [Parameter]
+    public Func<TextEditorFooterParameters, Task>? UpdateFooterAsync { get; set; }
     
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     
@@ -130,10 +132,13 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
     private bool GlobalShowWhitespace => TextEditorService
         .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
+    
+    private TextEditorFooterParameters TextEditorFooterParameters => 
+        new(
+            this,
+            MutableReferenceToTextEditor);
 
     public TextEditorCursor PrimaryCursor { get; } = new(true);
-
-    public event Action? CursorsChanged;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -195,14 +200,18 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .SingleOrDefault(x => x.Key == TextEditorKey));
 
-        CursorsChanged?.Invoke();
-
         base.OnInitialized();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender) ReloadVirtualizationDisplay();
+        if (firstRender)
+        {
+            ReloadVirtualizationDisplay();
+
+            if (UpdateFooterAsync is not null)
+                await UpdateFooterAsync.Invoke(TextEditorFooterParameters);
+        }
 
         if (ShouldMeasureDimensions)
         {
@@ -301,7 +310,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             }
         }
 
-        CursorsChanged?.Invoke();
+        if (UpdateFooterAsync is not null)
+            await UpdateFooterAsync.Invoke(TextEditorFooterParameters);
 
         primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
 
@@ -401,7 +411,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                 cursorPositionOfLowerExpansion;
         }
 
-        CursorsChanged?.Invoke();
+        if (UpdateFooterAsync is not null)
+            await UpdateFooterAsync.Invoke(TextEditorFooterParameters);
     }
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
@@ -469,7 +480,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
         _thinksLeftMouseButtonIsDown = true;
 
-        CursorsChanged?.Invoke();
+        if (UpdateFooterAsync is not null)
+            await UpdateFooterAsync.Invoke(TextEditorFooterParameters);
     }
 
     /// <summary>
@@ -508,7 +520,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         else
             _thinksLeftMouseButtonIsDown = false;
 
-        CursorsChanged?.Invoke();
+        if (UpdateFooterAsync is not null)
+            await UpdateFooterAsync.Invoke(TextEditorFooterParameters);
     }
 
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(

@@ -134,6 +134,7 @@
     font-size: .8em;
     display: flex;
     height: var(--bte_text-editor-footer-height);
+    padding-left: var(--bte_text-editor-footer-padding-left);
     align-items: center;
     overflow: auto;
     white-space: nowrap;

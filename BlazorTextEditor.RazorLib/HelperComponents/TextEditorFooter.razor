@@ -2,37 +2,38 @@
 
 <div class="bte_text-editor-footer @TextEditorService.GlobalThemeCssClassString">
     @{
-        var textEditor = TextEditorStatesSelection.Value;
-
-        if (textEditor is not null)
+        if (_textEditorBase is not null)
         {
-            <div class="bte_text-editor-footer-entry">
-                @(FileExtension ?? "in-memory")
-            </div>
-
-            <div class="bte_text-editor-footer-entry">
-                length:@($"{textEditor.DocumentLength}")
-                &nbsp;
-                lines:@($"{textEditor.RowCount}")
-            </div>
-
-            if (TextEditorDisplay is not null)
+            if (FileExtension is not null)
             {
                 <div class="bte_text-editor-footer-entry">
-                    Ln:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.rowIndex}")
-                    &nbsp;
-                    Col:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.columnIndex}")
+                    @FileExtension
                 </div>
             }
 
             <div class="bte_text-editor-footer-entry">
-                @if (textEditor.OnlyRowEndingKind is null)
+                length:@($"{_textEditorBase.DocumentLength}")
+                &nbsp;
+                lines:@($"{_textEditorBase.RowCount}")
+            </div>
+
+            if (_textEditorDisplay is not null)
+            {
+                <div class="bte_text-editor-footer-entry">
+                    Ln:@($"{_textEditorDisplay.PrimaryCursor.IndexCoordinates.rowIndex}")
+                    &nbsp;
+                    Col:@($"{_textEditorDisplay.PrimaryCursor.IndexCoordinates.columnIndex}")
+                </div>
+            }
+
+            <div class="bte_text-editor-footer-entry">
+                @if (_textEditorBase.OnlyRowEndingKind is null)
                 {
                     <text>has:mixed </text>
                 }
                 else
                 {
-                    <text>has:@textEditor.OnlyRowEndingKind.Value.AsFriendlyName() </text>
+                    <text>has:@_textEditorBase.OnlyRowEndingKind.Value.AsFriendlyName() </text>
                 }
 
                 use:
@@ -40,7 +41,7 @@
                     @foreach (var rowEndingKind in RowEndingKind.Linefeed.GetRowEndingsUserAllowedToUse())
                     {
                         <option value="@rowEndingKind.ToString()"
-                                selected="@(textEditor.UsingRowEndingKind == rowEndingKind)">
+                                selected="@(_textEditorBase.UsingRowEndingKind == rowEndingKind)">
                             @rowEndingKind.AsFriendlyName()
                         </option>
                     }
