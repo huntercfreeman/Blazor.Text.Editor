@@ -16,7 +16,7 @@ public partial class TextEditorBase
     public const int MAXIMUM_EDIT_BLOCKS = 10;
 
     private readonly List<RichCharacter> _content = new();
-    private readonly List<EditBlock> _editBlocks = new();
+    private readonly List<EditBlock> _editBlocksPersisted = new();
     private readonly List<(RowEndingKind rowEndingKind, int count)> _rowEndingKindCounts = new();
 
     /// <summary>
@@ -35,7 +35,7 @@ public partial class TextEditorBase
     public int RowCount => _rowEndingPositions.Count;
     public int DocumentLength => _content.Count;
 
-    public ImmutableArray<EditBlock> EditBlocks => _editBlocks.ToImmutableArray();
+    public ImmutableArray<EditBlock> EditBlocks => _editBlocksPersisted.ToImmutableArray();
 
     /// <summary>
     ///     If there is a mixture of<br />

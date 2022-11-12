@@ -1,5 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -18,7 +19,7 @@ public partial class TextEditorBase
         Lexer = lexer ?? new LexerDefault();
         DecorationMapper = decorationMapper ?? new DecorationMapperDefault();
         TextEditorKeymap = textEditorKeymap ?? new TextEditorKeymapDefault();
-
+        
         SetContent(content);
     }
 

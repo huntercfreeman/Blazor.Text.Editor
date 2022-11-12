@@ -22,21 +22,31 @@ public partial class TextEditorBase
                 textEditKind);
         }
 
-        var mostRecentEditBlock = _editBlocks.LastOrDefault();
+        var mostRecentEditBlock = _editBlocksPersisted.LastOrDefault();
 
         if (mostRecentEditBlock is null ||
             mostRecentEditBlock.TextEditKind != textEditKind)
         {
-            _editBlocks.Add(new EditBlock(
+            var newEditBlockIndex = EditBlockIndex;
+            
+            _editBlocksPersisted.Insert(newEditBlockIndex, new EditBlock(
                 textEditKind,
                 textEditKind.ToString(),
                 GetAllText(),
                 otherTextEditKindIdentifier));
+
+            var removeBlocksStartingAt = newEditBlockIndex + 1;
+            
+            _editBlocksPersisted.RemoveRange(
+                removeBlocksStartingAt,
+                _editBlocksPersisted.Count - removeBlocksStartingAt);
+            
+            EditBlockIndex++;
         }
 
-        while (_editBlocks.Count > MAXIMUM_EDIT_BLOCKS &&
-               _editBlocks.Count != 0)
-            _editBlocks.RemoveAt(0);
+        while (_editBlocksPersisted.Count > MAXIMUM_EDIT_BLOCKS &&
+               _editBlocksPersisted.Count != 0)
+            _editBlocksPersisted.RemoveAt(0);
     }
 
     private void PerformInsertions(EditTextEditorBaseAction editTextEditorBaseAction)
@@ -450,7 +460,7 @@ public partial class TextEditorBase
 
     private void SetContent(string content)
     {
-        ResetState();
+        ResetStateButNotEditHistory();
         
         var rowIndex = 0;
         var previousCharacter = '\0';
@@ -529,11 +539,9 @@ public partial class TextEditorBase
         _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
     }
 
-    private void ResetState()
+    private void ResetStateButNotEditHistory()
     {
         _content.Clear();
-        _editBlocks.Clear();
-        EditBlockIndex = 0;
         _rowEndingKindCounts.Clear();
         _rowEndingPositions.Clear();
         _tabKeyPositions.Clear();

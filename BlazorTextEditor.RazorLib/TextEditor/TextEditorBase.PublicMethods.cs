@@ -2,6 +2,7 @@
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
@@ -269,18 +270,50 @@ public partial class TextEditorBase
     public void ClearEditBlocks()
     {
         EditBlockIndex = 0;
-        _editBlocks.Clear();
+        _editBlocksPersisted.Clear();
     }
     
+    /// <summary>
+    /// The "if (EditBlockIndex == _editBlocksPersisted.Count)"
+    /// <br/><br/>
+    /// Is done because the active EditBlock is not yet persisted.
+    /// <br/><br/>
+    /// The active EditBlock is instead being 'created' as the user
+    /// continues to make edits of the same <see cref="TextEditKind"/>
+    /// <br/><br/>
+    /// For complete clarity, this comment refers to one possibly expecting
+    /// to see "if (EditBlockIndex == _editBlocksPersisted.Count - 1)"
+    /// </summary>
     public void UndoEdit()
     {
         if (EditBlockIndex > 0)
+        {
+            if (EditBlockIndex == _editBlocksPersisted.Count)
+            {
+                // If the edit block is pending then persist it
+                // before reverting back to the previous persisted edit block.
+                
+                EnsureUndoPoint(TextEditKind.ForcePersistEditBlock);
+            }
+            
             EditBlockIndex--;
+
+            var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
+            
+            SetContent(restoreEditBlock.ContentSnapshot);
+        }
     }
+    
     
     public void RedoEdit()
     {
-        if (EditBlockIndex < _editBlocks.Count - 1)
+        if (EditBlockIndex < _editBlocksPersisted.Count - 1)
+        {
             EditBlockIndex++;
+
+            var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
+            
+            SetContent(restoreEditBlock.ContentSnapshot);
+        }
     }
 }
