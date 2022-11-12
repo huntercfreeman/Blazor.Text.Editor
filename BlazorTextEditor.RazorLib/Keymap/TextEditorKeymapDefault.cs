@@ -26,6 +26,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
 
         var command = keyboardEventArgs.Key switch
         {
+            "x" => TextEditorCommandFacts.Cut,
             "c" => TextEditorCommandFacts.Copy,
             "v" => TextEditorCommandFacts.Paste,
             "s" => TextEditorCommandFacts.Save,

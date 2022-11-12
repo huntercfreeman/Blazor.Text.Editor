@@ -35,6 +35,42 @@ public static class TextEditorCommandFacts
         },
         "Copy",
         "defaults_copy");
+    
+    public static readonly TextEditorCommand Cut = new(
+        async textEditorCommandParameter =>
+        {
+            var selectedText = TextEditorSelectionHelper
+                .GetSelectedText(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection,
+                    textEditorCommandParameter.TextEditor);
+
+            if (selectedText is not null)
+            {
+                await textEditorCommandParameter
+                    .ClipboardProvider
+                    .SetClipboard(
+                        selectedText);
+            }
+            
+            textEditorCommandParameter.TextEditorService
+                .EditTextEditor(new EditTextEditorBaseAction(
+                    textEditorCommandParameter.TextEditor.Key,
+                    textEditorCommandParameter.CursorSnapshots,
+                    new KeyboardEventArgs
+                    {
+                        Key = KeyboardKeyFacts.MetaKeys.DELETE
+                    },
+                    CancellationToken.None));
+            
+            textEditorCommandParameter
+                .ReloadVirtualizationDisplay
+                .Invoke();
+        },
+        "Cut",
+        "defaults_cut");
 
     public static readonly TextEditorCommand Paste = new(
         async textEditorCommandParameter =>
