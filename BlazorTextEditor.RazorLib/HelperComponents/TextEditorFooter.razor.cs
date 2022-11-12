@@ -15,7 +15,7 @@ public partial class TextEditorFooter : ComponentBase, IDisposable
     [Parameter, EditorRequired]
     public TextEditorDisplay? TextEditorDisplay { get; set; }
     [Parameter, EditorRequired]
-    public string? Extension { get; set; }
+    public string? FileExtension { get; set; }
 
     private TextEditorDisplay? _previousTextEditorDisplay;
 
