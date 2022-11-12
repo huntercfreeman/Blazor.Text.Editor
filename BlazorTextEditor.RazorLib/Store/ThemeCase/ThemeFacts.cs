@@ -29,4 +29,11 @@ public static class ThemeFacts
         "Visual Studio Light Clone",
         ContrastKind.Default,
         ColorKind.Light);
+    
+    public static readonly Theme Unset = new(
+        ThemeKey.NewThemeKey(),
+        string.Empty,
+        "Unset",
+        ContrastKind.Default,
+        ColorKind.Dark);
 }

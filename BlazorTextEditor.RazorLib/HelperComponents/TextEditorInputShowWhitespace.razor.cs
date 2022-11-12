@@ -12,6 +12,8 @@ public partial class TextEditorInputShowWhitespace : FluxorComponent
     public string TopLevelDivElementCssClassString { get; set; } = string.Empty;
     [Parameter, EditorRequired]
     public string InputElementCssClassString { get; set; } = string.Empty;
+    [Parameter, EditorRequired]
+    public string LabelElementCssClassString { get; set; } = string.Empty;
 
     public bool GlobalShowWhitespace
     {

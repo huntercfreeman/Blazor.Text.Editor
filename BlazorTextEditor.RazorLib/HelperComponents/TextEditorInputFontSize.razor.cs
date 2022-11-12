@@ -13,9 +13,7 @@ public partial class TextEditorInputFontSize : FluxorComponent
     [Parameter, EditorRequired]
     public string InputElementCssClassString { get; set; } = string.Empty;
     [Parameter, EditorRequired]
-    public string ValueWrappingDivElementCssClassString { get; set; } = string.Empty;
-    [Parameter, EditorRequired]
-    public string EmElementCssClassString { get; set; } = string.Empty;
+    public string LabelElementCssClassString { get; set; } = string.Empty;
 
     private const int MINIMUM_FONT_SIZE_IN_PIXELS = 5;
     

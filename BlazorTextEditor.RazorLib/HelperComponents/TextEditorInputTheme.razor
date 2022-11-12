@@ -1,0 +1,24 @@
+﻿@using BlazorTextEditor.RazorLib.Store.ThemeCase
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div class="bte_text-editor-input-theme @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
+    <span class="@LabelElementCssClassString">
+        Theme:&nbsp;
+    </span>
+
+    <select @onchange="SelectedThemeChanged"
+            class="@InputElementCssClassString">
+        @{
+            var themes = ThemeStatesWrap.Value.Themes;
+            var chosenTheme = TextEditorService.GlobalThemeValue;
+            
+            foreach (var theme in themes)
+            {
+                <option value="@theme.ThemeKey.Guid.ToString()"
+                        selected="@((chosenTheme?.ThemeKey ?? ThemeKey.Empty) == theme.ThemeKey)">
+                    @theme.DisplayName
+                </option>
+            }
+        }
+    </select>
+</div>

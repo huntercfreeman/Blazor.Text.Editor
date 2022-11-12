@@ -10,6 +10,7 @@ public record ThemeStates(ImmutableArray<Theme> Themes)
     {
         Themes = Themes.AddRange(new[]
         {
+            ThemeFacts.Unset,
             ThemeFacts.BlazorTextEditorDark,
             ThemeFacts.BlazorTextEditorLight,
             ThemeFacts.VisualStudioDarkClone,

@@ -35,6 +35,10 @@ public class TextEditorService : ITextEditorService
                                                    .CssClassString
                                                ?? string.Empty;
 
+    public Theme? GlobalThemeValue => TextEditorStates
+        .GlobalTextEditorOptions
+        .Theme;
+
     public string GlobalFontSizeInPixelsStyling => "font-size: " + 
                                                    GlobalFontSizeInPixelsValue +
                                                    "px;";
