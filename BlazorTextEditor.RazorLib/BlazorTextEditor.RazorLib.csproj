@@ -29,8 +29,4 @@
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="HelperComponents\HeaderButtons" />
-    </ItemGroup>
-
 </Project>

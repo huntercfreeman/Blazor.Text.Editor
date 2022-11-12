@@ -75,4 +75,9 @@ public partial class TextEditorHeader : ComponentBase
     {
         throw new NotImplementedException();
     }
+
+    private Task DoRefreshOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
 }
