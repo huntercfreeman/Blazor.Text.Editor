@@ -1004,7 +1004,9 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
         if (keyboardEventArgs.Key == ";" ||
             KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
-            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v"))
+            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v") ||
+            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
+            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y"))
         {
             // Syntax Highlighting
 

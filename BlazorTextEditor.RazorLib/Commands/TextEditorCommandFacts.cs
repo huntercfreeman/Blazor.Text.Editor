@@ -166,6 +166,10 @@ public static class TextEditorCommandFacts
         {
             textEditorCommandParameter.TextEditor.UndoEdit();
             
+            textEditorCommandParameter
+                .ReloadVirtualizationDisplay
+                .Invoke();
+            
             return Task.CompletedTask;
         },
         "Undo",
@@ -174,6 +178,10 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditor.RedoEdit();
+            
+            textEditorCommandParameter
+                .ReloadVirtualizationDisplay
+                .Invoke();
             
             return Task.CompletedTask;
         },

@@ -294,6 +294,7 @@ public partial class TextEditorBase
                 // before reverting back to the previous persisted edit block.
                 
                 EnsureUndoPoint(TextEditKind.ForcePersistEditBlock);
+                EditBlockIndex--;
             }
             
             EditBlockIndex--;
@@ -303,7 +304,6 @@ public partial class TextEditorBase
             SetContent(restoreEditBlock.ContentSnapshot);
         }
     }
-    
     
     public void RedoEdit()
     {
