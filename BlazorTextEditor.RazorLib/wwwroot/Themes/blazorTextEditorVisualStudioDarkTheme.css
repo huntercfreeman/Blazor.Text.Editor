@@ -19,4 +19,6 @@
     --bte_secondary-font-color: #d1d2ca;
     --bte_secondary-background-color: #2d2f34;
     --bte_primary-overlay-box-shadow-color: #ffffff;
+    --bte_button-background-color: #1e56a7;
+    --bte_button-foreground-color: var(--bte_primary-font-color);
 }

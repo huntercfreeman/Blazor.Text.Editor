@@ -1,6 +1,8 @@
-﻿using BlazorTextEditor.RazorLib.Row;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
@@ -11,6 +13,8 @@ public partial class TextEditorHeader : ComponentBase
 
     [Parameter, EditorRequired]
     public string? FileExtension { get; set; }
+    [Parameter]
+    public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
 
     private TextEditorDisplay? _textEditorDisplay;
     private TextEditorBase? _textEditorBase;
@@ -35,5 +39,40 @@ public partial class TextEditorHeader : ComponentBase
 
         if (Enum.TryParse<RowEndingKind>(rowEndingKindString, out var rowEndingKind))
             TextEditorService.SetUsingRowEndingKind(textEditorKey, rowEndingKind);
+    }
+
+    private Task DoCopyOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task DoCutOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task DoPasteOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task DoRedoOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task DoSaveOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task DoUndoOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task DoSelectAllOnClick(MouseEventArgs arg)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -173,3 +173,8 @@
     border-right: 2px solid var(--bte_text-editor-caret-row-border-color);
     margin-right: 5px;
 }
+
+.bte_button {
+    background-color: var(--bte_button-background-color);
+    color: var(--bte_button-foreground-color);
+}
