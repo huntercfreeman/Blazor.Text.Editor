@@ -1,4 +1,6 @@
 :root {
     --bte_text-editor-footer-height: 1.8rem;
     --bte_text-editor-footer-padding-left: 5px;
+    --bte_text-editor-header-height: 1.8rem;
+    --bte_text-editor-header-padding-left: 5px;
 }
