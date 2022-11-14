@@ -12,11 +12,11 @@ public partial class TextEditorInputTheme : FluxorComponent
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
-    [Parameter, EditorRequired]
+    [Parameter]
     public string TopLevelDivElementCssClassString { get; set; } = string.Empty;
-    [Parameter, EditorRequired]
+    [Parameter]
     public string InputElementCssClassString { get; set; } = string.Empty;
-    [Parameter, EditorRequired]
+    [Parameter]
     public string LabelElementCssClassString { get; set; } = string.Empty;
     
     private void SelectedThemeChanged(ChangeEventArgs changeEventArgs)

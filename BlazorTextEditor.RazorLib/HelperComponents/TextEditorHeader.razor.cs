@@ -16,7 +16,7 @@ public partial class TextEditorHeader : ComponentBase
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
-    [Parameter, EditorRequired]
+    [Parameter]
     public string? FileExtension { get; set; }
     [Parameter]
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
