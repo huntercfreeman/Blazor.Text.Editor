@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace Blazor.Text.Editor.Analysis.Shared;
+namespace BlazorTextEditor.RazorLib.Analysis;
 
 public class TextEditorDiagnosticBag : IEnumerable<TextEditorDiagnostic>
 {

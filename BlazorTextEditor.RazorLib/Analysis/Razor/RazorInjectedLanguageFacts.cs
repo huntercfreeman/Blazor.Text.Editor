@@ -1,6 +1,6 @@
-using Blazor.Text.Editor.Analysis.Html.ClassLib.InjectLanguage;
+using BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
 
-namespace Blazor.Text.Editor.Analysis.Razor.ClassLib;
+namespace BlazorTextEditor.RazorLib.Analysis.Razor;
 
 public static class RazorInjectedLanguageFacts
 {

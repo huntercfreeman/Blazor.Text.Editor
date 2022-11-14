@@ -1,6 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Decoration;
 
-namespace Blazor.Text.Editor.Analysis.CSharp.ClassLib;
+namespace BlazorTextEditor.RazorLib.Analysis.CSharp;
 
 public class TextEditorCSharpDecorationMapper : IDecorationMapper
 {

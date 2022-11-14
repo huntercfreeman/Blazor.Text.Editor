@@ -1,6 +1,6 @@
-﻿using Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxItems;
+﻿using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 
-namespace Blazor.Text.Editor.Analysis.Html.ClassLib;
+namespace BlazorTextEditor.RazorLib.Analysis.Html;
 
 public class HtmlSyntaxUnit
 {

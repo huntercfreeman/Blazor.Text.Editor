@@ -1,4 +1,4 @@
-﻿# BlazorStudio.ClassLib/Keyboard
+﻿# BlazorTextEditor.ClassLib/Keyboard
 
 In this directory I keep any constants relating to a Keyboard. This includes for example:
 

@@ -1,4 +1,4 @@
-namespace Blazor.Text.Editor.Analysis.Html.ClassLib.InjectLanguage;
+namespace BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
 
 public class InjectedLanguageCodeBlock
 {

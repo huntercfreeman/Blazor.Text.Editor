@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
-using Blazor.Text.Editor.Analysis.Shared;
 
-namespace Blazor.Text.Editor.Analysis.Html.ClassLib.Facts;
+namespace BlazorTextEditor.RazorLib.Analysis.Html.Facts;
 
 public static class HtmlFacts
 {

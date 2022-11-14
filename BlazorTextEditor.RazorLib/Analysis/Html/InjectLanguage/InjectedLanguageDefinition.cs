@@ -1,7 +1,6 @@
-using Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxItems;
-using Blazor.Text.Editor.Analysis.Shared;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 
-namespace Blazor.Text.Editor.Analysis.Html.ClassLib.InjectLanguage;
+namespace BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
 
 public class InjectedLanguageDefinition
 {

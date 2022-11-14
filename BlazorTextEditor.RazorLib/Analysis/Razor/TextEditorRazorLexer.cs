@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace Blazor.Text.Editor.Analysis.Razor.ClassLib;
+namespace BlazorTextEditor.RazorLib.Analysis.Razor;
 
 public class TextEditorRazorLexer : ILexer
 {

@@ -3,7 +3,7 @@ using System.Text;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.TextEditor;
 
-namespace Blazor.Text.Editor.Analysis.Shared;
+namespace BlazorTextEditor.RazorLib.Analysis;
 
 /// <summary>
 ///     The marker for an out of bounds read is

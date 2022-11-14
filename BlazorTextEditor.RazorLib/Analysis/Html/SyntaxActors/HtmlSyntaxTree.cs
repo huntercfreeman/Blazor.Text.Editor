@@ -1,14 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.Decoration;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.ExtensionMethods;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.Facts;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.InjectLanguage;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxItems;
-using Blazor.Text.Editor.Analysis.Shared;
+using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Html.ExtensionMethods;
+using BlazorTextEditor.RazorLib.Analysis.Html.Facts;
+using BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxActors;
+namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 
 public static class HtmlSyntaxTree
 {

@@ -1,4 +1,4 @@
-﻿namespace Blazor.Text.Editor.Analysis.Shared;
+﻿namespace BlazorTextEditor.RazorLib.Analysis;
 
 public static class ParserFacts
 {

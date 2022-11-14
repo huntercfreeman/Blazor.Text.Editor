@@ -1,14 +1,13 @@
 using System.Collections.Immutable;
 using System.Text;
-using Blazor.Text.Editor.Analysis.CSharp.ClassLib;
-using Blazor.Text.Editor.Analysis.Html.ClassLib;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.Decoration;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.InjectLanguage;
-using Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxItems;
-using Blazor.Text.Editor.Analysis.Shared;
+using BlazorTextEditor.RazorLib.Analysis.CSharp;
+using BlazorTextEditor.RazorLib.Analysis.Html;
+using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace Blazor.Text.Editor.Analysis.Razor.ClassLib;
+namespace BlazorTextEditor.RazorLib.Analysis.Razor;
 
 public static class ParserInjectedLanguageFragmentCSharp
 {

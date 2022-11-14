@@ -1,4 +1,4 @@
-﻿namespace Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxItems;
+﻿namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 
 public class AttributeNameSyntax
 {

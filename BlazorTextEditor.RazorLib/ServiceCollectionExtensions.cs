@@ -8,7 +8,7 @@ namespace BlazorTextEditor.RazorLib;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTextEditorRazorLibServices(
+    public static IServiceCollection AddBlazorTextEditor(
         this IServiceCollection services,
         Action<TextEditorServiceOptions>? configure = null)
     {

@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Blazor.Text.Editor.Analysis.CSharp.ClassLib;
+namespace BlazorTextEditor.RazorLib.Analysis.CSharp;
 
 public class GeneralSyntaxCollector : CSharpSyntaxWalker
 {

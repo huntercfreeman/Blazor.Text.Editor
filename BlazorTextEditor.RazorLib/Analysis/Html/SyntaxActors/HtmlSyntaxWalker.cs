@@ -1,6 +1,6 @@
-﻿using Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxItems;
+﻿using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 
-namespace Blazor.Text.Editor.Analysis.Html.ClassLib.SyntaxActors;
+namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 
 public class HtmlSyntaxWalker
 {

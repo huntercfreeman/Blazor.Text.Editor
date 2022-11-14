@@ -1,4 +1,4 @@
-﻿namespace Blazor.Text.Editor.Analysis.CSharp.ClassLib;
+﻿namespace BlazorTextEditor.RazorLib.Analysis.CSharp;
 
 public enum CSharpDecorationKind
 {

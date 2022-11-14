@@ -1,4 +1,4 @@
-﻿namespace Blazor.Text.Editor.Analysis.JavaScript.ClassLib;
+﻿namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 
 public class Class1
 {
