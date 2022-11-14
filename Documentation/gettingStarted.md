@@ -17,8 +17,6 @@
     - COLOR THEME :root [blazorTextEditorDefaultColors.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditorDefaultColors.css): `<link href="_content/Blazor.Text.Editor/blazorTextEditorDefaultColors.css" rel="stylesheet"/>`
     - COLOR THEME .bte_dark-theme-visual-studio [blazorTextEditorVisualStudioDarkTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorVisualStudioDarkTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioDarkTheme.css" rel="stylesheet"/>`
     - COLOR THEME .bte_light-theme-visual-studio [blazorTextEditorVisualStudioLightTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorVisualStudioLightTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioLightTheme.css" rel="stylesheet"/>`
-    - COLOR THEME .bte_dark-theme [blazorTextEditorDarkTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorDarkTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorDarkTheme.css" rel="stylesheet"/>`
-    - COLOR THEME .bte_light-theme [blazorTextEditorLightTheme.css](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/Themes/blazorTextEditorLightTheme.css): `<link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorLightTheme.css" rel="stylesheet"/>`
 
 - Add the library's JavaScript to `Pages/_Layout.cshtml`. Every available JavaScript file appears in the following child bulleted list. The entirety of an example _Layout.cshtml is shown as an html code snippet after this step.
     - REQUIRED [blazorTextEditor.js](https://github.com/huntercfreeman/Blazor.Text.Editor/blob/main/BlazorTextEditor.RazorLib/wwwroot/blazorTextEditor.js): `<script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>`
@@ -26,31 +24,30 @@
 - The following html code snippet is an example index.html with unrelated things ommitted for brevity.
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
 
 <head>
-    <!-- Blazor.Text.Editor Nuget Package | required css -->
+    @* Required CSS *@
     <link href="_content/Blazor.Text.Editor/blazorTextEditor.css" rel="stylesheet"/>
+    @* Required CSS *@
     <link href="_content/Blazor.Text.Editor/blazorTextEditorSizes.css" rel="stylesheet"/>
-
-    <!-- Blazor.Text.Editor Nuget Package | optional color themes -->
-    <link href="_content/Blazor.Text.Editor/blazorTextEditorDefaultColors.css" rel="stylesheet"/>
-    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioDarkTheme.css" rel="stylesheet"/>
-    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioLightTheme.css" rel="stylesheet"/>
-    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorDarkTheme.css" rel="stylesheet"/>
-    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorLightTheme.css" rel="stylesheet"/>
-</head>
-
-<body>
     
-    <script src="_framework/blazor.webassembly.js"></script>
+    @* Default Theme (is same as Visual Studio Dark Clone) | :root {...} *@
+    <link href="_content/Blazor.Text.Editor/blazorTextEditorDefaultColors.css" rel="stylesheet"/>
+    
+    @* Visual Studio Dark Clone Theme *@
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioDarkTheme.css" rel="stylesheet"/>
+    @* Visual Studio Light Clone Theme *@
+    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioLightTheme.css" rel="stylesheet"/>
+    
+</head>
+<body>
 
-    <!-- Blazor.Text.Editor Nuget Package | required JavaScript -->
+    <script src="_framework/blazor.server.js"></script>
+
+    @* Required JavaScript *@
     <script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>
 
 </body>
-
 </html>
 
 ```
