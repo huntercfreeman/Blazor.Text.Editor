@@ -3,10 +3,13 @@
 @using BlazorTextEditor.RazorLib.HelperComponents
 @using BlazorTextEditor.RazorLib.Row
 @using BlazorTextEditor.RazorLib.Virtualization
+@using System.Collections.Immutable
 <div style="@GlobalFontSizeInPixelsStyling @StyleCssString"
      class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
 
-    <TextEditorHeader />
+    <TextEditorHeader TextEditorBase="MutableReferenceToTextEditor"
+                      TextEditorDisplay="this"
+                      HeaderButtonKinds="HeaderButtonKinds"/>
     
     <div @ref="_textEditorDisplayElementReference"
          @onclick="FocusTextEditorOnClickAsync"
@@ -180,5 +183,7 @@
         </div>
     </div>
     
-    <TextEditorFooter @ref="_textEditorFooter"/>
+    <TextEditorFooter TextEditorBase="MutableReferenceToTextEditor"
+                      TextEditorDisplay="this"
+                      FileExtension="@FileExtension"/>
 </div>
