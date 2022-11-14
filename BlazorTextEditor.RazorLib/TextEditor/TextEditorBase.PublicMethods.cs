@@ -108,17 +108,8 @@ public partial class TextEditorBase
     
     public TextEditorBase PerformEditTextEditorAction(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
     {
-        var previousCharacterWasCarriageReturn = false;
-
         foreach (var character in insertTextTextEditorBaseAction.Content)
         {
-            if (previousCharacterWasCarriageReturn &&
-                character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
-            {
-                previousCharacterWasCarriageReturn = false;
-                continue;
-            }
-
             // TODO: This needs to be rewritten everything should be inserted at the same time not a foreach loop insertion for each character
             //
             // Need innerCursorSnapshots because need
@@ -133,7 +124,7 @@ public partial class TextEditorBase
 
             var code = character switch
             {
-                '\r' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
+                '\r' => KeyboardKeyFacts.WhitespaceCodes.CARRIAGE_RETURN_CODE,
                 '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
                 '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
                 ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
@@ -152,12 +143,8 @@ public partial class TextEditorBase
                         CancellationToken.None);
 
             PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
-
-            previousCharacterWasCarriageReturn =
-                KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN
-                == character;
         }
-
+        
         return this;
     }
     
