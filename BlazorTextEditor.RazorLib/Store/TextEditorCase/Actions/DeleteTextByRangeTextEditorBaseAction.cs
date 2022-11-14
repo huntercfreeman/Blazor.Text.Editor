@@ -7,6 +7,5 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 public record DeleteTextByRangeTextEditorBaseAction(
     TextEditorKey TextEditorKey,
     ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots,
-    int StartingPositionIndex,
     int Count,
     CancellationToken CancellationToken);

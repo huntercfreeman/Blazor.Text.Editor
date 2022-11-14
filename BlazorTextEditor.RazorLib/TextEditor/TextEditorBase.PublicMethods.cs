@@ -199,8 +199,8 @@ public partial class TextEditorBase
                     innerCursorSnapshots,
                     new KeyboardEventArgs
                     {
-                        Code = KeyboardKeyFacts.MetaKeys.BACKSPACE,
-                        Key = KeyboardKeyFacts.MetaKeys.BACKSPACE,
+                        Code = KeyboardKeyFacts.MetaKeys.DELETE,
+                        Key = KeyboardKeyFacts.MetaKeys.DELETE,
                     },
                     CancellationToken.None);
 
