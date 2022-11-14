@@ -1,4 +1,12 @@
-﻿@if (TextEditorServiceOptions.InitializeFluxor)
+﻿@using BlazorTextEditor.RazorLib.Dialog
+@using BlazorTextEditor.RazorLib.Notifications
+@using BlazorTextEditor.RazorLib.Dialog
+
+@if (TextEditorServiceOptions.InitializeFluxor)
 {
     <Fluxor.Blazor.Web.StoreInitializer/>
 }
+
+<DialogInitializer/>
+<NotificationInitializer/>
+<DragDisplay/>

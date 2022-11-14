@@ -1,10 +1,9 @@
-using BlazorStudio.ClassLib.Store.FontCase;
-using BlazorStudio.ClassLib.Store.IconCase;
+using BlazorTextEditor.RazorLib.Store.IconCase;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorStudio.RazorLib.Icons;
+namespace BlazorTextEditor.RazorLib.Icons;
 
 public partial class IconSettingsDisplay : FluxorComponent
 {

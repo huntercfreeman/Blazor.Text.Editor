@@ -1,9 +1,8 @@
-@using BlazorStudio.ClassLib.Context
-@using BlazorStudio.RazorLib.ContextCase
-@using BlazorStudio.RazorLib.ResizableCase
-<ContextBoundary ContextRecord="ContextFacts.DialogDisplayContext"
-                 ClassCssString="bstudio_dialog-display"
-                 StyleCssString="@StyleCssString">
+@using BlazorTextEditor.RazorLib.Resize
+
+<div class="bstudio_dialog-display"
+     style="@StyleCssString">
+
     @if (DialogRecord.IsResizable)
     {
         <ResizableDisplay @ref="_resizableDisplay"
@@ -42,4 +41,4 @@
                               Parameters="DialogRecord.Parameters"/>
         </CascadingValue>
     </div>
-</ContextBoundary>
+</div>
