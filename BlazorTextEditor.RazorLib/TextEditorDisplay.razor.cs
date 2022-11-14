@@ -298,8 +298,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                         cursorSnapshots,
                         ClipboardProvider,
                         TextEditorService,
-                        ReloadVirtualizationDisplay,
-                        OnSaveRequested));
+                        this));
             }
             else
             {

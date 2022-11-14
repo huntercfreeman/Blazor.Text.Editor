@@ -67,8 +67,8 @@ public static class TextEditorCommandFacts
                     CancellationToken.None));
             
             textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
+                .TextEditorDisplay
+                .ReloadVirtualizationDisplay();
         },
         "Cut",
         "defaults_cut");
@@ -91,8 +91,8 @@ public static class TextEditorCommandFacts
                     CancellationToken.None));
 
             textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
+                .TextEditorDisplay
+                .ReloadVirtualizationDisplay();
         },
         "Paste",
         "defaults_paste",
@@ -102,6 +102,7 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Save = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter
+                .TextEditorDisplay
                 .OnSaveRequested?
                 .Invoke(
                     textEditorCommandParameter.TextEditor);
@@ -130,8 +131,8 @@ public static class TextEditorCommandFacts
             textEditorCommandParameter.TextEditor.UndoEdit();
             
             textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
+                .TextEditorDisplay
+                .ReloadVirtualizationDisplay();
             
             return Task.CompletedTask;
         },
@@ -143,11 +144,24 @@ public static class TextEditorCommandFacts
             textEditorCommandParameter.TextEditor.RedoEdit();
             
             textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
+                .TextEditorDisplay
+                .ReloadVirtualizationDisplay();
             
             return Task.CompletedTask;
         },
         "Redo",
         "defaults_redo");
+    
+    public static readonly TextEditorCommand Remeasure = new(textEditorCommandParameter =>
+        {
+            textEditorCommandParameter.TextEditorDisplay.ShouldMeasureDimensions = true;
+            
+            textEditorCommandParameter
+                .TextEditorDisplay
+                .ReloadVirtualizationDisplay();
+            
+            return Task.CompletedTask;
+        },
+        "Remeasure",
+        "defaults_remeasure");
 }

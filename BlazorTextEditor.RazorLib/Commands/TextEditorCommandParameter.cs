@@ -12,15 +12,13 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
         ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots,
         IClipboardProvider clipboardProvider,
         ITextEditorService textEditorService,
-        Action reloadVirtualizationDisplay,
-        Action<TextEditorBase>? onSaveRequested)
+        TextEditorDisplay textEditorDisplay)
     {
         TextEditor = textEditor;
         CursorSnapshots = cursorSnapshots;
         ClipboardProvider = clipboardProvider;
         TextEditorService = textEditorService;
-        ReloadVirtualizationDisplay = reloadVirtualizationDisplay;
-        OnSaveRequested = onSaveRequested;
+        TextEditorDisplay = textEditorDisplay;
     }
 
     public TextEditorBase TextEditor { get; }
@@ -31,9 +29,5 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
     public ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots { get; }
     public IClipboardProvider ClipboardProvider { get; }
     public ITextEditorService TextEditorService { get; }
-    /// <summary>
-    /// TODO: <see cref="ReloadVirtualizationDisplay"/> is a hack and should be rewritten correctly. The modification of the TextEditorBase should send a notification automatically to all Blazor components that reference it by TextEditorKey. Allowing them an option to choose to re-render.
-    /// </summary>
-    public Action ReloadVirtualizationDisplay { get; }
-    public Action<TextEditorBase>? OnSaveRequested { get; }
+    public TextEditorDisplay TextEditorDisplay { get; }
 }

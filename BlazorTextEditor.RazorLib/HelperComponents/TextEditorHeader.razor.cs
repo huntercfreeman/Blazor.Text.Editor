@@ -21,8 +21,20 @@ public partial class TextEditorHeader : ComponentBase
     [Parameter]
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
 
-    private TextEditorDisplay? _textEditorDisplay;
     private TextEditorBase? _textEditorBase;
+    private TextEditorDisplay? _textEditorDisplay;
+
+    private TextEditorCommandParameter ConstructTextEditorCommandParameter(
+        TextEditorBase textEditorBase,
+        TextEditorDisplay textEditorDisplay)
+    {
+        return new TextEditorCommandParameter(
+            textEditorBase,
+            TextEditorCursorSnapshot.TakeSnapshots(textEditorDisplay.PrimaryCursor),
+            ClipboardProvider,
+            TextEditorService,
+            textEditorDisplay);
+    }
 
     public async Task ReRenderTextEditorHeaderAsync(
         TextEditorHelperComponentParameters textEditorHelperComponentParameters)
@@ -46,14 +58,40 @@ public partial class TextEditorHeader : ComponentBase
             TextEditorService.SetUsingRowEndingKind(textEditorKey, rowEndingKind);
     }
 
-    private Task DoCopyOnClick(MouseEventArgs arg)
+    private async Task DoCopyOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            _textEditorBase,
+            _textEditorDisplay);
+
+        var command = TextEditorCommandFacts.Copy;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 
-    private Task DoCutOnClick(MouseEventArgs arg)
+    private async Task DoCutOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            _textEditorBase,
+            _textEditorDisplay);
+
+        var command = TextEditorCommandFacts.Cut;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 
     private async Task DoPasteOnClick(MouseEventArgs arg)
@@ -64,13 +102,9 @@ public partial class TextEditorHeader : ComponentBase
             return;
         }
 
-        var textEditorCommandParameter = new TextEditorCommandParameter(
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             _textEditorBase,
-            TextEditorCursorSnapshot.TakeSnapshots(_textEditorDisplay.PrimaryCursor),
-            ClipboardProvider,
-            TextEditorService,
-            _textEditorDisplay.ReloadVirtualizationDisplay,
-            _textEditorDisplay.OnSaveRequested);
+            _textEditorDisplay);
 
         var command = TextEditorCommandFacts.Paste;
         
@@ -78,28 +112,93 @@ public partial class TextEditorHeader : ComponentBase
             textEditorCommandParameter);
     }
 
-    private Task DoRedoOnClick(MouseEventArgs arg)
+    private async Task DoRedoOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            _textEditorBase,
+            _textEditorDisplay);
+
+        var command = TextEditorCommandFacts.Redo;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 
-    private Task DoSaveOnClick(MouseEventArgs arg)
+    private async Task DoSaveOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            _textEditorBase,
+            _textEditorDisplay);
+
+        var command = TextEditorCommandFacts.Save;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 
-    private Task DoUndoOnClick(MouseEventArgs arg)
+    private async Task DoUndoOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            _textEditorBase,
+            _textEditorDisplay);
+
+        var command = TextEditorCommandFacts.Undo;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 
-    private Task DoSelectAllOnClick(MouseEventArgs arg)
+    private async Task DoSelectAllOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            _textEditorBase,
+            _textEditorDisplay);
+
+        var command = TextEditorCommandFacts.SelectAll;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 
-    private Task DoRefreshOnClick(MouseEventArgs arg)
+    private async Task DoRefreshOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            _textEditorBase,
+            _textEditorDisplay);
+
+        var command = TextEditorCommandFacts.Remeasure;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 }
