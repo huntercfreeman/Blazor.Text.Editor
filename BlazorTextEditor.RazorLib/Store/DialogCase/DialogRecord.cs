@@ -1,6 +1,6 @@
 using BlazorTextEditor.RazorLib.Dimensions;
 
-namespace BlazorStudio.ClassLib.Store.DialogCase;
+namespace BlazorTextEditor.RazorLib.Store.DialogCase;
 
 public record DialogRecord(
     DialogKey DialogKey,

@@ -1,4 +1,4 @@
-﻿namespace BlazorStudio.ClassLib.Store.DialogCase;
+﻿namespace BlazorTextEditor.RazorLib.Store.DialogCase;
 
 public static class DialogFacts
 {

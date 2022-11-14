@@ -1,4 +1,4 @@
-using BlazorStudio.ClassLib.Store.DialogCase;
+using BlazorTextEditor.RazorLib.Store.DialogCase;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.Dialog;

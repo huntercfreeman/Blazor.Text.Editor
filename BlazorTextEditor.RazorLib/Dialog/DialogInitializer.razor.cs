@@ -1,4 +1,4 @@
-using BlazorStudio.ClassLib.Store.DialogCase;
+using BlazorTextEditor.RazorLib.Store.DialogCase;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;

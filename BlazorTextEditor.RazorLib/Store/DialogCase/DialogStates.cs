@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Fluxor;
 
-namespace BlazorStudio.ClassLib.Store.DialogCase;
+namespace BlazorTextEditor.RazorLib.Store.DialogCase;
 
 [FeatureState]
 public record DialogStates(ImmutableList<DialogRecord> DialogRecords)

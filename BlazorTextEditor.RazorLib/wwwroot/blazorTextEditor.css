@@ -430,3 +430,86 @@
     min-height: 100%;
     color: var(--bte_primary-font-color);
 }
+
+.btv_unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+/* 
+    "btv_set-selectable" is for child elements of 
+    a "btv_unselectable" where the child needs to
+    re-enable selectable when the parent turned it off.
+*/
+.btv_set-selectable {
+    -webkit-touch-callout: default;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    -o-user-select: text;
+    user-select: text;
+}
+
+.btv_tree-view-state {
+    height: 200px;
+    overflow: auto;
+}
+
+.btv-tree-view-title {
+    display: flex;
+    white-space: nowrap;
+}
+
+.btv-tree-view-title.btv_active {
+    background-color: var(--btv_active-but-not-focused-background-color);
+}
+
+.btv_tree-view-state:focus:not(.btv_active) {
+    outline: var(--btv_outline-color) inset;
+}
+
+.btv_tree-view-state:focus .btv-tree-view-title.btv_active {
+    background-color: var(--btv_outline-color);
+}
+
+.btv-tree-view-title.btv_active:focus {
+    background-color: var(--btv_outline-color);
+}
+
+.btv-tree-view-children-border {
+    border-left: 1.5px solid var(--btv-tree-view-children-border-color);
+    opacity: 0.5;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.btv-tree-view-children {
+    position: relative;
+}
+
+.btv_context-menu {
+    position: fixed;
+    min-width: 15ch;
+    min-height:6em;
+    background-color: var(--btv_context-menu-background-color);
+    color: var(--btv_context-menu-foreground-color);
+}
+
+.btv-tree-view-expansion-chevron {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--btv-tree-view-expansion-chevron-color);
+}
+
+.btv-tree-view-title-content {
+    cursor: default;
+}

@@ -48,4 +48,6 @@
     --btv_active-but-not-focused-background-color: #7f8e93;
     --btv_context-menu-background-color: red;
     --btv_context-menu-foreground-color: green;
+    --btv-tree-view-expansion-chevron-color: currentColor;
+    --btv-tree-view-children-border-color: currentColor;
 }

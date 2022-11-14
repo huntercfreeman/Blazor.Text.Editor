@@ -1,5 +1,5 @@
-using BlazorStudio.ClassLib.Store.DialogCase;
 using BlazorTextEditor.RazorLib.Resize;
+using BlazorTextEditor.RazorLib.Store.DialogCase;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 

@@ -1,5 +1,4 @@
 using BlazorTextEditor.RazorLib.Dimensions;
-using BlazorTextEditor.RazorLib.Resize;
 using BlazorTextEditor.RazorLib.Store.DragCase;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
