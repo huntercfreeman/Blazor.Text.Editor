@@ -8,6 +8,7 @@ using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
@@ -101,6 +102,123 @@ public partial class TextEditorBase
         }
         else
             PerformInsertions(keyboardEventTextEditorBaseAction);
+
+        return this;
+    }
+    
+    public TextEditorBase PerformEditTextEditorAction(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
+    {
+        var previousCharacterWasCarriageReturn = false;
+
+        foreach (var character in insertTextTextEditorBaseAction.Content)
+        {
+            if (previousCharacterWasCarriageReturn &&
+                character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
+            {
+                previousCharacterWasCarriageReturn = false;
+                continue;
+            }
+
+            // TODO: This needs to be rewritten everything should be inserted at the same time not a foreach loop insertion for each character
+            //
+            // Need innerCursorSnapshots because need
+            // after every loop of the foreach that the
+            // cursor snapshots are updated
+            var innerCursorSnapshots = TextEditorCursorSnapshot
+                .TakeSnapshots(
+                    insertTextTextEditorBaseAction.CursorSnapshots
+                            .Select(x => x.UserCursor)
+                            .ToArray())
+                .ToImmutableArray();
+
+            var code = character switch
+            {
+                '\r' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
+                '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
+                '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
+                ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
+                _ => character.ToString(),
+            };
+
+            var keyboardEventTextEditorBaseAction =
+                    new KeyboardEventTextEditorBaseAction(
+                        insertTextTextEditorBaseAction.TextEditorKey,
+                        innerCursorSnapshots,
+                        new KeyboardEventArgs
+                        {
+                            Code = code,
+                            Key = character.ToString(),
+                        },
+                        CancellationToken.None);
+
+            PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+
+            previousCharacterWasCarriageReturn =
+                KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN
+                == character;
+        }
+
+        return this;
+    }
+    
+    public TextEditorBase PerformEditTextEditorAction(DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+    {
+        var keyboardEventArgs = deleteTextByMotionTextEditorBaseAction.MotionKind switch
+        {
+            MotionKind.Backspace => new KeyboardEventArgs
+            {
+                Key = KeyboardKeyFacts.MetaKeys.BACKSPACE
+            },
+            MotionKind.Delete => new KeyboardEventArgs
+            {
+                Key = KeyboardKeyFacts.MetaKeys.DELETE
+            },
+            _ => throw new ApplicationException(
+                $"The {nameof(MotionKind)}:" +
+                $" {deleteTextByMotionTextEditorBaseAction.MotionKind}" +
+                " was not recognized.")
+        };
+        
+        var keyboardEventTextEditorBaseAction =
+            new KeyboardEventTextEditorBaseAction(
+                deleteTextByMotionTextEditorBaseAction.TextEditorKey,
+                deleteTextByMotionTextEditorBaseAction.CursorSnapshots,
+                keyboardEventArgs,
+                CancellationToken.None);
+
+        PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+
+        return this;
+    }
+    
+    public TextEditorBase PerformEditTextEditorAction(DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+    {
+        // TODO: This needs to be rewritten everything should be deleted at the same time not a foreach loop insertion for each character
+        for (var i = 0; i < deleteTextByRangeTextEditorBaseAction.Count; i++)
+        {
+            // Need innerCursorSnapshots because need
+            // after every loop of the foreach that the
+            // cursor snapshots are updated
+            var innerCursorSnapshots = TextEditorCursorSnapshot
+                .TakeSnapshots(
+                    deleteTextByRangeTextEditorBaseAction.CursorSnapshots
+                        .Select(x => x.UserCursor)
+                        .ToArray())
+                .ToImmutableArray();
+            
+            var keyboardEventTextEditorBaseAction =
+                new KeyboardEventTextEditorBaseAction(
+                    deleteTextByRangeTextEditorBaseAction.TextEditorKey,
+                    innerCursorSnapshots,
+                    new KeyboardEventArgs
+                    {
+                        Code = KeyboardKeyFacts.MetaKeys.BACKSPACE,
+                        Key = KeyboardKeyFacts.MetaKeys.BACKSPACE,
+                    },
+                    CancellationToken.None);
+
+            PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+        }
 
         return this;
     }

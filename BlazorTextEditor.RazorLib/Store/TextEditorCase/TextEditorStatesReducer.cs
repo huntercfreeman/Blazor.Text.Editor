@@ -24,7 +24,26 @@ public class TextEditorStatesReducer
     }
 
     [ReducerMethod]
-    public static TextEditorStates ReduceEditTextEditorBaseAction(
+    public static TextEditorStates ReduceInsertTextTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == insertTextTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(insertTextTextEditorBaseAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceKeyboardEventTextEditorBaseAction(
         TextEditorStates previousTextEditorStates,
         KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
     {
@@ -32,6 +51,44 @@ public class TextEditorStatesReducer
             .Single(x => x.Key == keyboardEventTextEditorBaseAction.TextEditorKey);
 
         var nextTextEditor = textEditor.PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceDeleteTextByMotionTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == deleteTextByMotionTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByMotionTextEditorBaseAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceEditTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == deleteTextByRangeTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByRangeTextEditorBaseAction);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);
