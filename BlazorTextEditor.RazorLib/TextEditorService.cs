@@ -5,7 +5,6 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
-using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 

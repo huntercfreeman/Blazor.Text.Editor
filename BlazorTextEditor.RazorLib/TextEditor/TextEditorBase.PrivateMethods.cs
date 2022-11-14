@@ -5,7 +5,6 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;

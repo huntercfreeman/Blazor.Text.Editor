@@ -263,3 +263,42 @@ window.blazorTextEditor = {
         return localStorage.getItem(key);
     },
 }
+
+Blazor.registerCustomEventType('keydownwithpreventscroll', {
+    browserEventName: 'keydown',
+    createEventArgs: e => {
+        
+        let preventDefaultOnTheseKeys = [
+            "ArrowLeft",
+            "ArrowDown",
+            "ArrowUp",
+            "ArrowRight",
+            "Home",
+            "End",
+            "Space",
+            "Enter",
+        ];
+        
+        let preventDefaultOnTheseCodes = [
+            "Space",
+            "Enter",
+        ];
+        
+        if (preventDefaultOnTheseKeys.indexOf(e.key) !== -1 ||
+            preventDefaultOnTheseCodes.indexOf(e.code) !== -1) {
+            e.preventDefault();
+        }
+
+        return {
+            Type: e.type,
+            MetaKey: e.metaKey,
+            AltKey: e.altKey,
+            ShiftKey: e.shiftKey,
+            CtrlKey: e.ctrlKey,
+            Repeat: e.repeat,
+            Location: e.location,
+            Code: e.code,
+            Key: e.key
+        };
+    }
+});

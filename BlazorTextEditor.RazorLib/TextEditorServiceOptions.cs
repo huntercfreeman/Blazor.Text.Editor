@@ -1,7 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
-using BlazorTextEditor.RazorLib.TextEditor;
-using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 

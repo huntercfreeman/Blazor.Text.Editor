@@ -2,7 +2,6 @@
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using Microsoft.AspNetCore.Components.Web;
 

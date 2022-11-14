@@ -29,4 +29,11 @@
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Dropdown\DropdownDisplay.razor" />
+      <AdditionalFiles Include="Menu\MenuDisplay.razor" />
+      <AdditionalFiles Include="Menu\MenuOptionDisplay.razor" />
+      <AdditionalFiles Include="OutOfBoundsClick\OutOfBoundsClickDisplay.razor" />
+    </ItemGroup>
+
 </Project>

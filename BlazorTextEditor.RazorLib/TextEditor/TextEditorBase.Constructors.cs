@@ -1,10 +1,6 @@
-﻿using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Decoration;
-using BlazorTextEditor.RazorLib.Editing;
-using BlazorTextEditor.RazorLib.Keyboard;
+﻿using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
-using BlazorTextEditor.RazorLib.Row;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
