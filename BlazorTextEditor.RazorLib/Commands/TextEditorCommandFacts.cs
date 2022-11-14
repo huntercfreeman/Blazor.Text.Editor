@@ -3,6 +3,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Commands;
@@ -56,7 +57,7 @@ public static class TextEditorCommandFacts
             }
             
             textEditorCommandParameter.TextEditorService
-                .EditTextEditor(new EditTextEditorBaseAction(
+                .HandleKeyboardEvent(new KeyboardEventTextEditorBaseAction(
                     textEditorCommandParameter.TextEditor.Key,
                     textEditorCommandParameter.CursorSnapshots,
                     new KeyboardEventArgs
@@ -111,8 +112,8 @@ public static class TextEditorCommandFacts
                 };
 
                 textEditorCommandParameter.TextEditorService
-                    .EditTextEditor(
-                        new EditTextEditorBaseAction(
+                    .HandleKeyboardEvent(
+                        new KeyboardEventTextEditorBaseAction(
                             textEditorCommandParameter.TextEditor.Key,
                             innerCursorSnapshots,
                             new KeyboardEventArgs

@@ -1,5 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 
@@ -21,7 +22,10 @@ public interface ITextEditorService : IDisposable
     public event Action? OnTextEditorStatesChanged;
 
     public void RegisterTextEditor(TextEditorBase textEditorBase);
-    public void EditTextEditor(EditTextEditorBaseAction editTextEditorBaseAction);
+    public void InsertText(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction);
+    public void HandleKeyboardEvent(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction);
+    public void DeleteTextByMotion(DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction);
+    public void DeleteTextByRange(DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction);
     public void DisposeTextEditor(TextEditorKey textEditorKey);
     public void SetFontSize(int fontSizeInPixels);
     public void SetTheme(Theme theme);

@@ -8,6 +8,7 @@ using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
@@ -300,7 +301,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             else
             {
                 Dispatcher.Dispatch(
-                    new EditTextEditorBaseAction(
+                    new KeyboardEventTextEditorBaseAction(
                         TextEditorKey,
                         cursorSnapshots,
                         keyboardEventArgs,

@@ -1,3 +1,4 @@
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
@@ -25,12 +26,12 @@ public class TextEditorStatesReducer
     [ReducerMethod]
     public static TextEditorStates ReduceEditTextEditorBaseAction(
         TextEditorStates previousTextEditorStates,
-        EditTextEditorBaseAction editTextEditorBaseAction)
+        KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == editTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.Key == keyboardEventTextEditorBaseAction.TextEditorKey);
 
-        var nextTextEditor = textEditor.PerformEditTextEditorAction(editTextEditorBaseAction);
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);

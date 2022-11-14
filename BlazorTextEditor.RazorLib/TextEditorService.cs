@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
@@ -11,18 +12,18 @@ namespace BlazorTextEditor.RazorLib;
 public class TextEditorService : ITextEditorService
 {
     private readonly IDispatcher _dispatcher;
-    private readonly IJSRuntime _jsRuntime;
+    private readonly IStorageProvider _storageProvider;
     private readonly IState<TextEditorStates> _textEditorStates;
     
 
     public TextEditorService(
         IState<TextEditorStates> textEditorStates,
         IDispatcher dispatcher,
-        IJSRuntime jsRuntime)
+        IStorageProvider storageProvider)
     {
         _textEditorStates = textEditorStates;
         _dispatcher = dispatcher;
-        _jsRuntime = jsRuntime;
+        _storageProvider = storageProvider;
 
         _textEditorStates.StateChanged += TextEditorStatesOnStateChanged;
     }
@@ -58,10 +59,25 @@ public class TextEditorService : ITextEditorService
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
     }
-
-    public void EditTextEditor(EditTextEditorBaseAction editTextEditorBaseAction)
+    
+    public void InsertText(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
     {
-        _dispatcher.Dispatch(editTextEditorBaseAction);
+        _dispatcher.Dispatch(insertTextTextEditorBaseAction);
+    }
+
+    public void HandleKeyboardEvent(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+    {
+        _dispatcher.Dispatch(keyboardEventTextEditorBaseAction);
+    }
+    
+    public void DeleteTextByMotion(DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+    {
+        _dispatcher.Dispatch(deleteTextByMotionTextEditorBaseAction);
+    }
+    
+    public void DeleteTextByRange(DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+    {
+        _dispatcher.Dispatch(deleteTextByRangeTextEditorBaseAction);
     }
 
     public void DisposeTextEditor(TextEditorKey textEditorKey)
@@ -115,9 +131,9 @@ public class TextEditorService : ITextEditorService
     
     public async Task SetTextEditorOptionsFromLocalStorageAsync()
     {
-        var optionsJsonString = await _jsRuntime.InvokeAsync<string>(
-            "blazorTextEditor.localStorageGetItem",
-            ITextEditorService.LocalStorageGlobalTextEditorOptionsKey);
+        var optionsJsonString = (await _storageProvider
+            .GetValue(ITextEditorService.LocalStorageGlobalTextEditorOptionsKey))
+                as string;
 
         if (string.IsNullOrWhiteSpace(optionsJsonString))
             return;

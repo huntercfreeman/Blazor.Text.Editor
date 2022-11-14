@@ -1,13 +1,12 @@
-﻿using BlazorTextEditor.RazorLib.Clipboard;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
-namespace BlazorTextEditor.RazorLib;
+namespace BlazorTextEditor.RazorLib.Clipboard;
 
-public class ClipboardProviderDefault : IClipboardProvider
+public class JavaScriptInteropClipboardProvider : IClipboardProvider
 {
     private readonly IJSRuntime _jsRuntime;
 
-    public ClipboardProviderDefault(IJSRuntime jsRuntime)
+    public JavaScriptInteropClipboardProvider(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
     }

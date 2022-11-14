@@ -7,6 +7,7 @@ using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
@@ -90,16 +91,16 @@ public partial class TextEditorBase
         return tabs.Count();
     }
 
-    public TextEditorBase PerformEditTextEditorAction(EditTextEditorBaseAction editTextEditorBaseAction)
+    public TextEditorBase PerformEditTextEditorAction(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
     {
-        if (KeyboardKeyFacts.IsMetaKey(editTextEditorBaseAction.KeyboardEventArgs))
+        if (KeyboardKeyFacts.IsMetaKey(keyboardEventTextEditorBaseAction.KeyboardEventArgs))
         {
-            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key ||
-                KeyboardKeyFacts.MetaKeys.DELETE == editTextEditorBaseAction.KeyboardEventArgs.Key)
-                PerformDeletions(editTextEditorBaseAction);
+            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key ||
+                KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
+                PerformDeletions(keyboardEventTextEditorBaseAction);
         }
         else
-            PerformInsertions(editTextEditorBaseAction);
+            PerformInsertions(keyboardEventTextEditorBaseAction);
 
         return this;
     }
