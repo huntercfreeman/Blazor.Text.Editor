@@ -253,6 +253,7 @@
 .bte_dialog-display {
     z-index: var(--bte_dialog-display-z-index);
     background-color: var(--bte_dialog-display-background-color);
+    color: var(--bte_primary-font-color);
     box-shadow: 0 0 var(--bte_dialog-display-box-shadow-blur-radius) var(--bte_primary-box-shadow-color);
 }
 

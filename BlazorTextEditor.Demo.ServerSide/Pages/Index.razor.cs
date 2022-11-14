@@ -24,4 +24,9 @@ public partial class Index
         
         base.OnInitialized();
     }
+
+    private void OpenSettingsDialogOnClick()
+    {
+        TextEditorService.ShowSettingsDialog();
+    }
 }

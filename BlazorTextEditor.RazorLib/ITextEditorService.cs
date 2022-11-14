@@ -32,6 +32,7 @@ public interface ITextEditorService : IDisposable
     public void SetShowWhitespace(bool showWhitespace);
     public void SetShowNewlines(bool showNewlines);
     public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind);
+    public void ShowSettingsDialog();
     
     public Task SetTextEditorOptionsFromLocalStorageAsync();
     public void WriteGlobalTextEditorOptionsToLocalStorage();

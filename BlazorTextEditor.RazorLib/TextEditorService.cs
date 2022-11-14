@@ -1,4 +1,6 @@
-﻿using BlazorTextEditor.RazorLib.Row;
+﻿using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Row;
+using BlazorTextEditor.RazorLib.Store.DialogCase;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
@@ -121,6 +123,19 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(
             new TextEditorSetUsingRowEndingKindAction(textEditorKey, rowEndingKind));
+    }
+
+    public void ShowSettingsDialog()
+    {
+        var settingsDialog = new DialogRecord(
+            DialogKey.NewDialogKey(), 
+            "Text Editor Settings",
+            typeof(TextEditorSettings),
+            null);
+        
+        _dispatcher.Dispatch(
+            new RegisterDialogRecordAction(
+                settingsDialog));
     }
 
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
