@@ -1,4 +1,7 @@
 ﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
@@ -10,6 +13,8 @@ public partial class TextEditorHeader : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
+    private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public string? FileExtension { get; set; }
@@ -51,9 +56,26 @@ public partial class TextEditorHeader : ComponentBase
         throw new NotImplementedException();
     }
 
-    private Task DoPasteOnClick(MouseEventArgs arg)
+    private async Task DoPasteOnClick(MouseEventArgs arg)
     {
-        throw new NotImplementedException();
+        if (_textEditorBase is null || 
+            _textEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = new TextEditorCommandParameter(
+            _textEditorBase,
+            TextEditorCursorSnapshot.TakeSnapshots(_textEditorDisplay.PrimaryCursor),
+            ClipboardProvider,
+            TextEditorService,
+            _textEditorDisplay.ReloadVirtualizationDisplay,
+            _textEditorDisplay.OnSaveRequested);
+
+        var command = TextEditorCommandFacts.Paste;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
     }
 
     private Task DoRedoOnClick(MouseEventArgs arg)
