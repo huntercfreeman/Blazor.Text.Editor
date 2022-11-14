@@ -13,26 +13,18 @@ public partial class TextEditorFooter : ComponentBase
     private ITextEditorService TextEditorService { get; set; } = null!;
     
     [Parameter, EditorRequired]
+    public TextEditorDisplay? TextEditorDisplay { get; set; }
+    [Parameter, EditorRequired]
+    public TextEditorBase? TextEditorBase { get; set; }
+    [Parameter]
     public string? FileExtension { get; set; }
-
-    private TextEditorDisplay? _textEditorDisplay;
-    private TextEditorBase? _textEditorBase;
-    
-    public async Task ReRenderTextEditorFooterAsync(
-        TextEditorHelperComponentParameters textEditorHelperComponentParameters)
-    {
-        _textEditorBase = textEditorHelperComponentParameters.TextEditorBase;
-        _textEditorDisplay = textEditorHelperComponentParameters.TextEditorDisplay;
-        
-        await InvokeAsync(StateHasChanged);
-    }
 
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
-        if (_textEditorBase is null)
+        if (TextEditorBase is null)
             return;
         
-        var textEditorKey = _textEditorBase.Key;
+        var textEditorKey = TextEditorBase.Key;
 
         var rowEndingKindString = (string)(changeEventArgs.Value ?? string.Empty);
 

@@ -1,10 +1,13 @@
 ﻿using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
+using BlazorTextEditor.RazorLib.Store.ThemeCase;
 
 namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorServiceOptions : ITextEditorServiceOptions
 {
+    public bool InitializeFluxor { get; set; } = true;
+    public Theme InitialTheme { get; set; } = ThemeFacts.Unset;
     /// <summary>
     /// Default value if left null is: <see cref="JavaScriptInteropClipboardProvider"/>
     /// <br/><br/>
@@ -13,7 +16,6 @@ public class TextEditorServiceOptions : ITextEditorServiceOptions
     /// <see cref="InMemoryClipboardProvider"/>
     /// </summary>
     public Func<IServiceProvider, IClipboardProvider>? ClipboardProviderFactory { get; set; }
-    public bool InitializeFluxor { get; set; } = true;
     /// <summary>
     /// Default value if left null is: <see cref="LocalStorageProvider"/>
     /// <br/><br/>

@@ -16,13 +16,12 @@ public partial class TextEditorHeader : ComponentBase
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
-    [Parameter]
-    public string? FileExtension { get; set; }
+    [Parameter, EditorRequired]
+    public TextEditorDisplay? TextEditorDisplay { get; set; }
+    [Parameter, EditorRequired]
+    public TextEditorBase? TextEditorBase { get; set; }
     [Parameter]
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
-
-    private TextEditorBase? _textEditorBase;
-    private TextEditorDisplay? _textEditorDisplay;
 
     private TextEditorCommandParameter ConstructTextEditorCommandParameter(
         TextEditorBase textEditorBase,
@@ -36,21 +35,12 @@ public partial class TextEditorHeader : ComponentBase
             textEditorDisplay);
     }
 
-    public async Task ReRenderTextEditorHeaderAsync(
-        TextEditorHelperComponentParameters textEditorHelperComponentParameters)
-    {
-        _textEditorBase = textEditorHelperComponentParameters.TextEditorBase;
-        _textEditorDisplay = textEditorHelperComponentParameters.TextEditorDisplay;
-
-        await InvokeAsync(StateHasChanged);
-    }
-
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
-        if (_textEditorBase is null)
+        if (TextEditorBase is null)
             return;
 
-        var textEditorKey = _textEditorBase.Key;
+        var textEditorKey = TextEditorBase.Key;
 
         var rowEndingKindString = (string)(changeEventArgs.Value ?? string.Empty);
 
@@ -60,15 +50,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoCopyOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.Copy;
         
@@ -78,15 +68,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoCutOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.Cut;
         
@@ -96,15 +86,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoPasteOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.Paste;
         
@@ -114,15 +104,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoRedoOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.Redo;
         
@@ -132,15 +122,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoSaveOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.Save;
         
@@ -150,15 +140,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoUndoOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.Undo;
         
@@ -168,15 +158,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoSelectAllOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.SelectAll;
         
@@ -186,15 +176,15 @@ public partial class TextEditorHeader : ComponentBase
 
     private async Task DoRefreshOnClick(MouseEventArgs arg)
     {
-        if (_textEditorBase is null || 
-            _textEditorDisplay is null)
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            _textEditorBase,
-            _textEditorDisplay);
+            TextEditorBase,
+            TextEditorDisplay);
 
         var command = TextEditorCommandFacts.Remeasure;
         

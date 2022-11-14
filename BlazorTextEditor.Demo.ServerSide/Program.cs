@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using BlazorTextEditor.Demo.ServerSide.Data;
 using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.Store.ThemeCase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddBlazorTextEditor();
+builder.Services.AddBlazorTextEditor(options => 
+    options.InitialTheme = ThemeFacts.VisualStudioLightClone);
 
 var app = builder.Build();
 

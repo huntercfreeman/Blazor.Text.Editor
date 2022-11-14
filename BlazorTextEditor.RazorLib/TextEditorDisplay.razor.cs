@@ -65,8 +65,43 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     /// </summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;
+    /// <summary>
+    /// <see cref="IncludeHeaderHelperComponent"/> results in
+    /// <see cref="TextEditorHeader"/> being rendered above the
+    /// <see cref="TextEditorDisplay"/>
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
     [Parameter]
-    public Func<TextEditorHelperComponentParameters, Task>? UpdateHelperComponentsAsync { get; set; }
+    public bool IncludeHeaderHelperComponent { get; set; } = true;
+    /// <summary>
+    /// <see cref="HeaderButtonKinds"/> contains
+    /// the enum value that represents a button displayed
+    /// in the <see cref="TextEditorHeader"/>.
+    /// <br/></br>
+    /// The <see cref="TextEditorHeader"/> is only displayed if
+    /// <see cref="IncludeHeaderHelperComponent"/> is set to true.
+    /// </summary>
+    [Parameter]
+    public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
+    /// <summary>
+    /// <see cref="IncludeFooterHelperComponent"/> results in
+    /// <see cref="TextEditorFooter"/> being rendered below the
+    /// <see cref="TextEditorDisplay"/>
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
+    [Parameter]
+    public bool IncludeFooterHelperComponent { get; set; } = true;
+    /// <summary>
+    /// <see cref="FileExtension"/> is displayed as is within the
+    /// <see cref="TextEditorFooter"/>.
+    /// <br/><br/>
+    /// The <see cref="TextEditorFooter"/> is only displayed if
+    /// <see cref="IncludeFooterHelperComponent"/> is set to true.
+    /// </summary>
+    [Parameter]
+    public string FileExtension { get; set; } = string.Empty;
     
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     
@@ -93,6 +128,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private bool _thinksLeftMouseButtonIsDown;
 
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
+    private TextEditorHeader? _textEditorHeader;
+    private TextEditorFooter? _textEditorFooter;
 
     public bool ShouldMeasureDimensions { get; set; } = true;
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
@@ -133,11 +170,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
     private bool GlobalShowWhitespace => TextEditorService
         .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
-    
-    private TextEditorHelperComponentParameters TextEditorHelperComponentParameters => 
-        new(
-            this,
-            MutableReferenceToTextEditor);
 
     public TextEditorCursor PrimaryCursor { get; } = new(true);
 
@@ -209,9 +241,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         if (firstRender)
         {
             ReloadVirtualizationDisplay();
-
-            if (UpdateHelperComponentsAsync is not null)
-                await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
         }
 
         if (ShouldMeasureDimensions)
@@ -314,9 +343,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             }
         }
 
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
-
         primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
 
         var afterOnKeyDownAsync = AfterOnKeyDownAsync;
@@ -414,9 +440,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                     .UserCursor.TextEditorSelection.AnchorPositionIndex =
                 cursorPositionOfLowerExpansion;
         }
-
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
     }
     
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
@@ -483,9 +506,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             cursorPositionIndex;
 
         _thinksLeftMouseButtonIsDown = true;
-
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
     }
 
     /// <summary>
@@ -523,9 +543,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         }
         else
             _thinksLeftMouseButtonIsDown = false;
-
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
     }
 
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(
