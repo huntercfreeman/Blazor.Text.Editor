@@ -1,0 +1,25 @@
+﻿namespace BlazorTextEditor.Tests.TestDataFolder;
+
+public static partial class TestData
+{
+    public const string RAZOR_EXAMPLE_TEXT = @"<div class=""card"" style=""width:22rem"">
+    <div class=""card-body"">
+        <h3 class=""card-title"">@Title</h3>
+        <p class=""card-text"">@ChildContent</p>
+        <button @onclick=""OnYes"">Yes!</button>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    private void OnYes()
+    {
+        Console.WriteLine(""Write to the console in C#! 'Yes' button selected."");
+    }
+}";
+}
