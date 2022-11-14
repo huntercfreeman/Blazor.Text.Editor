@@ -38,7 +38,7 @@ public partial record TreeViewStateContainer(
     
     public record SetActiveNodeAction(
         TreeViewStateKey TreeViewStateKey,
-        TreeView.TreeView NextActiveNode);
+        TreeView.TreeView? NextActiveNode);
     
     public record MoveActiveSelectionLeftAction(
         TreeViewStateKey TreeViewStateKey);

@@ -38,7 +38,6 @@ public partial class TreeViewDisplay : ComponentBase
     public int Depth { get; set; }
 
     private ElementReference? _treeViewTitleElementReference;
-    private bool _isFocused;
     private TreeViewChangedKey _previousTreeViewChangedKey = TreeViewChangedKey.Empty;
 
     private bool _previousIsActive;

@@ -89,7 +89,7 @@ public class TreeViewService : ITreeViewService
 
     public void SetActiveNode(
         TreeViewStateKey treeViewStateKey,
-        TreeView nextActiveNode)
+        TreeView? nextActiveNode)
     {
         var setActiveNodeAction = new TreeViewStateContainer.SetActiveNodeAction(
             treeViewStateKey,

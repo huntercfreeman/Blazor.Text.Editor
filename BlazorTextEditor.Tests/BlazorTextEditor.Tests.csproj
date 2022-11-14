@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Blazor.Text.Editor\BlazorTextEditor.RazorLib\BlazorTextEditor.RazorLib.csproj" />
       <ProjectReference Include="..\BlazorTextEditor.RazorLib\BlazorTextEditor.RazorLib.csproj" />
     </ItemGroup>
 

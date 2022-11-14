@@ -24,7 +24,7 @@ public abstract class TreeView
     public bool IsHidden { get; set; }
     public bool IsExpandable { get; set; }
     public bool IsExpanded { get; set; }
-    public TreeViewChangedKey TreeViewChangedKey { get; set; }
+    public TreeViewChangedKey TreeViewChangedKey { get; set; } = TreeViewChangedKey.NewTreeViewChangedKey();
     public Guid Id { get; set; } = Guid.NewGuid();
 
     public abstract TreeViewRenderer GetTreeViewRenderer();

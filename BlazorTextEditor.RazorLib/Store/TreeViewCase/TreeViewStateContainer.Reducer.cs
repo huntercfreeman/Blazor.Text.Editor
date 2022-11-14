@@ -121,7 +121,8 @@ public partial record TreeViewStateContainer
             if (treeViewState.ActiveNode is not null)
                 MarkForRerender(treeViewState.ActiveNode);
 
-            MarkForRerender(setActiveNodeAction.NextActiveNode);
+            if (setActiveNodeAction.NextActiveNode is not null)
+                MarkForRerender(setActiveNodeAction.NextActiveNode);
 
             var nextTreeViewState = treeViewState with
             {
