@@ -1,3 +1,7 @@
+.bte_text-editor-css-wrapper {
+    height: 250px;
+}
+
 .bte_text-editor {
     height: 100%;
     color: var(--bte_primary-font-color);

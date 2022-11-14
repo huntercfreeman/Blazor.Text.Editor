@@ -52,7 +52,7 @@
 
 ```
 
-- Register the library's services by invoking the IServiceCollection extension method `AddTextEditorRazorLibServices()`
+- Register the library's services by invoking the IServiceCollection extension method `AddBlazorTextEditor()`
 
 ```csharp
 // In Program.cs
@@ -63,17 +63,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ... using elipses for conciseness
 
-builder.Services.AddTextEditorRazorLibServices();
+builder.Services.AddBlazorTextEditor();
 
 var app = builder.Build();
 ```
 
 - Edit `App.razor` and add the following markup. 
 
-> **_NOTE:_**  Internally the library uses a state management library named [Fluxor](https://github.com/mrpmorris/Fluxor). This markup currently only acts as a wrapper for the markup required by Fluxor which is their [StoreInitializer.razor](https://github.com/mrpmorris/Fluxor/blob/master/Source/Lib/Fluxor.Blazor.Web/StoreInitializer.cs).
-
 ```html
-<BlazorTextEditor.RazorLib.BlazorTextEditorInitializer />
+<BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/>
 ```
 
 - Add a file named `Index.razor.cs` to the directory `Pages/`
