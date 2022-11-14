@@ -29,16 +29,16 @@ public partial class MenuOptionDisplay : ComponentBase
         .Any(x => x.Guid == _subMenuDropdownKey.Guid);
     
     private string IsActiveCssClass => IsActive
-        ? "bstudio_active"
+        ? "bte_active"
         : string.Empty;
     
     private string HasSubmenuActiveCssClass => HasSubmenuActive
-            ? "bstudio_active"
+            ? "bte_active"
             : string.Empty;
     
     private string HasWidgetActiveCssClass => _shouldDisplayWidget && 
                                               MenuOptionRecord.WidgetRendererType is not null
-        ? "bstudio_active"
+        ? "bte_active"
         : string.Empty;
 
     private MenuOptionWidgetParameters MenuOptionWidgetParameters => new(

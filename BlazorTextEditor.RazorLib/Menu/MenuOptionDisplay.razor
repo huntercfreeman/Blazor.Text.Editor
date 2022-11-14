@@ -1,7 +1,7 @@
 @using BlazorTextEditor.RazorLib.Dropdown
 @using BlazorTextEditor.RazorLib.Dropdown
 
-<div class="bstudio_menu-option-display bstudio_unselectable @IsActiveCssClass @HasWidgetActiveCssClass"
+<div class="bte_menu-option-display bte_unselectable @IsActiveCssClass @HasWidgetActiveCssClass"
      tabindex="-1"
      @ref="_menuOptionDisplayElementReference"
      @onclick="HandleOnClick"
@@ -19,7 +19,7 @@
                          DropdownPositionKind="DropdownPositionKind.Horizontal"
                          ShouldDisplayOutOfBoundsClickDisplay="false">
 
-            <div class="bstudio_dropdown-display-default-background">
+            <div class="bte_dropdown-display-default-background">
                 <MenuDisplay MenuRecord="MenuOptionRecord.SubMenu"/>
             </div>
         </DropdownDisplay>
@@ -27,7 +27,7 @@
 
     @if (DisplayWidget)
     {
-        <div class="bstudio_menu-option-widget"
+        <div class="bte_menu-option-widget"
              @onclick:stopPropagation="true"
              @ondblclick:stopPropagation="true"
              @onkeydown:stopPropagation="true"
