@@ -11,7 +11,7 @@
     <TextEditorHeader TextEditorBase="MutableReferenceToTextEditor"
                       TextEditorDisplay="this"
                       HeaderButtonKinds="HeaderButtonKinds"/>
-    
+
     <div @ref="_textEditorDisplayElementReference"
          @onclick="FocusTextEditorOnClickAsync"
          @onkeydown="HandleOnKeyDownAsync"
@@ -176,14 +176,26 @@
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
                                                  TabIndex="TabIndex"
-                                                 OnContextMenuRenderFragment="OnContextMenuRenderFragment"
-                                                 AutoCompleteMenuRenderFragment="AutoCompleteMenuRenderFragment"/>
+                                                 AutoCompleteMenuRenderFragment="AutoCompleteMenuRenderFragment">
+
+                            <OnContextMenuRenderFragment>
+                                @if (OnContextMenuRenderFragment is not null)
+                                {
+                                }
+                                else
+                                {
+                                    @* This is the default context menu *@
+                                    <TextEditorContextMenu TextEditor="textEditor"
+                                                           TextEditorDisplay="this"/>
+                                }
+                            </OnContextMenuRenderFragment>
+                        </TextEditorCursorDisplay>
                     }
                 }
             }
         </div>
     </div>
-    
+
     <TextEditorFooter TextEditorBase="MutableReferenceToTextEditor"
                       TextEditorDisplay="this"
                       FileExtension="@FileExtension"/>

@@ -1,4 +1,5 @@
 @using BlazorTextEditor.RazorLib.Dropdown
+@using BlazorTextEditor.RazorLib.CustomEvents
 
 <div class="bte_menu-option-display bte_unselectable @IsActiveCssClass @HasWidgetActiveCssClass"
      tabindex="-1"
@@ -30,7 +31,7 @@
              @onclick:stopPropagation="true"
              @ondblclick:stopPropagation="true"
              @onkeydown:stopPropagation="true"
-             @onbskeydown:stopPropagation="true"
+             @onkeydownwithpreventscroll:stopPropagation="true"
              @oncontextmenu:stopPropagation="true">
 
             <CascadingValue Value="MenuOptionWidgetParameters">

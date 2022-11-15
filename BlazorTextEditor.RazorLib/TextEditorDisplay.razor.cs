@@ -102,6 +102,21 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     /// </summary>
     [Parameter]
     public string FileExtension { get; set; } = string.Empty;
+    /// <summary>
+    /// <see cref="IncludeDefaultContextMenu"/> results in
+    /// <see cref="TextEditorContextMenu"/> being rendered
+    /// On a context menu event which includes
+    /// <br/>
+    /// -ShiftKey + F10
+    /// <br/>
+    /// -ContextMenu button
+    /// <br/>
+    /// -RightClick of mouse
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
+    [Parameter]
+    public bool IncludeDefaultContextMenu { get; set; } = true;
     
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     

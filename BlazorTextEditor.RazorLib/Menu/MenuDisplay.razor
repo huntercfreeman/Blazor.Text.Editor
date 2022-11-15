@@ -1,9 +1,11 @@
+@using BlazorTextEditor.RazorLib.CustomEvents
+
 <div class="bte_menu-display"
      tabindex="-1"
      @ref="_menuDisplayElementReference"
      @onclick:stopPropagation="true"
      @ondblclick:stopPropagation="true"
-     @onbskeydown:stopPropagation="true"
+     @onkeydownwithpreventscroll:stopPropagation="true"
      @onkeydown:stopPropagation="true"
      @onkeydown:preventDefault="true"
      @onkeydown="HandleOnKeyDown">
