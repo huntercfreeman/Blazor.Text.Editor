@@ -42,10 +42,13 @@ public partial class DropdownDisplay : FluxorComponent
     
     protected override void Dispose(bool disposing)
     {
-        if (ShouldDisplay)
-            Dispatcher.Dispatch(new RemoveActiveDropdownKeyAction(DropdownKey));
+        if (disposing)
+        {
+            if (ShouldDisplay)
+                Dispatcher.Dispatch(new RemoveActiveDropdownKeyAction(DropdownKey));
+        }
         
-        base.Dispose(disposing);
+        base.Dispose(true);
     }
 }
 

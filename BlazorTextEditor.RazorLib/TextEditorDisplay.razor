@@ -192,6 +192,17 @@
                                                            TextEditorDisplay="this"/>
                                 }
                             </OnContextMenuRenderFragment>
+                            <AutoCompleteMenuRenderFragment>
+                                @if (AutoCompleteMenuRenderFragment is not null)
+                                {
+                                }
+                                else
+                                {
+                                    @* This is the default autocomplete menu *@
+                                    <TextEditorAutocompleteMenu TextEditor="textEditor"
+                                                                TextEditorDisplay="this"/>
+                                }
+                            </AutoCompleteMenuRenderFragment>
                         </TextEditorCursorDisplay>
                     }
                 }

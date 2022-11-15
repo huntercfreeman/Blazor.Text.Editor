@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
+using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib;
@@ -10,7 +11,7 @@ namespace BlazorTextEditor.RazorLib;
 /// message broker abstraction between a
 /// Blazor component and a <see cref="TextEditorBase"/>
 /// </summary>
-public class TextEditorView : ComponentBase, IDisposable
+public class TextEditorView : FluxorComponent
 {
     [Inject]
     protected IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
@@ -25,17 +26,6 @@ public class TextEditorView : ComponentBase, IDisposable
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .SingleOrDefault(x => x.Key == TextEditorKey));
         
-        TextEditorStatesSelection.SelectedValueChanged += TextEditorStatesSelectionOnSelectedValueChanged;
-
         base.OnInitialized();
-    }
-    
-    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-    public void Dispose()
-    {
-        TextEditorStatesSelection.SelectedValueChanged -= TextEditorStatesSelectionOnSelectedValueChanged;
     }
 }

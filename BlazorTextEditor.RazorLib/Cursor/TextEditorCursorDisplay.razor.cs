@@ -1,12 +1,12 @@
-using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorTextEditor.RazorLib.HelperComponents;
+namespace BlazorTextEditor.RazorLib.Cursor;
 
-public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
+public partial class TextEditorCursorDisplay : TextEditorView
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
@@ -253,18 +253,23 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
         return TabIndex;
     }
     
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        _blinkingCursorCancellationTokenSource.Cancel();
-
-        if (IsFocusTarget)
+        if (disposing)
         {
-            _ = Task.Run(async () =>
+            _blinkingCursorCancellationTokenSource.Cancel();
+
+            if (IsFocusTarget)
             {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                    _intersectionObserverMapKey.ToString());
-            });
+                _ = Task.Run(async () =>
+                {
+                    await JsRuntime.InvokeVoidAsync(
+                        "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
+                        _intersectionObserverMapKey.ToString());
+                });
+            }
         }
+        
+        base.Dispose(true);
     }
 }

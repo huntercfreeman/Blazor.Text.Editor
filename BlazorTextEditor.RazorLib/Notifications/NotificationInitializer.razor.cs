@@ -14,15 +14,18 @@ public partial class NotificationInitializer : FluxorComponent
 
     protected override void Dispose(bool disposing)
     {
-        var notificationState = NotificationStateWrap.Value;
-
-        foreach (var notification in notificationState.Notifications)
+        if (disposing)
         {
-            Dispatcher.Dispatch(
-                new NotificationState.DisposeNotificationAction(
-                    notification.NotificationKey));
+            var notificationState = NotificationStateWrap.Value;
+
+            foreach (var notification in notificationState.Notifications)
+            {
+                Dispatcher.Dispatch(
+                    new NotificationState.DisposeNotificationAction(
+                        notification.NotificationKey));
+            }
         }
         
-        base.Dispose(disposing);
+        base.Dispose(true);
     }
 }

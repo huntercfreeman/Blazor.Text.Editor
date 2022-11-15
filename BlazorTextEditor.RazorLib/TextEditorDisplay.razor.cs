@@ -18,7 +18,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
-public partial class TextEditorDisplay : TextEditorView, IDisposable
+public partial class TextEditorDisplay : TextEditorView
 {
     [Inject]
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
@@ -1061,8 +1061,13 @@ public partial class TextEditorDisplay : TextEditorView, IDisposable
         }
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        TextEditorStatesSelection.SelectedValueChanged -= TextEditorStatesSelectionOnSelectedValueChanged;
+        if (disposing)
+        {
+            TextEditorStatesSelection.SelectedValueChanged -= TextEditorStatesSelectionOnSelectedValueChanged;
+        }
+        
+        base.Dispose(true);
     }
 }
