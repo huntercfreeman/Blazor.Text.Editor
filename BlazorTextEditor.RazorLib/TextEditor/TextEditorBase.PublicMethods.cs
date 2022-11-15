@@ -103,7 +103,7 @@ public partial class TextEditorBase
         else
             PerformInsertions(keyboardEventTextEditorBaseAction);
 
-        return this;
+        return new TextEditorBase(this);
     }
     
     public TextEditorBase PerformEditTextEditorAction(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
@@ -145,7 +145,7 @@ public partial class TextEditorBase
             PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
         }
         
-        return this;
+        return new TextEditorBase(this);
     }
     
     public TextEditorBase PerformEditTextEditorAction(DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
@@ -175,7 +175,7 @@ public partial class TextEditorBase
 
         PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
 
-        return this;
+        return new TextEditorBase(this);
     }
     
     public TextEditorBase PerformEditTextEditorAction(DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
@@ -207,7 +207,7 @@ public partial class TextEditorBase
             PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
         }
 
-        return this;
+        return new TextEditorBase(this);
     }
 
     /// <summary>
@@ -371,7 +371,7 @@ public partial class TextEditorBase
     public TextEditorBase SetUsingRowEndingKind(RowEndingKind rowEndingKind)
     {
         UsingRowEndingKind = rowEndingKind;
-        return this;
+        return new TextEditorBase(this);
     }
 
     public ImmutableArray<RichCharacter> GetAllRichCharacters()
