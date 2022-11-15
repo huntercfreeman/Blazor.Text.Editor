@@ -31,6 +31,8 @@ public static class TextEditorCommandFacts
                     .ClipboardProvider
                     .SetClipboard(
                         selectedText);
+                
+                await textEditorCommandParameter.TextEditorDisplay.FocusTextEditorAsync();
             }
         },
         "Copy",
@@ -53,6 +55,8 @@ public static class TextEditorCommandFacts
                     .ClipboardProvider
                     .SetClipboard(
                         selectedText);
+
+                await textEditorCommandParameter.TextEditorDisplay.FocusTextEditorAsync();
             }
             
             textEditorCommandParameter.TextEditorService

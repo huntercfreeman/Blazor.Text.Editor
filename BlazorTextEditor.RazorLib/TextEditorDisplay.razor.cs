@@ -274,7 +274,7 @@ public partial class TextEditorDisplay : TextEditorView
         _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
-    private async Task FocusTextEditorOnClickAsync()
+    public async Task FocusTextEditorAsync()
     {
         if (_textEditorCursorDisplay is not null)
             await _textEditorCursorDisplay.FocusAsync();   
