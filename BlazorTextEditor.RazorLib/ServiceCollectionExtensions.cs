@@ -22,7 +22,9 @@ public static class ServiceCollectionExtensions
                     new LocalStorageProvider(
                         serviceProvider.GetRequiredService<IJSRuntime>()),
                 serviceProvider =>
-                    new AutocompleteService(),
+                    new AutocompleteService(serviceProvider.GetRequiredService<IAutocompleteIndexer>()),
+                serviceProvider =>
+                    new AutocompleteIndexer(serviceProvider.GetRequiredService<ITextEditorService>()),
                 configure);
     }
 
@@ -31,6 +33,7 @@ public static class ServiceCollectionExtensions
         Func<IServiceProvider, IClipboardProvider> clipboardProviderDefaultFactory,
         Func<IServiceProvider, IStorageProvider> storageProviderDefaultFactory,
         Func<IServiceProvider, IAutocompleteService> autocompleteServiceDefaultFactory,
+        Func<IServiceProvider, IAutocompleteIndexer> autocompleteIndexerDefaultFactory,
         Action<TextEditorServiceOptions>? configure = null)
     {
         var textEditorOptions = new TextEditorServiceOptions();
@@ -44,6 +47,9 @@ public static class ServiceCollectionExtensions
         
         var autocompleteServiceFactory = textEditorOptions.AutocompleteServiceFactory
                                                 ?? autocompleteServiceDefaultFactory;
+        
+        var autocompleteIndexerFactory = textEditorOptions.AutocompleteIndexerFactory
+                                                ?? autocompleteIndexerDefaultFactory;
 
         services
             .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
@@ -51,6 +57,7 @@ public static class ServiceCollectionExtensions
             .AddScoped(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => storageProviderFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => autocompleteServiceFactory.Invoke(serviceProvider))
+            .AddScoped(serviceProvider => autocompleteIndexerFactory.Invoke(serviceProvider))
             .AddScoped<IThemeService, ThemeService>()
             .AddScoped<ITextEditorService, TextEditorService>();
 

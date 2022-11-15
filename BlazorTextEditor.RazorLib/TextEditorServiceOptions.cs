@@ -31,4 +31,10 @@ public class TextEditorServiceOptions : ITextEditorServiceOptions
     /// Additionally one can override this value with their own.
     /// </summary>
     public Func<IServiceProvider, IAutocompleteService>? AutocompleteServiceFactory { get; set; }
+    /// <summary>
+    /// Default value if left null is: <see cref="AutocompleteIndexer"/>
+    /// <br/><br/>
+    /// Additionally one can override this value with their own.
+    /// </summary>
+    public Func<IServiceProvider, IAutocompleteIndexer>? AutocompleteIndexerFactory { get; set; }
 }
