@@ -11,7 +11,7 @@ public record DialogRecord(
     public ElementDimensions ElementDimensions { get; init; } = ConstructDefaultDialogDimensions();
     public bool IsMinimized { get; set; }
     public bool IsMaximized { get; set; }
-    public bool IsResizable { get; set; } = true;
+    public bool IsResizable { get; set; }
 
     public static ElementDimensions ConstructDefaultDialogDimensions()
     {

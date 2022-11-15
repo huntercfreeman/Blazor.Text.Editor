@@ -19,14 +19,6 @@
         @* TODO: Use the <ButtonDisplay>...</ButtonDisplay> instead of class="bte_dialog-display-button-entry"*@
         <div class="bte_dialog-display-buttons"
              @onmousedown:stopPropagation="true">
-            <div class="bte_dialog-display-button-entry">
-                <IconMinimize/>
-            </div>
-
-            <div class="bte_dialog-display-button-entry">
-                <IconMaximize/>
-            </div>
-
             <div class="bte_dialog-display-button-entry"
                  @onclick="DispatchDisposeDialogRecordAction">
                 <IconClose/>
