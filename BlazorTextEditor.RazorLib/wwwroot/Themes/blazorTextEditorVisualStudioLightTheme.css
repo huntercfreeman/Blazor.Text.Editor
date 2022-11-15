@@ -15,11 +15,11 @@
     --bte_tag-name-foreground-color: #0000FF;
     --bte_injected-language-fragment-color: red;
     --bte_text-editor-gutter-border-color: #accec1;
-    --bte_text-editor-gutter-background-color: #f0f0dc;
+    --bte_text-editor-gutter-background-color: #e7c9a9;
     --bte_secondary-font-color: var(--bte_primary-font-color);
     --bte_secondary-background-color: #e6e6e6;
     --bte_primary-overlay-box-shadow-color: #000000;
-    --bte_button-background-color: #1e56a7;
+    --bte_button-background-color: #b2d1ff;
     --bte_button-foreground-color: var(--bte_primary-font-color);
     --bte_resize-column-background-color: black;
     --bte_resize-row-background-color: black;
