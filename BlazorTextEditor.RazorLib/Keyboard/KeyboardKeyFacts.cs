@@ -246,6 +246,11 @@ public static class KeyboardKeyFacts
         public const string SPACE_CODE = "Space";
     }
 
+    /// <summary>
+    /// Added characters that were found in
+    /// https://www.scintilla.org/ScintillaDoc.html
+    /// source code, CharacterType.h:79
+    /// </summary>
     public static class PunctuationCharacters
     {
         public const char OPEN_CURLY_BRACE = '{';
@@ -254,9 +259,26 @@ public static class KeyboardKeyFacts
         public const char CLOSE_PARENTHESIS = ')';
         public const char OPEN_SQUARE_BRACKET = '[';
         public const char CLOSE_SQUARE_BRACKET = ']';
+        public const char BANG = '!';
+        public const char QUESTION_MARK = '?';
         public const char PERIOD = '.';
+        public const char COMMA = ',';
+        public const char HASHTAG = '#';
+        public const char DOLLARS = '$';
+        public const char PERCENT = '%';
+        public const char AMPERSAND = '&';
+        public const char CARET = '^';
+        public const char STAR = '*';
+        public const char PLUS = '+';
         public const char SEMICOLON = ';';
         public const char EQUAL = '=';
+        public const char AT = '@';
+        public const char DASH = '-';
+        public const char UNDER_SCORE = '_';
+        public const char ACCENT = '`';
+        public const char TILDE = '~';
+        public const char PIPE = '|';
+        public const char COLON = ':';
         public const char DOUBLE_QUOTE = '\"';
         public const char SINGLE_QUOTE = '\'';
         public const char OPEN_ARROW_BRACKET = '<';
