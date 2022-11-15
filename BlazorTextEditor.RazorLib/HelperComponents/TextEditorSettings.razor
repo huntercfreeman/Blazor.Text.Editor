@@ -6,8 +6,12 @@
 <div>
     @{
         var indexedStrings = AutocompleteIndexer.IndexedStrings;
+        <div>
+            IndexedStrings Shown Below 
+            (count: @($"{indexedStrings.Length:N0}"))
+        </div>
     }
-    
+
     @foreach (var indexedString in indexedStrings)
     {
         <div>'@indexedString'</div>

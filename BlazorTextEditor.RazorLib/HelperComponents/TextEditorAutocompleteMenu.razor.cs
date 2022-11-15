@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Autocomplete;
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
@@ -38,28 +39,74 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
     private MenuRecord GetMenuRecord()
     {
-        var autocompleteOptions = AutocompleteService
-            .GetAutocompleteOptions(string.Empty);
+        var cursorSnapshots = 
+            TextEditorCursorSnapshot.TakeSnapshots(
+                TextEditorDisplay.PrimaryCursor);
 
-        List<MenuOptionRecord> menuOptionRecords = autocompleteOptions
-            .Select(option => new MenuOptionRecord(
-                option,
-                MenuOptionKind.Other,
-                () => 
-                    SelectMenuOption(() => 
-                        InsertAutocompleteMenuOption(option))))
-            .ToList();
+        var primaryCursorSnapshot = cursorSnapshots
+            .First(x => x.UserCursor.IsPrimaryCursor);
+        
+        var positionIndex = TextEditor.GetPositionIndex(
+            primaryCursorSnapshot.ImmutableCursor.RowIndex,
+            primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
-        if (!menuOptionRecords.Any())
+        var characterKind = TextEditor.GetCharacterKindAt(positionIndex);
+
+        if (characterKind == CharacterKind.LetterOrDigit)
         {
-            menuOptionRecords.Add(new MenuOptionRecord(
-                "No Autocomplete Results",
-                MenuOptionKind.Other));
-        }
+            var wordColumnIndexStart = TextEditor
+                .GetColumnIndexOfCharacterWithDifferingKind(
+                    primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                    primaryCursorSnapshot.ImmutableCursor.ColumnIndex,
+                    true);
 
+            wordColumnIndexStart =
+                wordColumnIndexStart == -1
+                    ? 0
+                    : wordColumnIndexStart;
+
+            var wordLength = primaryCursorSnapshot.ImmutableCursor.ColumnIndex -
+                             wordColumnIndexStart;
+
+            var wordStartingPositionIndex =
+                primaryCursorSnapshot.ImmutableCursor.ColumnIndex - wordLength;
+
+            var word = TextEditor.GetTextRange(
+                wordStartingPositionIndex,
+                wordLength
+                + 1);
+
+            var autocompleteOptions = AutocompleteService
+                .GetAutocompleteOptions(word);
+
+            List<MenuOptionRecord> menuOptionRecords = autocompleteOptions
+                .Select(option => new MenuOptionRecord(
+                    option,
+                    MenuOptionKind.Other,
+                    () =>
+                        SelectMenuOption(() =>
+                            InsertAutocompleteMenuOption(option))))
+                .ToList();
+
+            if (!menuOptionRecords.Any())
+            {
+                menuOptionRecords.Add(new MenuOptionRecord(
+                    "No Autocomplete Results",
+                    MenuOptionKind.Other));
+            }
+
+            return new MenuRecord(
+                menuOptionRecords
+                    .ToImmutableArray());
+        }
+        
         return new MenuRecord(
-            menuOptionRecords
-                .ToImmutableArray());
+            new MenuOptionRecord[]
+            {
+                new(
+                    "No results",
+                    MenuOptionKind.Other)
+            }.ToImmutableArray());
     }
 
     private void SelectMenuOption(Func<Task> menuOptionAction)

@@ -1102,8 +1102,7 @@ public partial class TextEditorDisplay : TextEditorView
                     
                     var word = textEditor.GetTextRange(
                         wordStartingPositionIndex, 
-                        possibleWordColumnIndexEnd - 
-                        wordColumnIndexStart 
+                        wordLength
                         + 1);
             
                     await AutocompleteIndexer.IndexWordAsync(word);
