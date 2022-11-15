@@ -1,4 +1,9 @@
-﻿using BlazorTextEditor.RazorLib.HelperComponents;
+﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
+using BlazorTextEditor.RazorLib.Analysis.Html;
+using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Razor;
+using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.DialogCase;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
@@ -55,12 +60,67 @@ public class TextEditorService : ITextEditorService
 
     public event Action? OnTextEditorStatesChanged;
 
-    public void RegisterTextEditor(TextEditorBase textEditorBase)
+    public void RegisterCustomTextEditor(
+        TextEditorBase textEditorBase)
     {
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
     }
-    
+
+    public void RegisterCSharpTextEditor(
+        TextEditorKey textEditorKey, 
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            new TextEditorCSharpLexer(),
+            new TextEditorCSharpDecorationMapper(),
+            null);
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
+    public void RegisterRazorTextEditor(TextEditorKey textEditorKey, string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            new TextEditorRazorLexer(),
+            new TextEditorHtmlDecorationMapper(),
+            null);
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
+    public void RegisterHtmlTextEditor(TextEditorKey textEditorKey, string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            new TextEditorHtmlLexer(),
+            new TextEditorHtmlDecorationMapper(),
+            null);
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
+    public void RegisterPlainTextEditor(TextEditorKey textEditorKey, string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            null,
+            null,
+            null);
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
     public void InsertText(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
     {
         _dispatcher.Dispatch(insertTextTextEditorBaseAction);

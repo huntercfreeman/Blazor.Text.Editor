@@ -56,6 +56,6 @@ public class BlazorTextEditorTestingBase
             null,
             _textEditorKey);
         
-        _textEditorService.RegisterTextEditor(textEditor);
+        _textEditorService.RegisterCustomTextEditor(textEditor);
     }
 }

@@ -19,7 +19,7 @@ public partial class Index
             null,
             TextEditorFacts.IndexTextEditorKey);
         
-        TextEditorService.RegisterTextEditor(
+        TextEditorService.RegisterCustomTextEditor(
             textEditor);
         
         base.OnInitialized();
