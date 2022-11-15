@@ -11,7 +11,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorContextMenu : ComponentBase
+public partial class TextEditorContextMenu : TextEditorView
 {
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;

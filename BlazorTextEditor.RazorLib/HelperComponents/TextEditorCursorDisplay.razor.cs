@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
+public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;

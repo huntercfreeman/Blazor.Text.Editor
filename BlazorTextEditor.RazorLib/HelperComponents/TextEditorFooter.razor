@@ -1,5 +1,7 @@
 ﻿@using BlazorTextEditor.RazorLib.Row
 
+@inherits TextEditorView
+
 <div class="bte_text-editor-footer @TextEditorService.GlobalThemeCssClassString">
     @{
         if (TextEditorBase is not null)

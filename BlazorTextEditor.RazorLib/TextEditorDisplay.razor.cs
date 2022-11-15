@@ -18,10 +18,8 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
-public partial class TextEditorDisplay : ComponentBase, IDisposable
+public partial class TextEditorDisplay : TextEditorView
 {
-    [Inject]
-    private IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
     [Inject]
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
@@ -33,8 +31,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
-    [Parameter, EditorRequired]
-    public TextEditorKey TextEditorKey { get; set; } = null!;
     [Parameter]
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
@@ -118,6 +114,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     [Parameter]
     public bool IncludeDefaultContextMenu { get; set; } = true;
     
+    // TODO: Add a minimum throttle delay
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     
     private int? _previousGlobalFontSizeInPixels;
@@ -240,17 +237,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         await base.OnParametersSetAsync();
     }
 
-    protected override void OnInitialized()
-    {
-        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
-
-        TextEditorStatesSelection
-            .Select(textEditorStates => textEditorStates.TextEditorList
-                .SingleOrDefault(x => x.Key == TextEditorKey));
-
-        base.OnInitialized();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -278,16 +264,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         }
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-    
-    private void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
-    {
-        if (_previousGlobalTextEditorOptions is null ||
-            _previousGlobalTextEditorOptions != TextEditorStatesWrap.Value.GlobalTextEditorOptions)
-        {
-            _previousGlobalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
-            InvokeAsync(StateHasChanged);
-        }
     }
 
     /// <summary>
@@ -1074,10 +1050,5 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                 _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
             }
         }
-    }
-
-    public void Dispose()
-    {
-        TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
     }
 }

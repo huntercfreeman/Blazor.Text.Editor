@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorHeader : ComponentBase
+public partial class TextEditorHeader : TextEditorView
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;

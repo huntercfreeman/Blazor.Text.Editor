@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorFooter : ComponentBase
+public partial class TextEditorFooter : TextEditorView
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
