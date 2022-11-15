@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Security.Cryptography.X509Certificates;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
@@ -281,11 +282,12 @@ public partial class TextEditorBase
                             : columnIndexOfCharacterWithDifferingKind;
                     
                     countToRemove =
-                        // 1 to delete the previous character
-                        1 +
-                        // Rest is for contiguous characters of the same kind
                         cursorSnapshot.ImmutableCursor.ColumnIndex -
                         columnIndexOfCharacterWithDifferingKind;
+
+                    countToRemove = countToRemove == 0
+                        ? 1
+                        : countToRemove;
                 }
                 else
                 {
@@ -311,11 +313,12 @@ public partial class TextEditorBase
                             : columnIndexOfCharacterWithDifferingKind;
                     
                     countToRemove =
-                        // 1 to delete the current character
-                        1 +
-                        // Rest is for contiguous characters of the same kind
-                        cursorSnapshot.ImmutableCursor.ColumnIndex -
-                        columnIndexOfCharacterWithDifferingKind;
+                        columnIndexOfCharacterWithDifferingKind -
+                        cursorSnapshot.ImmutableCursor.ColumnIndex;
+                    
+                    countToRemove = countToRemove == 0
+                        ? 1
+                        : countToRemove;
                 }
                 else
                 {

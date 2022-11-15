@@ -326,6 +326,12 @@ public partial class TextEditorBase
             positionIndex -= 1;
         }
 
+        if (positionIndex < 0 ||
+            positionIndex >= _content.Count)
+        {
+            return -1;
+        }
+
         var startingCharacterKind = _content[positionIndex].GetCharacterKind();
 
         while (true)
