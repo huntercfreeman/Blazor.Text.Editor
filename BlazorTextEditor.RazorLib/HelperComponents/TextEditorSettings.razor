@@ -2,3 +2,14 @@
 <TextEditorInputShowNewLines />
 <TextEditorInputShowWhitespace />
 <TextEditorInputTheme />
+
+<div>
+    @{
+        var indexedStrings = AutocompleteIndexer.IndexedStrings;
+    }
+    
+    @foreach (var indexedString in indexedStrings)
+    {
+        <div>'@indexedString'</div>
+    }
+</div>

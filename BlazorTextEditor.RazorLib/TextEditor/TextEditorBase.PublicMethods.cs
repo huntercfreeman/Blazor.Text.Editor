@@ -459,4 +459,9 @@ public partial class TextEditorBase
 
         return new TextEditorBase(this);
     }
+    
+    public CharacterKind GetCharacterKindAt(int positionIndex)
+    {
+        return _content[positionIndex].GetCharacterKind();
+    }
 }

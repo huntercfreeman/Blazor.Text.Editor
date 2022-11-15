@@ -26,6 +26,8 @@ public partial class TextEditorDisplay : TextEditorView
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     [Inject]
+    private IAutocompleteIndexer AutocompleteIndexer { get; set; } = null!;
+    [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
@@ -350,7 +352,7 @@ public partial class TextEditorDisplay : TextEditorView
             }
             else
             {
-                if (!IsAutocompleteInvoker(keyboardEventArgs))
+                if (!IsAutocompleteMenuInvoker(keyboardEventArgs))
                 {
                     if (!KeyboardKeyFacts.IsMetaKey(keyboardEventArgs)
                         || (KeyboardKeyFacts.MetaKeys.ESCAPE == keyboardEventArgs.Key ||
@@ -1059,6 +1061,50 @@ public partial class TextEditorDisplay : TextEditorView
             .First(x =>
                 x.UserCursor.IsPrimaryCursor);
 
+        // Indexing can be invoked and this method still check for syntax highlighting and such
+        if (IsAutocompleteIndexerInvoker(keyboardEventArgs))
+        {
+            if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
+            {
+                // All keyboardEventArgs that return true from "IsAutocompleteIndexerInvoker"
+                // are to be 1 character long, as well either specific whitespace or punctuation.
+                //
+                // Therefore 1 character behind might be a word that can be indexed.
+                var possibleWordColumnIndexEnd =
+                    primaryCursorSnapshot.ImmutableCursor.ColumnIndex -
+                    1;
+
+                var positionIndex = textEditor.GetPositionIndex(
+                                    primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                                    possibleWordColumnIndexEnd);
+                
+                var characterKindBehindCurrent = textEditor.GetCharacterKindAt(
+                    positionIndex);
+
+                if (characterKindBehindCurrent == CharacterKind.LetterOrDigit)
+                {
+                    var wordColumnIndexStart = textEditor
+                        .GetColumnIndexOfCharacterWithDifferingKind(
+                            primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                            possibleWordColumnIndexEnd,
+                            true);
+
+                    wordColumnIndexStart =
+                        wordColumnIndexStart == -1
+                            ? 0
+                            : wordColumnIndexStart;
+
+                    var word = textEditor.GetTextRange(
+                        positionIndex, 
+                        possibleWordColumnIndexEnd - 
+                        wordColumnIndexStart +
+                        1);
+            
+                    await AutocompleteIndexer.IndexWordAsync(word);
+                }
+            }
+        }
+        
         if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
         {
             var success = await _afterOnKeyDownSyntaxHighlightingSemaphoreSlim
@@ -1078,7 +1124,7 @@ public partial class TextEditorDisplay : TextEditorView
                 _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
             }
         }
-        else if (IsAutocompleteInvoker(keyboardEventArgs))
+        else if (IsAutocompleteMenuInvoker(keyboardEventArgs))
         {
             await setTextEditorMenuKind.Invoke(
                 TextEditorMenuKind.AutoCompleteMenu, 
@@ -1095,12 +1141,25 @@ public partial class TextEditorDisplay : TextEditorView
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
     }
         
-    private bool IsAutocompleteInvoker(KeyboardEventArgs keyboardEventArgs)
+    private bool IsAutocompleteMenuInvoker(KeyboardEventArgs keyboardEventArgs)
     {
         // Is {Ctrl + Space} or LetterOrDigit
         return (keyboardEventArgs.CtrlKey && keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE) ||
                (!KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
                 !KeyboardKeyFacts.IsMetaKey(keyboardEventArgs));
+    }
+    
+    /// <summary>
+    /// All keyboardEventArgs that return true from "IsAutocompleteIndexerInvoker"
+    /// are to be 1 character long, as well either specific whitespace or punctuation.
+    ///
+    /// Therefore 1 character behind might be a word that can be indexed.
+    /// </summary>
+    private bool IsAutocompleteIndexerInvoker(KeyboardEventArgs keyboardEventArgs)
+    {
+        return KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE == keyboardEventArgs.Code ||
+               KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE == keyboardEventArgs.Code ||
+               KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First());
     }
 
     protected override void Dispose(bool disposing)

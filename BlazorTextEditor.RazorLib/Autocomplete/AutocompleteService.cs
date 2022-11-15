@@ -11,11 +11,8 @@ public class AutocompleteService : IAutocompleteService
     
     public List<string> GetAutocompleteOptions(string word)
     {
-        return new List<string>
-        {
-            "TestA",
-            "TestB",
-            "TestC",
-        };
+        var indexedStrings = _autocompleteIndexer.IndexedStrings;
+        
+        return new List<string>(indexedStrings);
     }
 }
