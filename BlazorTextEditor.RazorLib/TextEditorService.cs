@@ -76,7 +76,8 @@ public class TextEditorService : ITextEditorService
             initialContent,
             new TextEditorCSharpLexer(),
             new TextEditorCSharpDecorationMapper(),
-            null);
+            null,
+            textEditorKey);
         
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
@@ -89,7 +90,8 @@ public class TextEditorService : ITextEditorService
             initialContent,
             new TextEditorRazorLexer(),
             new TextEditorHtmlDecorationMapper(),
-            null);
+            null,
+            textEditorKey);
         
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
@@ -102,7 +104,8 @@ public class TextEditorService : ITextEditorService
             initialContent,
             new TextEditorHtmlLexer(),
             new TextEditorHtmlDecorationMapper(),
-            null);
+            null,
+            textEditorKey);
         
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
@@ -115,7 +118,8 @@ public class TextEditorService : ITextEditorService
             initialContent,
             null,
             null,
-            null);
+            null,
+            textEditorKey);
         
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));

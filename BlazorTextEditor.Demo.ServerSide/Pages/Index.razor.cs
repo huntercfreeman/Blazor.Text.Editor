@@ -12,15 +12,9 @@ public partial class Index
 
     protected override void OnInitialized()
     {
-        var textEditor = new TextEditorBase(
-            string.Empty,
-            null,
-            null,
-            null,
-            TextEditorFacts.IndexTextEditorKey);
-        
-        TextEditorService.RegisterCustomTextEditor(
-            textEditor);
+        TextEditorService.RegisterCSharpTextEditor(
+            TextEditorFacts.IndexTextEditorKey,
+            string.Empty);
         
         base.OnInitialized();
     }
