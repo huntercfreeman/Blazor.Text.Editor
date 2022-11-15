@@ -174,6 +174,24 @@ public partial class TextEditorHeader : TextEditorView
             textEditorCommandParameter);
     }
 
+    private async Task DoRemeasureOnClick(MouseEventArgs arg)
+    {
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
+        {
+            return;
+        }
+
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
+            TextEditorBase,
+            TextEditorDisplay);
+
+        var command = TextEditorCommandFacts.Remeasure;
+        
+        await command.DoAsyncFunc.Invoke(
+            textEditorCommandParameter);
+    }
+    
     private async Task DoRefreshOnClick(MouseEventArgs arg)
     {
         if (TextEditorBase is null || 
@@ -190,5 +208,41 @@ public partial class TextEditorHeader : TextEditorView
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
+    }
+
+    /// <summary>
+    /// disabled=@GetUndoDisabledAttribute()
+    /// will toggle the attribute
+    /// <br/><br/>
+    /// disabled="@GetUndoDisabledAttribute()"
+    /// will toggle the value of the attribute
+    /// </summary>
+    private bool GetUndoDisabledAttribute()
+    {
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
+        {
+            return true;
+        }
+        
+        return !TextEditorBase.CanUndoEdit();
+    }
+    
+    /// <summary>
+    /// disabled=@GetRedoDisabledAttribute()
+    /// will toggle the attribute
+    /// <br/><br/>
+    /// disabled="@GetRedoDisabledAttribute()"
+    /// will toggle the value of the attribute
+    /// </summary>
+    private bool GetRedoDisabledAttribute()
+    {
+        if (TextEditorBase is null || 
+            TextEditorDisplay is null)
+        {
+            return true;
+        }
+        
+        return !TextEditorBase.CanRedoEdit();
     }
 }

@@ -385,6 +385,11 @@ public partial class TextEditorBase
         _editBlocksPersisted.Clear();
     }
     
+    public bool CanUndoEdit()
+    {
+        return EditBlockIndex > 0;
+    }
+    
     /// <summary>
     /// The "if (EditBlockIndex == _editBlocksPersisted.Count)"
     /// <br/><br/>
@@ -398,34 +403,39 @@ public partial class TextEditorBase
     /// </summary>
     public void UndoEdit()
     {
-        if (EditBlockIndex > 0)
+        if (!CanUndoEdit()) 
+            return;
+        
+        if (EditBlockIndex == _editBlocksPersisted.Count)
         {
-            if (EditBlockIndex == _editBlocksPersisted.Count)
-            {
-                // If the edit block is pending then persist it
-                // before reverting back to the previous persisted edit block.
+            // If the edit block is pending then persist it
+            // before reverting back to the previous persisted edit block.
                 
-                EnsureUndoPoint(TextEditKind.ForcePersistEditBlock);
-                EditBlockIndex--;
-            }
-            
+            EnsureUndoPoint(TextEditKind.ForcePersistEditBlock);
             EditBlockIndex--;
-
-            var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
-            
-            SetContent(restoreEditBlock.ContentSnapshot);
         }
+            
+        EditBlockIndex--;
+
+        var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
+            
+        SetContent(restoreEditBlock.ContentSnapshot);
+    }
+    
+    public bool CanRedoEdit()
+    {
+        return EditBlockIndex < _editBlocksPersisted.Count - 1;
     }
     
     public void RedoEdit()
     {
-        if (EditBlockIndex < _editBlocksPersisted.Count - 1)
-        {
-            EditBlockIndex++;
+        if (!CanRedoEdit()) 
+            return;
+        
+        EditBlockIndex++;
 
-            var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
+        var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
             
-            SetContent(restoreEditBlock.ContentSnapshot);
-        }
+        SetContent(restoreEditBlock.ContentSnapshot);
     }
 }
