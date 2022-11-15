@@ -227,6 +227,7 @@ public partial class TextEditorBase
             // Needed for when text selection is deleted
             (int rowIndex, int columnIndex)? selectionLowerBoundIndexCoordinates = null;
 
+            // TODO: The deletion logic should be the same whether it be 'Delete' 'Backspace' 'CtrlModified' or 'DeleteSelection'. What should change is one needs to calculate the starting and ending index appropriately foreach case.
             if (TextEditorSelectionHelper.HasSelectedText(
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
             {
@@ -265,15 +266,63 @@ public partial class TextEditorBase
             }
             else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
             {
-                startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
-                countToRemove = 1;
                 moveBackwards = true;
+
+                if (keyboardEventTextEditorBaseAction.KeyboardEventArgs.CtrlKey)
+                {
+                    var columnIndexOfCharacterWithDifferingKind = GetColumnIndexOfCharacterWithDifferingKind(
+                        cursorSnapshot.ImmutableCursor.RowIndex,
+                        cursorSnapshot.ImmutableCursor.ColumnIndex,
+                        moveBackwards);
+
+                    columnIndexOfCharacterWithDifferingKind =
+                        columnIndexOfCharacterWithDifferingKind == -1
+                            ? 0
+                            : columnIndexOfCharacterWithDifferingKind;
+                    
+                    countToRemove =
+                        // 1 to delete the previous character
+                        1 +
+                        // Rest is for contiguous characters of the same kind
+                        cursorSnapshot.ImmutableCursor.ColumnIndex -
+                        columnIndexOfCharacterWithDifferingKind;
+                }
+                else
+                {
+                    countToRemove = 1;
+                }
+                
+                startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
             }
             else if (KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
             {
-                startingPositionIndexToRemoveInclusive = cursorPositionIndex;
-                countToRemove = 1;
                 moveBackwards = false;
+                
+                if (keyboardEventTextEditorBaseAction.KeyboardEventArgs.CtrlKey)
+                {
+                    var columnIndexOfCharacterWithDifferingKind = GetColumnIndexOfCharacterWithDifferingKind(
+                        cursorSnapshot.ImmutableCursor.RowIndex,
+                        cursorSnapshot.ImmutableCursor.ColumnIndex,
+                        moveBackwards);
+
+                    columnIndexOfCharacterWithDifferingKind =
+                        columnIndexOfCharacterWithDifferingKind == -1
+                            ? GetLengthOfRow(cursorSnapshot.ImmutableCursor.RowIndex)
+                            : columnIndexOfCharacterWithDifferingKind;
+                    
+                    countToRemove =
+                        // 1 to delete the current character
+                        1 +
+                        // Rest is for contiguous characters of the same kind
+                        cursorSnapshot.ImmutableCursor.ColumnIndex -
+                        columnIndexOfCharacterWithDifferingKind;
+                }
+                else
+                {
+                    countToRemove = 1;
+                }
+                
+                startingPositionIndexToRemoveInclusive = cursorPositionIndex;
             }
             else
             {
