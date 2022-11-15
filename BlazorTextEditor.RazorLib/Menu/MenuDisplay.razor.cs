@@ -22,6 +22,8 @@ public partial class MenuDisplay : ComponentBase
     public int InitialActiveMenuOptionRecordIndex { get; set; } = -1;
     [Parameter]
     public bool GroupByMenuOptionKind { get; set; } = true;
+    [Parameter]
+    public bool FocusOnAfterRenderAsync { get; set; } = true;
 
     private ElementReference? _menuDisplayElementReference;
     
@@ -37,7 +39,8 @@ public partial class MenuDisplay : ComponentBase
         {
             _activeMenuOptionRecordIndex = InitialActiveMenuOptionRecordIndex;
 
-            if (_activeMenuOptionRecordIndex == -1 &&
+            if (FocusOnAfterRenderAsync &&
+                _activeMenuOptionRecordIndex == -1 &&
                 _menuDisplayElementReference is not null)
             {
                 _menuDisplayElementReference.Value.FocusAsync();

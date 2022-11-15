@@ -9,6 +9,14 @@ namespace BlazorTextEditor.RazorLib.Commands;
 
 public static class TextEditorCommandFacts
 {
+    public static readonly TextEditorCommand DoNothingDiscard = new(
+        _ =>
+        {
+            return Task.CompletedTask;
+        },
+        "DoNothingDiscard",
+        "defaults_do-nothing-discard");
+    
     public static readonly TextEditorCommand Copy = new(
         async textEditorCommandParameter =>
         {

@@ -30,29 +30,6 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
     private ElementReference? _textEditorAutocompleteMenuElementReference;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            if (_textEditorAutocompleteMenuElementReference is not null)
-            {
-                try
-                {
-                    await _textEditorAutocompleteMenuElementReference.Value
-                        .FocusAsync();
-                }
-                catch (JSException)
-                {
-                    // Caused when calling:
-                    // await (ElementReference).FocusAsync();
-                    // After component is no longer rendered
-                }
-            }
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-    
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
         if (KeyboardKeyFacts.MetaKeys.ESCAPE == keyboardEventArgs.Key)
