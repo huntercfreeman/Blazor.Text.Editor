@@ -84,17 +84,17 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
                 List<MenuOptionRecord> menuOptionRecords = autocompleteOptions
                     .Select(option => new MenuOptionRecord(
-                        $"{word} | wordColumnIndexStart: {wordColumnIndexStartInclusive} | possibleWordColumnIndexEnd: {wordColumnIndexEndExclusive} " + option,
+                        option,
                         MenuOptionKind.Other,
                         () =>
                             SelectMenuOption(() =>
-                                InsertAutocompleteMenuOption(option))))
+                                InsertAutocompleteMenuOption(word, option))))
                     .ToList();
 
                 if (!menuOptionRecords.Any())
                 {
                     menuOptionRecords.Add(new MenuOptionRecord(
-                        $"{word} | wordColumnIndexStart: {wordColumnIndexStartInclusive} | possibleWordColumnIndexEnd: {wordColumnIndexEndExclusive}",
+                        "No results",
                         MenuOptionKind.Other));
                 }
 
@@ -122,12 +122,12 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
         });
     }
 
-    private async Task InsertAutocompleteMenuOption(string option)
+    private async Task InsertAutocompleteMenuOption(string word, string option)
     {
         var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
             TextEditor.Key,
             TextEditorCursorSnapshot.TakeSnapshots(TextEditorDisplay.PrimaryCursor),
-            option,
+            option.Substring(word.Length),
             CancellationToken.None);
 
         TextEditorService.InsertText(insertTextTextEditorBaseAction);
