@@ -82,7 +82,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
                     wordStartingPositionIndex,
                     wordLength
                     + 1);
-
+                
                 var autocompleteOptions = AutocompleteService
                     .GetAutocompleteOptions(word);
 
@@ -98,7 +98,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
                 if (!menuOptionRecords.Any())
                 {
                     menuOptionRecords.Add(new MenuOptionRecord(
-                        word + ' ' + "No Autocomplete Results",
+                        "No Autocomplete Results",
                         MenuOptionKind.Other));
                 }
 
