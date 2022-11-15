@@ -183,6 +183,11 @@
     color: var(--bte_button-foreground-color);
 }
 
+.bte_button:disabled {
+    background-color: var(--bte_button-disabled-background-color);
+    color: var(--bte_button-disabled-foreground-color);
+}
+
 .bte_unselectable {
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */

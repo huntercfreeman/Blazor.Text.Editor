@@ -21,6 +21,8 @@
     --bte_primary-overlay-box-shadow-color: #ffffff;
     --bte_button-background-color: #1e56a7;
     --bte_button-foreground-color: var(--bte_primary-font-color);
+    --bte_button-disabled-background-color: #4a5a71;
+    --bte_button-disabled-foreground-color: var(--bte_primary-font-color);
     --bte_resize-column-background-color: #d7d7d7;
     --bte_resize-row-background-color: #d7d7d7;
     --bte_dialog-display-background-color: #2d2f34;
