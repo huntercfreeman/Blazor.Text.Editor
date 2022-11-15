@@ -320,17 +320,19 @@ public partial class TextEditorDisplay : TextEditorView
             new(primaryCursorSnapshot.UserCursor),
         }.ToImmutableArray();
 
-        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
-
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
             TextEditorCursor.MoveCursor(
                 keyboardEventArgs,
                 primaryCursorSnapshot.UserCursor,
                 safeTextEditorReference);
+            
+            _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
         }
         else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
+        {
             _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
+        }
         else
         {
             var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
@@ -348,6 +350,17 @@ public partial class TextEditorDisplay : TextEditorView
             }
             else
             {
+                if (!IsAutocompleteInvoker(keyboardEventArgs))
+                {
+                    if (!KeyboardKeyFacts.IsMetaKey(keyboardEventArgs)
+                        || (KeyboardKeyFacts.MetaKeys.ESCAPE == keyboardEventArgs.Key ||
+                            KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventArgs.Key ||
+                            KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventArgs.Key))
+                    {
+                        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+                    }
+                }
+                
                 Dispatcher.Dispatch(
                     new KeyboardEventTextEditorBaseAction(
                         TextEditorKey,
@@ -1046,7 +1059,7 @@ public partial class TextEditorDisplay : TextEditorView
             .First(x =>
                 x.UserCursor.IsPrimaryCursor);
 
-        if (IsSyntaxHighlightingInvoker())
+        if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
         {
             var success = await _afterOnKeyDownSyntaxHighlightingSemaphoreSlim
                 .WaitAsync(TimeSpan.Zero);
@@ -1065,29 +1078,29 @@ public partial class TextEditorDisplay : TextEditorView
                 _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
             }
         }
-        else if (IsAutocompleteInvoker())
+        else if (IsAutocompleteInvoker(keyboardEventArgs))
         {
             await setTextEditorMenuKind.Invoke(
                 TextEditorMenuKind.AutoCompleteMenu, 
                 true);
         }
-
-        bool IsSyntaxHighlightingInvoker()
-        {
-            return keyboardEventArgs.Key == ";" ||
-                KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
-                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v") ||
-                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
-                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
-        }
+    }
+    
+    private bool IsSyntaxHighlightingInvoker(KeyboardEventArgs keyboardEventArgs)
+    {
+        return keyboardEventArgs.Key == ";" ||
+               KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v") ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
+    }
         
-        bool IsAutocompleteInvoker()
-        {
-            // Is {Ctrl + Space} or LetterOrDigit
-            return (keyboardEventArgs.CtrlKey && keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE) ||
-                (!KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
-                 !KeyboardKeyFacts.IsMetaKey(keyboardEventArgs));
-        }
+    private bool IsAutocompleteInvoker(KeyboardEventArgs keyboardEventArgs)
+    {
+        // Is {Ctrl + Space} or LetterOrDigit
+        return (keyboardEventArgs.CtrlKey && keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE) ||
+               (!KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
+                !KeyboardKeyFacts.IsMetaKey(keyboardEventArgs));
     }
 
     protected override void Dispose(bool disposing)
