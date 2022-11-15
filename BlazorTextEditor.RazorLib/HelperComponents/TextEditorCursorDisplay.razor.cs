@@ -12,8 +12,6 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
     private IJSRuntime JsRuntime { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public TextEditorBase TextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
     [Parameter, EditorRequired]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
@@ -71,6 +69,11 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
 
     private string GetCursorStyleCss()
     {
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if (textEditor is null)
+            return string.Empty;
+        
         var leftInPixels = 0d;
 
         // Gutter padding column offset
@@ -81,7 +84,7 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
 
         // Tab key column offset
         {
-            var tabsOnSameRowBeforeCursor = TextEditor
+            var tabsOnSameRowBeforeCursor = textEditor
                 .GetTabsCountOnSameRowBeforeCursor(
                     TextEditorCursor.IndexCoordinates.rowIndex,
                     TextEditorCursor.IndexCoordinates.columnIndex);
@@ -96,7 +99,7 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
 
         // Line number column offset
         {
-            var mostDigitsInARowLineNumber = TextEditor.RowCount
+            var mostDigitsInARowLineNumber = textEditor.RowCount
                 .ToString()
                 .Length;
 
@@ -115,17 +118,27 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
 
     private string GetCaretRowStyleCss()
     {
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if (textEditor is null)
+            return string.Empty;
+        
         var top =
             $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
         var height = $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var width = $"width: {TextEditor.MostCharactersOnASingleRow * CharacterWidthAndRowHeight.CharacterWidthInPixels}px;";
+        var width = $"width: {textEditor.MostCharactersOnASingleRow * CharacterWidthAndRowHeight.CharacterWidthInPixels}px;";
 
         return $"{top} {width} {height}";
     }
 
     private string GetMenuStyleCss()
     {
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if (textEditor is null)
+            return string.Empty;
+        
         var leftInPixels = 0d;
 
         // Gutter padding column offset
@@ -136,7 +149,7 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
 
         // Tab key column offset
         {
-            var tabsOnSameRowBeforeCursor = TextEditor
+            var tabsOnSameRowBeforeCursor = textEditor
                 .GetTabsCountOnSameRowBeforeCursor(
                     TextEditorCursor.IndexCoordinates.rowIndex,
                     TextEditorCursor.IndexCoordinates.columnIndex);
@@ -151,7 +164,7 @@ public partial class TextEditorCursorDisplay : TextEditorView, IDisposable
 
         // Line number column offset
         {
-            var mostDigitsInARowLineNumber = TextEditor.RowCount
+            var mostDigitsInARowLineNumber = textEditor.RowCount
                 .ToString()
                 .Length;
 

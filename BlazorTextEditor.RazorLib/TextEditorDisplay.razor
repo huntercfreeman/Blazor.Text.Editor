@@ -4,13 +4,14 @@
 @using BlazorTextEditor.RazorLib.Row
 @using BlazorTextEditor.RazorLib.Virtualization
 @using System.Collections.Immutable
+@using BlazorTextEditor.RazorLib.TextEditor
 
 @inherits TextEditorView
 
 <div style="@GlobalFontSizeInPixelsStyling @StyleCssString"
      class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
 
-    <TextEditorHeader TextEditorBase="MutableReferenceToTextEditor"
+    <TextEditorHeader TextEditorKey="TextEditorKey"
                       TextEditorDisplay="this"
                       HeaderButtonKinds="HeaderButtonKinds"/>
 
@@ -174,7 +175,7 @@
                         <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                                  TextEditorCursor="PrimaryCursor"
                                                  CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
-                                                 TextEditor="textEditor"
+                                                 TextEditorKey="TextEditorKey"
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
                                                  TabIndex="TabIndex"
@@ -198,7 +199,7 @@
         </div>
     </div>
 
-    <TextEditorFooter TextEditorBase="MutableReferenceToTextEditor"
+    <TextEditorFooter TextEditorKey="TextEditorKey"
                       TextEditorDisplay="this"
                       FileExtension="@FileExtension"/>
 </div>
