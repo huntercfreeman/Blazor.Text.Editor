@@ -1,6 +1,8 @@
 @using BlazorTextEditor.RazorLib.Resize
 
-<div class="bte_dialog-display"
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div class="bte_dialog-display @GlobalThemeCssClassString"
      style="@StyleCssString">
 
     @if (DialogRecord.IsResizable)
@@ -19,10 +21,10 @@
         @* TODO: Use the <ButtonDisplay>...</ButtonDisplay> instead of class="bte_dialog-display-button-entry"*@
         <div class="bte_dialog-display-buttons"
              @onmousedown:stopPropagation="true">
-            <div class="bte_dialog-display-button-entry"
+            <button class="bte_dialog-display-button-entry"
                  @onclick="DispatchDisposeDialogRecordAction">
                 <IconClose/>
-            </div>
+            </button>
         </div>
     </div>
 
