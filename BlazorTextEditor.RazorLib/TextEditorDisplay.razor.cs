@@ -402,11 +402,22 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                 rowAndColumnIndex.columnIndex,
                 true);
         
+        lowerColumnIndexExpansion =
+            lowerColumnIndexExpansion == -1
+                ? 0
+                : lowerColumnIndexExpansion;
+        
         var higherColumnIndexExpansion = safeTextEditorReference
             .GetColumnIndexOfCharacterWithDifferingKind(
                 rowAndColumnIndex.rowIndex,
                 rowAndColumnIndex.columnIndex,
                 false);
+        
+        higherColumnIndexExpansion =
+            higherColumnIndexExpansion == -1
+                ? safeTextEditorReference.GetLengthOfRow(
+                    rowAndColumnIndex.rowIndex)
+                : higherColumnIndexExpansion;
         
         // Move user's cursor position to the higher expansion
         {
