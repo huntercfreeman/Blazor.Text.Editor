@@ -47,7 +47,10 @@ public partial class TextEditorBase
 
         while (_editBlocksPersisted.Count > MAXIMUM_EDIT_BLOCKS &&
                _editBlocksPersisted.Count != 0)
+        {
+            EditBlockIndex--;
             _editBlocksPersisted.RemoveAt(0);
+        }
     }
 
     private void PerformInsertions(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)

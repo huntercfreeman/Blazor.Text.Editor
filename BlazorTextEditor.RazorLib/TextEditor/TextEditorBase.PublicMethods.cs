@@ -14,11 +14,25 @@ namespace BlazorTextEditor.RazorLib.TextEditor;
 
 public partial class TextEditorBase
 {
+    /// <summary>
+    /// The cursor is a separate element
+    /// and at times will try to access out of bounds locations.
+    /// <br/><br/>
+    /// When cursor accesses out of bounds location
+    /// return largest available RowIndex and
+    /// largest available ColumnIndex
+    /// </summary>
     public (int positionIndex, RowEndingKind rowEndingKind) GetStartOfRowTuple(int rowIndex)
     {
-        return rowIndex > 0
-            ? _rowEndingPositions[rowIndex - 1]
-            : (0, RowEndingKind.StartOfFile);
+        if (rowIndex > 0)
+        {
+            if (rowIndex >= _rowEndingPositions.Count - 1)
+                rowIndex = _rowEndingPositions.Count - 1;
+                
+            return _rowEndingPositions[rowIndex - 1];
+        }
+        
+        return (0, RowEndingKind.StartOfFile);
     }
 
     /// <summary>
