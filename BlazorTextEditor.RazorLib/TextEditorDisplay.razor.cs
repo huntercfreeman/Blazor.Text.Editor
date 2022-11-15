@@ -113,6 +113,16 @@ public partial class TextEditorDisplay : TextEditorView, IDisposable
     /// </summary>
     [Parameter]
     public bool IncludeDefaultContextMenu { get; set; } = true;
+    /// <summary>
+    /// <see cref="IncludeDefaultAutocompleteMenu"/> results in
+    /// <see cref="TextEditorAutocompleteMenu"/> being rendered
+    /// when the user types and possible autocomplete
+    /// options are available
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
+    [Parameter]
+    public bool IncludeDefaultAutocompleteMenu { get; set; } = true;
     
     // TODO: Add a minimum throttle delay
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);

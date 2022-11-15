@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Clipboard;
+﻿using BlazorTextEditor.RazorLib.Autocomplete;
+using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.ThemeCase;
 
@@ -23,5 +24,11 @@ public class TextEditorServiceOptions : ITextEditorServiceOptions
     /// <br/>
     /// <see cref="DoNothingStorageProvider"/>
     /// </summary>
-    public Func<IServiceProvider,IStorageProvider>? StorageProviderFactory { get; set; }
+    public Func<IServiceProvider, IStorageProvider>? StorageProviderFactory { get; set; }
+    /// <summary>
+    /// Default value if left null is: <see cref="AutocompleteService"/>
+    /// <br/><br/>
+    /// Additionally one can override this value with their own.
+    /// </summary>
+    public Func<IServiceProvider, IAutocompleteService>? AutocompleteServiceFactory { get; set; }
 }

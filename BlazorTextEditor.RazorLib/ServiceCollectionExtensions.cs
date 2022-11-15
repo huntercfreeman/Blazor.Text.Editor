@@ -1,3 +1,4 @@
+using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using Fluxor;
@@ -20,6 +21,8 @@ public static class ServiceCollectionExtensions
                 serviceProvider =>
                     new LocalStorageProvider(
                         serviceProvider.GetRequiredService<IJSRuntime>()),
+                serviceProvider =>
+                    new AutocompleteService(),
                 configure);
     }
 
@@ -27,6 +30,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Func<IServiceProvider, IClipboardProvider> clipboardProviderDefaultFactory,
         Func<IServiceProvider, IStorageProvider> storageProviderDefaultFactory,
+        Func<IServiceProvider, IAutocompleteService> autocompleteServiceDefaultFactory,
         Action<TextEditorServiceOptions>? configure = null)
     {
         var textEditorOptions = new TextEditorServiceOptions();
@@ -37,12 +41,16 @@ public static class ServiceCollectionExtensions
         
         var storageProviderFactory = textEditorOptions.StorageProviderFactory
                                        ?? storageProviderDefaultFactory;
+        
+        var autocompleteServiceFactory = textEditorOptions.AutocompleteServiceFactory
+                                                ?? autocompleteServiceDefaultFactory;
 
         services
             .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
                 _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
             .AddScoped(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => storageProviderFactory.Invoke(serviceProvider))
+            .AddScoped(serviceProvider => autocompleteServiceFactory.Invoke(serviceProvider))
             .AddScoped<IThemeService, ThemeService>()
             .AddScoped<ITextEditorService, TextEditorService>();
 
