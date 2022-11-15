@@ -1094,11 +1094,17 @@ public partial class TextEditorDisplay : TextEditorView
                             ? 0
                             : wordColumnIndexStart;
 
+                    var wordLength = possibleWordColumnIndexEnd -
+                                     wordColumnIndexStart;
+
+                    var wordStartingPositionIndex = 
+                        possibleWordColumnIndexEnd - wordLength;
+                    
                     var word = textEditor.GetTextRange(
-                        positionIndex, 
+                        wordStartingPositionIndex, 
                         possibleWordColumnIndexEnd - 
-                        wordColumnIndexStart +
-                        1);
+                        wordColumnIndexStart 
+                        + 1);
             
                     await AutocompleteIndexer.IndexWordAsync(word);
                 }

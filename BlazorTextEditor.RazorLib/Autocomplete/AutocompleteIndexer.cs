@@ -26,7 +26,11 @@ public class AutocompleteIndexer : IAutocompleteIndexer
     
     public Task IndexWordAsync(string word)
     {
-        _indexedStrings.Add(word);
+        if (!_indexedStrings.Contains(word))
+        {
+            _indexedStrings.Add(word);
+        }
+        
         return Task.CompletedTask;
     }
 
