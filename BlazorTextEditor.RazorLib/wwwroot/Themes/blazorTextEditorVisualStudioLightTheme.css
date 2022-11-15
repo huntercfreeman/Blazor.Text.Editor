@@ -3,7 +3,7 @@
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
     --bte_body-background-color: #FFFFFF;
-    --bte_text-editor-caret-row-border-color: #F8F8F8;
+    --bte_text-editor-caret-row-border-color: #28ae0c;
     --bte_newline-foreground-color: #007F00;
     --bte_newline-background-color: #faeee2;
     --bte_method-foreground-color: #74531F;
@@ -14,7 +14,7 @@
     --bte_comment-foreground-color: #007F00;
     --bte_tag-name-foreground-color: #0000FF;
     --bte_injected-language-fragment-color: red;
-    --bte_text-editor-gutter-border-color: #accec1;
+    --bte_text-editor-gutter-border-color: #28ae0c;
     --bte_text-editor-gutter-background-color: #e7c9a9;
     --bte_secondary-font-color: var(--bte_primary-font-color);
     --bte_secondary-background-color: #e6e6e6;
