@@ -13,6 +13,8 @@ public class AutocompleteService : IAutocompleteService
     {
         var indexedStrings = _autocompleteIndexer.IndexedStrings;
         
-        return new List<string>(indexedStrings);
+        return new List<string>(
+            indexedStrings
+                .Where(x => x.StartsWith(word)));
     }
 }

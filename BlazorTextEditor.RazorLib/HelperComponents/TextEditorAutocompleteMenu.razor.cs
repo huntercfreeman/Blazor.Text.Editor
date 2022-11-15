@@ -39,67 +39,75 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
     private MenuRecord GetMenuRecord()
     {
-        var cursorSnapshots = 
+        var cursorSnapshots =
             TextEditorCursorSnapshot.TakeSnapshots(
                 TextEditorDisplay.PrimaryCursor);
 
         var primaryCursorSnapshot = cursorSnapshots
             .First(x => x.UserCursor.IsPrimaryCursor);
-        
-        var positionIndex = TextEditor.GetPositionIndex(
-            primaryCursorSnapshot.ImmutableCursor.RowIndex,
-            primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
-        var characterKind = TextEditor.GetCharacterKindAt(positionIndex);
-
-        if (characterKind == CharacterKind.LetterOrDigit)
+        if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
         {
-            var wordColumnIndexStart = TextEditor
-                .GetColumnIndexOfCharacterWithDifferingKind(
-                    primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                    primaryCursorSnapshot.ImmutableCursor.ColumnIndex,
-                    true);
+            var possibleWordColumnIndexEnd =
+                primaryCursorSnapshot.ImmutableCursor.ColumnIndex -
+                1;
 
-            wordColumnIndexStart =
-                wordColumnIndexStart == -1
-                    ? 0
-                    : wordColumnIndexStart;
+            var positionIndex = TextEditor.GetPositionIndex(
+                primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                possibleWordColumnIndexEnd);
 
-            var wordLength = primaryCursorSnapshot.ImmutableCursor.ColumnIndex -
-                             wordColumnIndexStart;
+            var characterKindBehindCurrent = TextEditor.GetCharacterKindAt(
+                positionIndex);
 
-            var wordStartingPositionIndex =
-                primaryCursorSnapshot.ImmutableCursor.ColumnIndex - wordLength;
-
-            var word = TextEditor.GetTextRange(
-                wordStartingPositionIndex,
-                wordLength
-                + 1);
-
-            var autocompleteOptions = AutocompleteService
-                .GetAutocompleteOptions(word);
-
-            List<MenuOptionRecord> menuOptionRecords = autocompleteOptions
-                .Select(option => new MenuOptionRecord(
-                    option,
-                    MenuOptionKind.Other,
-                    () =>
-                        SelectMenuOption(() =>
-                            InsertAutocompleteMenuOption(option))))
-                .ToList();
-
-            if (!menuOptionRecords.Any())
+            if (characterKindBehindCurrent == CharacterKind.LetterOrDigit)
             {
-                menuOptionRecords.Add(new MenuOptionRecord(
-                    "No Autocomplete Results",
-                    MenuOptionKind.Other));
-            }
+                var wordColumnIndexStart = TextEditor
+                    .GetColumnIndexOfCharacterWithDifferingKind(
+                        primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        possibleWordColumnIndexEnd,
+                        true);
 
-            return new MenuRecord(
-                menuOptionRecords
-                    .ToImmutableArray());
+                wordColumnIndexStart =
+                    wordColumnIndexStart == -1
+                        ? 0
+                        : wordColumnIndexStart;
+
+                var wordLength = possibleWordColumnIndexEnd -
+                                 wordColumnIndexStart;
+
+                var wordStartingPositionIndex =
+                    possibleWordColumnIndexEnd - wordLength;
+
+                var word = TextEditor.GetTextRange(
+                    wordStartingPositionIndex,
+                    wordLength
+                    + 1);
+
+                var autocompleteOptions = AutocompleteService
+                    .GetAutocompleteOptions(word);
+
+                List<MenuOptionRecord> menuOptionRecords = autocompleteOptions
+                    .Select(option => new MenuOptionRecord(
+                        option,
+                        MenuOptionKind.Other,
+                        () =>
+                            SelectMenuOption(() =>
+                                InsertAutocompleteMenuOption(option))))
+                    .ToList();
+
+                if (!menuOptionRecords.Any())
+                {
+                    menuOptionRecords.Add(new MenuOptionRecord(
+                        word + ' ' + "No Autocomplete Results",
+                        MenuOptionKind.Other));
+                }
+
+                return new MenuRecord(
+                    menuOptionRecords
+                        .ToImmutableArray());
+            }
         }
-        
+
         return new MenuRecord(
             new MenuOptionRecord[]
             {
@@ -125,7 +133,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
             TextEditorCursorSnapshot.TakeSnapshots(TextEditorDisplay.PrimaryCursor),
             option,
             CancellationToken.None);
-        
+
         TextEditorService.InsertText(insertTextTextEditorBaseAction);
     }
 }

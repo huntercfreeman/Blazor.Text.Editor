@@ -462,6 +462,17 @@ public partial class TextEditorBase
     
     public CharacterKind GetCharacterKindAt(int positionIndex)
     {
-        return _content[positionIndex].GetCharacterKind();
+        try
+        {
+            return _content[positionIndex].GetCharacterKind();
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            // The text editor's cursor is is likely
+            // to have this occur at times
+        }
+
+
+        return CharacterKind.Whitespace;
     }
 }
