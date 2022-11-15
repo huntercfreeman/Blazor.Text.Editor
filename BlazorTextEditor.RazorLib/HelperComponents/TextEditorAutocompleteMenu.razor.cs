@@ -48,47 +48,42 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
         if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
         {
-            var possibleWordColumnIndexEnd =
-                primaryCursorSnapshot.ImmutableCursor.ColumnIndex -
-                1;
+            var wordColumnIndexEndExclusive =
+                primaryCursorSnapshot.ImmutableCursor.ColumnIndex;
 
-            var positionIndex = TextEditor.GetPositionIndex(
+            var wordPositionIndexEndExclusive = TextEditor.GetPositionIndex(
                 primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                possibleWordColumnIndexEnd);
+                wordColumnIndexEndExclusive);
 
-            var characterKindBehindCurrent = TextEditor.GetCharacterKindAt(
-                positionIndex);
+            var wordCharacterKind = TextEditor.GetCharacterKindAt(
+                wordPositionIndexEndExclusive - 1);
 
-            if (characterKindBehindCurrent == CharacterKind.LetterOrDigit)
+            if (wordCharacterKind == CharacterKind.LetterOrDigit)
             {
-                var wordColumnIndexStart = TextEditor
+                var wordColumnIndexStartInclusive = TextEditor
                     .GetColumnIndexOfCharacterWithDifferingKind(
                         primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                        possibleWordColumnIndexEnd,
+                        wordColumnIndexEndExclusive - 1,
                         true);
 
-                wordColumnIndexStart =
-                    wordColumnIndexStart == -1
-                        ? 0
-                        : wordColumnIndexStart;
+                wordColumnIndexStartInclusive++;
+                
+                var wordLength = wordColumnIndexEndExclusive -
+                                 wordColumnIndexStartInclusive;
 
-                var wordLength = possibleWordColumnIndexEnd -
-                                 wordColumnIndexStart;
-
-                var wordStartingPositionIndex =
-                    possibleWordColumnIndexEnd - wordLength;
+                var wordPositionIndexStartInclusive =
+                    wordPositionIndexEndExclusive - wordLength;
 
                 var word = TextEditor.GetTextRange(
-                    wordStartingPositionIndex,
-                    wordLength
-                    + 1);
+                    wordPositionIndexStartInclusive,
+                    wordLength);
                 
                 var autocompleteOptions = AutocompleteService
                     .GetAutocompleteOptions(word);
 
                 List<MenuOptionRecord> menuOptionRecords = autocompleteOptions
                     .Select(option => new MenuOptionRecord(
-                        option,
+                        $"{word} | wordColumnIndexStart: {wordColumnIndexStartInclusive} | possibleWordColumnIndexEnd: {wordColumnIndexEndExclusive} " + option,
                         MenuOptionKind.Other,
                         () =>
                             SelectMenuOption(() =>
@@ -98,7 +93,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
                 if (!menuOptionRecords.Any())
                 {
                     menuOptionRecords.Add(new MenuOptionRecord(
-                        "No Autocomplete Results",
+                        $"{word} | wordColumnIndexStart: {wordColumnIndexStartInclusive} | possibleWordColumnIndexEnd: {wordColumnIndexEndExclusive}",
                         MenuOptionKind.Other));
                 }
 

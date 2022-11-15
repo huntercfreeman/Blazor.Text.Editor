@@ -470,8 +470,10 @@ public partial class TextEditorBase
         {
             // The text editor's cursor is is likely
             // to have this occur at times
+            
+            if (_content.Any())
+                return _content.Last().GetCharacterKind();
         }
-
 
         return CharacterKind.Whitespace;
     }

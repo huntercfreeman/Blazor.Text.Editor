@@ -15,6 +15,7 @@ public class AutocompleteService : IAutocompleteService
         
         return new List<string>(
             indexedStrings
-                .Where(x => x.StartsWith(word)));
+                .Where(x => x.StartsWith(word))
+                .Take(5));
     }
 }
