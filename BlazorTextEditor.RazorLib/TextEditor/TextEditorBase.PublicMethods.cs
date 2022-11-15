@@ -24,13 +24,11 @@ public partial class TextEditorBase
     /// </summary>
     public (int positionIndex, RowEndingKind rowEndingKind) GetStartOfRowTuple(int rowIndex)
     {
+        if (rowIndex >= _rowEndingPositions.Count - 1)
+            rowIndex = _rowEndingPositions.Count - 1;
+        
         if (rowIndex > 0)
-        {
-            if (rowIndex >= _rowEndingPositions.Count - 1)
-                rowIndex = _rowEndingPositions.Count - 1;
-                
             return _rowEndingPositions[rowIndex - 1];
-        }
         
         return (0, RowEndingKind.StartOfFile);
     }
@@ -106,6 +104,11 @@ public partial class TextEditorBase
         return tabs.Count();
     }
 
+    public TextEditorBase PerformForceRerenderAction(ForceRerenderAction forceRerenderAction)
+    {
+        return new TextEditorBase(this);
+    }
+    
     public TextEditorBase PerformEditTextEditorAction(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
     {
         if (KeyboardKeyFacts.IsMetaKey(keyboardEventTextEditorBaseAction.KeyboardEventArgs))
@@ -404,6 +407,11 @@ public partial class TextEditorBase
         return EditBlockIndex > 0;
     }
     
+    public bool CanRedoEdit()
+    {
+        return EditBlockIndex < _editBlocksPersisted.Count - 1;
+    }
+    
     /// <summary>
     /// The "if (EditBlockIndex == _editBlocksPersisted.Count)"
     /// <br/><br/>
@@ -415,10 +423,10 @@ public partial class TextEditorBase
     /// For complete clarity, this comment refers to one possibly expecting
     /// to see "if (EditBlockIndex == _editBlocksPersisted.Count - 1)"
     /// </summary>
-    public void UndoEdit()
+    public TextEditorBase UndoEdit()
     {
         if (!CanUndoEdit()) 
-            return;
+            return this;
         
         if (EditBlockIndex == _editBlocksPersisted.Count)
         {
@@ -434,22 +442,21 @@ public partial class TextEditorBase
         var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
             
         SetContent(restoreEditBlock.ContentSnapshot);
+        
+        return new TextEditorBase(this);
     }
     
-    public bool CanRedoEdit()
+    public TextEditorBase RedoEdit()
     {
-        return EditBlockIndex < _editBlocksPersisted.Count - 1;
-    }
-    
-    public void RedoEdit()
-    {
-        if (!CanRedoEdit()) 
-            return;
+        if (!CanRedoEdit())
+            return this;
         
         EditBlockIndex++;
 
         var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
             
         SetContent(restoreEditBlock.ContentSnapshot);
+
+        return new TextEditorBase(this);
     }
 }

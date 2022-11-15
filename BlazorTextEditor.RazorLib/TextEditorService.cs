@@ -80,6 +80,20 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(deleteTextByRangeTextEditorBaseAction);
     }
+    
+    public void RedoEdit(TextEditorKey textEditorKey)
+    {
+        var redoEditAction = new RedoEditAction(textEditorKey);
+        
+        _dispatcher.Dispatch(redoEditAction);
+    }
+    
+    public void UndoEdit(TextEditorKey textEditorKey)
+    {
+        var undoEditAction = new UndoEditAction(textEditorKey);
+        
+        _dispatcher.Dispatch(undoEditAction);
+    }
 
     public void DisposeTextEditor(TextEditorKey textEditorKey)
     {
@@ -136,6 +150,17 @@ public class TextEditorService : ITextEditorService
         _dispatcher.Dispatch(
             new RegisterDialogRecordAction(
                 settingsDialog));
+    }
+    
+    
+    /// <summary>
+    /// <see cref="ForceRerender"/> 
+    /// </summary>
+    public void ForceRerender(TextEditorKey textEditorKey)
+    {
+        _dispatcher.Dispatch(
+            new ForceRerenderAction(
+                textEditorKey));
     }
 
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)

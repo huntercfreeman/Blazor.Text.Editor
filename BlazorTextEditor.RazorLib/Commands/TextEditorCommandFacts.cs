@@ -9,11 +9,6 @@ namespace BlazorTextEditor.RazorLib.Commands;
 
 public static class TextEditorCommandFacts
 {
-    public static readonly TextEditorCommand DoNothingDiscard = new(
-        textEditorCommandParameter => { return Task.CompletedTask; },
-        "Do Nothing",
-        "defaults_do-nothing");
-
     public static readonly TextEditorCommand Copy = new(
         async textEditorCommandParameter =>
         {
@@ -68,10 +63,6 @@ public static class TextEditorCommandFacts
                         Key = KeyboardKeyFacts.MetaKeys.DELETE
                     },
                     CancellationToken.None));
-            
-            textEditorCommandParameter
-                .TextEditorDisplay
-                .ReloadVirtualizationDisplay();
         },
         "Cut",
         "defaults_cut");
@@ -92,10 +83,6 @@ public static class TextEditorCommandFacts
                     }.ToImmutableArray(),
                     clipboard,
                     CancellationToken.None));
-
-            textEditorCommandParameter
-                .TextEditorDisplay
-                .ReloadVirtualizationDisplay();
         },
         "Paste",
         "defaults_paste",
@@ -109,6 +96,10 @@ public static class TextEditorCommandFacts
                 .OnSaveRequested?
                 .Invoke(
                     textEditorCommandParameter.TextEditor);
+            
+            textEditorCommandParameter.TextEditorService
+                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            
             return Task.CompletedTask;
         },
         "Save",
@@ -124,6 +115,10 @@ public static class TextEditorCommandFacts
 
             primaryCursor.TextEditorSelection.EndingPositionIndex =
                 textEditorCommandParameter.TextEditor.DocumentLength;
+            
+            textEditorCommandParameter.TextEditorService
+                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            
             return Task.CompletedTask;
         },
         "Select All",
@@ -131,11 +126,8 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand Undo = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter.TextEditor.UndoEdit();
-            
-            textEditorCommandParameter
-                .TextEditorDisplay
-                .ReloadVirtualizationDisplay();
+            textEditorCommandParameter.TextEditorService
+                .UndoEdit(textEditorCommandParameter.TextEditor.Key);
             
             return Task.CompletedTask;
         },
@@ -144,12 +136,9 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter.TextEditor.RedoEdit();
-            
-            textEditorCommandParameter
-                .TextEditorDisplay
-                .ReloadVirtualizationDisplay();
-            
+            textEditorCommandParameter.TextEditorService
+                .RedoEdit(textEditorCommandParameter.TextEditor.Key);
+
             return Task.CompletedTask;
         },
         "Redo",
@@ -159,9 +148,8 @@ public static class TextEditorCommandFacts
         {
             textEditorCommandParameter.TextEditorDisplay.ShouldMeasureDimensions = true;
             
-            textEditorCommandParameter
-                .TextEditorDisplay
-                .ReloadVirtualizationDisplay();
+            textEditorCommandParameter.TextEditorService
+                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
             
             return Task.CompletedTask;
         },

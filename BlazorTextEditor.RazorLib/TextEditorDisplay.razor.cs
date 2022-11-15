@@ -18,7 +18,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
-public partial class TextEditorDisplay : TextEditorView
+public partial class TextEditorDisplay : TextEditorView, IDisposable
 {
     [Inject]
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
@@ -209,8 +209,6 @@ public partial class TextEditorDisplay : TextEditorView
 
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
-
-            ReloadVirtualizationDisplay();
         }
 
         if (_previousTextEditorKey is null ||
@@ -230,18 +228,30 @@ public partial class TextEditorDisplay : TextEditorView
                 primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
-
-            ReloadVirtualizationDisplay();
         }
 
         await base.OnParametersSetAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        // base will select the
+        // TreeViewBase from the TreeViewKey
+        base.OnInitialized();
+        
+        TextEditorStatesSelection.SelectedValueChanged += TextEditorStatesSelectionOnSelectedValueChanged;
+    }
+
+    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            ReloadVirtualizationDisplay();
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
         if (ShouldMeasureDimensions)
@@ -264,14 +274,6 @@ public partial class TextEditorDisplay : TextEditorView
         }
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-
-    /// <summary>
-    /// TODO: Various 'todo' comments have been added about <see cref="ReloadVirtualizationDisplay"/> being a hack and that it should be rewritten correctly. I stand by those comments but to clarify further. This method itself should remain and be public. It should never need to be called however. It is in a sense like a save button in a 'google docs' like program that autosaves. I feel it is important to have one for the sanity of some users who feel comfort in clicking it.
-    /// </summary>
-    public void ReloadVirtualizationDisplay()
-    {
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
     public async Task FocusTextEditorAsync()
@@ -328,9 +330,6 @@ public partial class TextEditorDisplay : TextEditorView
                         cursorSnapshots,
                         keyboardEventArgs,
                         CancellationToken.None));
-
-                // TODO: The invocation of ReloadVirtualizationDisplay in this scenario is a hack and should be rewritten correctly. The modification of the TextEditorBase should send a notification automatically to all Blazor components that reference it by TextEditorKey. Allowing them an option to choose to re-render.
-                ReloadVirtualizationDisplay();
             }
         }
 
@@ -1050,5 +1049,10 @@ public partial class TextEditorDisplay : TextEditorView
                 _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
             }
         }
+    }
+
+    public void Dispose()
+    {
+        TextEditorStatesSelection.SelectedValueChanged -= TextEditorStatesSelectionOnSelectedValueChanged;
     }
 }

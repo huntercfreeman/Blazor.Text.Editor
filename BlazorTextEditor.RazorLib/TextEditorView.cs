@@ -10,7 +10,7 @@ namespace BlazorTextEditor.RazorLib;
 /// message broker abstraction between a
 /// Blazor component and a <see cref="TextEditorBase"/>
 /// </summary>
-public class TextEditorView : ComponentBase
+public class TextEditorView : ComponentBase, IDisposable
 {
     [Inject]
     protected IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
@@ -24,7 +24,18 @@ public class TextEditorView : ComponentBase
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .SingleOrDefault(x => x.Key == TextEditorKey));
+        
+        TextEditorStatesSelection.SelectedValueChanged += TextEditorStatesSelectionOnSelectedValueChanged;
 
         base.OnInitialized();
+    }
+    
+    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    public void Dispose()
+    {
+        TextEditorStatesSelection.SelectedValueChanged -= TextEditorStatesSelectionOnSelectedValueChanged;
     }
 }
