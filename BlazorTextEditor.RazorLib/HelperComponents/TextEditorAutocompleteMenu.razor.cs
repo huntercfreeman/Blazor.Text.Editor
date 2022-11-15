@@ -63,10 +63,11 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
                 var wordColumnIndexStartInclusive = TextEditor
                     .GetColumnIndexOfCharacterWithDifferingKind(
                         primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                        wordColumnIndexEndExclusive - 1,
+                        wordColumnIndexEndExclusive,
                         true);
 
-                wordColumnIndexStartInclusive++;
+                if (wordColumnIndexStartInclusive == -1)
+                    wordColumnIndexStartInclusive = 0;
                 
                 var wordLength = wordColumnIndexEndExclusive -
                                  wordColumnIndexStartInclusive;
