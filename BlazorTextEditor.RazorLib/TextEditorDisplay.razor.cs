@@ -324,12 +324,23 @@ public partial class TextEditorDisplay : TextEditorView
 
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
-            TextEditorCursor.MoveCursor(
-                keyboardEventArgs,
-                primaryCursorSnapshot.UserCursor,
-                safeTextEditorReference);
+            if ((KeyboardKeyFacts.MovementKeys.ARROW_DOWN == keyboardEventArgs.Key ||
+                 KeyboardKeyFacts.MovementKeys.ARROW_UP == keyboardEventArgs.Key) &&
+                _textEditorCursorDisplay is not null &&
+                _textEditorCursorDisplay.TextEditorMenuKind ==
+                TextEditorMenuKind.AutoCompleteMenu)
+            {
+                // TODO: Focus the autocomplete menu
+            }
+            else
+            {
+                TextEditorCursor.MoveCursor(
+                    keyboardEventArgs,
+                    primaryCursorSnapshot.UserCursor,
+                    safeTextEditorReference);
             
-            _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+                _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+            }
         }
         else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
         {

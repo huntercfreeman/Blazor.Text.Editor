@@ -42,6 +42,8 @@ public partial class TextEditorCursorDisplay : TextEditorView
     public string BlinkAnimationCssClass => _hasBlinkAnimation
         ? "bte_blink"
         : string.Empty;
+    
+    public TextEditorMenuKind TextEditorMenuKind => _textEditorMenuKind;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
