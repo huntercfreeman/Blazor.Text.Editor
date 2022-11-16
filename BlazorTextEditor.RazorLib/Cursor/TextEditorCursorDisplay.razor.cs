@@ -33,6 +33,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
+    private int _textEditorMenuShouldGetFocusRequestCount;
 
     public string TextEditorCursorDisplayId => $"bte_text-editor-cursor-display_{_intersectionObserverMapKey}";
 
@@ -239,6 +240,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
         TextEditorMenuKind textEditorMenuKind,
         bool shouldFocusCursor = true)
     {
+        // Clear the counter of requests for the Menu to take focus
+        _ = TextEditorMenuShouldTakeFocus();
+        
         _textEditorMenuKind = textEditorMenuKind;
 
         await InvokeAsync(StateHasChanged);
@@ -247,6 +251,24 @@ public partial class TextEditorCursorDisplay : TextEditorView
             await FocusAsync();
     }
 
+    public void SetFocusToActiveMenu()
+    {
+        _textEditorMenuShouldGetFocusRequestCount++;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private bool TextEditorMenuShouldTakeFocus()
+    {
+        if (_textEditorMenuShouldGetFocusRequestCount > 0)
+        {
+            _textEditorMenuShouldGetFocusRequestCount = 0;
+            
+            return true;
+        }
+
+        return false;
+    }
+    
     private int GetTabIndex()
     {
         if (!IsFocusTarget)

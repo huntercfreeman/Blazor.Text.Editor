@@ -55,6 +55,13 @@ public partial class MenuDisplay : ComponentBase
         
         return base.OnAfterRenderAsync(firstRender);
     }
+    
+    public void SetFocusToFirstOptionInMenu()
+    {
+        _activeMenuOptionRecordIndex = 0;
+
+        InvokeAsync(StateHasChanged);
+    }
 
     private void RestoreFocusToThisMenu()
     {

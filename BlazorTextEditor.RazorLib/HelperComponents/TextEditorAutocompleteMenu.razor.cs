@@ -23,11 +23,24 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
     [CascadingParameter(Name = "SetShouldDisplayMenuAsync")]
     public Func<TextEditorMenuKind, bool, Task> SetShouldDisplayMenuAsync { get; set; } = null!;
+    [CascadingParameter(Name="TextEditorMenuShouldTakeFocusFunc")]
+    public Func<bool> TextEditorMenuShouldTakeFocusFunc { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
 
     private ElementReference? _textEditorAutocompleteMenuElementReference;
+    private MenuDisplay? _autocompleteMenuDisplay;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (TextEditorMenuShouldTakeFocusFunc.Invoke())
+        {
+            _autocompleteMenuDisplay?.SetFocusToFirstOptionInMenu();
+        }
+        
+        return base.OnAfterRenderAsync(firstRender);
+    }
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {

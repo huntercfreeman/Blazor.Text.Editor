@@ -23,22 +23,25 @@
 
         <CascadingValue Name="SetShouldDisplayMenuAsync"
                         Value="new Func<TextEditorMenuKind, bool, Task>(SetShouldDisplayMenuAsync)">
+            <CascadingValue Name="TextEditorMenuShouldTakeFocusFunc"
+                            Value="TextEditorMenuShouldTakeFocus">
 
-            @switch (_textEditorMenuKind)
-            {
-                case TextEditorMenuKind.ContextMenu:
-                    if (OnContextMenuRenderFragment is not null)
-                    {
-                        @OnContextMenuRenderFragment
-                    }
-                    break;
-                case TextEditorMenuKind.AutoCompleteMenu:
-                    if (AutoCompleteMenuRenderFragment is not null)
-                    {
-                        @AutoCompleteMenuRenderFragment
-                    }
-                    break;
-            }
+                @switch (_textEditorMenuKind)
+                {
+                    case TextEditorMenuKind.ContextMenu:
+                        if (OnContextMenuRenderFragment is not null)
+                        {
+                            @OnContextMenuRenderFragment
+                        }
+                        break;
+                    case TextEditorMenuKind.AutoCompleteMenu:
+                        if (AutoCompleteMenuRenderFragment is not null)
+                        {
+                            @AutoCompleteMenuRenderFragment
+                        }
+                        break;
+                }
+            </CascadingValue>
         </CascadingValue>
     </div>
 }

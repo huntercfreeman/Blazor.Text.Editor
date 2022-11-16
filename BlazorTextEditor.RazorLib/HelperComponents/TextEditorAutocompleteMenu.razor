@@ -7,7 +7,7 @@
      class="bstudio_text-editor-autocomplete-menu"
      @onkeydown="HandleOnKeyDownAsync">
 
-    <MenuDisplay MenuRecord="GetMenuRecord()"
+    <MenuDisplay @ref="_autocompleteMenuDisplay" MenuRecord="GetMenuRecord()"
                  FocusOnAfterRenderAsync="false"/>
     
 </div>

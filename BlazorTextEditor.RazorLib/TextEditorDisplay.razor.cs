@@ -330,7 +330,7 @@ public partial class TextEditorDisplay : TextEditorView
                 _textEditorCursorDisplay.TextEditorMenuKind ==
                 TextEditorMenuKind.AutoCompleteMenu)
             {
-                // TODO: Focus the autocomplete menu
+                _textEditorCursorDisplay.SetFocusToActiveMenu();
             }
             else
             {
