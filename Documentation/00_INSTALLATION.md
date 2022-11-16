@@ -28,6 +28,8 @@ In my C# Project services are registered in Program.cs
 Go to the file that you register your services and add the following line of C# code.
 
 ```csharp
+using BlazorTextEditor.RazorLib;
+
 builder.Services.AddBlazorTextEditor();
 ```
 
