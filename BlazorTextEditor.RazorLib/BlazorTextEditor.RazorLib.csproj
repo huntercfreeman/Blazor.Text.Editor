@@ -22,11 +22,19 @@
     <ItemGroup>
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.3.1" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Dropdown\DropdownDisplay.razor" />
+      <AdditionalFiles Include="Menu\MenuDisplay.razor" />
+      <AdditionalFiles Include="Menu\MenuOptionDisplay.razor" />
+      <AdditionalFiles Include="OutOfBoundsClick\OutOfBoundsClickDisplay.razor" />
     </ItemGroup>
 
 </Project>

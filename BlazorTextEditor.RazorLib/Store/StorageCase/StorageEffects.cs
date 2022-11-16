@@ -1,23 +1,21 @@
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
-using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.Store.StorageCase;
 
 public class StorageEffects
 {
     private readonly IState<TextEditorStates> _textEditorStatesWrap;
-    private readonly IJSRuntime _jsRuntime;
-    
+    private readonly IStorageProvider _storageProvider;
+
     public StorageEffects(
         ITextEditorServiceOptions textEditorServiceOptions,
         IState<TextEditorStates> textEditorStatesWrap,
-        IJSRuntime jsRuntime)
+        IStorageProvider storageProvider)
     {
         _textEditorStatesWrap = textEditorStatesWrap;
-        _jsRuntime = jsRuntime;
+        _storageProvider = storageProvider;
     }
 
     public record WriteGlobalTextEditorOptionsToLocalStorageAction(TextEditorOptions GlobalTextEditorOptions);
@@ -29,10 +27,9 @@ public class StorageEffects
     {
         var optionsJsonString = System.Text.Json.JsonSerializer
             .Serialize(writeGlobalTextEditorOptionsToLocalStorageAction.GlobalTextEditorOptions);
-        
-        await _jsRuntime.InvokeVoidAsync(
-            "blazorTextEditor.localStorageSetItem",
-            ITextEditorService.LocalStorageGlobalTextEditorOptionsKey,
+
+        await _storageProvider.SetValue(
+            ITextEditorService.LocalStorageGlobalTextEditorOptionsKey, 
             optionsJsonString);
     }
 }

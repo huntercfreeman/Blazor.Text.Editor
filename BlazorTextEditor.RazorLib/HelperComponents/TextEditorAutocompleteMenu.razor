@@ -1,0 +1,18 @@
+﻿@using BlazorTextEditor.RazorLib.Menu
+
+@inherits TextEditorView
+
+<div @ref="_textEditorAutocompleteMenuElementReference"
+     tab-index="-1"
+     class="bstudio_text-editor-autocomplete-menu"
+     @onkeydown="HandleOnKeyDownAsync">
+    
+    <CascadingValue Name="ReturnFocusToParentAction"
+                    Value="new Action(ReturnFocusToThis)">
+        
+        <MenuDisplay @ref="_autocompleteMenuDisplay" 
+                     MenuRecord="GetMenuRecord()"
+                     FocusOnAfterRenderAsync="false"/>
+    </CascadingValue>
+
+</div>

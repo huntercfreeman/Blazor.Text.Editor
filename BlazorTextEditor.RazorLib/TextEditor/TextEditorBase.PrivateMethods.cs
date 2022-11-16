@@ -1,11 +1,12 @@
 using System.Collections.Immutable;
+using System.Security.Cryptography.X509Certificates;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
@@ -46,19 +47,22 @@ public partial class TextEditorBase
 
         while (_editBlocksPersisted.Count > MAXIMUM_EDIT_BLOCKS &&
                _editBlocksPersisted.Count != 0)
+        {
+            EditBlockIndex--;
             _editBlocksPersisted.RemoveAt(0);
+        }
     }
 
-    private void PerformInsertions(EditTextEditorBaseAction editTextEditorBaseAction)
+    private void PerformInsertions(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
     {
         EnsureUndoPoint(TextEditKind.Insertion);
 
-        foreach (var cursorSnapshot in editTextEditorBaseAction.CursorSnapshots)
+        foreach (var cursorSnapshot in keyboardEventTextEditorBaseAction.CursorSnapshots)
         {
             if (TextEditorSelectionHelper.HasSelectedText(
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
             {
-                PerformDeletions(editTextEditorBaseAction);
+                PerformDeletions(keyboardEventTextEditorBaseAction);
 
                 var selectionBounds = TextEditorSelectionHelper.GetSelectionBounds(
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
@@ -74,7 +78,7 @@ public partial class TextEditorBase
                 cursorSnapshot.UserCursor.IndexCoordinates = 
                     (lowerRowData.rowIndex, lowerColumnIndex);
                 
-                var nextEdit = editTextEditorBaseAction with
+                var nextEdit = keyboardEventTextEditorBaseAction with
                 {
                     CursorSnapshots = new []
                     {
@@ -98,19 +102,19 @@ public partial class TextEditorBase
             var wasTabCode = false;
             var wasEnterCode = false;
 
-            var characterValueToInsert = editTextEditorBaseAction.KeyboardEventArgs.Key
+            var characterValueToInsert = keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key
                 .First();
 
-            if (KeyboardKeyFacts.IsWhitespaceCode(editTextEditorBaseAction.KeyboardEventArgs.Code))
+            if (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code))
             {
                 characterValueToInsert =
-                    KeyboardKeyFacts.ConvertWhitespaceCodeToCharacter(editTextEditorBaseAction.KeyboardEventArgs.Code);
+                    KeyboardKeyFacts.ConvertWhitespaceCodeToCharacter(keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code);
 
                 wasTabCode = KeyboardKeyFacts.WhitespaceCodes.TAB_CODE ==
-                             editTextEditorBaseAction.KeyboardEventArgs.Code;
+                             keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code;
 
                 wasEnterCode = KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE ==
-                               editTextEditorBaseAction.KeyboardEventArgs.Code;
+                               keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code;
             }
 
             var characterCountInserted = 1;
@@ -205,11 +209,11 @@ public partial class TextEditorBase
         }
     }
 
-    private void PerformDeletions(EditTextEditorBaseAction editTextEditorBaseAction)
+    private void PerformDeletions(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
     {
         EnsureUndoPoint(TextEditKind.Deletion);
 
-        foreach (var cursorSnapshot in editTextEditorBaseAction.CursorSnapshots)
+        foreach (var cursorSnapshot in keyboardEventTextEditorBaseAction.CursorSnapshots)
         {
             var startOfRowPositionIndex =
                 GetStartOfRowTuple(cursorSnapshot.ImmutableCursor.RowIndex)
@@ -227,6 +231,7 @@ public partial class TextEditorBase
             // Needed for when text selection is deleted
             (int rowIndex, int columnIndex)? selectionLowerBoundIndexCoordinates = null;
 
+            // TODO: The deletion logic should be the same whether it be 'Delete' 'Backspace' 'CtrlModified' or 'DeleteSelection'. What should change is one needs to calculate the starting and ending index appropriately foreach case.
             if (TextEditorSelectionHelper.HasSelectedText(
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
             {
@@ -263,22 +268,72 @@ public partial class TextEditorBase
 
                 cursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
-            else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorBaseAction.KeyboardEventArgs.Key)
+            else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
             {
-                startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
-                countToRemove = 1;
                 moveBackwards = true;
+
+                if (keyboardEventTextEditorBaseAction.KeyboardEventArgs.CtrlKey)
+                {
+                    var columnIndexOfCharacterWithDifferingKind = GetColumnIndexOfCharacterWithDifferingKind(
+                        cursorSnapshot.ImmutableCursor.RowIndex,
+                        cursorSnapshot.ImmutableCursor.ColumnIndex,
+                        moveBackwards);
+
+                    columnIndexOfCharacterWithDifferingKind =
+                        columnIndexOfCharacterWithDifferingKind == -1
+                            ? 0
+                            : columnIndexOfCharacterWithDifferingKind;
+                    
+                    countToRemove =
+                        cursorSnapshot.ImmutableCursor.ColumnIndex -
+                        columnIndexOfCharacterWithDifferingKind;
+
+                    countToRemove = countToRemove == 0
+                        ? 1
+                        : countToRemove;
+                }
+                else
+                {
+                    countToRemove = 1;
+                }
+                
+                startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
             }
-            else if (KeyboardKeyFacts.MetaKeys.DELETE == editTextEditorBaseAction.KeyboardEventArgs.Key)
+            else if (KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
             {
-                startingPositionIndexToRemoveInclusive = cursorPositionIndex;
-                countToRemove = 1;
                 moveBackwards = false;
+                
+                if (keyboardEventTextEditorBaseAction.KeyboardEventArgs.CtrlKey)
+                {
+                    var columnIndexOfCharacterWithDifferingKind = GetColumnIndexOfCharacterWithDifferingKind(
+                        cursorSnapshot.ImmutableCursor.RowIndex,
+                        cursorSnapshot.ImmutableCursor.ColumnIndex,
+                        moveBackwards);
+
+                    columnIndexOfCharacterWithDifferingKind =
+                        columnIndexOfCharacterWithDifferingKind == -1
+                            ? GetLengthOfRow(cursorSnapshot.ImmutableCursor.RowIndex)
+                            : columnIndexOfCharacterWithDifferingKind;
+                    
+                    countToRemove =
+                        columnIndexOfCharacterWithDifferingKind -
+                        cursorSnapshot.ImmutableCursor.ColumnIndex;
+                    
+                    countToRemove = countToRemove == 0
+                        ? 1
+                        : countToRemove;
+                }
+                else
+                {
+                    countToRemove = 1;
+                }
+                
+                startingPositionIndexToRemoveInclusive = cursorPositionIndex;
             }
             else
             {
                 throw new ApplicationException(
-                    $"The keyboard key: {editTextEditorBaseAction.KeyboardEventArgs.Key} was not recognized");
+                    $"The keyboard key: {keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key} was not recognized");
             }
 
             var charactersRemovedCount = 0;

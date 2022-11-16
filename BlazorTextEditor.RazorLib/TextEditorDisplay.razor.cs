@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
@@ -8,6 +9,7 @@ using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
@@ -17,14 +19,14 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
-public partial class TextEditorDisplay : ComponentBase, IDisposable
+public partial class TextEditorDisplay : TextEditorView
 {
-    [Inject]
-    private IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
     [Inject]
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
+    private IAutocompleteIndexer AutocompleteIndexer { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
@@ -32,8 +34,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
-    [Parameter, EditorRequired]
-    public TextEditorKey TextEditorKey { get; set; } = null!;
     [Parameter]
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
@@ -41,8 +41,21 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     [Parameter]
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
     /// <summary>
-    ///     (TextEditorBase textEditor, ImmutableArray&lt;TextEditorCursorSnapshot&gt; textEditorCursorSnapshots,
-    ///     KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
+    /// If left null, the default <see cref="AfterOnKeyDownAsync"/> will
+    /// be used.
+    /// <br/><br/>
+    /// The default <see cref="AfterOnKeyDownAsync"/> will provide
+    /// syntax highlighting, and autocomplete.
+    /// <br/><br/>
+    /// The syntax highlighting occurs on ';', whitespace, paste, undo, redo
+    /// <br/><br/>
+    /// The autocomplete occurs on LetterOrDigit typed or { Ctrl + Space }.
+    /// Furthermore, the autocomplete is done via <see cref="IAutocompleteService"/>
+    /// and the one can provide their own implementation when registering the
+    /// BlazorTextEditor services using <see cref="TextEditorServiceOptions.AutocompleteServiceFactory"/>
+    /// <br/><br/>
+    /// (TextEditorBase textEditor, ImmutableArray&lt;TextEditorCursorSnapshot&gt; textEditorCursorSnapshots,
+    /// KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
     /// </summary>
     [Parameter]
     public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs,
@@ -64,11 +77,76 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     /// </summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;
+    /// <summary>
+    /// <see cref="IncludeHeaderHelperComponent"/> results in
+    /// <see cref="TextEditorHeader"/> being rendered above the
+    /// <see cref="TextEditorDisplay"/>
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
     [Parameter]
-    public Func<TextEditorHelperComponentParameters, Task>? UpdateHelperComponentsAsync { get; set; }
-    
+    public bool IncludeHeaderHelperComponent { get; set; } = true;
+    /// <summary>
+    /// <see cref="HeaderButtonKinds"/> contains
+    /// the enum value that represents a button displayed
+    /// in the <see cref="TextEditorHeader"/>.
+    /// <br/><br/>
+    /// The <see cref="TextEditorHeader"/> is only displayed if
+    /// <see cref="IncludeHeaderHelperComponent"/> is set to true.
+    /// </summary>
+    [Parameter]
+    public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
+    /// <summary>
+    /// <see cref="IncludeFooterHelperComponent"/> results in
+    /// <see cref="TextEditorFooter"/> being rendered below the
+    /// <see cref="TextEditorDisplay"/>
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
+    [Parameter]
+    public bool IncludeFooterHelperComponent { get; set; } = true;
+    /// <summary>
+    /// <see cref="FileExtension"/> is displayed as is within the
+    /// <see cref="TextEditorFooter"/>.
+    /// <br/><br/>
+    /// The <see cref="TextEditorFooter"/> is only displayed if
+    /// <see cref="IncludeFooterHelperComponent"/> is set to true.
+    /// </summary>
+    [Parameter]
+    public string FileExtension { get; set; } = string.Empty;
+    /// <summary>
+    /// <see cref="IncludeDefaultContextMenu"/> results in
+    /// <see cref="TextEditorContextMenu"/> being rendered
+    /// On a context menu event which includes
+    /// <br/>
+    /// -ShiftKey + F10
+    /// <br/>
+    /// -ContextMenu button
+    /// <br/>
+    /// -RightClick of mouse
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
+    [Parameter]
+    public bool IncludeDefaultContextMenu { get; set; } = true;
+    /// <summary>
+    /// <see cref="IncludeDefaultAutocompleteMenu"/> results in
+    /// <see cref="TextEditorAutocompleteMenu"/> being rendered
+    /// when the user types and possible autocomplete
+    /// options are available
+    /// <br/><br/>
+    /// Default value is true
+    /// </summary>
+    [Parameter]
+    public bool IncludeDefaultAutocompleteMenu { get; set; } = true;
+
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
+    private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromSeconds(1);
+    private int _skippedSyntaxHighlightingEventCount;
     
+    private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
+    private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(50);
+        
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
@@ -92,6 +170,8 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private bool _thinksLeftMouseButtonIsDown;
 
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
+    private TextEditorHeader? _textEditorHeader;
+    private TextEditorFooter? _textEditorFooter;
 
     public bool ShouldMeasureDimensions { get; set; } = true;
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
@@ -106,13 +186,13 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
 
     private MarkupString GetAllTextEscaped => (MarkupString)(MutableReferenceToTextEditor?
-        .GetAllText()
-        .Replace("\r\n", "\\r\\n<br/>")
-        .Replace("\r", "\\r<br/>")
-        .Replace("\n", "\\n<br/>")
-        .Replace("\t", "--->")
-        .Replace(" ", "·")
-            ?? string.Empty);
+                                                                 .GetAllText()
+                                                                 .Replace("\r\n", "\\r\\n<br/>")
+                                                                 .Replace("\r", "\\r<br/>")
+                                                                 .Replace("\n", "\\n<br/>")
+                                                                 .Replace("\t", "--->")
+                                                                 .Replace(" ", "·")
+                                                             ?? string.Empty);
 
     private string GlobalThemeCssClassString => TextEditorService
                                                     .TextEditorStates
@@ -132,11 +212,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
     private bool GlobalShowWhitespace => TextEditorService
         .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
-    
-    private TextEditorHelperComponentParameters TextEditorHelperComponentParameters => 
-        new(
-            this,
-            MutableReferenceToTextEditor);
 
     public TextEditorCursor PrimaryCursor { get; } = new(true);
 
@@ -164,8 +239,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
-
-            ReloadVirtualizationDisplay();
         }
 
         if (_previousTextEditorKey is null ||
@@ -185,8 +258,6 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                 primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
-
-            ReloadVirtualizationDisplay();
         }
 
         await base.OnParametersSetAsync();
@@ -194,23 +265,23 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
     protected override void OnInitialized()
     {
-        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
-
-        TextEditorStatesSelection
-            .Select(textEditorStates => textEditorStates.TextEditorList
-                .SingleOrDefault(x => x.Key == TextEditorKey));
-
+        // base will select the
+        // TreeViewBase from the TreeViewKey
         base.OnInitialized();
+
+        TextEditorStatesSelection.SelectedValueChanged += TextEditorStatesSelectionOnSelectedValueChanged;
+    }
+
+    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            ReloadVirtualizationDisplay();
-
-            if (UpdateHelperComponentsAsync is not null)
-                await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
         if (ShouldMeasureDimensions)
@@ -234,26 +305,11 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
         await base.OnAfterRenderAsync(firstRender);
     }
-    
-    private void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
-    {
-        if (_previousGlobalTextEditorOptions is null ||
-            _previousGlobalTextEditorOptions != TextEditorStatesWrap.Value.GlobalTextEditorOptions)
-        {
-            _previousGlobalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
-            InvokeAsync(StateHasChanged);
-        }
-    }
 
-    public void ReloadVirtualizationDisplay()
-    {
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
-    }
-
-    private async Task FocusTextEditorOnClickAsync()
+    public async Task FocusTextEditorAsync()
     {
         if (_textEditorCursorDisplay is not null)
-            await _textEditorCursorDisplay.FocusAsync();   
+            await _textEditorCursorDisplay.FocusAsync();
     }
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
@@ -262,7 +318,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
         if (safeTextEditorReference is null)
             return;
-        
+
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
         var cursorSnapshots = new TextEditorCursorSnapshot[]
@@ -270,17 +326,30 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             new(primaryCursorSnapshot.UserCursor),
         }.ToImmutableArray();
 
-        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
-
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
-            TextEditorCursor.MoveCursor(
-                keyboardEventArgs,
-                primaryCursorSnapshot.UserCursor,
-                safeTextEditorReference);
+            if ((KeyboardKeyFacts.MovementKeys.ARROW_DOWN == keyboardEventArgs.Key ||
+                 KeyboardKeyFacts.MovementKeys.ARROW_UP == keyboardEventArgs.Key) &&
+                _textEditorCursorDisplay is not null &&
+                _textEditorCursorDisplay.TextEditorMenuKind ==
+                TextEditorMenuKind.AutoCompleteMenu)
+            {
+                _textEditorCursorDisplay.SetFocusToActiveMenu();
+            }
+            else
+            {
+                TextEditorCursor.MoveCursor(
+                    keyboardEventArgs,
+                    primaryCursorSnapshot.UserCursor,
+                    safeTextEditorReference);
+            
+                _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+            }
         }
         else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
+        {
             _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
+        }
         else
         {
             var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
@@ -294,47 +363,50 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                         cursorSnapshots,
                         ClipboardProvider,
                         TextEditorService,
-                        ReloadVirtualizationDisplay,
-                        OnSaveRequested));
+                        this));
             }
             else
             {
+                if (!IsAutocompleteMenuInvoker(keyboardEventArgs))
+                {
+                    if (!KeyboardKeyFacts.IsMetaKey(keyboardEventArgs)
+                        || (KeyboardKeyFacts.MetaKeys.ESCAPE == keyboardEventArgs.Key ||
+                            KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventArgs.Key ||
+                            KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventArgs.Key))
+                    {
+                        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+                    }
+                }
+                
                 Dispatcher.Dispatch(
-                    new EditTextEditorBaseAction(
+                    new KeyboardEventTextEditorBaseAction(
                         TextEditorKey,
                         cursorSnapshots,
                         keyboardEventArgs,
                         CancellationToken.None));
-
-                ReloadVirtualizationDisplay();
             }
         }
 
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
-
         primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
 
-        var afterOnKeyDownAsync = AfterOnKeyDownAsync;
+        var afterOnKeyDownAsync = AfterOnKeyDownAsync
+                                  ?? HandleAfterOnKeyDownAsync;
 
-        if (afterOnKeyDownAsync is not null)
+        var cursorDisplay = _textEditorCursorDisplay;
+
+        if (cursorDisplay is not null)
         {
-            var cursorDisplay = _textEditorCursorDisplay;
+            var textEditor = safeTextEditorReference;
 
-            if (cursorDisplay is not null)
+            // Do not block UI thread with long running AfterOnKeyDownAsync 
+            _ = Task.Run(async () =>
             {
-                var textEditor = safeTextEditorReference;
-
-                // Do not block UI thread with long running AfterOnKeyDownAsync 
-                _ = Task.Run(async () =>
-                {
-                    await afterOnKeyDownAsync.Invoke(
-                        textEditor,
-                        cursorSnapshots,
-                        keyboardEventArgs,
-                        cursorDisplay.SetShouldDisplayMenuAsync);
-                });
-            }
+                await afterOnKeyDownAsync.Invoke(
+                    textEditor,
+                    cursorSnapshots,
+                    keyboardEventArgs,
+                    cursorDisplay.SetShouldDisplayMenuAsync);
+            });
         }
     }
 
@@ -346,10 +418,10 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private async Task HandleContentOnDoubleClickAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
-        
+
         if (safeTextEditorReference is null)
             return;
-        
+
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
@@ -358,7 +430,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             // Not pressing the left mouse button
             // so assume ContextMenu is desired result.
             return;
-        
+
         if (mouseEventArgs.ShiftKey)
             // Do not expand selection if user is holding shift
             return;
@@ -371,18 +443,29 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
                 rowAndColumnIndex.rowIndex,
                 rowAndColumnIndex.columnIndex,
                 true);
-        
+
+        lowerColumnIndexExpansion =
+            lowerColumnIndexExpansion == -1
+                ? 0
+                : lowerColumnIndexExpansion;
+
         var higherColumnIndexExpansion = safeTextEditorReference
             .GetColumnIndexOfCharacterWithDifferingKind(
                 rowAndColumnIndex.rowIndex,
                 rowAndColumnIndex.columnIndex,
                 false);
-        
+
+        higherColumnIndexExpansion =
+            higherColumnIndexExpansion == -1
+                ? safeTextEditorReference.GetLengthOfRow(
+                    rowAndColumnIndex.rowIndex)
+                : higherColumnIndexExpansion;
+
         // Move user's cursor position to the higher expansion
         {
             primaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (rowAndColumnIndex.rowIndex, higherColumnIndexExpansion);
-            
+
             primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
                 rowAndColumnIndex.columnIndex;
         }
@@ -391,37 +474,34 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         {
             var cursorPositionOfHigherExpansion = safeTextEditorReference
                 .GetPositionIndex(
-                    rowAndColumnIndex.rowIndex, 
+                    rowAndColumnIndex.rowIndex,
                     higherColumnIndexExpansion);
 
             primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.EndingPositionIndex =
                 cursorPositionOfHigherExpansion;
         }
-        
+
         // Set text selection anchor to lower expansion
         {
             var cursorPositionOfLowerExpansion = safeTextEditorReference
                 .GetPositionIndex(
-                    rowAndColumnIndex.rowIndex, 
+                    rowAndColumnIndex.rowIndex,
                     lowerColumnIndexExpansion);
 
             primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.AnchorPositionIndex =
                 cursorPositionOfLowerExpansion;
         }
-
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
     }
-    
+
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
-        
+
         if (safeTextEditorReference is null)
             return;
-        
+
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
@@ -456,16 +536,16 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             {
                 // If user does not yet have a selection
                 // then place the text selection anchor were they were
-                
+
                 var cursorPositionPriorToMovementOccurring = safeTextEditorReference
                     .GetPositionIndex(
                         primaryCursorSnapshot.ImmutableCursor.RowIndex,
                         primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
-            
+
                 primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
                     cursorPositionPriorToMovementOccurring;
             }
-            
+
             // If user ALREADY has a selection
             // then do not modify the text selection anchor
         }
@@ -474,14 +554,11 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
                 cursorPositionIndex;
         }
-        
+
         primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
             cursorPositionIndex;
 
         _thinksLeftMouseButtonIsDown = true;
-
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
     }
 
     /// <summary>
@@ -490,45 +567,57 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     /// <param name="mouseEventArgs"></param>
     private async Task HandleContentOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-        
-        if (safeTextEditorReference is null)
+        var success = await _onMouseMoveSemaphoreSlim
+            .WaitAsync(TimeSpan.Zero);
+
+        if (!success)
             return;
-        
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
-        // Buttons is a bit flag
-        // '& 1' gets if left mouse button is held
-        if (_thinksLeftMouseButtonIsDown &&
-            (mouseEventArgs.Buttons & 1) == 1)
+        try
         {
-            var rowAndColumnIndex =
-                await DetermineRowAndColumnIndex(mouseEventArgs);
+            var safeTextEditorReference = MutableReferenceToTextEditor;
 
-            primaryCursorSnapshot.UserCursor.IndexCoordinates =
-                (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-            primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
-                rowAndColumnIndex.columnIndex;
+            if (safeTextEditorReference is null)
+                return;
 
-            _textEditorCursorDisplay?.PauseBlinkAnimation();
+            var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
-            primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
-                safeTextEditorReference
-                    .GetCursorPositionIndex(
-                        new TextEditorCursor(rowAndColumnIndex, false));
+            // Buttons is a bit flag
+            // '& 1' gets if left mouse button is held
+            if (_thinksLeftMouseButtonIsDown &&
+                (mouseEventArgs.Buttons & 1) == 1)
+            {
+                var rowAndColumnIndex =
+                    await DetermineRowAndColumnIndex(mouseEventArgs);
+
+                primaryCursorSnapshot.UserCursor.IndexCoordinates =
+                    (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+                primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
+                    rowAndColumnIndex.columnIndex;
+
+                _textEditorCursorDisplay?.PauseBlinkAnimation();
+
+                primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
+                    safeTextEditorReference
+                        .GetCursorPositionIndex(
+                            new TextEditorCursor(rowAndColumnIndex, false));
+            }
+            else
+                _thinksLeftMouseButtonIsDown = false;
+                
+            await Task.Delay(_onMouseMoveDelay);
         }
-        else
-            _thinksLeftMouseButtonIsDown = false;
-
-        if (UpdateHelperComponentsAsync is not null)
-            await UpdateHelperComponentsAsync.Invoke(TextEditorHelperComponentParameters);
+        finally
+        {
+            _onMouseMoveSemaphoreSlim.Release();
+        }
     }
 
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(
         MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
-        
+
         if (safeTextEditorReference is null)
             return (0, 0);
 
@@ -611,7 +700,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private string GetCssClass(byte decorationByte)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
-        
+
         if (safeTextEditorReference is null)
             return string.Empty;
 
@@ -621,7 +710,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
-        
+
         if (safeTextEditorReference is null)
             return string.Empty;
 
@@ -653,7 +742,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
     private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
-        
+
         if (safeTextEditorReference is null)
             return string.Empty;
 
@@ -693,7 +782,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
 
         if (safeTextEditorReference is null)
             return string.Empty;
-        
+
         if (CharacterWidthAndRowHeight is null ||
             rowIndex >= safeTextEditorReference.RowEndingPositions.Length)
             return string.Empty;
@@ -849,10 +938,10 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
         {
             return new(
                 ImmutableArray<VirtualizationEntry<List<RichCharacter>>>.Empty,
-                new(0,0,0,0),
-                new(0,0,0,0),
-                new(0,0,0,0),
-                new(0,0,0,0));
+                new(0, 0, 0, 0),
+                new(0, 0, 0, 0),
+                new(0, 0, 0, 0),
+                new(0, 0, 0, 0));
         }
 
         var verticalStartingIndex = (int)Math.Floor(
@@ -984,7 +1073,7 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             topBoundary,
             bottomBoundary);
     }
-    
+
     /// <summary>
     /// Default implementation so Syntax Highlighting
     /// can be done with less setup.
@@ -1002,35 +1091,110 @@ public partial class TextEditorDisplay : ComponentBase, IDisposable
             .First(x =>
                 x.UserCursor.IsPrimaryCursor);
 
-        if (keyboardEventArgs.Key == ";" ||
-            KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
-            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v") ||
-            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
-            (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y"))
+        // Indexing can be invoked and this method still check for syntax highlighting and such
+        if (IsAutocompleteIndexerInvoker(keyboardEventArgs))
         {
-            // Syntax Highlighting
+            if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
+            {
+                // All keyboardEventArgs that return true from "IsAutocompleteIndexerInvoker"
+                // are to be 1 character long, as well either specific whitespace or punctuation.
+                //
+                // Therefore 1 character behind might be a word that can be indexed.
 
+                var word = textEditor.ReadPreviousWordOrDefault(
+                    primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                    primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
+                
+                if (word is not null)
+                    await AutocompleteIndexer.IndexWordAsync(word);
+            }
+        }
+        
+        if (IsAutocompleteMenuInvoker(keyboardEventArgs))
+        {
+            await setTextEditorMenuKind.Invoke(
+                TextEditorMenuKind.AutoCompleteMenu, 
+                true);
+        }
+        else if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
+        {
             var success = await _afterOnKeyDownSyntaxHighlightingSemaphoreSlim
                 .WaitAsync(TimeSpan.Zero);
 
             if (!success)
+            {
+                _skippedSyntaxHighlightingEventCount++;
                 return;
+            }
 
             try
             {
-                await textEditor.ApplySyntaxHighlightingAsync();
+                do
+                {
+                    await textEditor.ApplySyntaxHighlightingAsync();
 
-                await InvokeAsync(StateHasChanged);
+                    await InvokeAsync(StateHasChanged);
+
+                    await Task.Delay(_afterOnKeyDownSyntaxHighlightingDelay);
+                } while (StartSyntaxHighlightEventIfHasSkipped());
             }
             finally
             {
                 _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
             }
         }
+
+        bool StartSyntaxHighlightEventIfHasSkipped()
+        {
+            if (_skippedSyntaxHighlightingEventCount > 0)
+            {
+                _skippedSyntaxHighlightingEventCount = 0;
+                
+                return true;
+            }
+
+            return false;
+        }
+    }
+    
+    private bool IsSyntaxHighlightingInvoker(KeyboardEventArgs keyboardEventArgs)
+    {
+        return keyboardEventArgs.Key == ";" ||
+               KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v") ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
+    }
+        
+    private bool IsAutocompleteMenuInvoker(KeyboardEventArgs keyboardEventArgs)
+    {
+        // Is {Ctrl + Space} or LetterOrDigit was hit without Ctrl being held
+        return (keyboardEventArgs.CtrlKey && keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE) ||
+               (!keyboardEventArgs.CtrlKey &&
+                !KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
+                !KeyboardKeyFacts.IsMetaKey(keyboardEventArgs));
+    }
+    
+    /// <summary>
+    /// All keyboardEventArgs that return true from "IsAutocompleteIndexerInvoker"
+    /// are to be 1 character long, as well either whitespace or punctuation.
+    ///
+    /// Therefore 1 character behind might be a word that can be indexed.
+    /// </summary>
+    private bool IsAutocompleteIndexerInvoker(KeyboardEventArgs keyboardEventArgs)
+    {
+        return (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
+               KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
+                !keyboardEventArgs.CtrlKey;
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
+        if (disposing)
+        {
+            TextEditorStatesSelection.SelectedValueChanged -= TextEditorStatesSelectionOnSelectedValueChanged;
+        }
+
+        base.Dispose(true);
     }
 }

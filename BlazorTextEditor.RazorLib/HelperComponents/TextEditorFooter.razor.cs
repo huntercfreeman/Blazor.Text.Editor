@@ -7,36 +7,26 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorFooter : ComponentBase
+public partial class TextEditorFooter : TextEditorView
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     
     [Parameter, EditorRequired]
+    public TextEditorDisplay? TextEditorDisplay { get; set; }
+    [Parameter]
     public string? FileExtension { get; set; }
-
-    private TextEditorDisplay? _textEditorDisplay;
-    private TextEditorBase? _textEditorBase;
-    
-    public async Task ReRenderTextEditorFooterAsync(
-        TextEditorHelperComponentParameters textEditorHelperComponentParameters)
-    {
-        _textEditorBase = textEditorHelperComponentParameters.TextEditorBase;
-        _textEditorDisplay = textEditorHelperComponentParameters.TextEditorDisplay;
-        
-        await InvokeAsync(StateHasChanged);
-    }
 
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
-        if (_textEditorBase is null)
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if (textEditor is null)
             return;
         
-        var textEditorKey = _textEditorBase.Key;
-
         var rowEndingKindString = (string)(changeEventArgs.Value ?? string.Empty);
 
         if (Enum.TryParse<RowEndingKind>(rowEndingKindString, out var rowEndingKind))
-            TextEditorService.SetUsingRowEndingKind(textEditorKey, rowEndingKind);
+            TextEditorService.SetUsingRowEndingKind(TextEditorKey, rowEndingKind);
     }
 }

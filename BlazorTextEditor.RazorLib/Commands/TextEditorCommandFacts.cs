@@ -2,7 +2,7 @@
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Keyboard;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Commands;
@@ -10,10 +10,13 @@ namespace BlazorTextEditor.RazorLib.Commands;
 public static class TextEditorCommandFacts
 {
     public static readonly TextEditorCommand DoNothingDiscard = new(
-        textEditorCommandParameter => { return Task.CompletedTask; },
-        "Do Nothing",
-        "defaults_do-nothing");
-
+        _ =>
+        {
+            return Task.CompletedTask;
+        },
+        "DoNothingDiscard",
+        "defaults_do-nothing-discard");
+    
     public static readonly TextEditorCommand Copy = new(
         async textEditorCommandParameter =>
         {
@@ -31,6 +34,8 @@ public static class TextEditorCommandFacts
                     .ClipboardProvider
                     .SetClipboard(
                         selectedText);
+                
+                await textEditorCommandParameter.TextEditorDisplay.FocusTextEditorAsync();
             }
         },
         "Copy",
@@ -53,10 +58,12 @@ public static class TextEditorCommandFacts
                     .ClipboardProvider
                     .SetClipboard(
                         selectedText);
+
+                await textEditorCommandParameter.TextEditorDisplay.FocusTextEditorAsync();
             }
             
             textEditorCommandParameter.TextEditorService
-                .EditTextEditor(new EditTextEditorBaseAction(
+                .HandleKeyboardEvent(new KeyboardEventTextEditorBaseAction(
                     textEditorCommandParameter.TextEditor.Key,
                     textEditorCommandParameter.CursorSnapshots,
                     new KeyboardEventArgs
@@ -64,10 +71,6 @@ public static class TextEditorCommandFacts
                         Key = KeyboardKeyFacts.MetaKeys.DELETE
                     },
                     CancellationToken.None));
-            
-            textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
         },
         "Cut",
         "defaults_cut");
@@ -75,61 +78,19 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Paste = new(
         async textEditorCommandParameter =>
         {
-            var primaryCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
-
             var clipboard = await textEditorCommandParameter
                 .ClipboardProvider
                 .ReadClipboard();
 
-            var previousCharacterWasCarriageReturn = false;
-
-            foreach (var character in clipboard)
-            {
-                if (previousCharacterWasCarriageReturn &&
-                    character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
-                {
-                    previousCharacterWasCarriageReturn = false;
-                    continue;
-                }
-
-                // Need innerCursorSnapshots because need
-                // after every loop of the foreach that the
-                // cursor snapshots are updated
-                var innerCursorSnapshots = new TextEditorCursorSnapshot[]
-                {
-                    new(
-                        primaryCursor),
-                }.ToImmutableArray();
-
-                var code = character switch
-                {
-                    '\r' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
-                    '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
-                    '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
-                    ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
-                    _ => character.ToString(),
-                };
-
-                textEditorCommandParameter.TextEditorService
-                    .EditTextEditor(
-                        new EditTextEditorBaseAction(
-                            textEditorCommandParameter.TextEditor.Key,
-                            innerCursorSnapshots,
-                            new KeyboardEventArgs
-                            {
-                                Code = code,
-                                Key = character.ToString(),
-                            },
-                            CancellationToken.None));
-
-                previousCharacterWasCarriageReturn =
-                    KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN
-                    == character;
-            }
-
-            textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
+            textEditorCommandParameter.TextEditorService.InsertText(
+                new InsertTextTextEditorBaseAction(
+                    textEditorCommandParameter.TextEditor.Key,
+                    new[]
+                    {
+                        textEditorCommandParameter.PrimaryCursorSnapshot,
+                    }.ToImmutableArray(),
+                    clipboard,
+                    CancellationToken.None));
         },
         "Paste",
         "defaults_paste",
@@ -139,9 +100,14 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Save = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter
+                .TextEditorDisplay
                 .OnSaveRequested?
                 .Invoke(
                     textEditorCommandParameter.TextEditor);
+            
+            textEditorCommandParameter.TextEditorService
+                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            
             return Task.CompletedTask;
         },
         "Save",
@@ -157,6 +123,10 @@ public static class TextEditorCommandFacts
 
             primaryCursor.TextEditorSelection.EndingPositionIndex =
                 textEditorCommandParameter.TextEditor.DocumentLength;
+            
+            textEditorCommandParameter.TextEditorService
+                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            
             return Task.CompletedTask;
         },
         "Select All",
@@ -164,11 +134,8 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand Undo = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter.TextEditor.UndoEdit();
-            
-            textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
+            textEditorCommandParameter.TextEditorService
+                .UndoEdit(textEditorCommandParameter.TextEditor.Key);
             
             return Task.CompletedTask;
         },
@@ -177,14 +144,23 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter.TextEditor.RedoEdit();
-            
-            textEditorCommandParameter
-                .ReloadVirtualizationDisplay
-                .Invoke();
-            
+            textEditorCommandParameter.TextEditorService
+                .RedoEdit(textEditorCommandParameter.TextEditor.Key);
+
             return Task.CompletedTask;
         },
         "Redo",
         "defaults_redo");
+    
+    public static readonly TextEditorCommand Remeasure = new(textEditorCommandParameter =>
+        {
+            textEditorCommandParameter.TextEditorDisplay.ShouldMeasureDimensions = true;
+            
+            textEditorCommandParameter.TextEditorService
+                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            
+            return Task.CompletedTask;
+        },
+        "Remeasure",
+        "defaults_remeasure");
 }

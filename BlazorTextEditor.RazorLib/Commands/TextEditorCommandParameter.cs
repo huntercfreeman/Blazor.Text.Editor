@@ -12,15 +12,13 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
         ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots,
         IClipboardProvider clipboardProvider,
         ITextEditorService textEditorService,
-        Action reloadVirtualizationDisplay,
-        Action<TextEditorBase>? onSaveRequested)
+        TextEditorDisplay textEditorDisplay)
     {
         TextEditor = textEditor;
         CursorSnapshots = cursorSnapshots;
         ClipboardProvider = clipboardProvider;
         TextEditorService = textEditorService;
-        ReloadVirtualizationDisplay = reloadVirtualizationDisplay;
-        OnSaveRequested = onSaveRequested;
+        TextEditorDisplay = textEditorDisplay;
     }
 
     public TextEditorBase TextEditor { get; }
@@ -31,6 +29,5 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
     public ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots { get; }
     public IClipboardProvider ClipboardProvider { get; }
     public ITextEditorService TextEditorService { get; }
-    public Action ReloadVirtualizationDisplay { get; }
-    public Action<TextEditorBase>? OnSaveRequested { get; }
+    public TextEditorDisplay TextEditorDisplay { get; }
 }

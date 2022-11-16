@@ -32,13 +32,13 @@ public class ThemeService : IThemeService
         _dispatcher.Dispatch(new DisposeThemeAction(themeKey));
     }
 
-    public void Dispose()
-    {
-        _themeStates.StateChanged -= ThemeStatesOnStateChanged;
-    }
-
     private void ThemeStatesOnStateChanged(object? sender, EventArgs e)
     {
         OnThemeStatesChanged?.Invoke();
+    }
+    
+    public void Dispose()
+    {
+        _themeStates.StateChanged -= ThemeStatesOnStateChanged;
     }
 }

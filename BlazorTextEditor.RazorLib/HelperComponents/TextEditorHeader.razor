@@ -1,9 +1,13 @@
 ﻿@using BlazorTextEditor.RazorLib.Row
 @using System.Collections.Immutable
 
+@inherits TextEditorView
+
 <div class="bte_text-editor-header @TextEditorService.GlobalThemeCssClassString">
     @{
-        if (_textEditorBase is not null)
+        var textEditor = TextEditorStatesSelection.Value;
+        
+        if (textEditor is not null)
         {
             var localHeaderButtonKinds = HeaderButtonKinds;
 
@@ -44,6 +48,7 @@
                         case TextEditorHeaderButtonKind.Undo:
                             <button title="@headerButtonKind.ToString()"
                                     class="bte_button"
+                                    disabled=@GetUndoDisabledAttribute()
                                     @onclick="DoUndoOnClick">
                                 <IconArrowLeft/>
                             </button>
@@ -51,6 +56,7 @@
                         case TextEditorHeaderButtonKind.Redo:
                             <button title="@headerButtonKind.ToString()"
                                     class="bte_button"
+                                    disabled=@GetRedoDisabledAttribute()
                                     @onclick="DoRedoOnClick">
                                 <IconArrowRight/>
                             </button>
@@ -72,12 +78,13 @@
                     }
                 </div>
             }
+            
             <div class="bte_text-editor-header-entry">
-                <button title="Refresh"
+                <button title="Measure editor size"
                         class="bte_button"
-                        @onclick="DoRefreshOnClick">
+                        @onclick="DoRemeasureOnClick">
                     
-                    <IconRefresh/>
+                    <IconSymbolRuler/>
                 </button>
             </div>
         }

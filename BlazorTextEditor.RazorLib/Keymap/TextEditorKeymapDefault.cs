@@ -40,8 +40,8 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         {
             command = keyboardEventArgs.Code switch
             {
-                KeyboardKeyFacts.WhitespaceCodes
-                    .SPACE_CODE => null,
+                KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE => 
+                    TextEditorCommandFacts.DoNothingDiscard,
                 _ => null,
             };
         }

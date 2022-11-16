@@ -4,26 +4,6 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Cursor;
 
-public class TextEditorCursorSnapshot
-{
-    public TextEditorCursorSnapshot(
-        TextEditorCursor userCursor)
-        : this(new ImmutableTextEditorCursor(userCursor), userCursor)
-    {
-    }
-
-    public TextEditorCursorSnapshot(
-        ImmutableTextEditorCursor immutableCursor,
-        TextEditorCursor userCursor)
-    {
-        ImmutableCursor = immutableCursor;
-        UserCursor = userCursor;
-    }
-
-    public ImmutableTextEditorCursor ImmutableCursor { get; }
-    public TextEditorCursor UserCursor { get; }
-}
-
 public class TextEditorCursor
 {
     public TextEditorCursor(bool isPrimaryCursor)
@@ -35,6 +15,7 @@ public class TextEditorCursor
         : this(isPrimaryCursor)
     {
         IndexCoordinates = rowAndColumnIndex;
+        PreferredColumnIndex = IndexCoordinates.columnIndex;
     }
 
     public (int rowIndex, int columnIndex) IndexCoordinates { get; set; }

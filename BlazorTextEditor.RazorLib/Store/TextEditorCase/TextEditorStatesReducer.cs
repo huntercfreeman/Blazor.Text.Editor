@@ -1,3 +1,4 @@
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
@@ -21,16 +22,130 @@ public class TextEditorStatesReducer
             TextEditorList = nextList,
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceForceRerenderAction(
+        TextEditorStates previousTextEditorStates,
+        ForceRerenderAction forceRerenderAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == forceRerenderAction.TextEditorKey);
 
+        var nextTextEditor = textEditor.PerformForceRerenderAction(forceRerenderAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+
+    [ReducerMethod]
+    public static TextEditorStates ReduceInsertTextTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == insertTextTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(insertTextTextEditorBaseAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceKeyboardEventTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == keyboardEventTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceDeleteTextByMotionTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == deleteTextByMotionTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByMotionTextEditorBaseAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceDeleteTextByRangeTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == deleteTextByRangeTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByRangeTextEditorBaseAction);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
     [ReducerMethod]
     public static TextEditorStates ReduceEditTextEditorBaseAction(
         TextEditorStates previousTextEditorStates,
-        EditTextEditorBaseAction editTextEditorBaseAction)
+        UndoEditAction undoEditAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == editTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.Key == undoEditAction.TextEditorKey);
 
-        var nextTextEditor = textEditor.PerformEditTextEditorAction(editTextEditorBaseAction);
+        var nextTextEditor = textEditor.UndoEdit();
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceEditTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        RedoEditAction redoEditAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == redoEditAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.RedoEdit();
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);

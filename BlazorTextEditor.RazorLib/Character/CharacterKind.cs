@@ -5,4 +5,5 @@ public enum CharacterKind
     LetterOrDigit,
     Whitespace,
     Punctuation,
+    Bad,
 }

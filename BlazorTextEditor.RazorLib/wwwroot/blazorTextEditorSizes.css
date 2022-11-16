@@ -1,6 +1,22 @@
 :root {
-    --bte_text-editor-footer-height: 1.8rem;
+    --bte_text-editor-footer-height: 2.2em;
     --bte_text-editor-footer-padding-left: 5px;
-    --bte_text-editor-header-height: 1.8rem;
+    --bte_text-editor-header-height: 2.2em;
     --bte_text-editor-header-padding-left: 5px;
+    --bte_dialog-display-toolbar-height: 2rem;
+    --bte_dialog-display-z-index: 10;
+    --bte_dialog-display-box-shadow-blur-radius: 2px;
+    --bte_dialog-display-button-entry-margin-right: 5px;
+    --bte_dialog-display-button-entry-padding: 3px;
+    --bte_drag-display-z-index: 30;
+    --bte_dropdown-display-default-background-box-shadow-blur-radius: 2px;
+    --bte_dropdown-display-z-index: 20;
+    --bte_menu-display-focus-outline-size: 2px;
+    --bte_menu-option-display-padding-width: 10px;
+    --bte_menu-option-display-focus-outline-size: 2px;
+    --bte_editor-tabs-bar-height: 2.6rem;
+    --bte_editor-tabs-bar-margin-bottom: 10px;
+    --bte_notification-display-z-index: 15;
+    --bte_notification-display-box-shadow-blur-radius: 2px;
+    --bte_notification-display-toolbar-height: 2rem;
 }

@@ -1,13 +1,16 @@
-﻿namespace BlazorTextEditor.RazorLib;
+﻿using BlazorTextEditor.RazorLib.Store.ThemeCase;
+
+namespace BlazorTextEditor.RazorLib;
 
 public class ImmutableTextEditorServiceOptions : ITextEditorServiceOptions
 {
-    public ImmutableTextEditorServiceOptions(TextEditorServiceOptions textEditorServiceOptions)
+    public ImmutableTextEditorServiceOptions(
+        TextEditorServiceOptions textEditorServiceOptions)
     {
         InitializeFluxor = textEditorServiceOptions.InitializeFluxor;
-        UseLocalStorageForSettings = textEditorServiceOptions.UseLocalStorageForSettings;
+        InitialTheme = textEditorServiceOptions.InitialTheme;
     }
 
     public bool InitializeFluxor { get; }
-    public bool UseLocalStorageForSettings { get; set; }
+    public Theme InitialTheme { get; set; }
 }

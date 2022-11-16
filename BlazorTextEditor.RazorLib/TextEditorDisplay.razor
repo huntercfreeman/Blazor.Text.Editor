@@ -3,16 +3,26 @@
 @using BlazorTextEditor.RazorLib.HelperComponents
 @using BlazorTextEditor.RazorLib.Row
 @using BlazorTextEditor.RazorLib.Virtualization
+@using System.Collections.Immutable
+@using BlazorTextEditor.RazorLib.TextEditor
+
+@inherits TextEditorView
+
 <div style="@GlobalFontSizeInPixelsStyling @StyleCssString"
-     class="@GlobalThemeCssClassString @ClassCssString">
+     class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
+
+    <TextEditorHeader TextEditorKey="TextEditorKey"
+                      TextEditorDisplay="this"
+                      HeaderButtonKinds="HeaderButtonKinds"/>
 
     <div @ref="_textEditorDisplayElementReference"
-         @onclick="FocusTextEditorOnClickAsync"
+         @onclick="FocusTextEditorAsync"
          @onkeydown="HandleOnKeyDownAsync"
          @onkeydown:preventDefault="true"
          @oncontextmenu="HandleOnContextMenuAsync"
          @oncontextmenu:preventDefault="true"
-         class="bte_text-editor">
+         class="bte_text-editor"
+         tabindex="-1">
 
         <div class="bte_text-editor-content bte_unselectable"
              id="@TextEditorContentId"
@@ -166,15 +176,41 @@
                         <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                                  TextEditorCursor="PrimaryCursor"
                                                  CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
-                                                 TextEditor="textEditor"
+                                                 TextEditorKey="TextEditorKey"
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
-                                                 TabIndex="TabIndex"
-                                                 OnContextMenuRenderFragment="OnContextMenuRenderFragment"
-                                                 AutoCompleteMenuRenderFragment="AutoCompleteMenuRenderFragment"/>
+                                                 TabIndex="TabIndex">
+
+                            <OnContextMenuRenderFragment>
+                                @if (OnContextMenuRenderFragment is not null)
+                                {
+                                }
+                                else
+                                {
+                                    @* This is the default context menu *@
+                                    <TextEditorContextMenu TextEditor="textEditor"
+                                                           TextEditorDisplay="this"/>
+                                }
+                            </OnContextMenuRenderFragment>
+                            <AutoCompleteMenuRenderFragment>
+                                @if (AutoCompleteMenuRenderFragment is not null)
+                                {
+                                }
+                                else
+                                {
+                                    @* This is the default autocomplete menu *@
+                                    <TextEditorAutocompleteMenu TextEditorKey="TextEditorKey"
+                                                                TextEditorDisplay="this"/>
+                                }
+                            </AutoCompleteMenuRenderFragment>
+                        </TextEditorCursorDisplay>
                     }
                 }
             }
         </div>
     </div>
+
+    <TextEditorFooter TextEditorKey="TextEditorKey"
+                      TextEditorDisplay="this"
+                      FileExtension="@FileExtension"/>
 </div>
