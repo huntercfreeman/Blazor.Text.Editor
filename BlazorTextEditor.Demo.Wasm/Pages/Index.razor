@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using BlazorTextEditor.RazorLib
+@using BlazorTextEditor.RazorLib.TextEditor
 
 <PageTitle>Index</PageTitle>
 
@@ -7,3 +9,18 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?"/>
+
+@code {
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    
+    private static readonly TextEditorKey IndexTextEditor = TextEditorKey.NewTextEditorKey();
+
+    protected override void OnInitialized()
+    {
+        TextEditorService.RegisterCSharpTextEditor();
+        
+        base.OnInitialized();
+    }
+
+}
