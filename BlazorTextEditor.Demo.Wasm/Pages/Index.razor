@@ -10,15 +10,20 @@ Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?"/>
 
+<TextEditorDisplay TextEditorKey="IndexTextEditorKey"/>
+
 @code {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     
-    private static readonly TextEditorKey IndexTextEditor = TextEditorKey.NewTextEditorKey();
+    private static readonly TextEditorKey IndexTextEditorKey = 
+        TextEditorKey.NewTextEditorKey();
 
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterCSharpTextEditor();
+        TextEditorService.RegisterCSharpTextEditor(
+            IndexTextEditorKey,
+            string.Empty);
         
         base.OnInitialized();
     }
