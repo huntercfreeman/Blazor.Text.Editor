@@ -74,3 +74,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Exception was being thrown when user selected the last character of the document and then pressed ArrowRight.
     - This bug was occurring starting 3.2.0
+
+## [5.0.0]
+
+### Added
+
+- Razor Syntax Highlighting
+- Automatic LocalStorage integration (Optional)
+    - int? FontSizeInPixels
+    - Theme? Theme
+    - bool? ShowWhitespace
+    - bool? ShowNewlines
+- Helper Components
+    - TreeViewFooter.razor
+    - TextEditorInputFontSize.razor
+    - TextEditorInputShowNewLines.razor
+    - TextEditorInputShowWhitespace.razor
+    - TextEditorInputTheme.razor
+- Text Manipulation
+  - When text is selected typing a character will delete the selection before inserting the character.
+- Text Selection
+  - { Shift + LeftClick } will move the
+        text selection ending position index
+        to the clicked position. If the user does not have a text selection anchor set, the text selection anchor is set to where the cursor is prior to the movement. Then the text selecting ending position is the clicked position and in between the two points gets selected.
+  - DoubleClick will expand select at the
+      double-clicked position. In otherwords
+      double clicking a word will now select that
+      word.
+- Cursor movement
+    - If the cursor is not in the viewable area upon an OnMouseDown event, the TextEditorDisplay will no longer do a jarring scroll bug.
+- Fix the JavaScript disposing of IntersectionObservers
+- Keymap
+    - { Ctrl + X } -> cut
+    - { Ctrl + Z } -> undo
+    - { Ctrl + Y } -> redo
+- Blazor Component Parameter changes
+    - TextEditorDisplay can be given
+        the TextEditorKey of a yet to be registered
+        TextEditorBase. The component will then render on its own once the TextEditorKey gets registered.
+    - Only a TextEditorKey is required to be passed in to a TextEditorDisplay. Everything else will be done internally.
+    - One can modify default behavior through the various other Blazor parameters other than the TextEditorKey. The others are used for customization.
+- Theme changes
+  - The 'Unset' theme is now a Visual Studio Dark Clone
+  - Removed BlazorTextEditor custom themes
+  - Only Unset, Visual Studio Dark Clone, and Visual Studio Light Clone remain.
+- { Ctrl + C } to Copy no longer results in  one losing focus
+- Allow the user to set the initial theme when invoking AddBlazorTextEditor() service collection extension method.
+- BUG: Cut selection on content that starts with column index 0 will put cursor at column index -1
+- Out of the box static settings dialog component containing all the individual Setting helper components.
+- Control + Backspace
+- Control + Delete
+- Fix the Constants for punctuation to no longer be missing some.
+- Change light theme caret row color
+- Fix GetColumnIndexOfCharacterWithDifferingKind() index out of range
+- Default context menu
+  - Cut
+  - Copy
+  - Paste
+- TextEditorHeader.razor Blazor component's buttons.
+    - Undo
+    - Redo
+    - Cut
+    - Copy
+    - Paste
+    - Save
+    - Select All
+    - Refresh
+- Move over all Analysis code (the ILexers and IDecorationMappers) to BlazorTextEditor
+    - Not enough analysis logic exists to justify the extra step of installing a separate nuget package.
+- Move over some code from BlazorStudio to the BlazorTextEditor
+    - CustomEvents
+    - Dimensions
+    - Dropdown
+    - Menu
+    - OutOfBoundsClick
+    - Resize
+    - Notifications
+- Move over some code from BlazorTreeView  to the BlazorTextEditor
+- When cursor accesses out of bounds location return largest available RowIndex and largest available ColumnIndex
+- Virtualization move to separate files the many classes in one
+- Move rerender logic to the reducer having a replaced value needing rendered. Instead of manually.
+- Make TextEditorView to be a base class for all Blazor components wanting to be notified of re instantiations of their given TextEditorKey's TextEditorBase
+- Visual Indicator whether TextEditorDisplay has focus
+- Disabled button background color change
+- Added AutocompleteIndexer.cs
+- Index on whitespace, and punctuation.
+- Look for autocomplete results when user types a LetterOrDigit
+- Register methods for common TextEditorBase uses cases like C# and Razor
+- { Ctrl + Space } -> bring up auto complete menu
+- ArrowDown or ArrowUp to set focus to autocomplete menu if it is open
+- Esc to close AutocompleteMenu when focusing it
+- Fix out of bounds error when deleting after selecting all
+- Bug fix: Pasting carriage return will now paste the LineEnding being used in the TextEditor instead of being treated as two separate newline characters.
+- Throttle syntax highlighting 1 second
+- 50 ms on mouse move throttle
+- 
