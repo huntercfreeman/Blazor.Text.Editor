@@ -75,6 +75,13 @@ window.blazorTextEditor = {
     measureCharacterWidthAndRowHeight: function (elementId, amountOfCharactersRendered) {
         let element = document.getElementById(elementId);
 
+        if (!element) {
+            return {
+                CharacterWidthInPixels: 5,
+                RowHeightInPixels: 5
+            }
+        }
+        
         let fontWidth = element.offsetWidth / amountOfCharactersRendered;
 
         return {
