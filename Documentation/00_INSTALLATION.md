@@ -25,7 +25,7 @@ The following is a gif of me installing the NuGet Package
 
 In my C# Project services are registered in Program.cs
 
-Go to the file that you register your services and add the following line of C# code.
+Go to the file that you register your services and add the following lines of C# code.
 
 ```csharp
 using BlazorTextEditor.RazorLib;
