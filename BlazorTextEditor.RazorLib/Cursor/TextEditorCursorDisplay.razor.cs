@@ -48,6 +48,8 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var textEditor = TextEditorStatesSelection.Value;
+        
         if (firstRender)
         {
             if (IsFocusTarget)
@@ -58,6 +60,34 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     ScrollableContainerId,
                     TextEditorCursorDisplayId);
             }
+        }
+
+        if (textEditor is null)
+        {
+            TextEditorCursor.IndexCoordinates = (0, 0);
+        }
+        else
+        {
+            var rowIndex = TextEditorCursor.IndexCoordinates.rowIndex;
+
+            if (rowIndex > textEditor.RowCount - 1)
+            {
+                rowIndex = textEditor.RowCount - 1;
+            }
+            
+            var columnIndex = TextEditorCursor.IndexCoordinates.columnIndex;
+
+            var rowLength = textEditor.GetLengthOfRow(rowIndex);
+
+            if (columnIndex > rowLength)
+            {
+                columnIndex = rowLength - 1;
+            }
+
+            rowIndex = Math.Max(0, rowIndex);
+            columnIndex = Math.Max(0, columnIndex);
+            
+            TextEditorCursor.IndexCoordinates = (rowIndex, columnIndex);
         }
 
         if (TextEditorCursor.ShouldRevealCursor)

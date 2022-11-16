@@ -1129,9 +1129,10 @@ public partial class TextEditorDisplay : TextEditorView
         
     private bool IsAutocompleteMenuInvoker(KeyboardEventArgs keyboardEventArgs)
     {
-        // Is {Ctrl + Space} or LetterOrDigit
+        // Is {Ctrl + Space} or LetterOrDigit was hit without Ctrl being held
         return (keyboardEventArgs.CtrlKey && keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE) ||
-               (!KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
+               (!keyboardEventArgs.CtrlKey &&
+                !KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
                 !KeyboardKeyFacts.IsMetaKey(keyboardEventArgs));
     }
     

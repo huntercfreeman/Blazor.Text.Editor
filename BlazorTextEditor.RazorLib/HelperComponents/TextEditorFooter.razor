@@ -32,9 +32,9 @@
             if (TextEditorDisplay is not null)
             {
                 <div class="bte_text-editor-footer-entry">
-                    Ln:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.rowIndex}")
+                    Ln:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.rowIndex + 1}")
                     &nbsp;
-                    Col:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.columnIndex}")
+                    Col:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.columnIndex + 1}")
                 </div>
             }
 
