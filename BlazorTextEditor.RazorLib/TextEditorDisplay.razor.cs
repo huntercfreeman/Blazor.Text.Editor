@@ -144,6 +144,9 @@ public partial class TextEditorDisplay : TextEditorView
     private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromSeconds(1);
     private int _skippedSyntaxHighlightingEventCount;
     
+    private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
+    private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(50);
+        
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
@@ -564,35 +567,50 @@ public partial class TextEditorDisplay : TextEditorView
     /// <param name="mouseEventArgs"></param>
     private async Task HandleContentOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
+        var success = await _onMouseMoveSemaphoreSlim
+            .WaitAsync(TimeSpan.Zero);
 
-        if (safeTextEditorReference is null)
+        if (!success)
             return;
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
-
-        // Buttons is a bit flag
-        // '& 1' gets if left mouse button is held
-        if (_thinksLeftMouseButtonIsDown &&
-            (mouseEventArgs.Buttons & 1) == 1)
+        try
         {
-            var rowAndColumnIndex =
-                await DetermineRowAndColumnIndex(mouseEventArgs);
+            var safeTextEditorReference = MutableReferenceToTextEditor;
 
-            primaryCursorSnapshot.UserCursor.IndexCoordinates =
-                (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-            primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
-                rowAndColumnIndex.columnIndex;
+            if (safeTextEditorReference is null)
+                return;
 
-            _textEditorCursorDisplay?.PauseBlinkAnimation();
+            var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
-            primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
-                safeTextEditorReference
-                    .GetCursorPositionIndex(
-                        new TextEditorCursor(rowAndColumnIndex, false));
+            // Buttons is a bit flag
+            // '& 1' gets if left mouse button is held
+            if (_thinksLeftMouseButtonIsDown &&
+                (mouseEventArgs.Buttons & 1) == 1)
+            {
+                var rowAndColumnIndex =
+                    await DetermineRowAndColumnIndex(mouseEventArgs);
+
+                primaryCursorSnapshot.UserCursor.IndexCoordinates =
+                    (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+                primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
+                    rowAndColumnIndex.columnIndex;
+
+                _textEditorCursorDisplay?.PauseBlinkAnimation();
+
+                primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
+                    safeTextEditorReference
+                        .GetCursorPositionIndex(
+                            new TextEditorCursor(rowAndColumnIndex, false));
+            }
+            else
+                _thinksLeftMouseButtonIsDown = false;
+                
+            await Task.Delay(_onMouseMoveDelay);
         }
-        else
-            _thinksLeftMouseButtonIsDown = false;
+        finally
+        {
+            _onMouseMoveSemaphoreSlim.Release();
+        }
     }
 
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(
