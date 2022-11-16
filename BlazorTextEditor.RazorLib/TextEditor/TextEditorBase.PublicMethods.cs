@@ -126,7 +126,10 @@ public partial class TextEditorBase
 
     public TextEditorBase PerformEditTextEditorAction(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
     {
-        foreach (var character in insertTextTextEditorBaseAction.Content)
+        var localContent = insertTextTextEditorBaseAction.Content
+            .Replace("\r\n", "\n");
+        
+        foreach (var character in localContent)
         {
             // TODO: This needs to be rewritten everything should be inserted at the same time not a foreach loop insertion for each character
             //
@@ -200,7 +203,7 @@ public partial class TextEditorBase
     public TextEditorBase PerformEditTextEditorAction(
         DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
     {
-        // TODO: This needs to be rewritten everything should be deleted at the same time not a foreach loop insertion for each character
+        // TODO: This needs to be rewritten everything should be deleted at the same time not a foreach loop for each character
         for (var i = 0; i < deleteTextByRangeTextEditorBaseAction.Count; i++)
         {
             // Need innerCursorSnapshots because need
