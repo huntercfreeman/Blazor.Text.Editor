@@ -89,3 +89,5 @@ at the top of the file add the following Razor markup
 The following is a gif of me rendering the `<BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/>` Blazor component in App.razor
 
 ![Render the Initializer component](/Images/Gifs/00_initializer-component.gif)
+
+# Next tutorial: [Usage](/Documentation/10_USAGE.md)
