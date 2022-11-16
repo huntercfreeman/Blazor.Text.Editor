@@ -47,6 +47,15 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
         if (KeyboardKeyFacts.MetaKeys.ESCAPE == keyboardEventArgs.Key)
             await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
     }
+    
+    private void ReturnFocusToThis()
+    {
+        _ = Task.Run(async () =>
+        {
+            await SetShouldDisplayMenuAsync
+                .Invoke(TextEditorMenuKind.None, true);
+        });
+    }
 
     private MenuRecord GetMenuRecord()
     {
