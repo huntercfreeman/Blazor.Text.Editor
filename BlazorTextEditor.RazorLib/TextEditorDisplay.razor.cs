@@ -1080,7 +1080,13 @@ public partial class TextEditorDisplay : TextEditorView
             }
         }
         
-        if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
+        if (IsAutocompleteMenuInvoker(keyboardEventArgs))
+        {
+            await setTextEditorMenuKind.Invoke(
+                TextEditorMenuKind.AutoCompleteMenu, 
+                true);
+        }
+        else if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
         {
             var success = await _afterOnKeyDownSyntaxHighlightingSemaphoreSlim
                 .WaitAsync(TimeSpan.Zero);
@@ -1098,12 +1104,6 @@ public partial class TextEditorDisplay : TextEditorView
             {
                 _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
             }
-        }
-        else if (IsAutocompleteMenuInvoker(keyboardEventArgs))
-        {
-            await setTextEditorMenuKind.Invoke(
-                TextEditorMenuKind.AutoCompleteMenu, 
-                true);
         }
     }
     
@@ -1132,8 +1132,9 @@ public partial class TextEditorDisplay : TextEditorView
     /// </summary>
     private bool IsAutocompleteIndexerInvoker(KeyboardEventArgs keyboardEventArgs)
     {
-        return KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
-               KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First());
+        return (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
+               KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
+                !keyboardEventArgs.CtrlKey;
     }
 
     protected override void Dispose(bool disposing)
