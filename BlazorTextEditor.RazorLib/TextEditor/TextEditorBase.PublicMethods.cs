@@ -334,6 +334,9 @@ public partial class TextEditorBase
                 rowIndex)
             .positionIndex;
 
+        if (rowIndex >= _rowEndingPositions.Count - 1)
+            return -1;
+        
         var lastPositionIndexOnRow = _rowEndingPositions[rowIndex].positionIndex - 1;
 
         var positionIndex = GetPositionIndex(rowIndex, columnIndex);
