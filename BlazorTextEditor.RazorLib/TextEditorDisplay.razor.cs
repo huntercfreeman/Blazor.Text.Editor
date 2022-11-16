@@ -90,7 +90,7 @@ public partial class TextEditorDisplay : TextEditorView
     /// <see cref="HeaderButtonKinds"/> contains
     /// the enum value that represents a button displayed
     /// in the <see cref="TextEditorHeader"/>.
-    /// <br/></br>
+    /// <br/><br/>
     /// The <see cref="TextEditorHeader"/> is only displayed if
     /// <see cref="IncludeHeaderHelperComponent"/> is set to true.
     /// </summary>

@@ -7,5 +7,9 @@
      class="bstudio_text-editor-context-menu"
      @onkeydown="HandleOnKeyDownAsync">
 
-    <MenuDisplay MenuRecord="GetMenuRecord()"/>
+    <CascadingValue Name="ReturnFocusToParentAction"
+                    Value="new Action(ReturnFocusToThis)">
+        
+        <MenuDisplay MenuRecord="GetMenuRecord()"/>
+    </CascadingValue>
 </div>

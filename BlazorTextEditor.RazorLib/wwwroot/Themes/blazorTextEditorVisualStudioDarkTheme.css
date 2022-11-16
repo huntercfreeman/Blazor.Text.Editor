@@ -3,7 +3,8 @@
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
     --bte_text-selection-background-color: #245B82;
     --bte_body-background-color: #1E1E1E;
-    --bte_text-editor-caret-row-border-color: #977400;
+    --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);;
+    --bte_text-editor-caret-row-border-color-editor-focus-within: #977400;
     --bte_newline-foreground-color: #4e9a41;
     --bte_newline-background-color: #424242;
     --bte_method-foreground-color: #DCDCAA;

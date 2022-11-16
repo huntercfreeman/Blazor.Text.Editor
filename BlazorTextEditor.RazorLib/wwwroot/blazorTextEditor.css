@@ -71,7 +71,7 @@
 
 .bte_text-editor-cursor {
     position: absolute;
-    width: 2px;
+    width: 0;
     display: inline-block;
     background-color: var(--bte_text-editor-cursor-foreground-color);
     margin: 0;
@@ -82,11 +82,21 @@
     overflow: hidden;
 }
 
+.bte_text-editor:focus-within .bte_text-editor-cursor {
+    width: 2px;
+}
+
 .bte_text-editor-caret-row {
-    border: 2px solid var(--bte_text-editor-caret-row-border-color);
+    border-width: 2px;
+    border-style: solid;
+    border-color: var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
     position: absolute;
     left: 0;
     min-width: 100%;
+}
+
+.bte_text-editor:focus-within .bte_text-editor-caret-row {
+    border-color: var(--bte_text-editor-caret-row-border-color-editor-focus-within);
 }
 
 .bte_text-editor-context-menu {
