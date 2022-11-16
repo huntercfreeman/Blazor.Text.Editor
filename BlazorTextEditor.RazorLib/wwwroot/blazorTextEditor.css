@@ -1,9 +1,9 @@
 .bte_text-editor-css-wrapper {
-    height: 250px;
+    height: calc(300px + var(--bte_text-editor-header-height) + var(--bte_text-editor-footer-height));
 }
 
 .bte_text-editor {
-    height: 100%;
+    height: calc(100% - var(--bte_text-editor-header-height) - var(--bte_text-editor-footer-height));
     color: var(--bte_primary-font-color);
     background-color: var(--bte_body-background-color);
 }

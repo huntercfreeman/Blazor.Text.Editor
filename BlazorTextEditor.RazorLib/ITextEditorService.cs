@@ -76,6 +76,21 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorHtmlLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
+    /// </summary>
+    public void RegisterHtmlTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null);
+    /// <summary>
+    /// Constructs a new <see cref="TextEditorBase"/> using the
+    /// <see cref="TextEditorKey"/> provided. The text editor will
+    /// render with the <see cref="initialContent"/> provided.
+    /// <see cref="ITextEditorKeymap"/> is optional and it is likely
+    /// that one would prefer leaving it null as this will result
+    /// in the default keymap being used.
+    /// <br/><br/>
     /// Used <see cref="ILexer"/>: <see cref="TextEditorRazorLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
     /// </summary>
@@ -91,10 +106,25 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorHtmlLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
+    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
     /// </summary>
-    public void RegisterHtmlTextEditor(
+    public void RegisterJavaScriptTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null);
+    /// <summary>
+    /// Constructs a new <see cref="TextEditorBase"/> using the
+    /// <see cref="TextEditorKey"/> provided. The text editor will
+    /// render with the <see cref="initialContent"/> provided.
+    /// <see cref="ITextEditorKeymap"/> is optional and it is likely
+    /// that one would prefer leaving it null as this will result
+    /// in the default keymap being used.
+    /// <br/><br/>
+    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
+    /// </summary>
+    public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);

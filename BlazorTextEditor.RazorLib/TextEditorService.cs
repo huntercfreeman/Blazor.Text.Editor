@@ -78,6 +78,30 @@ public class TextEditorService : ITextEditorService
             new TextEditorCSharpDecorationMapper(),
             null,
             textEditorKey);
+
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+    
+    public void RegisterHtmlTextEditor(TextEditorKey textEditorKey, string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            new TextEditorHtmlLexer(),
+            new TextEditorHtmlDecorationMapper(),
+            null,
+            textEditorKey);
+        
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
         
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
@@ -93,24 +117,57 @@ public class TextEditorService : ITextEditorService
             null,
             textEditorKey);
         
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
-    }
-
-    public void RegisterHtmlTextEditor(TextEditorKey textEditorKey, string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
-    {
-        var textEditorBase = new TextEditorBase(
-            initialContent,
-            new TextEditorHtmlLexer(),
-            new TextEditorHtmlDecorationMapper(),
-            null,
-            textEditorKey);
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
         
         _dispatcher.Dispatch(
             new RegisterTextEditorBaseAction(textEditorBase));
     }
 
+    public void RegisterJavaScriptTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            null,
+            null,
+            null,
+            textEditorKey);
+        
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+    
+    public void RegisterTypeScriptTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            null,
+            null,
+            null,
+            textEditorKey);
+        
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+    
     public void RegisterPlainTextEditor(TextEditorKey textEditorKey, string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
