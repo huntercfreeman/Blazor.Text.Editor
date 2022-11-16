@@ -36,7 +36,8 @@
 
                         <MenuOptionDisplay MenuOptionRecord="@menuOption"
                                            ActiveMenuOptionRecordIndex="@_activeMenuOptionRecordIndex"
-                                           Index="cumulativeIndex++"/>
+                                           Index="cumulativeIndex++"
+                                           IconRenderFragment="IconRenderFragment"/>
                     }
 
                     if (groupIndex != groups.Count - 1)
@@ -54,7 +55,8 @@
 
                     <MenuOptionDisplay MenuOptionRecord="@menuOption"
                                        ActiveMenuOptionRecordIndex="@_activeMenuOptionRecordIndex"
-                                       Index="index"/>
+                                       Index="index"
+                                       IconRenderFragment="IconRenderFragment"/>
                 }
             }
         }

@@ -8,7 +8,12 @@
      @onclick:stopPropagation="true"
      @onkeydown="HandleOnKeyDown"
      @onkeydown:preventDefault="true">
-
+    
+    @if (IconRenderFragment is not null)
+    {
+        @IconRenderFragment(MenuOptionRecord)
+    }
+    
     @MenuOptionRecord.DisplayName
 
     @if (MenuOptionRecord.SubMenu is not null)

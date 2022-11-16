@@ -19,6 +19,8 @@ public partial class MenuOptionDisplay : ComponentBase
     public int Index { get; set; }
     [Parameter, EditorRequired]
     public int ActiveMenuOptionRecordIndex { get; set; }
+    [Parameter]
+    public RenderFragment<MenuOptionRecord>? IconRenderFragment { get; set; }
     
     private readonly DropdownKey _subMenuDropdownKey = DropdownKey.NewDropdownKey();
     private ElementReference? _menuOptionDisplayElementReference;

@@ -24,6 +24,8 @@ public partial class MenuDisplay : ComponentBase
     public bool GroupByMenuOptionKind { get; set; } = true;
     [Parameter]
     public bool FocusOnAfterRenderAsync { get; set; } = true;
+    [Parameter]
+    public RenderFragment<MenuOptionRecord>? IconRenderFragment { get; set; }
 
     private ElementReference? _menuDisplayElementReference;
     
