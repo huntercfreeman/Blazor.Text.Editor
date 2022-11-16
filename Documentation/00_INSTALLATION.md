@@ -66,7 +66,7 @@ The following is a gif of me referencing the CSS
 
 In my C# Project JavaScript files are referenced from wwwroot/index.html
 
-Go to the file that you reference JavaScript files from and add the following JavaScript references below the Blazor framework JavaScript reference
+Go to the file that you reference JavaScript files from and add the following JavaScript reference below the Blazor framework JavaScript reference
 
 ```html
     <!-- Blazor.Text.Editor | Required JavaScript -->
