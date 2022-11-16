@@ -140,9 +140,10 @@ public partial class TextEditorDisplay : TextEditorView
     [Parameter]
     public bool IncludeDefaultAutocompleteMenu { get; set; } = true;
 
-    // TODO: Add a minimum throttle delay
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
-
+    private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromSeconds(1);
+    private int _skippedSyntaxHighlightingEventCount;
+    
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
@@ -1103,18 +1104,38 @@ public partial class TextEditorDisplay : TextEditorView
                 .WaitAsync(TimeSpan.Zero);
 
             if (!success)
+            {
+                _skippedSyntaxHighlightingEventCount++;
                 return;
+            }
 
             try
             {
-                await textEditor.ApplySyntaxHighlightingAsync();
+                do
+                {
+                    await textEditor.ApplySyntaxHighlightingAsync();
 
-                await InvokeAsync(StateHasChanged);
+                    await InvokeAsync(StateHasChanged);
+
+                    await Task.Delay(_afterOnKeyDownSyntaxHighlightingDelay);
+                } while (StartSyntaxHighlightEventIfHasSkipped());
             }
             finally
             {
                 _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
             }
+        }
+
+        bool StartSyntaxHighlightEventIfHasSkipped()
+        {
+            if (_skippedSyntaxHighlightingEventCount > 0)
+            {
+                _skippedSyntaxHighlightingEventCount = 0;
+                
+                return true;
+            }
+
+            return false;
         }
     }
     
