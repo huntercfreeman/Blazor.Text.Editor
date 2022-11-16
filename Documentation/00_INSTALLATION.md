@@ -49,7 +49,7 @@ Go to the file that you reference CSS files from and add the following CSS refer
     <!-- Blazor.Text.Editor | Required CSS -->
     <link href="_content/Blazor.Text.Editor/blazorTextEditorSizes.css" rel="stylesheet"/>
     
-    <!-- Blazor.Text.Editor | Theme: Default (is same as Visual Studio Dark Clone) -->
+    <!-- Blazor.Text.Editor | Theme: Default (is at :root level no CSS class needede) -->
     <link href="_content/Blazor.Text.Editor/blazorTextEditorDefaultColors.css" rel="stylesheet"/>
     
     <!-- Blazor.Text.Editor | Theme: Visual Studio Dark Clone  -->
