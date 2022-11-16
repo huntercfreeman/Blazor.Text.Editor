@@ -3,10 +3,7 @@
 ## Installation and Setup
 
 ### Goal
-- This tutorial will use the default Blazor ServerSide template.
-- A button is put on the Index.razor page. When this button is clicked a text editor instance will be registered by invoking [TextEditorService.RegisterTextEditor](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/TextEditorService.cs)
-- By means of subscribing to the `EventHandler` [TextEditorService.OnTextEditorStatesChanged](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/TextEditorService.cs) the Index.razor will be notified to re-render whenever a text editor instance is either registered or disposed.
-- There is a foreach() loop in the Index.razor markup that renders a [TextEditorDisplay](https://github.com/huntercfreeman/BlazorTextEditorNugetPackage/blob/dev-version-1.1.0/BlazorTextEditor.RazorLib/TextEditorDisplay.razor.cs) foreach of the registered text editor instances.
+- 
 
 ### Steps
 - Add a NuGet package reference to `Blazor.Text.Editor`

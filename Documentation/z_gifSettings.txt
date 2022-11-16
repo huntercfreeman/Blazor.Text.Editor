@@ -1,0 +1,9 @@
+fps: 15
+width: 1280px
+height: 1000px
+OS: Windows
+Font Scaling: 170%
+
+Theme: Cobalt2 (trying to make the gifs
+    not look like they are part of github.com
+    due to color theme matching it looks odd.)
