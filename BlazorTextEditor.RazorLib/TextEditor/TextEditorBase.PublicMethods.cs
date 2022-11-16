@@ -26,10 +26,10 @@ public partial class TextEditorBase
     {
         if (rowIndex >= _rowEndingPositions.Count - 1)
             rowIndex = _rowEndingPositions.Count - 1;
-        
+
         if (rowIndex > 0)
             return _rowEndingPositions[rowIndex - 1];
-        
+
         return (0, RowEndingKind.StartOfFile);
     }
 
@@ -108,8 +108,9 @@ public partial class TextEditorBase
     {
         return new TextEditorBase(this);
     }
-    
-    public TextEditorBase PerformEditTextEditorAction(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+
+    public TextEditorBase PerformEditTextEditorAction(
+        KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
     {
         if (KeyboardKeyFacts.IsMetaKey(keyboardEventTextEditorBaseAction.KeyboardEventArgs))
         {
@@ -122,7 +123,7 @@ public partial class TextEditorBase
 
         return new TextEditorBase(this);
     }
-    
+
     public TextEditorBase PerformEditTextEditorAction(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
     {
         foreach (var character in insertTextTextEditorBaseAction.Content)
@@ -135,8 +136,8 @@ public partial class TextEditorBase
             var innerCursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
                     insertTextTextEditorBaseAction.CursorSnapshots
-                            .Select(x => x.UserCursor)
-                            .ToArray())
+                        .Select(x => x.UserCursor)
+                        .ToArray())
                 .ToImmutableArray();
 
             var code = character switch
@@ -149,23 +150,24 @@ public partial class TextEditorBase
             };
 
             var keyboardEventTextEditorBaseAction =
-                    new KeyboardEventTextEditorBaseAction(
-                        insertTextTextEditorBaseAction.TextEditorKey,
-                        innerCursorSnapshots,
-                        new KeyboardEventArgs
-                        {
-                            Code = code,
-                            Key = character.ToString(),
-                        },
-                        CancellationToken.None);
+                new KeyboardEventTextEditorBaseAction(
+                    insertTextTextEditorBaseAction.TextEditorKey,
+                    innerCursorSnapshots,
+                    new KeyboardEventArgs
+                    {
+                        Code = code,
+                        Key = character.ToString(),
+                    },
+                    CancellationToken.None);
 
             PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
         }
-        
+
         return new TextEditorBase(this);
     }
-    
-    public TextEditorBase PerformEditTextEditorAction(DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+
+    public TextEditorBase PerformEditTextEditorAction(
+        DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
     {
         var keyboardEventArgs = deleteTextByMotionTextEditorBaseAction.MotionKind switch
         {
@@ -182,7 +184,7 @@ public partial class TextEditorBase
                 $" {deleteTextByMotionTextEditorBaseAction.MotionKind}" +
                 " was not recognized.")
         };
-        
+
         var keyboardEventTextEditorBaseAction =
             new KeyboardEventTextEditorBaseAction(
                 deleteTextByMotionTextEditorBaseAction.TextEditorKey,
@@ -194,8 +196,9 @@ public partial class TextEditorBase
 
         return new TextEditorBase(this);
     }
-    
-    public TextEditorBase PerformEditTextEditorAction(DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+
+    public TextEditorBase PerformEditTextEditorAction(
+        DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
     {
         // TODO: This needs to be rewritten everything should be deleted at the same time not a foreach loop insertion for each character
         for (var i = 0; i < deleteTextByRangeTextEditorBaseAction.Count; i++)
@@ -209,7 +212,7 @@ public partial class TextEditorBase
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
-            
+
             var keyboardEventTextEditorBaseAction =
                 new KeyboardEventTextEditorBaseAction(
                     deleteTextByRangeTextEditorBaseAction.TextEditorKey,
@@ -312,7 +315,7 @@ public partial class TextEditorBase
 
         return (0, 0, _rowEndingPositions[0]);
     }
-    
+
     /// <summary>
     /// <see cref="moveBackwards"/> is to mean earlier in the document
     /// (lower column index or lower row index depending on position) 
@@ -401,17 +404,17 @@ public partial class TextEditorBase
         EditBlockIndex = 0;
         _editBlocksPersisted.Clear();
     }
-    
+
     public bool CanUndoEdit()
     {
         return EditBlockIndex > 0;
     }
-    
+
     public bool CanRedoEdit()
     {
         return EditBlockIndex < _editBlocksPersisted.Count - 1;
     }
-    
+
     /// <summary>
     /// The "if (EditBlockIndex == _editBlocksPersisted.Count)"
     /// <br/><br/>
@@ -425,41 +428,41 @@ public partial class TextEditorBase
     /// </summary>
     public TextEditorBase UndoEdit()
     {
-        if (!CanUndoEdit()) 
+        if (!CanUndoEdit())
             return this;
-        
+
         if (EditBlockIndex == _editBlocksPersisted.Count)
         {
             // If the edit block is pending then persist it
             // before reverting back to the previous persisted edit block.
-                
+
             EnsureUndoPoint(TextEditKind.ForcePersistEditBlock);
             EditBlockIndex--;
         }
-            
+
         EditBlockIndex--;
 
         var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
-            
+
         SetContent(restoreEditBlock.ContentSnapshot);
-        
+
         return new TextEditorBase(this);
     }
-    
+
     public TextEditorBase RedoEdit()
     {
         if (!CanRedoEdit())
             return this;
-        
+
         EditBlockIndex++;
 
         var restoreEditBlock = _editBlocksPersisted[EditBlockIndex];
-            
+
         SetContent(restoreEditBlock.ContentSnapshot);
 
         return new TextEditorBase(this);
     }
-    
+
     public CharacterKind GetCharacterKindAt(int positionIndex)
     {
         try
@@ -470,11 +473,47 @@ public partial class TextEditorBase
         {
             // The text editor's cursor is is likely
             // to have this occur at times
-            
+
             if (_content.Any())
                 return _content.Last().GetCharacterKind();
         }
 
         return CharacterKind.Whitespace;
+    }
+
+    public string? ReadPreviousWordOrDefault(
+        int rowIndexInclusive,
+        int columnIndexExclusive)
+    {
+        var wordPositionIndexEndExclusive = GetPositionIndex(
+            rowIndexInclusive,
+            columnIndexExclusive);
+
+        var wordCharacterKind = GetCharacterKindAt(
+            wordPositionIndexEndExclusive - 1);
+
+        if (wordCharacterKind == CharacterKind.LetterOrDigit)
+        {
+            var wordColumnIndexStartInclusive =
+                GetColumnIndexOfCharacterWithDifferingKind(
+                    rowIndexInclusive,
+                    columnIndexExclusive,
+                    true);
+
+            if (wordColumnIndexStartInclusive == -1)
+                wordColumnIndexStartInclusive = 0;
+
+            var wordLength = columnIndexExclusive -
+                             wordColumnIndexStartInclusive;
+
+            var wordPositionIndexStartInclusive =
+                wordPositionIndexEndExclusive - wordLength;
+
+            return GetTextRange(
+                wordPositionIndexStartInclusive,
+                wordLength);
+        }
+
+        return null;
     }
 }

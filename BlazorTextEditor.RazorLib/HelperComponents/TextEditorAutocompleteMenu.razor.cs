@@ -26,8 +26,6 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
     [Parameter, EditorRequired]
     public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorBase TextEditor { get; set; } = null!;
 
     private ElementReference? _textEditorAutocompleteMenuElementReference;
 
@@ -39,6 +37,8 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
     private MenuRecord GetMenuRecord()
     {
+        var textEditor = TextEditorStatesSelection.Value;
+        
         var cursorSnapshots =
             TextEditorCursorSnapshot.TakeSnapshots(
                 TextEditorDisplay.PrimaryCursor);
@@ -46,43 +46,21 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
         var primaryCursorSnapshot = cursorSnapshots
             .First(x => x.UserCursor.IsPrimaryCursor);
 
-        if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
+        if (textEditor is not null &&
+            primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
         {
-            var wordColumnIndexEndExclusive =
-                primaryCursorSnapshot.ImmutableCursor.ColumnIndex;
-
-            var wordPositionIndexEndExclusive = TextEditor.GetPositionIndex(
+            var word = textEditor.ReadPreviousWordOrDefault(
                 primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                wordColumnIndexEndExclusive);
+                primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
-            var wordCharacterKind = TextEditor.GetCharacterKindAt(
-                wordPositionIndexEndExclusive - 1);
-
-            if (wordCharacterKind == CharacterKind.LetterOrDigit)
+            List<MenuOptionRecord> menuOptionRecords = new();
+            
+            if (word is not null)
             {
-                var wordColumnIndexStartInclusive = TextEditor
-                    .GetColumnIndexOfCharacterWithDifferingKind(
-                        primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                        wordColumnIndexEndExclusive,
-                        true);
-
-                if (wordColumnIndexStartInclusive == -1)
-                    wordColumnIndexStartInclusive = 0;
-                
-                var wordLength = wordColumnIndexEndExclusive -
-                                 wordColumnIndexStartInclusive;
-
-                var wordPositionIndexStartInclusive =
-                    wordPositionIndexEndExclusive - wordLength;
-
-                var word = TextEditor.GetTextRange(
-                    wordPositionIndexStartInclusive,
-                    wordLength);
-                
                 var autocompleteOptions = AutocompleteService
                     .GetAutocompleteOptions(word);
 
-                List<MenuOptionRecord> menuOptionRecords = autocompleteOptions
+                menuOptionRecords = autocompleteOptions
                     .Select(option => new MenuOptionRecord(
                         option,
                         MenuOptionKind.Other,
@@ -90,18 +68,18 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
                             SelectMenuOption(() =>
                                 InsertAutocompleteMenuOption(word, option))))
                     .ToList();
-
-                if (!menuOptionRecords.Any())
-                {
-                    menuOptionRecords.Add(new MenuOptionRecord(
-                        "No results",
-                        MenuOptionKind.Other));
-                }
-
-                return new MenuRecord(
-                    menuOptionRecords
-                        .ToImmutableArray());
             }
+            
+            if (!menuOptionRecords.Any())
+            {
+                menuOptionRecords.Add(new MenuOptionRecord(
+                    "No results",
+                    MenuOptionKind.Other));
+            }
+
+            return new MenuRecord(
+                menuOptionRecords
+                    .ToImmutableArray());
         }
 
         return new MenuRecord(
@@ -125,7 +103,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
     private async Task InsertAutocompleteMenuOption(string word, string option)
     {
         var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
-            TextEditor.Key,
+            TextEditorKey,
             TextEditorCursorSnapshot.TakeSnapshots(TextEditorDisplay.PrimaryCursor),
             option.Substring(word.Length),
             CancellationToken.None);

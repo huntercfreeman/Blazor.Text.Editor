@@ -1070,43 +1070,13 @@ public partial class TextEditorDisplay : TextEditorView
                 // are to be 1 character long, as well either specific whitespace or punctuation.
                 //
                 // Therefore 1 character behind might be a word that can be indexed.
-                var possibleWordColumnIndexEnd =
-                    primaryCursorSnapshot.ImmutableCursor.ColumnIndex -
-                    1;
 
-                var positionIndex = textEditor.GetPositionIndex(
-                                    primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                                    possibleWordColumnIndexEnd);
+                var word = textEditor.ReadPreviousWordOrDefault(
+                    primaryCursorSnapshot.ImmutableCursor.RowIndex,
+                    primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
                 
-                var characterKindBehindCurrent = textEditor.GetCharacterKindAt(
-                    positionIndex);
-
-                if (characterKindBehindCurrent == CharacterKind.LetterOrDigit)
-                {
-                    var wordColumnIndexStart = textEditor
-                        .GetColumnIndexOfCharacterWithDifferingKind(
-                            primaryCursorSnapshot.ImmutableCursor.RowIndex,
-                            possibleWordColumnIndexEnd,
-                            true);
-
-                    wordColumnIndexStart =
-                        wordColumnIndexStart == -1
-                            ? 0
-                            : wordColumnIndexStart;
-
-                    var wordLength = possibleWordColumnIndexEnd -
-                                     wordColumnIndexStart;
-
-                    var wordStartingPositionIndex = 
-                        possibleWordColumnIndexEnd - wordLength;
-                    
-                    var word = textEditor.GetTextRange(
-                        wordStartingPositionIndex, 
-                        wordLength
-                        + 1);
-            
+                if (word is not null)
                     await AutocompleteIndexer.IndexWordAsync(word);
-                }
             }
         }
         
@@ -1156,14 +1126,13 @@ public partial class TextEditorDisplay : TextEditorView
     
     /// <summary>
     /// All keyboardEventArgs that return true from "IsAutocompleteIndexerInvoker"
-    /// are to be 1 character long, as well either specific whitespace or punctuation.
+    /// are to be 1 character long, as well either whitespace or punctuation.
     ///
     /// Therefore 1 character behind might be a word that can be indexed.
     /// </summary>
     private bool IsAutocompleteIndexerInvoker(KeyboardEventArgs keyboardEventArgs)
     {
-        return KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE == keyboardEventArgs.Code ||
-               KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE == keyboardEventArgs.Code ||
+        return KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
                KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First());
     }
 
