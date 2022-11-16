@@ -17,7 +17,7 @@ public static class RowEndingKindExtensions
             RowEndingKind.CarriageReturn => "\r",
             RowEndingKind.Linefeed => "\n",
             RowEndingKind.CarriageReturnLinefeed => "\r\n",
-            RowEndingKind.StartOfFile or RowEndingKind.EndOfFile => string.Empty,
+            RowEndingKind.StartOfFile or RowEndingKind.EndOfFile or RowEndingKind.Unset => string.Empty,
             _ => throw new ApplicationException($"Unexpected {nameof(RowEndingKind)} of: {rowEndingKind}"),
         };
     }
