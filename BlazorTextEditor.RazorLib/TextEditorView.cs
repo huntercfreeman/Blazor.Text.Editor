@@ -21,7 +21,6 @@ public class TextEditorView : FluxorComponent
     
     protected override void OnInitialized()
     {
-        // TODO: Will a IStateSelection only rerender if the selected state changes or any the parent FeatureState changes? This should only re-render when the TextEditorKey selected TextEditorBase is instantiated.
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .SingleOrDefault(x => x.Key == TextEditorKey));

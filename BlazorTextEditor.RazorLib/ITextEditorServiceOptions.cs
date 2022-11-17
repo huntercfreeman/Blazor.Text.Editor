@@ -7,7 +7,7 @@ public interface ITextEditorServiceOptions
     /// <summary>
     ///     If the consumer of the Nuget Package is
     ///     registering Fluxor themselves they can include
-    ///     typeof(TextEditorOptions).Assembly when invoking
+    ///     typeof(ITextEditorServiceOptions).Assembly when invoking
     ///     AddFluxor to add it as a service.
     ///     <br /><br />
     ///     As well the Fluxor.Blazor.Web.StoreInitializer will
