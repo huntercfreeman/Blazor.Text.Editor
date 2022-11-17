@@ -387,7 +387,12 @@ public partial class TextEditorDisplay : TextEditorView
             }
         }
 
-        primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
+        if (keyboardEventArgs.Key != "Shift" &&
+            keyboardEventArgs.Key != "Control" &&
+            keyboardEventArgs.Key != "Alt")
+        {
+            primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
+        }
 
         var afterOnKeyDownAsync = AfterOnKeyDownAsync
                                   ?? HandleAfterOnKeyDownAsync;
