@@ -155,7 +155,7 @@ public interface ITextEditorService : IDisposable
     public void SetShowWhitespace(bool showWhitespace);
     public void SetShowNewlines(bool showNewlines);
     public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind);
-    public void ShowSettingsDialog();
+    public void ShowSettingsDialog(bool isResizable = false);
     /// <summary>
     /// Avoid usage of <see cref="ForceRerender"/>
     /// <br/><br/>

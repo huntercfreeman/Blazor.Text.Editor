@@ -17,11 +17,10 @@ namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
+    private readonly IState<TextEditorStates> _textEditorStates;
     private readonly IDispatcher _dispatcher;
     private readonly IStorageProvider _storageProvider;
-    private readonly IState<TextEditorStates> _textEditorStates;
     
-
     public TextEditorService(
         IState<TextEditorStates> textEditorStates,
         IDispatcher dispatcher,
@@ -234,8 +233,6 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(
             new TextEditorSetThemeAction(theme));
-        
-        WriteGlobalTextEditorOptionsToLocalStorage();
     }
 
     public void SetShowWhitespace(bool showWhitespace)
@@ -260,13 +257,16 @@ public class TextEditorService : ITextEditorService
             new TextEditorSetUsingRowEndingKindAction(textEditorKey, rowEndingKind));
     }
 
-    public void ShowSettingsDialog()
+    public void ShowSettingsDialog(bool isResizable = false)
     {
         var settingsDialog = new DialogRecord(
             DialogKey.NewDialogKey(), 
             "Text Editor Settings",
             typeof(TextEditorSettings),
-            null);
+            null)
+        {
+            IsResizable = isResizable
+        };
         
         _dispatcher.Dispatch(
             new RegisterDialogRecordAction(

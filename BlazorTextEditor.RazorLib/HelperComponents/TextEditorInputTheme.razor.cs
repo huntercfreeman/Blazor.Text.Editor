@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Store.ThemeCase;
+﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -9,6 +10,8 @@ public partial class TextEditorInputTheme : FluxorComponent
 {
     [Inject]
     private IState<ThemeStates> ThemeStatesWrap { get; set; } = null!;
+    [Inject]
+    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 

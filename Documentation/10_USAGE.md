@@ -104,5 +104,5 @@ protected override void OnInitialized()
 
 - Now run the application and you will have rendered a `TextEditorDisplay` with C# syntax highlighting.
 
-![Rendered C# Text Editor](/Images/Gifs/01_usage-rendered.gif)
+![Rendered C# Text Editor](/Images/Gifs/10_usage-rendered.gif)
 

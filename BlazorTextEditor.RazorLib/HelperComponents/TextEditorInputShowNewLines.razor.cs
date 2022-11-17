@@ -1,3 +1,5 @@
+using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
@@ -5,6 +7,8 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 
 public partial class TextEditorInputShowNewLines : FluxorComponent
 {
+    [Inject]
+    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
