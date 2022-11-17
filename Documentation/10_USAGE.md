@@ -5,10 +5,6 @@
 ### Goal
 
 - Modify Pages/Index.razor to render a C# Text Editor with Syntax Highlighting
-- Modify Pages/Counter.razor to render a Razor Text Editor with Syntax Highlighting
-- Modify Pages/FetchData.razor to render a Razor Text Editor with Syntax Highlighting
-- Demonstrate the state management by navigating between the different pages and seeing the Text Editor state persist.
-- Render 3 C# Text Editors to showcase the event dispatching as typing in one editor modifies the others.
 
 ### Steps
 - One can write the upcoming code however they would like, I will be using the `@code` section in Razor markup.
