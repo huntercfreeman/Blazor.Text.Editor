@@ -1,6 +1,6 @@
 # Blazor.Text.Editor
 
-![ExampleClassApple.png](/Images/ExampleClassApple.png)
+![Example GIF](/Images/Gifs/root-readme-gif.gif)
 
 ***Blazor.Text.Editor*** is a Text Editor component library using
 the [Blazor UI Framework](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor)
@@ -22,12 +22,8 @@ directly.
 
 ## Getting started
 
-The documentation to get started comes in three forms. One can either watch the video I made on youtube or view the
-markdown file containing the same content. As well a minimum code necessary Blazor ServerSide application is available.
-
-- Minimum Code Necessary Example: [Blazor.Text.Editor-Template](https://github.com/huntercfreeman/Blazor.Text.Editor-Template)
-- Video: https://youtu.be/bDgU360ZBkI
-- Markdown: [gettingStarted.md](/Documentation/gettingStarted.md)
+- Video Format: https://youtu.be/bDgU360ZBkI
+- First of many markdown tutorials: [00_INSTALLATION.md](/Documentation/00_INSTALLATION.md)
 
 ## Installation
 
