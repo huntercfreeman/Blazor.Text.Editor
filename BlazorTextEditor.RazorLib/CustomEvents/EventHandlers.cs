@@ -8,11 +8,12 @@ namespace BlazorTextEditor.RazorLib.CustomEvents;
 /// is used as a custom Blazor event.
 /// <br/><br/>
 /// The purpose is to conditionally
-/// stopPropagation on a @onkeydown event.
+/// preventDefault on a @onkeydown event.
 /// <br/><br/>
-/// In specific this will stopPropagation
+/// In specific this will preventDefault
 /// on:
 /// <br/>
+/// -ContextMenu
 /// -ArrowLeft
 /// <br/>
 /// -ArrowDown

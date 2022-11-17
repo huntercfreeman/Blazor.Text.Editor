@@ -60,6 +60,9 @@ public interface ITreeViewService : IDisposable
     
     public string GetNodeElementId(
         TreeView treeView);
+
+    public string GetTreeContainerElementId(
+        TreeViewStateKey treeViewStateKey);
     
     public void DisposeTreeViewState(
         TreeViewStateKey treeViewStateKey);

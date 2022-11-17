@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Security.Cryptography.X509Certificates;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;

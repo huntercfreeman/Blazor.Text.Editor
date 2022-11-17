@@ -152,6 +152,12 @@ public class TreeViewService : ITreeViewService
     {
         return $"btv_node-{treeView.Id}";
     }
+    
+    public string GetTreeContainerElementId(
+        TreeViewStateKey treeViewStateKey)
+    {
+        return $"btv_tree-container-{treeViewStateKey.Guid}";
+    }
 
     public void DisposeTreeViewState(TreeViewStateKey treeViewStateKey)
     {

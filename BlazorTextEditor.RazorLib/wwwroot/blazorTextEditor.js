@@ -263,15 +263,17 @@ window.blazorTextEditor = {
             }
         }
     },
-    getContextMenuFixedPositionRelativeToElement: function (elementId) {
-        let element = document.getElementById(elementId);
-
-        let bounds = element.getBoundingClientRect();
-
+    getTreeViewContextMenuFixedPosition: function (
+        treeViewStateKey,
+        treeViewNodeId) {
+        
+        let treeViewNode = document.getElementById(treeViewNodeId);
+        let treeViewNodeBounds = treeViewNode.getBoundingClientRect();
+        
         return {
             OccurredDueToMouseEvent: false,
-            LeftPositionInPixels: bounds.left,
-            TopPositionInPixels: bounds.top + bounds.height
+            LeftPositionInPixels: treeViewNodeBounds.left,
+            TopPositionInPixels: treeViewNodeBounds.top + treeViewNodeBounds.height 
         }
     },
     localStorageSetItem: function (key, value) {
@@ -287,6 +289,7 @@ Blazor.registerCustomEventType('keydownwithpreventscroll', {
     createEventArgs: e => {
         
         let preventDefaultOnTheseKeys = [
+            "ContextMenu",
             "ArrowLeft",
             "ArrowDown",
             "ArrowUp",

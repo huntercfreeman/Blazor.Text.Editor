@@ -1,9 +1,13 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+@using BlazorTextEditor.RazorLib.CustomEvents
+@using BlazorTextEditor.RazorLib.Store.TreeViewCase
+
 @{
     var treeViewState = TreeViewStateContainerWrap.Value; 
     
-    <div class="btv_tree-view-state btv_unselectable @GetHasActiveNodeCssClass(treeViewState) @CssClassString"
+    <div id="@TreeViewService.GetTreeContainerElementId(treeViewState?.TreeViewStateKey ?? TreeViewStateKey.Empty)"
+         class="btv_tree-view-state btv_unselectable @GetHasActiveNodeCssClass(treeViewState) @CssClassString"
          style="@CssStyleString"
          tabindex="0"
          @onkeydownwithpreventscroll="(e) => HandleTreeViewOnKeyDownWithPreventScroll(e, treeViewState)"

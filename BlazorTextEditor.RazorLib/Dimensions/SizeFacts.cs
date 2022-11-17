@@ -2,7 +2,7 @@
 
 public static class SizeFacts
 {
-    public static class bte
+    public static class BlazorStudio
     {
         public static class Header
         {

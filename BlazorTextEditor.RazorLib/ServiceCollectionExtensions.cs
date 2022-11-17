@@ -1,6 +1,7 @@
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
+using BlazorTextEditor.RazorLib.TreeView;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
@@ -59,9 +60,32 @@ public static class ServiceCollectionExtensions
             .AddScoped(serviceProvider => autocompleteServiceFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => autocompleteIndexerFactory.Invoke(serviceProvider))
             .AddScoped<IThemeService, ThemeService>()
-            .AddScoped<ITextEditorService, TextEditorService>();
+            .AddScoped<ITextEditorService, TextEditorService>()
+            .AddBlazorTreeView(options => options.InitializeFluxor = false);
 
         if (textEditorOptions.InitializeFluxor)
+        {
+            services
+                .AddFluxor(options => options
+                    .ScanAssemblies(typeof(ServiceCollectionExtensions).Assembly));
+        }
+
+        return services;
+    }
+    
+    private static IServiceCollection AddBlazorTreeView(
+        this IServiceCollection services,
+        Action<BlazorTreeViewOptions>? configure = null)
+    {
+        var blazorTreeViewOptions = new BlazorTreeViewOptions();
+        configure?.Invoke(blazorTreeViewOptions);
+
+        services
+            .AddSingleton<IBlazorTreeViewOptions, ImmutableBlazorTreeViewOptions>(
+                _ => new ImmutableBlazorTreeViewOptions(blazorTreeViewOptions))
+            .AddScoped<ITreeViewService, TreeViewService>();
+
+        if (blazorTreeViewOptions.InitializeFluxor)
         {
             services
                 .AddFluxor(options => options

@@ -142,7 +142,8 @@ public partial class TreeViewStateDisplay : FluxorComponent
 
             contextMenuFixedPosition = await JsRuntime
                 .InvokeAsync<ContextMenuFixedPosition>(
-                    "blazorTreeView.getContextMenuFixedPositionRelativeToElement",
+                    "blazorTextEditor.getTreeViewContextMenuFixedPosition",
+                    TreeViewService.GetTreeContainerElementId(treeViewState.TreeViewStateKey),
                     TreeViewService.GetNodeElementId(
                         treeViewState.ActiveNode));
 
