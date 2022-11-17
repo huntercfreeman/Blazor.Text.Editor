@@ -24,13 +24,11 @@ public partial class TextEditorBase
     /// </summary>
     public (int positionIndex, RowEndingKind rowEndingKind) GetStartOfRowTuple(int rowIndex)
     {
+        if (rowIndex > _rowEndingPositions.Count - 1)
+            rowIndex = _rowEndingPositions.Count - 1;
+        
         if (rowIndex > 0)
-        {
-            if (rowIndex >= _rowEndingPositions.Count - 1)
-                rowIndex = _rowEndingPositions.Count - 1;
-                
             return _rowEndingPositions[rowIndex - 1];
-        }
         
         return (0, RowEndingKind.StartOfFile);
     }
