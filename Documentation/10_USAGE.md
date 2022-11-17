@@ -106,3 +106,4 @@ protected override void OnInitialized()
 
 ![Rendered C# Text Editor](/Images/Gifs/10_usage-rendered.gif)
 
+# Next tutorial: [Settings](/Documentation/20_SETTINGS.md)
