@@ -127,4 +127,6 @@ private async Task ReadLocalStorage()
 - local storage: bool? ShowWhitespace
 - local storage: bool? ShowNewlines
 
-- As of writing this tutorial however, it appears `FontSizeInPixels` is not working for me suddenly. The theme is being correctly restored.
+- As of writing this tutorial however, I am suddenly unable to get my theme from local storage. It just keeps being unrecognized and using the Unset theme.
+
+- A good way to go about making use of the local storage local. Is to OnAfterRenderAsync of a 'top level component'. In the if(firstRender) { await readLocalStorage(); }
