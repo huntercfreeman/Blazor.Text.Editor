@@ -126,6 +126,54 @@ public partial class TextEditorBase
 
     public TextEditorBase PerformEditTextEditorAction(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
     {
+        var cursorSnapshots = TextEditorCursorSnapshot
+            .TakeSnapshots(
+                insertTextTextEditorBaseAction.CursorSnapshots
+                    .Select(x => x.UserCursor)
+                    .ToArray())
+            .ToImmutableArray();
+
+        var primaryCursorSnapshot = cursorSnapshots
+            .FirstOrDefault(x =>
+                x.UserCursor.IsPrimaryCursor);
+
+        if (primaryCursorSnapshot is null)
+            return new TextEditorBase(this);
+
+        /*
+         * TODO: 2022-11-18 one must not use the UserCursor while
+         * calculating but instead make a copy of the mutable cursor
+         * by looking at the snapshot and mutate that local 'userCursor'
+         * then once the transaction is done offer the 'userCursor' to the
+         * user interface such that it can choose to move the actual user cursor
+         * to that position
+         */
+
+        // TODO: start making a mutable copy of their immutable cursor snapshot
+        // so if the user moves the cursor
+        // while calculating nothing can go wrong causing exception
+        //
+        // See the var localCursor in this contiguous code block.
+        //
+        // var localCursor = new TextEditorCursor(
+        //     (primaryCursorSnapshot.ImmutableCursor.RowIndex, primaryCursorSnapshot.ImmutableCursor.ColumnIndex), 
+        //     true);
+
+        if (TextEditorSelectionHelper.HasSelectedText(
+                primaryCursorSnapshot
+                    .ImmutableCursor.ImmutableTextEditorSelection))
+        {
+            PerformDeletions(new KeyboardEventTextEditorBaseAction(
+                insertTextTextEditorBaseAction.TextEditorKey,
+                cursorSnapshots,
+                new KeyboardEventArgs
+                {
+                    Code = KeyboardKeyFacts.MetaKeys.DELETE,
+                    Key = KeyboardKeyFacts.MetaKeys.DELETE,
+                },
+                CancellationToken.None));
+        }
+        
         var localContent = insertTextTextEditorBaseAction.Content
             .Replace("\r\n", "\n");
         
