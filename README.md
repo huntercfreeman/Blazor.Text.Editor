@@ -35,6 +35,10 @@ You can download the latest release NuGet packages from the official Blazor.Text
 
 See the [CHANGELOG.md](/CHANGELOG.md) for release history.
 
+## Roadmap
+
+See the [ROADMAP.md](/ROADMAP.md) for planned future updates.
+
 # Licence
 
 [MIT](https://opensource.org/licenses/MIT)
