@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using BlazorTextEditor.RazorLib
-@using BlazorTextEditor.RazorLib.HelperComponents
 @using BlazorTextEditor.RazorLib.TextEditor
+@using BlazorTextEditor.RazorLib.HelperComponents
 
 <PageTitle>Index</PageTitle>
 
@@ -11,15 +11,15 @@ Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?"/>
 
-<button class="btn btn-primary"
-        @onclick="ReadLocalStorage">
-    Read Local Storage
-</button>
-
 <TextEditorInputFontSize/>
 <TextEditorInputShowNewLines/>
 <TextEditorInputShowWhitespace/>
 <TextEditorInputTheme/>
+
+<button class="btn btn-primary"
+        @onclick="ReadLocalStorage">
+    Read Local Storage
+</button>
 
 <button class="btn btn-primary"
         @onclick="OpenTextEditorSettingsDialog">
@@ -32,8 +32,7 @@ Welcome to your new app.
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     
-    private static readonly TextEditorKey IndexTextEditorKey = 
-        TextEditorKey.NewTextEditorKey();
+    private static readonly TextEditorKey IndexTextEditorKey = TextEditorKey.NewTextEditorKey();
 
     protected override void OnInitialized()
     {
@@ -48,7 +47,7 @@ Welcome to your new app.
     {
         TextEditorService.ShowSettingsDialog(true);
     }
-
+    
     private async Task ReadLocalStorage()
     {
         await TextEditorService.SetTextEditorOptionsFromLocalStorageAsync();
