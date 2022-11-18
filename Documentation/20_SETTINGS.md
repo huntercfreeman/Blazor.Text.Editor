@@ -6,7 +6,7 @@
 
 - Render the optional static dialog containing all the settings available for change.
 - Render the resizable and moveable version of the settings dialog.
-- Render each settings individually where desired.
+- Render each setting individually where desired.
 - Inform about optional automatic local storage integration for settings.
 
 ### Steps
@@ -75,6 +75,12 @@ private void OpenTextEditorSettingsDialog()
 - Now run the program and click the button. You will see the resizable and moveable settings dialog as shown in this gif.
 
 ![Dynamic settings dialog](/Images/Gifs/20_dynamic-dialog.gif)
+
+- Add the following using statement to Index.razor if it is not already there.
+
+```html
+@using BlazorTextEditor.RazorLib.HelperComponents
+```
 
 - Above where the button is to open the settings dialog. Render the razor components shown in the following markup.
 

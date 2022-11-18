@@ -79,11 +79,10 @@ The following is a gif of me referencing the JavaScript
 
 - In App.razor render the <BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/> Blazor component
 
-In App.razor, where the Blazor Router is located,
-at the top of the file add the following Razor markup
+In App.razor, where the Blazor Router is located, at the top of the file add the following Razor markup
 
 ```html
-    <BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/>
+<BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/>
 ```
 
 The following is a gif of me rendering the `<BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/>` Blazor component in App.razor

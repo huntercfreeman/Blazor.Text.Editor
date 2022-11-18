@@ -1,0 +1,55 @@
+﻿@page "/"
+@using BlazorTextEditor.RazorLib
+@using BlazorTextEditor.RazorLib.TextEditor
+@using BlazorTextEditor.RazorLib.HelperComponents
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?"/>
+
+<TextEditorInputFontSize/>
+<TextEditorInputShowNewLines/>
+<TextEditorInputShowWhitespace/>
+<TextEditorInputTheme/>
+
+<button class="btn btn-primary"
+        @onclick="ReadLocalStorage">
+    Read Local Storage
+</button>
+
+<button class="btn btn-primary"
+        @onclick="OpenTextEditorSettingsDialog">
+    Text Editor Settings
+</button>
+
+<TextEditorDisplay TextEditorKey="IndexTextEditorKey"/>
+
+@code {
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    
+    private static readonly TextEditorKey IndexTextEditorKey = TextEditorKey.NewTextEditorKey();
+
+    protected override void OnInitialized()
+    {
+        TextEditorService.RegisterCSharpTextEditor(
+            IndexTextEditorKey,
+            string.Empty);
+        
+        base.OnInitialized();
+    }
+
+    private void OpenTextEditorSettingsDialog()
+    {
+        TextEditorService.ShowSettingsDialog(true);
+    }
+    
+    private async Task ReadLocalStorage()
+    {
+        await TextEditorService.SetTextEditorOptionsFromLocalStorageAsync();
+    }
+}
