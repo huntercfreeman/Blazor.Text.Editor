@@ -17,11 +17,6 @@ Welcome to your new app.
 <TextEditorInputTheme/>
 
 <button class="btn btn-primary"
-        @onclick="ReadLocalStorage">
-    Read Local Storage
-</button>
-
-<button class="btn btn-primary"
         @onclick="OpenTextEditorSettingsDialog">
     Text Editor Settings
 </button>
@@ -29,9 +24,10 @@ Welcome to your new app.
 <TextEditorDisplay TextEditorKey="IndexTextEditorKey"/>
 
 @code {
+
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
-    
+
     private static readonly TextEditorKey IndexTextEditorKey = TextEditorKey.NewTextEditorKey();
 
     protected override void OnInitialized()
@@ -46,10 +42,5 @@ Welcome to your new app.
     private void OpenTextEditorSettingsDialog()
     {
         TextEditorService.ShowSettingsDialog(true);
-    }
-    
-    private async Task ReadLocalStorage()
-    {
-        await TextEditorService.SetTextEditorOptionsFromLocalStorageAsync();
     }
 }
