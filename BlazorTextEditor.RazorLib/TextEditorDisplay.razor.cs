@@ -239,6 +239,8 @@ public partial class TextEditorDisplay : TextEditorView
 
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
+            
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
         if (_previousTextEditorKey is null ||
@@ -258,6 +260,8 @@ public partial class TextEditorDisplay : TextEditorView
                 primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
+            
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
         await base.OnParametersSetAsync();
