@@ -99,7 +99,7 @@ public partial class TextEditorBase
                 startOfRowPositionIndex + cursorSnapshot.ImmutableCursor.ColumnIndex;
             
             // If cursor is out of bounds then continue
-            if (cursorPositionIndex >= _content.Count)
+            if (cursorPositionIndex > _content.Count)
                 continue;
 
             var wasTabCode = false;
@@ -226,7 +226,7 @@ public partial class TextEditorBase
                 startOfRowPositionIndex + cursorSnapshot.ImmutableCursor.ColumnIndex;
             
             // If cursor is out of bounds then continue
-            if (cursorPositionIndex >= _content.Count)
+            if (cursorPositionIndex > _content.Count)
                 continue;
 
             int startingPositionIndexToRemoveInclusive;
