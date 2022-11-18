@@ -125,6 +125,12 @@ window.blazorTextEditor = {
 
             let intersectionObserverMapValue = this.virtualizationIntersectionObserverMap
                 .get(intersectionObserverMapKey);
+            
+            if (!intersectionObserverMapValue) {
+                // Received an error that intersectionObserverMapValue was
+                // undefined after closing a tab in the editor
+                return;
+            }
 
             for (let i = 0; i < intersectionObserverMapValue.BoundaryIdIsIntersectingTuples.length; i++) {
                 let boundaryTuple = intersectionObserverMapValue.BoundaryIdIsIntersectingTuples[i];
