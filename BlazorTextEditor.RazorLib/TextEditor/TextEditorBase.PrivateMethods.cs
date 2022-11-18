@@ -97,6 +97,10 @@ public partial class TextEditorBase
 
             var cursorPositionIndex =
                 startOfRowPositionIndex + cursorSnapshot.ImmutableCursor.ColumnIndex;
+            
+            // If cursor is out of bounds then continue
+            if (cursorPositionIndex >= _content.Count)
+                continue;
 
             var wasTabCode = false;
             var wasEnterCode = false;
@@ -131,7 +135,7 @@ public partial class TextEditorBase
                     });
 
                 characterCountInserted = rowEndingKindToInsert.AsCharacters().Length;
-
+                
                 _content.InsertRange(cursorPositionIndex, richCharacters);
 
                 _rowEndingPositions.Insert(cursorSnapshot.ImmutableCursor.RowIndex,
@@ -220,6 +224,10 @@ public partial class TextEditorBase
 
             var cursorPositionIndex =
                 startOfRowPositionIndex + cursorSnapshot.ImmutableCursor.ColumnIndex;
+            
+            // If cursor is out of bounds then continue
+            if (cursorPositionIndex >= _content.Count)
+                continue;
 
             int startingPositionIndexToRemoveInclusive;
             int countToRemove;
