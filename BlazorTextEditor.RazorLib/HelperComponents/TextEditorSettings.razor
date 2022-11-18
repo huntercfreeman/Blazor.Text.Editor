@@ -1,21 +1,23 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<TextEditorInputFontSize />
-<TextEditorInputShowNewLines />
-<TextEditorInputShowWhitespace />
-<TextEditorInputTheme />
-
-<div>
-    @{
-        var indexedStrings = AutocompleteIndexer.IndexedStrings;
-        <div>
-            IndexedStrings Shown Below 
-            (count: @($"{indexedStrings.Length:N0}"))
-        </div>
-    }
-
-    @foreach (var indexedString in indexedStrings)
-    {
-        <div>'@indexedString'</div>
-    }
+<div style="overflow: auto; height: 100%;">
+    <TextEditorInputFontSize />
+    <TextEditorInputShowNewLines />
+    <TextEditorInputShowWhitespace />
+    <TextEditorInputTheme />
+    
+    <div>
+        @{
+            var indexedStrings = AutocompleteIndexer.IndexedStrings;
+            <div>
+                IndexedStrings Shown Below 
+                (count: @($"{indexedStrings.Length:N0}"))
+            </div>
+        }
+    
+        @foreach (var indexedString in indexedStrings)
+        {
+            <div>'@indexedString'</div>
+        }
+    </div>
 </div>
