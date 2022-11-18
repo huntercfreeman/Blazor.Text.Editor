@@ -30,15 +30,7 @@ public class TextEditorHtmlDecorationMapper : IDecorationMapper
             HtmlDecorationKind.InjectedLanguageVariable => "bte_parameter",
             HtmlDecorationKind.InjectedLanguageType => "bte_type",
             HtmlDecorationKind.InjectedLanguageStringLiteral => "bte_string-literal",
-            _ => throw new ApplicationException(
-                $"The {nameof(HtmlDecorationKind)}: {decoration} was not recognized."),
+            _ => string.Empty,
         };
     }
 }
-// CSharpDecorationKind.None => string.Empty,
-// CSharpDecorationKind.Method => "bte_method",
-// CSharpDecorationKind.Type => "bte_type",
-// CSharpDecorationKind.Parameter => "bte_parameter",
-// CSharpDecorationKind.StringLiteral => "bte_string-literal",
-// CSharpDecorationKind.Keyword => "bte_keyword",
-// CSharpDecorationKind.Comment => "bte_comment",

@@ -145,7 +145,7 @@ public partial class TextEditorDisplay : TextEditorView
     private int _skippedSyntaxHighlightingEventCount;
     
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
-    private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(50);
+    private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
         
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;

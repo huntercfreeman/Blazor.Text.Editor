@@ -17,8 +17,7 @@ public class TextEditorCSharpDecorationMapper : IDecorationMapper
             CSharpDecorationKind.StringLiteral => "bte_string-literal",
             CSharpDecorationKind.Keyword => "bte_keyword",
             CSharpDecorationKind.Comment => "bte_comment",
-            _ => throw new ApplicationException(
-                $"The {nameof(CSharpDecorationKind)}: {decoration} was not recognized."),
+            _ => string.Empty,
         };
     }
 }
