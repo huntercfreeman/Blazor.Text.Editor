@@ -1,5 +1,6 @@
 ﻿namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 
-public class Class1
+public class JavaScriptSyntaxTree
 {
+    
 }
