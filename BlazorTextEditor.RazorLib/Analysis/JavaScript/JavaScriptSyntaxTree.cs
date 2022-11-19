@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 
@@ -10,10 +11,10 @@ public class JavaScriptSyntaxTree
     /// </summary>
     /// <param name="content"></param>
     /// <returns></returns>
-    public static List<string> ParseText(string content)
+    public static List<TextEditorTextSpan> ParseText(string content)
     {
         // Will contain the final result which will be returned.
-        var foundKeywords = new List<string>();
+        var textEditorTextSpans = new List<TextEditorTextSpan>();
         
         // A single while loop will go character by character
         // until the end of the file for this method.
@@ -22,6 +23,12 @@ public class JavaScriptSyntaxTree
         // The wordBuilder is appended to everytime a
         // character is consumed.
         var wordBuilder = new StringBuilder();
+
+        // wordBuilderStartingIndexInclusive == -1 is to mean
+        // that wordBuilder is empty. Once the first letter or digit
+        // (non whitespace) is read, then the wordBuilderStartingIndexInclusive
+        // will be set to a value other than -1.
+        var wordBuilderStartingIndexInclusive = -1;
         
         // When a keyword does not '.StartsWith()'
         // the 'wordBuilder.ToString()' then remove it
@@ -61,11 +68,21 @@ public class JavaScriptSyntaxTree
                 
                 if (foundKeyword is not null)
                 {
-                    FoundKeyword(foundKeyword);
+                    FoundKeyword(
+                        wordBuilderStartingIndexInclusive, 
+                        stringWalker.PositionIndex);
                 }
             }
             else
             {
+                if (wordBuilderStartingIndexInclusive == -1)
+                {
+                    // This is the start of a word
+                    // as opposed to the continuation of a word
+
+                    wordBuilderStartingIndexInclusive = stringWalker.PositionIndex;
+                }
+                
                 wordBuilder.Append(stringWalker.CurrentCharacter);
                 
                 possibleKeywordsState = possibleKeywordsState
@@ -87,15 +104,24 @@ public class JavaScriptSyntaxTree
             
             if (foundKeyword is not null)
             {
-                FoundKeyword(foundKeyword);
+                FoundKeyword(
+                    wordBuilderStartingIndexInclusive, 
+                    stringWalker.PositionIndex);
             }
         }
 
-        return foundKeywords;
+        return textEditorTextSpans;
 
-        void FoundKeyword(string keyword)
+        void FoundKeyword(
+            int startingIndexInclusive, 
+            int endingIndexExclusive)
         {
-            foundKeywords.Add(keyword);
+            textEditorTextSpans.Add(
+                new TextEditorTextSpan(
+                    startingIndexInclusive,
+                    endingIndexExclusive,
+                    (byte)JavaScriptDecorationKind.Keyword));
+            
             wordBuilder.Clear();
             possibleKeywordsState = JavaScriptKeywords.All.ToList();
         }
