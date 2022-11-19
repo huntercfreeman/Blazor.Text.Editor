@@ -2,7 +2,9 @@
 
 public static partial class TestData
 {
-    public const string C_SHARP_EXAMPLE_TEXT = @"using System.Collections.Immutable;
+    public static class CSharp
+    {
+        public const string EXAMPLE_TEXT_173_LINES = @"using System.Collections.Immutable;
 using BlazorTreeView.RazorLib.Store.TreeViewCase;
 using Fluxor;
 
@@ -175,4 +177,5 @@ public class TreeViewService : ITreeViewService
         _treeViewStateContainerWrap.StateChanged -= TreeViewStateContainerOnStateChanged;
     }
 }";
+    }
 }

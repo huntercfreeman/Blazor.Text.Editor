@@ -107,6 +107,34 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorBaseAction(textEditorBase));
     }
 
+    public void RegisterCssTextEditor(TextEditorKey textEditorKey, string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            null,
+            null,
+            null,
+            textEditorKey);
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
+    public void RegisterFSharpTextEditor(TextEditorKey textEditorKey, string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            null,
+            null,
+            null,
+            textEditorKey);
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
     public void RegisterRazorTextEditor(TextEditorKey textEditorKey, string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {

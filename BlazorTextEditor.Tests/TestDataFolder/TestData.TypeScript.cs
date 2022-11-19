@@ -2,7 +2,9 @@
 
 public static partial class TestData
 {
-    public const string TYPE_SCRIPT_EXAMPLE_TEXT = @"import { SocketMessage, User } from ""../contracts/events"";
+    public static class TypeScript
+    {
+        public const string EXAMPLE_TEXT_28_LINES = @"import { SocketMessage, User } from ""../contracts/events"";
 
 import socketIOClient from ""socket.io-client"";
 
@@ -30,4 +32,5 @@ const chatMessageEvent: WrappedClientSocket<string> =
   createSocket(""chat_message"");
 const userConnectedSocket: WrappedClientSocket<User> =
   createSocket(""user_connected"");";
+    }
 }

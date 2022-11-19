@@ -1,9 +1,25 @@
 using BlazorTextEditor.RazorLib.Analysis.JavaScript;
+using BlazorTextEditor.Tests.TestDataFolder;
 
 namespace BlazorTextEditor.Tests.Lexers;
 
 public class LexJavaScriptTests
 {
+    [Fact]
+    public void TestSingularKeywordRecognition()
+    {
+        var content = TestData.JavaScript.EXAMPLE_TEXT_28_LINES;
+        
+        var foundKeywords = JavaScriptSyntaxTree
+            .ParseText(content);
+
+        var z = 2;
+
+        // Assert.Contains(
+        //     foundKeywords, 
+        //     x => x == keyword);
+    }
+    
     // [Fact]
     // public void TestSingularKeywordRecognition()
     // {

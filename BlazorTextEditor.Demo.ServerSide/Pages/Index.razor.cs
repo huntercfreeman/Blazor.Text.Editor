@@ -15,27 +15,35 @@ public partial class Index
     {
         TextEditorService.RegisterCSharpTextEditor(
             TextEditorFacts.CSharpTextEditor,
-            TestData.C_SHARP_EXAMPLE_TEXT);
+            TestData.CSharp.EXAMPLE_TEXT_173_LINES);
+        
+        TextEditorService.RegisterCssTextEditor(
+            TextEditorFacts.CssTextEditor,
+            TestData.Css.EXAMPLE_TEXT_21_LINES);
+        
+        TextEditorService.RegisterFSharpTextEditor(
+            TextEditorFacts.FSharpTextEditor,
+            TestData.FSharp.EXAMPLE_TEXT_21_LINES);
         
         TextEditorService.RegisterHtmlTextEditor(
             TextEditorFacts.HtmlTextEditor,
-            TestData.HTML_EXAMPLE_TEXT);
-        
-        TextEditorService.RegisterRazorTextEditor(
-            TextEditorFacts.RazorTextEditor,
-            TestData.RAZOR_EXAMPLE_TEXT);
+            TestData.Html.EXAMPLE_TEXT_19_LINES);
         
         TextEditorService.RegisterJavaScriptTextEditor(
             TextEditorFacts.JavaScriptTextEditor,
-            TestData.JAVA_SCRIPT_EXAMPLE_TEXT);
-        
-        TextEditorService.RegisterTypeScriptTextEditor(
-            TextEditorFacts.TypeScriptTextEditor,
-            TestData.TYPE_SCRIPT_EXAMPLE_TEXT);
+            TestData.JavaScript.EXAMPLE_TEXT_28_LINES);
         
         TextEditorService.RegisterPlainTextEditor(
             TextEditorFacts.PlainTextEditor,
-            TestData.PLAIN_EXAMPLE_TEXT);
+            TestData.Plain.EXAMPLE_TEXT_25_LINES);
+        
+        TextEditorService.RegisterRazorTextEditor(
+            TextEditorFacts.RazorTextEditor,
+            TestData.Razor.EXAMPLE_TEXT_20_LINES);
+        
+        TextEditorService.RegisterTypeScriptTextEditor(
+            TextEditorFacts.TypeScriptTextEditor,
+            TestData.TypeScript.EXAMPLE_TEXT_28_LINES);
         
         base.OnInitialized();
     }

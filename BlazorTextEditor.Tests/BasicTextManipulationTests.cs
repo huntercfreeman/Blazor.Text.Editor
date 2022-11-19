@@ -34,7 +34,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
     {
         var cursor = new TextEditorCursor((0, 0), true);
 
-        var content = TestData.C_SHARP_EXAMPLE_TEXT;
+        var content = TestData.CSharp.EXAMPLE_TEXT_173_LINES;
         
         _textEditorService.InsertText(
             new InsertTextTextEditorBaseAction(

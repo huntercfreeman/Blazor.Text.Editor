@@ -2,7 +2,9 @@
 
 public static partial class TestData
 {
-    public const string PLAIN_EXAMPLE_TEXT = @"FROM: https://www.poetryfoundation.org/poems/46954/mary-had-a-little-lamb
+    public static class Plain
+    {
+        public const string EXAMPLE_TEXT_25_LINES = @"FROM: https://www.poetryfoundation.org/poems/46954/mary-had-a-little-lamb
 
 ""Mary had a little lamb,""
 BY SARAH JOSEPHA HALE
@@ -27,4 +29,5 @@ Why, Mary loves the lamb, you know,
 The teacher did reply.
 
 Source: The Dorling Kindersley Book of Nursery Rhymes (2000)";
+    }
 }
