@@ -8,9 +8,9 @@ namespace BlazorTextEditor.RazorLib.Analysis.CSharp;
 
 public class TextEditorCSharpLexer : ILexer
 {
-    public async Task<ImmutableArray<TextEditorTextSpan>> Lex(string content)
+    public async Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
-        var syntaxTree = CSharpSyntaxTree.ParseText(content);
+        var syntaxTree = CSharpSyntaxTree.ParseText(text);
 
         var syntaxNodeRoot = await syntaxTree.GetRootAsync();
 

@@ -5,10 +5,10 @@ namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 
 public class TextEditorJavaScriptLexer : ILexer
 {
-    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string content)
+    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
         var textEditorTextSpans = 
-            JavaScriptSyntaxTree.ParseText(content);
+            JavaScriptSyntaxTree.ParseText(text);
 
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }

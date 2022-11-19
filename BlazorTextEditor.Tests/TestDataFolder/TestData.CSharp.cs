@@ -4,6 +4,15 @@ public static partial class TestData
 {
     public static class CSharp
     {
+        public const string EXAMPLE_TEXT_8_LINES = @"namespace BlazorTreeView.RazorLib;
+public class MyClass
+{
+    public void MyMethod()
+    {
+        return;
+    }
+}";
+        
         public const string EXAMPLE_TEXT_173_LINES = @"using System.Collections.Immutable;
 using BlazorTreeView.RazorLib.Store.TreeViewCase;
 using Fluxor;
