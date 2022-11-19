@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript;
+using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
 
 namespace BlazorTextEditor.Tests.Lexers;
@@ -6,42 +8,37 @@ namespace BlazorTextEditor.Tests.Lexers;
 public class LexJavaScriptTests
 {
     [Fact]
-    public void TestSingularKeywordRecognition()
+    public async Task LexKeywords()
     {
-        var content = TestData.JavaScript.EXAMPLE_TEXT_28_LINES;
+        var text = TestData.JavaScript.EXAMPLE_TEXT_28_LINES;
+
+        var expectedKeywordTextEditorTextSpans = new[]
+        {
+            new TextEditorTextSpan(126, 128, 1),
+            new TextEditorTextSpan(137, 145, 1),
+            new TextEditorTextSpan(212, 217, 1),
+            new TextEditorTextSpan(225, 228, 1),
+            new TextEditorTextSpan(244, 249, 1),
+            new TextEditorTextSpan(257, 260, 1),
+            new TextEditorTextSpan(277, 280, 1),
+            new TextEditorTextSpan(311, 314, 1),
+            new TextEditorTextSpan(346, 348, 1),
+            new TextEditorTextSpan(439, 445, 1),
+            new TextEditorTextSpan(470, 475, 1),
+            new TextEditorTextSpan(502, 507, 1),
+            new TextEditorTextSpan(532, 537, 1),
+        };
         
-        var foundKeywords = JavaScriptSyntaxTree
-            .ParseText(content);
+        var javaScriptLexer = new TextEditorJavaScriptLexer();
 
-        var z = 2;
+        var textEditorTextSpans = 
+            await javaScriptLexer.Lex(text);
 
-        // Assert.Contains(
-        //     foundKeywords, 
-        //     x => x == keyword);
+        textEditorTextSpans = textEditorTextSpans
+            .Where(x => x.DecorationByte == (byte)JavaScriptDecorationKind.Keyword)
+            .OrderBy(x => x.StartingIndexInclusive)
+            .ToImmutableArray();
+        
+        Assert.Equal(expectedKeywordTextEditorTextSpans, textEditorTextSpans);
     }
-    
-    // [Fact]
-    // public void TestSingularKeywordRecognition()
-    // {
-    //     var keyword = JavaScriptKeywords.FalseKeyword;
-    //     
-    //     var foundKeywords = JavaScriptSyntaxTree
-    //         .ParseText(keyword);
-    //
-    //     Assert.Contains(
-    //         foundKeywords, 
-    //         x => x == keyword);
-    // }
-    //
-    // [Fact]
-    // public void TestAllKeywordsRecognition()
-    // {
-    //     var content = string.Join(' ', JavaScriptKeywords.All);
-    //     var expectedCountOfKeywords = JavaScriptKeywords.All.Length;
-    //     
-    //     var foundKeywords = JavaScriptSyntaxTree
-    //         .ParseText(content);
-    //
-    //     Assert.Equal(expectedCountOfKeywords, foundKeywords.Count);
-    // }
 }
