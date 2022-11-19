@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 
 public static class JavaScriptKeywords
@@ -48,4 +50,54 @@ public static class JavaScriptKeywords
     public const string WhileKeyword = "while";
     public const string WithKeyword = "with";
     public const string YieldKeyword = "yield";
+    
+    public static readonly ImmutableArray<string> All = new[]
+    {
+        AwaitKeyword,
+        BreakKeyword,
+        CaseKeyword,
+        CatchKeyword,
+        ClassKeyword,
+        ConstKeyword,
+        ContinueKeyword,
+        DebuggerKeyword,
+        DefaultKeyword,
+        DeleteKeyword,
+        DoKeyword,
+        ElseKeyword,
+        EnumKeyword,
+        ExportKeyword,
+        ExtendsKeyword,
+        FalseKeyword,
+        FinallyKeyword,
+        ForKeyword,
+        FunctionKeyword,
+        IfKeyword,
+        ImplementsKeyword,
+        ImportKeyword,
+        InKeyword,
+        InstanceofKeyword,
+        InterfaceKeyword,
+        LetKeyword,
+        NewKeyword,
+        NullKeyword,
+        PackageKeyword,
+        PrivateKeyword,
+        ProtectedKeyword,
+        PublicKeyword,
+        ReturnKeyword,
+        SuperKeyword,
+        SwitchKeyword,
+        StaticKeyword,
+        ThisKeyword,
+        ThrowKeyword,
+        TryKeyword,
+        TrueKeyword,
+        TypeofKeyword,
+        VarKeyword,
+        VoidKeyword,
+        WhileKeyword,
+        WithKeyword,
+        YieldKeyword,
+    }.ToImmutableArray();
 }
