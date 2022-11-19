@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript;
 using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
@@ -132,8 +133,8 @@ public class TextEditorService : ITextEditorService
     {
         var textEditorBase = new TextEditorBase(
             initialContent,
-            null,
-            null,
+            new TextEditorJavaScriptLexer(),
+            new TextEditorJavaScriptDecorationMapper(),
             null,
             textEditorKey);
         

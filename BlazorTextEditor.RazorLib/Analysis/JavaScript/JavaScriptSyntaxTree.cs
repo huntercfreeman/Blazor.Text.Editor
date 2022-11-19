@@ -68,10 +68,14 @@ public class JavaScriptSyntaxTree
                 
                 if (foundKeyword is not null)
                 {
-                    FoundKeyword(
-                        wordBuilderStartingIndexInclusive, 
-                        stringWalker.PositionIndex);
+                    textEditorTextSpans.Add(
+                        new TextEditorTextSpan(
+                            wordBuilderStartingIndexInclusive,
+                            stringWalker.PositionIndex,
+                            (byte)JavaScriptDecorationKind.Keyword));
                 }
+                
+                ResetFoundKeywordState();
             }
             else
             {
@@ -104,25 +108,24 @@ public class JavaScriptSyntaxTree
             
             if (foundKeyword is not null)
             {
-                FoundKeyword(
-                    wordBuilderStartingIndexInclusive, 
-                    stringWalker.PositionIndex);
+                textEditorTextSpans.Add(
+                    new TextEditorTextSpan(
+                        wordBuilderStartingIndexInclusive,
+                        stringWalker.PositionIndex,
+                        (byte)JavaScriptDecorationKind.Keyword));
+                
+                ResetFoundKeywordState();
             }
         }
 
         return textEditorTextSpans;
 
-        void FoundKeyword(
-            int startingIndexInclusive, 
-            int endingIndexExclusive)
+        void ResetFoundKeywordState()
         {
-            textEditorTextSpans.Add(
-                new TextEditorTextSpan(
-                    startingIndexInclusive,
-                    endingIndexExclusive,
-                    (byte)JavaScriptDecorationKind.Keyword));
-            
             wordBuilder.Clear();
+
+            wordBuilderStartingIndexInclusive = -1;
+            
             possibleKeywordsState = JavaScriptKeywords.All.ToList();
         }
     }
