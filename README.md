@@ -1,5 +1,9 @@
 # Blazor.Text.Editor
 
+Demo website:
+(Clear your cache if you see an older version as the site uses WebAssembly)
+- https://hunter-freeman-dev.azurewebsites.net/
+
 ![Example GIF](/Images/Gifs/root-readme-gif.gif)
 
 ***Blazor.Text.Editor*** is a Text Editor component library using
