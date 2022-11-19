@@ -154,8 +154,8 @@ public class TextEditorService : ITextEditorService
     {
         var textEditorBase = new TextEditorBase(
             initialContent,
-            null,
-            null,
+            new TextEditorJavaScriptLexer(),
+            new TextEditorJavaScriptDecorationMapper(),
             null,
             textEditorKey);
         
