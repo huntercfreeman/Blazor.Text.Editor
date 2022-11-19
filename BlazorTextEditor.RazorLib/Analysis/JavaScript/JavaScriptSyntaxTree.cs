@@ -12,6 +12,9 @@ public class JavaScriptSyntaxTree
     /// <returns></returns>
     public static List<string> ParseText(string content)
     {
+        // Will contain the final result which will be returned.
+        var foundKeywords = new List<string>();
+        
         // A single while loop will go character by character
         // until the end of the file for this method.
         var stringWalker = new StringWalker(content);
@@ -37,10 +40,64 @@ public class JavaScriptSyntaxTree
         
         stringWalker.WhileNotEndOfFile(() =>
         {
-            if (stringWalker.CheckForSubstringRange(JavaScriptKeywords.All))
+            if (JavaScriptWhitespace.WHITESPACE
+                .Contains(stringWalker.CurrentCharacter.ToString()))
             {
+                // Check if wordBuilder contains a keyword
+
+                // Using .First as I am proceeding the presumption
+                // that .First() will short circuit and not evaluate
+                // the predicate on the remaining keywords.
+                //
+                // Whereas I presume .Single would have to Assert there
+                // was only one match by iterating through all the keywords.
+                //
+                // Not sure however if the keyword string comparisons
+                // would even be impactful enough on performance
+                // for this to be useful if it is true.
+                var foundKeyword = possibleKeywordsState
+                    .FirstOrDefault(keyword => 
+                        keyword == wordBuilder.ToString());
                 
+                if (foundKeyword is not null)
+                {
+                    FoundKeyword(foundKeyword);
+                }
             }
+            else
+            {
+                wordBuilder.Append(stringWalker.CurrentCharacter);
+                
+                possibleKeywordsState = possibleKeywordsState
+                    .Where(keyword =>
+                        keyword.StartsWith(wordBuilder.ToString()))
+                    .ToList();
+            }
+
+            return false;
         });
+        
+        // When the end of the file is found
+        // the final keyword, if there is no whitespace after it,
+        // the keyword will not be added to the list without this code
+        {
+            var foundKeyword = possibleKeywordsState
+                .FirstOrDefault(keyword =>
+                    keyword == wordBuilder.ToString());
+            
+            if (foundKeyword is not null)
+            {
+                FoundKeyword(foundKeyword);
+            }
+        }
+
+        return foundKeywords;
+
+        void FoundKeyword(string keyword)
+        {
+            foundKeywords.Add(keyword);
+            wordBuilder.Clear();
+            possibleKeywordsState = JavaScriptKeywords.All.ToList();
+        }
     }
 }
