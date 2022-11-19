@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.JavaScript;
+using BlazorTextEditor.RazorLib.Analysis.TypeScript;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
 
@@ -14,28 +14,26 @@ public class LexTypeScriptTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(126, 128, 1),
-            new TextEditorTextSpan(137, 145, 1),
-            new TextEditorTextSpan(212, 217, 1),
-            new TextEditorTextSpan(225, 228, 1),
-            new TextEditorTextSpan(244, 249, 1),
-            new TextEditorTextSpan(257, 260, 1),
-            new TextEditorTextSpan(277, 280, 1),
-            new TextEditorTextSpan(311, 314, 1),
-            new TextEditorTextSpan(346, 348, 1),
-            new TextEditorTextSpan(439, 445, 1),
-            new TextEditorTextSpan(470, 475, 1),
-            new TextEditorTextSpan(502, 507, 1),
-            new TextEditorTextSpan(532, 537, 1),
+            new TextEditorTextSpan(0, 6, 1),
+            new TextEditorTextSpan(31, 35, 1),
+            new TextEditorTextSpan(60, 66, 1),
+            new TextEditorTextSpan(82, 86, 1),
+            new TextEditorTextSpan(108, 113, 1),
+            new TextEditorTextSpan(148, 157, 1),
+            new TextEditorTextSpan(201, 210, 1),
+            new TextEditorTextSpan(412, 420, 1),
+            new TextEditorTextSpan(487, 493, 1),
+            new TextEditorTextSpan(670, 675, 1),
+            new TextEditorTextSpan(756, 761, 1),
         };
         
-        var javaScriptLexer = new TextEditorJavaScriptLexer();
+        var typeScriptLexer = new TextEditorTypeScriptLexer();
 
         var textEditorTextSpans = 
-            await javaScriptLexer.Lex(text);
+            await typeScriptLexer.Lex(text);
 
         textEditorTextSpans = textEditorTextSpans
-            .Where(x => x.DecorationByte == (byte)JavaScriptDecorationKind.Keyword)
+            .Where(x => x.DecorationByte == (byte)TypeScriptDecorationKind.Keyword)
             .OrderBy(x => x.StartingIndexInclusive)
             .ToImmutableArray();
         
