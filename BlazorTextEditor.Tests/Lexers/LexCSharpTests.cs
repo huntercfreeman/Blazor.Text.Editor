@@ -11,7 +11,8 @@ public class LexCSharpTests
     [Fact]
     public async Task LexKeywords()
     {
-        var text = TestData.CSharp.EXAMPLE_TEXT_8_LINES;
+        var text = TestData.CSharp.EXAMPLE_TEXT_8_LINES
+            .ReplaceLineEndings("\n");
 
         var expectedKeywordTextEditorTextSpans = new[]
         {

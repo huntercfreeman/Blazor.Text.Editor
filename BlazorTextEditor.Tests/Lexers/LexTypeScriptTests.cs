@@ -10,7 +10,8 @@ public class LexTypeScriptTests
     [Fact]
     public async Task LexKeywords()
     {
-        var text = TestData.TypeScript.EXAMPLE_TEXT_28_LINES;
+        var text = TestData.TypeScript.EXAMPLE_TEXT_28_LINES
+            .ReplaceLineEndings("\n");
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
