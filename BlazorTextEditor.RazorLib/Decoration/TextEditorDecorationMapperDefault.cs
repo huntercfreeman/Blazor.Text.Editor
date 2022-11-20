@@ -1,6 +1,6 @@
 ﻿namespace BlazorTextEditor.RazorLib.Decoration;
 
-public class DecorationMapperDefault : IDecorationMapper
+public class TextEditorDecorationMapperDefault : IDecorationMapper
 {
     public string Map(byte decorationByte)
     {

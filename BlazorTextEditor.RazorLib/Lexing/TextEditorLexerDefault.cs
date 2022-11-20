@@ -2,7 +2,7 @@
 
 namespace BlazorTextEditor.RazorLib.Lexing;
 
-public class LexerDefault : ILexer
+public class TextEditorLexerDefault : ILexer
 {
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {

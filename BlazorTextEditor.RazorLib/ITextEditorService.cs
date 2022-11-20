@@ -92,8 +92,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
     /// </summary>
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey,
@@ -107,8 +107,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
     /// </summary>
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
@@ -167,8 +167,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
     /// </summary>
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,

@@ -490,14 +490,14 @@ public partial class TextEditorBase
 
     public void SetDecorationMapper(IDecorationMapper? decorationMapper)
     {
-        DecorationMapper = decorationMapper ?? new DecorationMapperDefault();
+        DecorationMapper = decorationMapper ?? new TextEditorDecorationMapperDefault();
 
         // TODO: Invoke an event to reapply the CSS classes?
     }
 
     public void SetLexerMapper(ILexer? lexer)
     {
-        Lexer = lexer ?? new LexerDefault();
+        Lexer = lexer ?? new TextEditorLexerDefault();
 
         // TODO: Invoke an event to reapply the CSS classes?
     }
