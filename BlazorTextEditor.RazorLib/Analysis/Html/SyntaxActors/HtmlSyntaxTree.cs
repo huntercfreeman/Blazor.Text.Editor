@@ -86,8 +86,8 @@ public static class HtmlSyntaxTree
                 {
                     var consumedCharacter = stringWalker.Consume();
 
-                    if (HtmlFacts.WHITESPACE.Contains(
-                            consumedCharacter.ToString()))
+                    if (WhitespaceFacts.ALL.Contains(
+                            consumedCharacter))
                         return false;
 
                     return true;

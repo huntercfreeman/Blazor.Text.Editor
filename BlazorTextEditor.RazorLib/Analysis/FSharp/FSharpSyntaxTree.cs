@@ -15,12 +15,12 @@ public class FSharpSyntaxTree
 
         var wordBuilderStartingIndexInclusive = -1;
         
-        var possibleKeywordsState = FSharpKeywords.All.ToList();
+        var possibleKeywordsState = FSharpKeywords.ALL.ToList();
         
         stringWalker.WhileNotEndOfFile(() =>
         {
-            if (FSharpWhitespace.WHITESPACE
-                .Contains(stringWalker.CurrentCharacter.ToString()))
+            if (WhitespaceFacts.ALL
+                .Contains(stringWalker.CurrentCharacter))
             {
                 // Check if wordBuilder contains a keyword
 
@@ -98,7 +98,7 @@ public class FSharpSyntaxTree
 
             wordBuilderStartingIndexInclusive = -1;
             
-            possibleKeywordsState = FSharpKeywords.All.ToList();
+            possibleKeywordsState = FSharpKeywords.ALL.ToList();
         }
     }
 }

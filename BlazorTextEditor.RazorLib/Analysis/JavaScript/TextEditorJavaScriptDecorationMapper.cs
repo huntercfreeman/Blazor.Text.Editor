@@ -1,5 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
-using BlazorTextEditor.RazorLib.Decoration;
+﻿using BlazorTextEditor.RazorLib.Decoration;
 
 namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 

@@ -1,15 +1,14 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.TypeScript;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace BlazorTextEditor.RazorLib.Analysis.FSharp;
+namespace BlazorTextEditor.RazorLib.Analysis.Css;
 
-public class TextEditorFSharpLexer : ILexer
+public class TextEditorCssLexer : ILexer
 {
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
         var textEditorTextSpans = 
-            TypeScriptSyntaxTree.ParseText(text);
+            CssSyntaxTree.ParseText(text);
 
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }

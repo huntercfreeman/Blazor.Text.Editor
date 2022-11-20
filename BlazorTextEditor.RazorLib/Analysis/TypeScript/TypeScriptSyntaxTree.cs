@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using BlazorTextEditor.RazorLib.Analysis.TypeScript;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.TypeScript;
@@ -44,12 +43,12 @@ public class TypeScriptSyntaxTree
         // After finding a keyword, reset 'possibleKeywordsState' list
         // back to TypeScriptKeywords.All.ToList(); As well,
         // clear 'wordBuilder'
-        var possibleKeywordsState = TypeScriptKeywords.All.ToList();
+        var possibleKeywordsState = TypeScriptKeywords.ALL.ToList();
         
         stringWalker.WhileNotEndOfFile(() =>
         {
-            if (TypeScriptWhitespace.WHITESPACE
-                .Contains(stringWalker.CurrentCharacter.ToString()))
+            if (WhitespaceFacts.ALL
+                .Contains(stringWalker.CurrentCharacter))
             {
                 // Check if wordBuilder contains a keyword
 
@@ -127,7 +126,7 @@ public class TypeScriptSyntaxTree
 
             wordBuilderStartingIndexInclusive = -1;
             
-            possibleKeywordsState = TypeScriptKeywords.All.ToList();
+            possibleKeywordsState = TypeScriptKeywords.ALL.ToList();
         }
     }
 }

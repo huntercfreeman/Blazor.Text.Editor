@@ -43,12 +43,12 @@ public class JavaScriptSyntaxTree
         // After finding a keyword, reset 'possibleKeywordsState' list
         // back to JavaScriptKeywords.All.ToList(); As well,
         // clear 'wordBuilder'
-        var possibleKeywordsState = JavaScriptKeywords.All.ToList();
+        var possibleKeywordsState = JavaScriptKeywords.ALL.ToList();
         
         stringWalker.WhileNotEndOfFile(() =>
         {
-            if (JavaScriptWhitespace.WHITESPACE
-                .Contains(stringWalker.CurrentCharacter.ToString()))
+            if (WhitespaceFacts.ALL
+                .Contains(stringWalker.CurrentCharacter))
             {
                 // Check if wordBuilder contains a keyword
 
@@ -126,7 +126,7 @@ public class JavaScriptSyntaxTree
 
             wordBuilderStartingIndexInclusive = -1;
             
-            possibleKeywordsState = JavaScriptKeywords.All.ToList();
+            possibleKeywordsState = JavaScriptKeywords.ALL.ToList();
         }
     }
 }
