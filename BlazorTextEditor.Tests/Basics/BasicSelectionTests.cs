@@ -1,4 +1,4 @@
-﻿namespace BlazorTextEditor.Tests;
+﻿namespace BlazorTextEditor.Tests.Basics;
 
 /// <summary>
 /// When one sees a method of the pattern
@@ -9,7 +9,7 @@
 /// BUT they then let go of the shift key and
 /// hit ArrowLeft in this example.
 /// </summary>
-public class SelectionTests
+public class BasicSelectionTests
 {
     [Fact]
     public void SelectText()

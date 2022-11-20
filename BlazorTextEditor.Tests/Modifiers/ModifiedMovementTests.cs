@@ -1,4 +1,4 @@
-﻿namespace BlazorTextEditor.Tests;
+﻿namespace BlazorTextEditor.Tests.Modifiers;
 
 public class ModifiedMovementTests
 {

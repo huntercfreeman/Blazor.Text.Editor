@@ -12,12 +12,12 @@ namespace BlazorTextEditor.Tests;
 /// </summary>
 public class BlazorTextEditorTestingBase
 {
-    protected readonly ServiceProvider _serviceProvider;
-    protected readonly ITextEditorService _textEditorService;
-    protected readonly TextEditorKey _textEditorKey = TextEditorKey.NewTextEditorKey();
+    protected readonly ServiceProvider ServiceProvider;
+    protected readonly ITextEditorService TextEditorService;
+    protected readonly TextEditorKey TextEditorKey = TextEditorKey.NewTextEditorKey();
 
-    protected TextEditorBase _textEditor => _textEditorService.TextEditorStates.TextEditorList
-        .First(x => x.Key == _textEditorKey);
+    protected TextEditorBase TextEditor => TextEditorService.TextEditorStates.TextEditorList
+        .First(x => x.Key == TextEditorKey);
 
     public BlazorTextEditorTestingBase()
     {
@@ -37,16 +37,16 @@ public class BlazorTextEditorTestingBase
         services
             .AddFluxor(options => options
                 .ScanAssemblies(
-                    typeof(BlazorTextEditor.RazorLib.ServiceCollectionExtensions)
+                    typeof(RazorLib.ServiceCollectionExtensions)
                         .Assembly));
 
-        _serviceProvider = services.BuildServiceProvider();
+        ServiceProvider = services.BuildServiceProvider();
 
-        var store = _serviceProvider.GetRequiredService<IStore>();
+        var store = ServiceProvider.GetRequiredService<IStore>();
 
         store.InitializeAsync().Wait();
 
-        _textEditorService = _serviceProvider
+        TextEditorService = ServiceProvider
             .GetRequiredService<ITextEditorService>();
 
         var textEditor = new TextEditorBase(
@@ -54,8 +54,8 @@ public class BlazorTextEditorTestingBase
             null,
             null,
             null,
-            _textEditorKey);
+            TextEditorKey);
         
-        _textEditorService.RegisterCustomTextEditor(textEditor);
+        TextEditorService.RegisterCustomTextEditor(textEditor);
     }
 }

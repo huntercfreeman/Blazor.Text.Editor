@@ -1,6 +1,6 @@
-﻿namespace BlazorTextEditor.Tests;
+﻿namespace BlazorTextEditor.Tests.Basics;
 
-public class EditHistoryTests
+public class BasicEditHistoryTests
 {
     [Fact]
     public void SetEditHistory()

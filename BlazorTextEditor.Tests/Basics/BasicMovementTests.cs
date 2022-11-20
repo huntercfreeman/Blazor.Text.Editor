@@ -1,4 +1,4 @@
-﻿namespace BlazorTextEditor.Tests;
+﻿namespace BlazorTextEditor.Tests.Basics;
 
 public class BasicMovementTests
 {
