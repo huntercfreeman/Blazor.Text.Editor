@@ -1,4 +1,6 @@
-﻿namespace BlazorTextEditor.RazorLib.Analysis.FSharp;
+﻿using System.Collections.Immutable;
+
+namespace BlazorTextEditor.RazorLib.Analysis.FSharp;
 
 public class FSharpKeywords
 {
@@ -68,4 +70,75 @@ public class FSharpKeywords
     public const string WithKeyword = "with";
     public const string YieldKeyword = "yield";
     public const string ConstKeyword = "const";
+    
+    public static readonly ImmutableArray<string> All = new[]
+    {
+        AbstractKeyword,
+        AndKeyword,
+        AsKeyword,
+        AssertKeyword,
+        BaseKeyword,
+        BeginKeyword,
+        ClassKeyword,
+        DefaultKeyword,
+        DelegateKeyword,
+        DoKeyword,
+        DoneKeyword,
+        DowncastKeyword,
+        DowntoKeyword,
+        ElifKeyword,
+        ElseKeyword,
+        EndKeyword,
+        ExceptionKeyword,
+        ExternKeyword,
+        FalseKeyword,
+        FinallyKeyword,
+        FixedKeyword,
+        ForKeyword,
+        FunKeyword,
+        FunctionKeyword,
+        GlobalKeyword,
+        IfKeyword,
+        InKeyword,
+        InheritKeyword,
+        InlineKeyword,
+        InterfaceKeyword,
+        InternalKeyword,
+        LazyKeyword,
+        LetKeyword,
+        MatchKeyword,
+        MemberKeyword,
+        ModuleKeyword,
+        MutableKeyword,
+        NamespaceKeyword,
+        NewKeyword,
+        NotKeyword,
+        NullKeyword,
+        OfKeyword,
+        OpenKeyword,
+        OrKeyword,
+        OverrideKeyword,
+        PrivateKeyword,
+        PublicKeyword,
+        RecKeyword,
+        ReturnKeyword,
+        SelectKeyword,
+        StaticKeyword,
+        StructKeyword,
+        ThenKeyword,
+        ToKeyword,
+        TrueKeyword,
+        TryKeyword,
+        TypeKeyword,
+        UpcastKeyword,
+        UseKeyword,
+        ValKeyword,
+        VoidKeyword,
+        WhenKeyword,
+        WhileKeyword,
+        WithKeyword,
+        YieldKeyword,
+        ConstKeyword,
+    }.ToImmutableArray();
 }
+

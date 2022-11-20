@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Analysis.CSharp;
-using BlazorTextEditor.RazorLib.Analysis.JavaScript;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
 
