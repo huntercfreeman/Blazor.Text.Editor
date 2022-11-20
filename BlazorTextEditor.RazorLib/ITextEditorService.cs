@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
+using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript;
@@ -107,8 +108,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorFSharpLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorFSharpDecorationMapper"/>
     /// </summary>
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
