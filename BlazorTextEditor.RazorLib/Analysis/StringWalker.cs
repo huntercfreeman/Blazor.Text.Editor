@@ -265,6 +265,54 @@ public class StringWalker
             _ = Consume();
         }
     }
+    
+    /// <summary>
+    /// While writing the keyword lexing for the various
+    /// ILexer implementations.
+    /// <br/><br/>
+    /// I found a 'consume word' like logic was common
+    /// so adding this method here to be shared.
+    /// </summary>
+    /// <returns></returns>
+    public (TextEditorTextSpan textSpan, string value) ConsumeWord()
+    {
+        // The wordBuilder is appended to everytime a
+        // character is consumed.
+        var wordBuilder = new StringBuilder();
+
+        // wordBuilderStartingIndexInclusive == -1 is to mean
+        // that wordBuilder is empty. Once the first letter or digit
+        // (non whitespace) is read, then the wordBuilderStartingIndexInclusive
+        // will be set to a value other than -1.
+        var wordBuilderStartingIndexInclusive = -1;
+        
+        WhileNotEndOfFile(() =>
+        {
+            if (WhitespaceFacts.ALL
+                .Contains(CurrentCharacter))
+            {
+                return true;
+            }
+            
+            if (wordBuilderStartingIndexInclusive == -1)
+            {
+                // This is the start of a word
+                // as opposed to the continuation of a word
+
+                wordBuilderStartingIndexInclusive = PositionIndex;
+            }
+            
+            wordBuilder.Append(CurrentCharacter);
+
+            return false;
+        });
+
+        return (new TextEditorTextSpan(
+            wordBuilderStartingIndexInclusive,
+            PositionIndex,
+            0),
+                wordBuilder.ToString());
+    }
 
     public string GetText(TextEditorTextSpan textEditorTextSpan)
     {
