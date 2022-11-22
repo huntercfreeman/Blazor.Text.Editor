@@ -19,4 +19,5 @@
     --bte_notification-display-z-index: 15;
     --bte_notification-display-box-shadow-blur-radius: 2px;
     --bte_notification-display-toolbar-height: 2rem;
+    --bte_scrollbar-size: 10px;
 }
