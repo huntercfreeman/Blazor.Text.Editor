@@ -139,6 +139,8 @@ public partial class TextEditorDisplay : TextEditorView
     /// </summary>
     [Parameter]
     public bool IncludeDefaultAutocompleteMenu { get; set; } = true;
+    
+    private const double SCROLLBAR_SIZE_IN_PIXELS = 30;
 
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromSeconds(1);
@@ -893,6 +895,58 @@ public partial class TextEditorDisplay : TextEditorView
 
         return $"{top} {height} {left} {widthCssStyleString}";
     }
+    
+    private string GetScrollbarHorizontalStyleCss()
+    {
+        var gutterWidthInPixels = GetGutterWidthInPixels();
+        
+        var left = $"left: {gutterWidthInPixels}px;";
+
+        var width = $"width: calc(100% - {gutterWidthInPixels}px);";
+
+        return $"{left} {width}";
+    }
+    
+    private string GetScrollbarVerticalStyleCss()
+    {
+        var gutterWidthInPixels = GetGutterWidthInPixels();
+
+        var left = $"left: calc(100% - {SCROLLBAR_SIZE_IN_PIXELS}px);";
+
+        return $"{left}";
+    }
+    
+    private string GetScrollbarConnectorStyleCss()
+    {
+        var gutterWidthInPixels = GetGutterWidthInPixels();
+
+        var left = $"left: calc(100% - {gutterWidthInPixels}px - {SCROLLBAR_SIZE_IN_PIXELS}px);";
+
+        return $"{left}";
+    }
+    
+    private double GetGutterWidthInPixels()
+    {
+        var safeTextEditorReference = MutableReferenceToTextEditor;
+
+        if (safeTextEditorReference is null)
+            return 0;
+
+        if (CharacterWidthAndRowHeight is null)
+            return 0;
+
+        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
+            .ToString()
+            .Length;
+
+        var gutterWidthInPixels = mostDigitsInARowLineNumber *
+                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+        gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
+                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+
+        return gutterWidthInPixels;
+    }
 
     private void AppendTextEscaped(
         StringBuilder spanBuilder,
@@ -950,7 +1004,8 @@ public partial class TextEditorDisplay : TextEditorView
                 new(0, 0, 0, 0),
                 new(0, 0, 0, 0),
                 new(0, 0, 0, 0),
-                new(0, 0, 0, 0));
+                new(0, 0, 0, 0),
+                request.ScrollPosition);
         }
 
         var verticalStartingIndex = (int)Math.Floor(
@@ -1080,7 +1135,8 @@ public partial class TextEditorDisplay : TextEditorView
             leftBoundary,
             rightBoundary,
             topBoundary,
-            bottomBoundary);
+            bottomBoundary,
+            request.ScrollPosition);
     }
 
     /// <summary>

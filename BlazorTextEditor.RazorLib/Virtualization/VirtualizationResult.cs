@@ -7,4 +7,5 @@ public record VirtualizationResult<T>(
     VirtualizationBoundary LeftVirtualizationBoundary,
     VirtualizationBoundary RightVirtualizationBoundary,
     VirtualizationBoundary TopVirtualizationBoundary,
-    VirtualizationBoundary BottomVirtualizationBoundary);
+    VirtualizationBoundary BottomVirtualizationBoundary,
+    VirtualizationScrollPosition VirtualizationScrollPosition);
