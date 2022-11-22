@@ -34,6 +34,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "z" => TextEditorCommandFacts.Undo,
             "y" => TextEditorCommandFacts.Redo,
             KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandFacts.ScrollLineDown,
+            KeyboardKeyFacts.MovementKeys.ARROW_UP => TextEditorCommandFacts.ScrollLineUp,
             _ => null,
         };
 

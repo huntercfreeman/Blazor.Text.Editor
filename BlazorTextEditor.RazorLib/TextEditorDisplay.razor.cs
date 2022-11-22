@@ -394,15 +394,10 @@ public partial class TextEditorDisplay : TextEditorView
 
         if (keyboardEventArgs.Key != "Shift" &&
             keyboardEventArgs.Key != "Control" &&
-            keyboardEventArgs.Key != "Alt")
+            keyboardEventArgs.Key != "Alt" &&
+            (command?.ShouldScrollCursorIntoView ?? true))
         {
-
-            // TODO: Ctrl + ArrowDown should not scroll the cursor into view as it scrolls the document by 1 line without moving the cursor. This however is not a good way of going about not scrolling the cursor into view and it should be changed.
-            if (keyboardEventArgs.Key != KeyboardKeyFacts.MovementKeys.ARROW_DOWN ||
-                !keyboardEventArgs.CtrlKey)
-            {
-                primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
-            }
+            primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
         }
 
         var afterOnKeyDownAsync = AfterOnKeyDownAsync
