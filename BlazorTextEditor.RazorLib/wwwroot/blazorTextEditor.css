@@ -69,6 +69,11 @@
     font-family: monospace;
 }
 
+.bte_scrollbar-section {
+    width: 100%;
+    height: 100%;
+}
+
 .bte_scrollbar-horizontal {
     position: sticky;
     top: calc(100% - var(--bte_scrollbar-size));

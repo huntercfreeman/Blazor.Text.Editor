@@ -9,12 +9,11 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class GutterSection : ComponentBase
 {
     [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
-
-    [Parameter, EditorRequired]
     public TextEditorBase TextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
+    [CascadingParameter]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
+    [CascadingParameter]
+    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
     
     private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
     {

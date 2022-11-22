@@ -10,12 +10,12 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class RowSection : ComponentBase
 {
     [CascadingParameter]
+    public TextEditorBase TextEditor { get; set; } = null!;
+    [CascadingParameter]
+    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
+    [CascadingParameter]
     public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
     
-    [Parameter, EditorRequired]
-    public TextEditorBase TextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     [Parameter, EditorRequired]
     public bool GlobalShowNewlines { get; set; }
     [Parameter, EditorRequired]

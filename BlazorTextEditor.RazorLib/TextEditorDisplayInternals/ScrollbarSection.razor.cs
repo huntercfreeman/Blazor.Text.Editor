@@ -6,9 +6,9 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 
 public partial class ScrollbarSection : ComponentBase
 {
-    [Parameter, EditorRequired]
+    [CascadingParameter]
     public TextEditorBase TextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
+    [CascadingParameter]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     
     private const double SCROLLBAR_SIZE_IN_PIXELS = 30;
