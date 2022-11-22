@@ -40,6 +40,8 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "y" => TextEditorCommandFacts.Redo,
             KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandFacts.ScrollLineDown,
             KeyboardKeyFacts.MovementKeys.ARROW_UP => TextEditorCommandFacts.ScrollLineUp,
+            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.CursorMovePageBottom,
+            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.CursorMovePageTop,
             _ => null,
         };
 

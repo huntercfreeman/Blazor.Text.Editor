@@ -205,4 +205,22 @@ public static class TextEditorCommandFacts
         false,
         "Scroll Page Up",
         "defaults_scroll-page-up");
+    
+    public static readonly TextEditorCommand CursorMovePageBottom = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .CursorMovePageBottomAsync();
+        },
+        false,
+        "Move Cursor to Bottom of the Page",
+        "defaults_cursor-move-page-bottom");
+    
+    public static readonly TextEditorCommand CursorMovePageTop = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .CursorMovePageTopAsync();
+        },
+        false,
+        "Move Cursor to Top of the Page",
+        "defaults_cursor-move-page-top");
 }

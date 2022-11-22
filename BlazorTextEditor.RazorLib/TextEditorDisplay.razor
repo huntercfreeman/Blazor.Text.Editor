@@ -57,6 +57,11 @@
                                                EntriesProviderFunc="EntriesProvider"
                                                Context="virtualizationResult">
 
+                            @{
+                                // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
+                                _mostRecentlyRenderedVirtualizationResult = virtualizationResult;
+                            }
+                            
                             <CascadingValue Value="textEditor">
                                 <CascadingValue Value="CharacterWidthAndRowHeight">
                                     <CascadingValue Value="virtualizationResult">

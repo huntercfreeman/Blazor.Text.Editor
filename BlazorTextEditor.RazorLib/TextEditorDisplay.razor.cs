@@ -172,6 +172,9 @@ public partial class TextEditorDisplay : TextEditorView
     private TextEditorHeader? _textEditorHeader;
     private TextEditorFooter? _textEditorFooter;
     private MeasureCharacterWidthAndRowHeight? _measureCharacterWidthAndRowHeightComponent;
+    
+    // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
+    private VirtualizationResult<List<RichCharacter>>? _mostRecentlyRenderedVirtualizationResult;
 
     public bool ShouldMeasureDimensions { get; set; } = true;
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
@@ -995,6 +998,38 @@ public partial class TextEditorDisplay : TextEditorView
     {
         await MutateScrollVerticalPositionByPixelsAsync(
             pages * (WidthAndHeightOfTextEditor?.HeightInPixels ?? 0));
+    }
+    
+    public async Task CursorMovePageBottomAsync()
+    {
+        var localMostRecentlyRenderedVirtualizationResult = _mostRecentlyRenderedVirtualizationResult;
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if ((localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false) &&
+            textEditor is not null)
+        {
+            var lastEntry = localMostRecentlyRenderedVirtualizationResult.Entries.Last();
+
+            var lastEntriesRowLength = textEditor.GetLengthOfRow(lastEntry.Index);
+            
+            PrimaryCursor.IndexCoordinates = (lastEntry.Index, lastEntriesRowLength);
+        }
+    }
+    
+    public async Task CursorMovePageTopAsync()
+    {
+        var localMostRecentlyRenderedVirtualizationResult = _mostRecentlyRenderedVirtualizationResult;
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if ((localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false) &&
+            textEditor is not null)
+        {
+            var firstEntry = localMostRecentlyRenderedVirtualizationResult.Entries.First();
+
+            var firstEntriesRowLength = textEditor.GetLengthOfRow(firstEntry.Index);
+            
+            PrimaryCursor.IndexCoordinates = (firstEntry.Index, firstEntriesRowLength);
+        }
     }
 
     protected override void Dispose(bool disposing)
