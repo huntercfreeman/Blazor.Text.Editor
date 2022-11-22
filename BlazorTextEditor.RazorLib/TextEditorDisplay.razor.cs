@@ -973,20 +973,28 @@ public partial class TextEditorDisplay : TextEditorView
                 KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
                !keyboardEventArgs.CtrlKey;
     }
-
-    public async Task MutateScrollVerticalPositionAsync(int lines)
+    
+    public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
     {
-        // TODO: what happens if I use JavaScript to set the scrollTop to a value
-        // greater than the maximum possible scrollTop value? Do I need to check this things on my end?
-
         await JsRuntime.InvokeVoidAsync(
-            "blazorTextEditor.mutateScrollVerticalPosition",
+            "blazorTextEditor.mutateScrollVerticalPositionByPixels",
             TextEditorContentId,
-            lines,
-            CharacterWidthAndRowHeight?.RowHeightInPixels ?? 0);
+            pixels);
         
         await InvokeAsync(StateHasChanged);
         _virtualizationDisplay?.InvokeEntriesProviderFunc();
+    }
+
+    public async Task MutateScrollVerticalPositionByLinesAsync(double lines)
+    {
+        await MutateScrollVerticalPositionByPixelsAsync(
+            lines * (CharacterWidthAndRowHeight?.RowHeightInPixels ?? 0));
+    }
+    
+    public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
+    {
+        await MutateScrollVerticalPositionByPixelsAsync(
+            pages * (WidthAndHeightOfTextEditor?.HeightInPixels ?? 0));
     }
 
     protected override void Dispose(bool disposing)

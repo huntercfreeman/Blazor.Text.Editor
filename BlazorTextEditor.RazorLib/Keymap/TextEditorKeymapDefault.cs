@@ -14,8 +14,13 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
 
             if (keyboardEventArgs.AltKey)
                 return AltModifiedKeymap(keyboardEventArgs);
-
-            return null;
+            
+            return keyboardEventArgs.Key switch
+            {
+                KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.ScrollPageDown,
+                KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.ScrollPageUp,
+                _ => null,
+            };
         };
 
     private static TextEditorCommand? CtrlModifiedKeymap(

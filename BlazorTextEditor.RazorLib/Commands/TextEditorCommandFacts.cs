@@ -173,18 +173,36 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand ScrollLineDown = new(async textEditorCommandParameter =>
         {
             await textEditorCommandParameter.TextEditorDisplay
-                .MutateScrollVerticalPositionAsync(1);
+                .MutateScrollVerticalPositionByLinesAsync(1);
         },
         false,
-        "Remeasure",
-        "defaults_remeasure");
+        "Scroll Line Down",
+        "defaults_scroll-line-down");
     
     public static readonly TextEditorCommand ScrollLineUp = new(async textEditorCommandParameter =>
         {
             await textEditorCommandParameter.TextEditorDisplay
-                .MutateScrollVerticalPositionAsync(-1);
+                .MutateScrollVerticalPositionByLinesAsync(-1);
         },
         false,
-        "Remeasure",
-        "defaults_remeasure");
+        "Scroll Line Up",
+        "defaults_scroll-line-up");
+    
+    public static readonly TextEditorCommand ScrollPageDown = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .MutateScrollVerticalPositionByPagesAsync(1);
+        },
+        false,
+        "Scroll Page Down",
+        "defaults_scroll-page-down");
+    
+    public static readonly TextEditorCommand ScrollPageUp = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .MutateScrollVerticalPositionByPagesAsync(-1);
+        },
+        false,
+        "Scroll Page Up",
+        "defaults_scroll-page-up");
 }

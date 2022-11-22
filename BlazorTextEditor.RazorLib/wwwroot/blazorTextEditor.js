@@ -222,10 +222,10 @@ window.blazorTextEditor = {
 
         intersectionObserver.disconnect();
     },
-    mutateScrollVerticalPosition: function (textEditorContentId, lines, rowHeightInPixels) {
+    mutateScrollVerticalPositionByPixels: function (textEditorContentId, pixels) {
         let textEditorContent = document.getElementById(textEditorContentId);
         
-        textEditorContent.scrollTop += (rowHeightInPixels * lines);
+        textEditorContent.scrollTop += pixels;
     },
     readClipboard: async function () {
         // First, ask the Permissions API if we have some kind of access to
