@@ -83,10 +83,12 @@
                         <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                                  TextEditorCursor="PrimaryCursor"
                                                  CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
+                                                 WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
                                                  TextEditorKey="TextEditorKey"
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
-                                                 TabIndex="TabIndex">
+                                                 TabIndex="TabIndex"
+                                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => _mostRecentlyRenderedVirtualizationResult">
 
                             <OnContextMenuRenderFragment>
                                 @if (OnContextMenuRenderFragment is not null)

@@ -61,6 +61,16 @@ window.blazorTextEditor = {
             });
         }
     },
+    scrollElementIntoView: function (intersectionObserverMapKey,
+                                     elementId) {
+
+        let element = document.getElementById(elementId);
+
+        element.scrollIntoView({
+            block: "nearest",
+            inline: "nearest"
+        });
+    },
     disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
 
         let intersectionObserverMapValue = this.cursorIntersectionObserverMap

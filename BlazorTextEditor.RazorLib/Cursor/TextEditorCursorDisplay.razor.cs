@@ -1,6 +1,8 @@
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -16,6 +18,8 @@ public partial class TextEditorCursorDisplay : TextEditorView
     [Parameter, EditorRequired]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     [Parameter, EditorRequired]
+    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
+    [Parameter, EditorRequired]
     public string ScrollableContainerId { get; set; } = null!;
     [Parameter, EditorRequired]
     public bool IsFocusTarget { get; set; }
@@ -25,11 +29,29 @@ public partial class TextEditorCursorDisplay : TextEditorView
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
     public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
+    /// <summary>
+    /// <see cref="GetMostRecentlyRenderedVirtualizationResultFunc"/> is a Func because
+    /// the way <see cref="TextEditorDisplay"/> sets the <see cref="TextEditorDisplay._mostRecentlyRenderedVirtualizationResult"/>
+    /// is through an interaction with the UserInterface that feels rather hacky.
+    /// <br/><br/>
+    /// Thereby a func will get the value once the value is updated by rendering the virtualization display
+    /// and without having to render the cursor.
+    /// </summary>
+    [Parameter]
+    public Func<VirtualizationResult<List<RichCharacter>>?> GetMostRecentlyRenderedVirtualizationResultFunc
+    {
+        get;
+        set;
+    } = null!;
     
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
     private TimeSpan _blinkingCursorTaskDelay = TimeSpan.FromMilliseconds(1000);
     private bool _hasBlinkAnimation = true;
+    
+    private CancellationTokenSource _checkCursorIsInViewCancellationTokenSource = new();
+    private SemaphoreSlim _checkCursorIsInViewSemaphoreSlim = new(1, 1);
+    private int _skippedCheckCursorIsInViewCount;
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
@@ -228,7 +250,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
     {
         _hasBlinkAnimation = false;
 
-        var cancellationToken = CancelSourceAndCreateNewThenReturnToken();
+        var cancellationToken = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
 
         _ = Task.Run(async () =>
         {
@@ -246,11 +268,73 @@ public partial class TextEditorCursorDisplay : TextEditorView
     {
         if (_textEditorCursorDisplayElementReference is null)
             return;
+        
+        var success = await _checkCursorIsInViewSemaphoreSlim
+            .WaitAsync(TimeSpan.Zero);
 
-        await JsRuntime.InvokeVoidAsync(
-            "blazorTextEditor.revealCursor",
-            _intersectionObserverMapKey.ToString(),
-            TextEditorCursorDisplayId);
+        if (!success)
+        {
+            _skippedCheckCursorIsInViewCount++;
+            return;
+        }
+
+        try
+        {
+            do
+            {
+                var mostRecentlyRenderedVirtualizationResult = GetMostRecentlyRenderedVirtualizationResultFunc
+                    .Invoke();
+                
+                var textEditorCursorSnapshot = new TextEditorCursorSnapshot(TextEditorCursor);
+                
+                if (mostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false)
+                {
+                    var firstEntry = mostRecentlyRenderedVirtualizationResult.Entries.First();
+                    var lastEntry = mostRecentlyRenderedVirtualizationResult.Entries.Last();
+                    
+                    var lowerRowBoundInclusive = firstEntry.Index;
+                    var upperRowBoundExclusive = lastEntry.Index + 1;
+
+                    if (lowerRowBoundInclusive <= textEditorCursorSnapshot.ImmutableCursor.RowIndex &&
+                        textEditorCursorSnapshot.ImmutableCursor.RowIndex < upperRowBoundExclusive)
+                    {
+                        var lowerColumnPixelInclusive = mostRecentlyRenderedVirtualizationResult
+                            .VirtualizationScrollPosition.ScrollLeftInPixels;
+
+                        var upperColumnPixelExclusive =
+                            lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
+                            1;
+
+                        var cursorColumnPixel = textEditorCursorSnapshot.ImmutableCursor.ColumnIndex;
+
+                        if (!(lowerColumnPixelInclusive <= cursorColumnPixel) ||
+                            !(cursorColumnPixel < upperColumnPixelExclusive))
+                        {
+                            await JsRuntime.InvokeVoidAsync(
+                                "blazorTextEditor.scrollElementIntoView",
+                                _intersectionObserverMapKey.ToString(),
+                                TextEditorCursorDisplayId);
+                        }
+                    }
+                }
+            } while (StartScrollIntoViewIfNotVisibleIfHasSkipped());
+        }
+        finally
+        {
+            _checkCursorIsInViewSemaphoreSlim.Release();
+        }
+
+        bool StartScrollIntoViewIfNotVisibleIfHasSkipped()
+        {
+            if (_skippedCheckCursorIsInViewCount > 0)
+            {
+                _skippedCheckCursorIsInViewCount = 0;
+
+                return true;
+            }
+
+            return false;
+        }
     }
 
     private void HandleOnKeyDown()
@@ -258,12 +342,20 @@ public partial class TextEditorCursorDisplay : TextEditorView
         PauseBlinkAnimation();
     }
 
-    private CancellationToken CancelSourceAndCreateNewThenReturnToken()
+    private CancellationToken CancelBlinkingCursorSourceAndCreateNewThenReturnToken()
     {
         _blinkingCursorCancellationTokenSource.Cancel();
         _blinkingCursorCancellationTokenSource = new CancellationTokenSource();
 
         return _blinkingCursorCancellationTokenSource.Token;
+    }
+    
+    private CancellationToken CancelCheckCursorInViewSourceAndCreateNewThenReturnToken()
+    {
+        _checkCursorIsInViewCancellationTokenSource.Cancel();
+        _checkCursorIsInViewCancellationTokenSource = new CancellationTokenSource();
+
+        return _checkCursorIsInViewCancellationTokenSource.Token;
     }
 
     public async Task SetShouldDisplayMenuAsync(
@@ -312,6 +404,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
         if (disposing)
         {
             _blinkingCursorCancellationTokenSource.Cancel();
+            _checkCursorIsInViewCancellationTokenSource.Cancel();
 
             if (IsFocusTarget)
             {
