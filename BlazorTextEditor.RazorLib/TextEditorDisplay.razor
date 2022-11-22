@@ -1,217 +1,112 @@
-﻿@using System.Text
-@using BlazorTextEditor.RazorLib.Cursor
+﻿@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.HelperComponents
-@using BlazorTextEditor.RazorLib.Row
-@using BlazorTextEditor.RazorLib.Virtualization
-@using System.Collections.Immutable
-@using BlazorTextEditor.RazorLib.TextEditor
 @using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
+@using BlazorTextEditor.RazorLib.Virtualization
 
 @inherits TextEditorView
 
 <div style="@GlobalFontSizeInPixelsStyling @StyleCssString"
      class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
 
-<TextEditorHeader TextEditorKey="TextEditorKey"
-                  TextEditorDisplay="this"
-                  HeaderButtonKinds="HeaderButtonKinds"/>
+    <TextEditorHeader TextEditorKey="TextEditorKey"
+                      TextEditorDisplay="this"
+                      HeaderButtonKinds="HeaderButtonKinds"/>
 
-<div @ref="_textEditorDisplayElementReference"
-     @onclick="FocusTextEditorAsync"
-     @onkeydown="HandleOnKeyDownAsync"
-     @onkeydown:preventDefault="true"
-     @oncontextmenu="HandleOnContextMenuAsync"
-     @oncontextmenu:preventDefault="true"
-     class="bte_text-editor"
-     tabindex="-1">
+    <div @ref="_textEditorDisplayElementReference"
+         @onclick="FocusTextEditorAsync"
+         @onkeydown="HandleOnKeyDownAsync"
+         @onkeydown:preventDefault="true"
+         @oncontextmenu="HandleOnContextMenuAsync"
+         @oncontextmenu:preventDefault="true"
+         class="bte_text-editor"
+         tabindex="-1">
 
-<div class="bte_text-editor-content bte_unselectable"
-     id="@TextEditorContentId"
-     @onmousedown="HandleContentOnMouseDownAsync"
-     @onmousemove="HandleContentOnMouseMoveAsync"
-     @ondblclick="HandleContentOnDoubleClickAsync">
+        <div class="bte_text-editor-content bte_unselectable"
+             id="@TextEditorContentId"
+             @onmousedown="HandleContentOnMouseDownAsync"
+             @onmousemove="HandleContentOnMouseMoveAsync"
+             @ondblclick="HandleContentOnDoubleClickAsync">
 
-<MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent" 
-                                   ElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
+            <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
+                                               ElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
 
-@{
-    var textEditor = TextEditorStatesSelection.Value;
+            @{
+                var textEditor = TextEditorStatesSelection.Value;
 
-    if (textEditor is not null)
-    {
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+                if (textEditor is not null)
+                {
+                    var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
-        if (CharacterWidthAndRowHeight is not null &&
-            TextEditorWidthAndHeight is not null)
-        {
-            <TextSelectionGroup TextEditor="textEditor"
-                                PrimaryCursorSnapshot="primaryCursorSnapshot"
-                                CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"/>
-            
-            var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
-            var spaceKeyOutput = "&nbsp;";
+                    if (CharacterWidthAndRowHeight is not null &&
+                        TextEditorWidthAndHeight is not null)
+                    {
+                        <TextSelectionGroup TextEditor="textEditor"
+                                            PrimaryCursorSnapshot="primaryCursorSnapshot"
+                                            CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"/>
 
-            if (GlobalShowWhitespace)
-            {
-                tabKeyOutput = "--->";
-                spaceKeyOutput = "·";
-            }
+                        var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                        var spaceKeyOutput = "&nbsp;";
 
-            <VirtualizationDisplay @ref="_virtualizationDisplay"
-                                   EntriesProviderFunc="EntriesProvider">
-                <ChildContent Context="virtualizedRow">
-                    @{
-                        var index = virtualizedRow.Index;
-                        var row = virtualizedRow.Item;
-                    }
-
-                    <div class="bte_gutter"
-                         style="@GetGutterStyleCss(index, virtualizedRow.LeftInPixels)">
-                        @(index + 1)
-                    </div>
-
-                    <div class="bte_row"
-                         style="@GetRowStyleCss(index, virtualizedRow.LeftInPixels)">
-                        @if (row.Any())
+                        if (GlobalShowWhitespace)
                         {
-                            var spanBuilder = new StringBuilder();
-                            var currentDecorationByte = row.First().DecorationByte;
+                            tabKeyOutput = "--->";
+                            spaceKeyOutput = "·";
+                        }
 
-                            foreach (var richCharacter in row)
-                            {
-                                if (currentDecorationByte == richCharacter.DecorationByte)
+                        <VirtualizationDisplay @ref="_virtualizationDisplay"
+                                               EntriesProviderFunc="EntriesProvider"
+                                               Context="virtualizationResult">
+
+                            <GutterSection TextEditor="textEditor"
+                                           CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"/>
+
+                            <RowSection TextEditor="textEditor"
+                                        CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
+                                        GlobalShowNewlines="GlobalShowNewlines"
+                                        SpaceKeyOutput="@spaceKeyOutput"
+                                        TabKeyOutput="@tabKeyOutput"/>
+
+                            <ScrollbarSection/>
+                        </VirtualizationDisplay>
+
+                        <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
+                                                 TextEditorCursor="PrimaryCursor"
+                                                 CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
+                                                 TextEditorKey="TextEditorKey"
+                                                 ScrollableContainerId="@TextEditorContentId"
+                                                 IsFocusTarget="true"
+                                                 TabIndex="TabIndex">
+
+                            <OnContextMenuRenderFragment>
+                                @if (OnContextMenuRenderFragment is not null)
                                 {
-                                    AppendTextEscaped(
-                                        spanBuilder,
-                                        richCharacter,
-                                        tabKeyOutput,
-                                        spaceKeyOutput);
                                 }
                                 else
                                 {
-                                    <span class="@GetCssClass(currentDecorationByte)">
-                                        @((MarkupString)spanBuilder.ToString())
-                                    </span>
-
-                                    spanBuilder.Clear();
-
-                                    AppendTextEscaped(
-                                        spanBuilder,
-                                        richCharacter,
-                                        tabKeyOutput,
-                                        spaceKeyOutput);
-
-                                    currentDecorationByte = richCharacter.DecorationByte;
-                                }
-                            }
-
-                            /* Final grouping of contiguous characters */
-                            <span class="@GetCssClass(currentDecorationByte)">
-                                @((MarkupString)spanBuilder.ToString())
-                            </span>
-                        }
-
-                        @if (GlobalShowNewlines &&
-                             index < textEditor.RowCount - 1)
-                        {
-                            var amountOfLeftInCharacterWidthUnits =
-                                virtualizedRow.LeftInPixels /
-                                CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-                            var lengthOfRow = textEditor
-                                .GetLengthOfRow(
-                                    index,
-                                    true);
-
-                            if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
-                            {
-                                var rowEndingTuple = textEditor
-                                    .RowEndingPositions[index];
-
-                                <span class="bte_newline">
-                                    @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()
-                                </span>
-                            }
-                        }
-                    </div>
-                </ChildContent>
-
-                <TestingCustomScrollbars Context="virtualizationResult">
-
-                    <div class="bte_scrollbar-horizontal"
-                         style="@GetScrollbarHorizontalStyleCss()"
-                         @onmousedown:stopPropagation="true"
-                         @onmousemove:stopPropagation="true"
-                         @ondblclick:stopPropagation="true">
-
-                        <div class="bte_scrollbar-slider">
-                            Horizontal
-                        </div>
-                    </div>
-
-                    <div class="bte_scrollbar-vertical"
-                         style="@GetScrollbarVerticalStyleCss()"
-                         @onmousedown:stopPropagation="true"
-                         @onmousemove:stopPropagation="true"
-                         @ondblclick:stopPropagation="true">
-
-                        <div class="bte_scrollbar-slider">
-                            Vertical
-                        </div>
-                    </div>
-
-                    <div class="bte_scrollbar-connector"
-                         style="@GetScrollbarConnectorStyleCss()"
-                         @onmousedown:stopPropagation="true"
-                         @onmousemove:stopPropagation="true"
-                         @ondblclick:stopPropagation="true">
-
-                        C
-                    </div>
-                </TestingCustomScrollbars>
-            </VirtualizationDisplay>
-        }
-
-        if (CharacterWidthAndRowHeight is not null)
-        {
-            <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
-                                     TextEditorCursor="PrimaryCursor"
-                                     CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
-                                     TextEditorKey="TextEditorKey"
-                                     ScrollableContainerId="@TextEditorContentId"
-                                     IsFocusTarget="true"
-                                     TabIndex="TabIndex">
-
-                <OnContextMenuRenderFragment>
-                    @if (OnContextMenuRenderFragment is not null)
-                    {
-                    }
-                    else
-                    {
                                     @* This is the default context menu *@
-                        <TextEditorContextMenu TextEditor="textEditor"
-                                               TextEditorDisplay="this"/>
-                    }
-                </OnContextMenuRenderFragment>
-                <AutoCompleteMenuRenderFragment>
-                    @if (AutoCompleteMenuRenderFragment is not null)
-                    {
-                    }
-                    else
-                    {
+                                    <TextEditorContextMenu TextEditor="textEditor"
+                                                           TextEditorDisplay="this"/>
+                                }
+                            </OnContextMenuRenderFragment>
+                            <AutoCompleteMenuRenderFragment>
+                                @if (AutoCompleteMenuRenderFragment is not null)
+                                {
+                                }
+                                else
+                                {
                                     @* This is the default autocomplete menu *@
-                        <TextEditorAutocompleteMenu TextEditorKey="TextEditorKey"
-                                                    TextEditorDisplay="this"/>
+                                    <TextEditorAutocompleteMenu TextEditorKey="TextEditorKey"
+                                                                TextEditorDisplay="this"/>
+                                }
+                            </AutoCompleteMenuRenderFragment>
+                        </TextEditorCursorDisplay>
                     }
-                </AutoCompleteMenuRenderFragment>
-            </TextEditorCursorDisplay>
-        }
-    }
-}
-</div>
-</div>
+                }
+            }
+        </div>
+    </div>
 
-<TextEditorFooter TextEditorKey="TextEditorKey"
-                  TextEditorDisplay="this"
-                  FileExtension="@FileExtension"/>
+    <TextEditorFooter TextEditorKey="TextEditorKey"
+                      TextEditorDisplay="this"
+                      FileExtension="@FileExtension"/>
 </div>

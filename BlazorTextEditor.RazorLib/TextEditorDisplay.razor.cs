@@ -140,16 +140,14 @@ public partial class TextEditorDisplay : TextEditorView
     /// </summary>
     [Parameter]
     public bool IncludeDefaultAutocompleteMenu { get; set; } = true;
-    
-    private const double SCROLLBAR_SIZE_IN_PIXELS = 30;
 
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromSeconds(1);
     private int _skippedSyntaxHighlightingEventCount;
-    
+
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
-        
+
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
@@ -241,7 +239,7 @@ public partial class TextEditorDisplay : TextEditorView
 
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
-            
+
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
@@ -262,7 +260,7 @@ public partial class TextEditorDisplay : TextEditorView
                 primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
-            
+
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
@@ -348,7 +346,7 @@ public partial class TextEditorDisplay : TextEditorView
                     keyboardEventArgs,
                     primaryCursorSnapshot.UserCursor,
                     safeTextEditorReference);
-            
+
                 _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
             }
         }
@@ -383,7 +381,7 @@ public partial class TextEditorDisplay : TextEditorView
                         _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
                     }
                 }
-                
+
                 Dispatcher.Dispatch(
                     new KeyboardEventTextEditorBaseAction(
                         TextEditorKey,
@@ -615,7 +613,7 @@ public partial class TextEditorDisplay : TextEditorView
             }
             else
                 _thinksLeftMouseButtonIsDown = false;
-                
+
             await Task.Delay(_onMouseMoveDelay);
         }
         finally
@@ -706,176 +704,6 @@ public partial class TextEditorDisplay : TextEditorView
         columnIndexInt = Math.Max(columnIndexInt, 0);
 
         return (rowIndex, columnIndexInt);
-    }
-
-    private string GetCssClass(byte decorationByte)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        return safeTextEditorReference.DecorationMapper.Map(decorationByte);
-    }
-
-    private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        if (CharacterWidthAndRowHeight is null)
-            return string.Empty;
-
-        var top =
-            $"top:{index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var leftInPixels = widthOfGutterInPixels +
-                           virtualizedRowLeftInPixels +
-                           TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                           TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var left = $"left: {leftInPixels}px;";
-
-        return $"{top} {height} {left}";
-    }
-
-    private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        if (CharacterWidthAndRowHeight is null)
-            return string.Empty;
-
-        var top =
-            $"top: {index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-            .ToString()
-            .Length;
-
-        var widthInPixels = mostDigitsInARowLineNumber *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var width = $"width: {widthInPixels}px;";
-
-        var paddingLeft =
-            $"padding-left: {TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS}px;";
-        var paddingRight =
-            $"padding-right: {TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS}px;";
-
-        var left = $"left: {virtualizedRowLeftInPixels}px;";
-
-        return $"{left} {top} {height} {width} {paddingLeft} {paddingRight}";
-    }
-    
-    private string GetScrollbarHorizontalStyleCss()
-    {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
-        
-        var left = $"left: {gutterWidthInPixels}px;";
-
-        var width = $"width: calc(100% - {gutterWidthInPixels}px);";
-
-        return $"{left} {width}";
-    }
-    
-    private string GetScrollbarVerticalStyleCss()
-    {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
-
-        var left = $"left: calc(100% - {SCROLLBAR_SIZE_IN_PIXELS}px);";
-
-        return $"{left}";
-    }
-    
-    private string GetScrollbarConnectorStyleCss()
-    {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
-
-        var left = $"left: calc(100% - {gutterWidthInPixels}px - {SCROLLBAR_SIZE_IN_PIXELS}px);";
-
-        return $"{left}";
-    }
-    
-    private double GetGutterWidthInPixels()
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return 0;
-
-        if (CharacterWidthAndRowHeight is null)
-            return 0;
-
-        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-            .ToString()
-            .Length;
-
-        var gutterWidthInPixels = mostDigitsInARowLineNumber *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        return gutterWidthInPixels;
-    }
-
-    private void AppendTextEscaped(
-        StringBuilder spanBuilder,
-        RichCharacter richCharacter,
-        string tabKeyOutput,
-        string spaceKeyOutput)
-    {
-        switch (richCharacter.Value)
-        {
-            case '\t':
-                spanBuilder.Append(tabKeyOutput);
-                break;
-            case ' ':
-                spanBuilder.Append(spaceKeyOutput);
-                break;
-            case '\r':
-                break;
-            case '\n':
-                break;
-            case '<':
-                spanBuilder.Append("&lt;");
-                break;
-            case '>':
-                spanBuilder.Append("&gt;");
-                break;
-            case '"':
-                spanBuilder.Append("&quot;");
-                break;
-            case '\'':
-                spanBuilder.Append("&#39;");
-                break;
-            case '&':
-                spanBuilder.Append("&amp;");
-                break;
-            default:
-                spanBuilder.Append(richCharacter.Value);
-                break;
-        }
     }
 
     private VirtualizationResult<List<RichCharacter>>? EntriesProvider(
@@ -1060,16 +888,16 @@ public partial class TextEditorDisplay : TextEditorView
                 var word = textEditor.ReadPreviousWordOrDefault(
                     primaryCursorSnapshot.ImmutableCursor.RowIndex,
                     primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
-                
+
                 if (word is not null)
                     await AutocompleteIndexer.IndexWordAsync(word);
             }
         }
-        
+
         if (IsAutocompleteMenuInvoker(keyboardEventArgs))
         {
             await setTextEditorMenuKind.Invoke(
-                TextEditorMenuKind.AutoCompleteMenu, 
+                TextEditorMenuKind.AutoCompleteMenu,
                 true);
         }
         else if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
@@ -1105,14 +933,14 @@ public partial class TextEditorDisplay : TextEditorView
             if (_skippedSyntaxHighlightingEventCount > 0)
             {
                 _skippedSyntaxHighlightingEventCount = 0;
-                
+
                 return true;
             }
 
             return false;
         }
     }
-    
+
     private bool IsSyntaxHighlightingInvoker(KeyboardEventArgs keyboardEventArgs)
     {
         return keyboardEventArgs.Key == ";" ||
@@ -1121,7 +949,7 @@ public partial class TextEditorDisplay : TextEditorView
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
     }
-        
+
     private bool IsAutocompleteMenuInvoker(KeyboardEventArgs keyboardEventArgs)
     {
         // Is {Ctrl + Space} or LetterOrDigit was hit without Ctrl being held
@@ -1130,7 +958,7 @@ public partial class TextEditorDisplay : TextEditorView
                 !KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
                 !KeyboardKeyFacts.IsMetaKey(keyboardEventArgs));
     }
-    
+
     /// <summary>
     /// All keyboardEventArgs that return true from "IsAutocompleteIndexerInvoker"
     /// are to be 1 character long, as well either whitespace or punctuation.
@@ -1140,8 +968,8 @@ public partial class TextEditorDisplay : TextEditorView
     private bool IsAutocompleteIndexerInvoker(KeyboardEventArgs keyboardEventArgs)
     {
         return (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
-               KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
-                !keyboardEventArgs.CtrlKey;
+                KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
+               !keyboardEventArgs.CtrlKey;
     }
 
     protected override void Dispose(bool disposing)

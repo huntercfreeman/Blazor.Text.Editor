@@ -1,0 +1,10 @@
+﻿<div class="bte_gutter-section">
+    
+    @foreach (var virtualizedRow in VirtualizationResult.Entries)
+    {
+        <div class="bte_gutter"
+             style="@GetGutterStyleCss(virtualizedRow.Index, virtualizedRow.LeftInPixels)">
+            @(virtualizedRow.Index + 1)
+        </div>
+    }
+</div>

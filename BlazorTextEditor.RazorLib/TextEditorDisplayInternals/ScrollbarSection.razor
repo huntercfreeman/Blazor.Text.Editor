@@ -1,0 +1,34 @@
+﻿<div class="bte_scrollbar-section">
+    
+    <div class="bte_scrollbar-horizontal"
+         style="@GetScrollbarHorizontalStyleCss()"
+         @onmousedown:stopPropagation="true"
+         @onmousemove:stopPropagation="true"
+         @ondblclick:stopPropagation="true">
+
+        <div class="bte_scrollbar-slider">
+            Horizontal
+        </div>
+    </div>
+
+    <div class="bte_scrollbar-vertical"
+         style="@GetScrollbarVerticalStyleCss()"
+         @onmousedown:stopPropagation="true"
+         @onmousemove:stopPropagation="true"
+         @ondblclick:stopPropagation="true">
+
+        <div class="bte_scrollbar-slider">
+            Vertical
+        </div>
+    </div>
+
+    <div class="bte_scrollbar-connector"
+         style="@GetScrollbarConnectorStyleCss()"
+         @onmousedown:stopPropagation="true"
+         @onmousemove:stopPropagation="true"
+         @ondblclick:stopPropagation="true">
+
+        C
+    </div>
+</div>
+
