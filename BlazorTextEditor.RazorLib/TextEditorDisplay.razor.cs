@@ -977,6 +977,17 @@ public partial class TextEditorDisplay : TextEditorView
                !keyboardEventArgs.CtrlKey;
     }
     
+    public async Task MutateScrollHorizontalPositionByPixelsAsync(double pixels)
+    {
+        await JsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.mutateScrollHorizontalPositionByPixels",
+            TextEditorContentId,
+            pixels);
+        
+        await InvokeAsync(StateHasChanged);
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+    }
+    
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
     {
         await JsRuntime.InvokeVoidAsync(
@@ -1032,8 +1043,16 @@ public partial class TextEditorDisplay : TextEditorView
     
     private async Task HandleOnWheelAsync(WheelEventArgs wheelEventArgs)
     {
-        await MutateScrollVerticalPositionByPixelsAsync(
-            wheelEventArgs.DeltaY);
+        if (wheelEventArgs.ShiftKey)
+        {
+            await MutateScrollHorizontalPositionByPixelsAsync(
+                wheelEventArgs.DeltaY);
+        }
+        else
+        {
+            await MutateScrollVerticalPositionByPixelsAsync(
+                wheelEventArgs.DeltaY);
+        }
     }
 
     protected override void Dispose(bool disposing)

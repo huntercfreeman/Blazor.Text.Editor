@@ -227,6 +227,11 @@ window.blazorTextEditor = {
         
         textEditorContent.scrollTop += pixels;
     },
+    mutateScrollHorizontalPositionByPixels: function (textEditorContentId, pixels) {
+        let textEditorContent = document.getElementById(textEditorContentId);
+        
+        textEditorContent.scrollLeft += pixels;
+    },
     readClipboard: async function () {
         // First, ask the Permissions API if we have some kind of access to
         // the "clipboard-read" feature.
