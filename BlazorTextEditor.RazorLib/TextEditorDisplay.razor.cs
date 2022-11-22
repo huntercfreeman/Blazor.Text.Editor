@@ -1026,9 +1026,7 @@ public partial class TextEditorDisplay : TextEditorView
         {
             var firstEntry = localMostRecentlyRenderedVirtualizationResult.Entries.First();
 
-            var firstEntriesRowLength = textEditor.GetLengthOfRow(firstEntry.Index);
-            
-            PrimaryCursor.IndexCoordinates = (firstEntry.Index, firstEntriesRowLength);
+            PrimaryCursor.IndexCoordinates = (firstEntry.Index, 0);
         }
     }
 
