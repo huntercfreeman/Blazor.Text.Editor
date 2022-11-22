@@ -12,15 +12,12 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
     [Parameter, EditorRequired]
     public Func<VirtualizationRequest, VirtualizationResult<T>?> EntriesProviderFunc { get; set; } = null!;
     [Parameter, EditorRequired]
-    public RenderFragment<VirtualizationEntry<T>> ChildContent { get; set; } = null!;
+    public RenderFragment<VirtualizationResult<T>> ChildContent { get; set; } = null!;
 
     [Parameter]
     public bool UseHorizontalVirtualization { get; set; } = true;
     [Parameter]
     public bool UseVerticalVirtualization { get; set; } = true;
-
-    [Parameter]
-    public RenderFragment<VirtualizationResult<T>>? TestingCustomScrollbars { get; set; }
     
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private VirtualizationRequest _request = null!;

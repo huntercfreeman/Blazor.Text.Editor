@@ -22,12 +22,4 @@
                                    VirtualizationBoundary="_result.BottomVirtualizationBoundary"/>
 }
 
-@foreach (var entry in _result.Entries)
-{
-    @ChildContent(entry)
-}
-
-@if (TestingCustomScrollbars is not null)
-{
-    @TestingCustomScrollbars(_result)
-}
+@ChildContent(_result)

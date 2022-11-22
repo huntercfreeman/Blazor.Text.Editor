@@ -5,6 +5,7 @@
 @using BlazorTextEditor.RazorLib.Virtualization
 @using System.Collections.Immutable
 @using BlazorTextEditor.RazorLib.TextEditor
+@using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
 
 @inherits TextEditorView
 
@@ -30,16 +31,8 @@
      @onmousemove="HandleContentOnMouseMoveAsync"
      @ondblclick="HandleContentOnDoubleClickAsync">
 
-<div class="bte_measure-character-width-and-row-height bte_row"
-     id="@MeasureCharacterWidthAndRowHeightId">
-
-    @for (var i = 0; i < _testStringRepeatCount; i++)
-    {
-        <text>
-            @_testStringForMeasurement
-        </text>
-    }
-</div>
+<MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent" 
+                                   ElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
 
 @{
     var textEditor = TextEditorStatesSelection.Value;
@@ -48,40 +41,13 @@
     {
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
-        <div class="bte_text-selection-group">
-            @if (TextEditorSelectionHelper.HasSelectedText(
-                primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
-            {
-                var selectionBounds = TextEditorSelectionHelper
-                    .GetSelectionBounds(
-                        primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
-
-                var firstRowToSelectData =
-                    textEditor
-                        .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                            selectionBounds.lowerBound);
-
-                var lastRowToSelectData =
-                    textEditor
-                        .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                            selectionBounds.upperBound);
-
-                for (var i = firstRowToSelectData.rowIndex;
-                    i <= lastRowToSelectData.rowIndex;
-                    i++)
-                {
-                    var rowIndex = i;
-
-                    <div class="bte_text-selection"
-                         style="@GetTextSelectionStyleCss(selectionBounds.lowerBound, selectionBounds.upperBound, rowIndex)">
-                    </div>
-                }
-            }
-        </div>
-
         if (CharacterWidthAndRowHeight is not null &&
             TextEditorWidthAndHeight is not null)
         {
+            <TextSelectionGroup TextEditor="textEditor"
+                                PrimaryCursorSnapshot="primaryCursorSnapshot"
+                                CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"/>
+            
             var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
             var spaceKeyOutput = "&nbsp;";
 
@@ -171,7 +137,7 @@
                 </ChildContent>
 
                 <TestingCustomScrollbars Context="virtualizationResult">
-                    
+
                     <div class="bte_scrollbar-horizontal"
                          style="@GetScrollbarHorizontalStyleCss()"
                          @onmousedown:stopPropagation="true"

@@ -11,6 +11,7 @@ using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -154,8 +155,6 @@ public partial class TextEditorDisplay : TextEditorView
     private TextEditorOptions? _previousGlobalTextEditorOptions;
 
     private TextEditorKey? _previousTextEditorKey;
-    private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
-    private int _testStringRepeatCount = 6;
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private ElementReference _textEditorDisplayElementReference;
 
@@ -174,6 +173,7 @@ public partial class TextEditorDisplay : TextEditorView
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
     private TextEditorHeader? _textEditorHeader;
     private TextEditorFooter? _textEditorFooter;
+    private MeasureCharacterWidthAndRowHeight? _measureCharacterWidthAndRowHeightComponent;
 
     public bool ShouldMeasureDimensions { get; set; } = true;
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
@@ -184,7 +184,7 @@ public partial class TextEditorDisplay : TextEditorView
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
 
-    private string MeasureCharacterWidthAndRowHeightId =>
+    private string MeasureCharacterWidthAndRowHeightElementId =>
         $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
 
     private MarkupString GetAllTextEscaped => (MarkupString)(MutableReferenceToTextEditor?
@@ -295,8 +295,8 @@ public partial class TextEditorDisplay : TextEditorView
             CharacterWidthAndRowHeight = await JsRuntime
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
-                    MeasureCharacterWidthAndRowHeightId,
-                    _testStringRepeatCount * _testStringForMeasurement.Length);
+                    MeasureCharacterWidthAndRowHeightElementId,
+                    _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
             TextEditorWidthAndHeight = await JsRuntime
                 .InvokeAsync<WidthAndHeightOfTextEditor>(
@@ -785,115 +785,6 @@ public partial class TextEditorDisplay : TextEditorView
         var left = $"left: {virtualizedRowLeftInPixels}px;";
 
         return $"{left} {top} {height} {width} {paddingLeft} {paddingRight}";
-    }
-
-    private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        if (CharacterWidthAndRowHeight is null ||
-            rowIndex >= safeTextEditorReference.RowEndingPositions.Length)
-            return string.Empty;
-
-        var startOfRowTuple = safeTextEditorReference.GetStartOfRowTuple(rowIndex);
-        var endOfRowTuple = safeTextEditorReference.RowEndingPositions[rowIndex];
-
-        var selectionStartingColumnIndex = 0;
-        var selectionEndingColumnIndex =
-            endOfRowTuple.positionIndex - 1;
-
-        var fullWidthOfRowIsSelected = true;
-
-        if (lowerBound > startOfRowTuple.positionIndex)
-        {
-            selectionStartingColumnIndex =
-                lowerBound - startOfRowTuple.positionIndex;
-
-            fullWidthOfRowIsSelected = false;
-        }
-
-        if (upperBound < endOfRowTuple.positionIndex)
-        {
-            selectionEndingColumnIndex =
-                upperBound - startOfRowTuple.positionIndex;
-
-            fullWidthOfRowIsSelected = false;
-        }
-
-        var top =
-            $"top: {rowIndex * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var gutterSizeInPixels =
-            widthOfGutterInPixels +
-            TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-            TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var selectionStartInPixels =
-            selectionStartingColumnIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        // selectionStartInPixels offset from Tab keys a width of many characters
-        {
-            var tabsOnSameRowBeforeCursor = safeTextEditorReference
-                .GetTabsCountOnSameRowBeforeCursor(
-                    rowIndex,
-                    selectionStartingColumnIndex);
-
-            // 1 of the character width is already accounted for
-
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
-
-            selectionStartInPixels += extraWidthPerTabKey *
-                                      tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
-
-        var selectionWidthInPixels =
-            selectionEndingColumnIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels -
-            selectionStartInPixels;
-
-        // Tab keys a width of many characters
-        {
-            var tabsOnSameRowBeforeCursor = safeTextEditorReference
-                .GetTabsCountOnSameRowBeforeCursor(
-                    rowIndex,
-                    selectionEndingColumnIndex);
-
-            // 1 of the character width is already accounted for
-
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
-
-            selectionWidthInPixels += extraWidthPerTabKey *
-                                      tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        var widthCssStyleString = "width: ";
-
-        if (fullWidthOfRowIsSelected)
-            widthCssStyleString += "100%";
-        else if (selectionStartingColumnIndex != 0 &&
-                 upperBound > endOfRowTuple.positionIndex - 1)
-            widthCssStyleString += $"calc(100% - {selectionStartInPixels}px);";
-        else
-            widthCssStyleString += $"{selectionWidthInPixels}px;";
-
-        return $"{top} {height} {left} {widthCssStyleString}";
     }
     
     private string GetScrollbarHorizontalStyleCss()
