@@ -70,12 +70,16 @@
 }
 
 .bte_scrollbar-section {
+    position: sticky;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    z-index: 20;
 }
 
 .bte_scrollbar-horizontal {
-    position: sticky;
+    position: absolute;
     top: calc(100% - var(--bte_scrollbar-size));
     height: var(--bte_scrollbar-size);
     background-color: blue;
@@ -85,7 +89,8 @@
 }
 
 .bte_scrollbar-vertical {
-    position: sticky;
+    position: absolute;
+    right: 0;
     top: 0;
     width: var(--bte_scrollbar-size);
     height: calc(100% - var(--bte_scrollbar-size));
@@ -97,7 +102,8 @@
 }
 
 .bte_scrollbar-connector {
-    position: sticky;
+    position: absolute;
+    right: 0;
     top: calc(100% - var(--bte_scrollbar-size));
     width: var(--bte_scrollbar-size);
     height: var(--bte_scrollbar-size);

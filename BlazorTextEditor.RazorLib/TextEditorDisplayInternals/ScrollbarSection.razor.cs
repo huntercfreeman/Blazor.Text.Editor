@@ -19,27 +19,9 @@ public partial class ScrollbarSection : ComponentBase
         
         var left = $"left: {gutterWidthInPixels}px;";
 
-        var width = $"width: calc(100% - {gutterWidthInPixels}px);";
+        var width = $"width: calc(100% - {gutterWidthInPixels}px - {SCROLLBAR_SIZE_IN_PIXELS}px);";
 
         return $"{left} {width}";
-    }
-    
-    private string GetScrollbarVerticalStyleCss()
-    {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
-
-        var left = $"left: calc(100% - {SCROLLBAR_SIZE_IN_PIXELS}px);";
-
-        return $"{left}";
-    }
-    
-    private string GetScrollbarConnectorStyleCss()
-    {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
-
-        var left = $"left: calc(100% - {gutterWidthInPixels}px - {SCROLLBAR_SIZE_IN_PIXELS}px);";
-
-        return $"{left}";
     }
     
     private double GetGutterWidthInPixels()
