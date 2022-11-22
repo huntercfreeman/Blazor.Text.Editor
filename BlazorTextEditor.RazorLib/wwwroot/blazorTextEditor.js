@@ -206,7 +206,9 @@ window.blazorTextEditor = {
         virtualizationDisplayDotNetObjectReference
             .invokeMethodAsync("OnScrollEventAsync", {
                 ScrollLeftInPixels: scrollableParent.scrollLeft,
-                ScrollTopInPixels: scrollableParent.scrollTop
+                ScrollTopInPixels: scrollableParent.scrollTop,
+                ScrollWidthInPixels: scrollableParent.scrollWidth,
+                ScrollHeightInPixels: scrollableParent.scrollHeight
             });
     },
     disposeVirtualizationIntersectionObserver: function (intersectionObserverMapKey) {

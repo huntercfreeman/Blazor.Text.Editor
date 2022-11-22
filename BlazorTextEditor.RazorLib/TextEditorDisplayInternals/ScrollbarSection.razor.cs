@@ -1,5 +1,7 @@
-﻿using BlazorTextEditor.RazorLib.JavaScriptObjects;
+﻿using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
@@ -10,6 +12,8 @@ public partial class ScrollbarSection : ComponentBase
     public TextEditorBase TextEditor { get; set; } = null!;
     [CascadingParameter]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
+    [CascadingParameter]
+    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
     
     private const double SCROLLBAR_SIZE_IN_PIXELS = 30;
     
@@ -37,5 +41,15 @@ public partial class ScrollbarSection : ComponentBase
                                TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
         return gutterWidthInPixels;
+    }
+
+    private string GetScrollbarSliderHorizontalStyleCss()
+    {
+        return string.Empty;
+    }
+
+    private string GetScrollbarSliderVerticalStyleCss()
+    {
+        return string.Empty;
     }
 }

@@ -1,28 +1,47 @@
 ﻿<div class="bte_scrollbar-section">
     
+     @* hackily rendering out UI for debugging | TODO: delete this *@
+     <div style="position: fixed; left: 270px; top: 40px; background-color:  #c0c5cc; color:  black; z-index: 30; min-width: 600px; min-height: 200px;"
+         @onmousedown:stopPropagation="true"
+         @onmousemove:stopPropagation="true"
+         @ondblclick:stopPropagation="true"
+         @onclick:stopPropagation="true"
+         @oncontextmenu:stopPropagation="true">
+            
+    </div>
+    
     <div class="bte_scrollbar bte_scrollbar-horizontal"
          style="@GetScrollbarHorizontalStyleCss()"
          @onmousedown:stopPropagation="true"
          @onmousemove:stopPropagation="true"
-         @ondblclick:stopPropagation="true">
+         @ondblclick:stopPropagation="true"
+         @onclick:stopPropagation="true"
+         @oncontextmenu:stopPropagation="true">
 
-        <div class="bte_scrollbar-slider">
+        <div class="bte_scrollbar-slider"
+             style="@GetScrollbarSliderHorizontalStyleCss()">
         </div>
     </div>
 
     <div class="bte_scrollbar bte_scrollbar-vertical"
+         style="@GetScrollbarSliderVerticalStyleCss()"
          @onmousedown:stopPropagation="true"
          @onmousemove:stopPropagation="true"
-         @ondblclick:stopPropagation="true">
+         @ondblclick:stopPropagation="true"
+         @onclick:stopPropagation="true"
+         @oncontextmenu:stopPropagation="true">
 
         <div class="bte_scrollbar-slider">
         </div>
     </div>
 
+    @* TODO: Color the bte_scrollbar-connector differently and render the 'corner icon'? *@
     <div class="bte_scrollbar bte_scrollbar-connector"
          @onmousedown:stopPropagation="true"
          @onmousemove:stopPropagation="true"
-         @ondblclick:stopPropagation="true">
+         @ondblclick:stopPropagation="true"
+         @onclick:stopPropagation="true"
+         @oncontextmenu:stopPropagation="true">
     </div>
 </div>
 

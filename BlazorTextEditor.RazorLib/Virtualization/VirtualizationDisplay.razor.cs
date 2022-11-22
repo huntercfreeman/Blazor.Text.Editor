@@ -28,7 +28,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
-        new(0, 0));
+        new(0, 0, 0, 0));
 
     private ElementReference _scrollableParentFinder;
 
@@ -52,7 +52,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
         _scrollEventCancellationTokenSource = new CancellationTokenSource();
         
         _request = new(
-            new VirtualizationScrollPosition(0, 0),
+            new VirtualizationScrollPosition(0, 0, 0, 0),
             _scrollEventCancellationTokenSource.Token);
         
         base.OnInitialized();

@@ -2,4 +2,6 @@
 
 public record VirtualizationScrollPosition(
     double ScrollLeftInPixels,
-    double ScrollTopInPixels);
+    double ScrollTopInPixels,
+    double ScrollWidthInPixels,
+    double ScrollHeightInPixels);

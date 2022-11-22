@@ -86,6 +86,10 @@
     background-color: var(--bte_scrollbar-background-color);
 }
 
+.bte_scrollbar-slider {
+    background-color: black;
+}
+
 .bte_scrollbar:hover {
     opacity: var(--bte_scrollbar-opacity-on-hover);
 }
