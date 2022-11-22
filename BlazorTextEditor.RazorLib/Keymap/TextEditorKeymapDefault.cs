@@ -33,6 +33,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "a" => TextEditorCommandFacts.SelectAll,
             "z" => TextEditorCommandFacts.Undo,
             "y" => TextEditorCommandFacts.Redo,
+            KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandFacts.ScrollLineDown,
             _ => null,
         };
 

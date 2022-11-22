@@ -329,8 +329,12 @@ public partial class TextEditorDisplay : TextEditorView
         {
             new(primaryCursorSnapshot.UserCursor),
         }.ToImmutableArray();
+        
+        var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
+            .Invoke(keyboardEventArgs);
 
-        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
+        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key) && 
+            command is null)
         {
             if ((KeyboardKeyFacts.MovementKeys.ARROW_DOWN == keyboardEventArgs.Key ||
                  KeyboardKeyFacts.MovementKeys.ARROW_UP == keyboardEventArgs.Key) &&
@@ -356,9 +360,6 @@ public partial class TextEditorDisplay : TextEditorView
         }
         else
         {
-            var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
-                .Invoke(keyboardEventArgs);
-
             if (command is not null)
             {
                 await command.DoAsyncFunc.Invoke(
@@ -395,7 +396,13 @@ public partial class TextEditorDisplay : TextEditorView
             keyboardEventArgs.Key != "Control" &&
             keyboardEventArgs.Key != "Alt")
         {
-            primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
+
+            // TODO: Ctrl + ArrowDown should not scroll the cursor into view as it scrolls the document by 1 line without moving the cursor. This however is not a good way of going about not scrolling the cursor into view and it should be changed.
+            if (keyboardEventArgs.Key != KeyboardKeyFacts.MovementKeys.ARROW_DOWN ||
+                !keyboardEventArgs.CtrlKey)
+            {
+                primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
+            }
         }
 
         var afterOnKeyDownAsync = AfterOnKeyDownAsync
@@ -970,6 +977,21 @@ public partial class TextEditorDisplay : TextEditorView
         return (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
                 KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
                !keyboardEventArgs.CtrlKey;
+    }
+
+    public async Task MutateScrollVerticalPositionAsync(int lines)
+    {
+        // TODO: what happens if I use JavaScript to set the scrollTop to a value
+        // greater than the maximum possible scrollTop value? Do I need to check this things on my end?
+
+        await JsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.mutateScrollVerticalPosition",
+            TextEditorContentId,
+            lines,
+            CharacterWidthAndRowHeight?.RowHeightInPixels ?? 0);
+        
+        await InvokeAsync(StateHasChanged);
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
     protected override void Dispose(bool disposing)

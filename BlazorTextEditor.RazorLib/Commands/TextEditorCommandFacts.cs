@@ -163,4 +163,12 @@ public static class TextEditorCommandFacts
         },
         "Remeasure",
         "defaults_remeasure");
+    
+    public static readonly TextEditorCommand ScrollLineDown = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .MutateScrollVerticalPositionAsync(1);
+        },
+        "Remeasure",
+        "defaults_remeasure");
 }
