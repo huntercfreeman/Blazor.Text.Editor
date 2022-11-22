@@ -38,7 +38,7 @@
                     var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
                     if (CharacterWidthAndRowHeight is not null &&
-                        TextEditorWidthAndHeight is not null)
+                        WidthAndHeightOfTextEditor is not null)
                     {
                         <TextSelectionGroup TextEditor="textEditor"
                                             PrimaryCursorSnapshot="primaryCursorSnapshot"
@@ -67,7 +67,7 @@
                                                     SpaceKeyOutput="@spaceKeyOutput"
                                                     TabKeyOutput="@tabKeyOutput"/>
 
-                                        <ScrollbarSection/>
+                                        <ScrollbarSection WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"/>
                                     </CascadingValue>
                                 </CascadingValue>
                             </CascadingValue>

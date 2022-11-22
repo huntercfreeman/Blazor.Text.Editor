@@ -14,6 +14,9 @@ public partial class ScrollbarSection : ComponentBase
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     [CascadingParameter]
     public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
     
     private const double SCROLLBAR_SIZE_IN_PIXELS = 30;
     

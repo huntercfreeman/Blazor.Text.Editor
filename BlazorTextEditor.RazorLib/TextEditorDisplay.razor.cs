@@ -176,7 +176,7 @@ public partial class TextEditorDisplay : TextEditorView
     public bool ShouldMeasureDimensions { get; set; } = true;
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
-    public WidthAndHeightOfTextEditor? TextEditorWidthAndHeight { get; private set; }
+    public WidthAndHeightOfTextEditor? WidthAndHeightOfTextEditor { get; private set; }
 
     public TextEditorBase? MutableReferenceToTextEditor => TextEditorStatesSelection.Value;
 
@@ -296,7 +296,7 @@ public partial class TextEditorDisplay : TextEditorView
                     MeasureCharacterWidthAndRowHeightElementId,
                     _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
-            TextEditorWidthAndHeight = await JsRuntime
+            WidthAndHeightOfTextEditor = await JsRuntime
                 .InvokeAsync<WidthAndHeightOfTextEditor>(
                     "blazorTextEditor.measureWidthAndHeightOfTextEditor",
                     TextEditorContentId);
@@ -710,7 +710,7 @@ public partial class TextEditorDisplay : TextEditorView
         VirtualizationRequest request)
     {
         if (CharacterWidthAndRowHeight is null ||
-            TextEditorWidthAndHeight is null ||
+            WidthAndHeightOfTextEditor is null ||
             request.CancellationToken.IsCancellationRequested)
             return null;
 
@@ -732,7 +732,7 @@ public partial class TextEditorDisplay : TextEditorView
             CharacterWidthAndRowHeight.RowHeightInPixels);
 
         var verticalTake = (int)Math.Ceiling(
-            TextEditorWidthAndHeight.HeightInPixels /
+            WidthAndHeightOfTextEditor.HeightInPixels /
             CharacterWidthAndRowHeight.RowHeightInPixels);
 
         if (verticalStartingIndex + verticalTake >
@@ -749,7 +749,7 @@ public partial class TextEditorDisplay : TextEditorView
             CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var horizontalTake = (int)Math.Ceiling(
-            TextEditorWidthAndHeight.WidthInPixels /
+            WidthAndHeightOfTextEditor.WidthInPixels /
             CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var virtualizedEntries = safeTextEditorReference
