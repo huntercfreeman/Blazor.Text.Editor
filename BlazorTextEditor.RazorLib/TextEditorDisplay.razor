@@ -25,7 +25,8 @@
              id="@TextEditorContentId"
              @onmousedown="HandleContentOnMouseDownAsync"
              @onmousemove="HandleContentOnMouseMoveAsync"
-             @ondblclick="HandleContentOnDoubleClickAsync">
+             @ondblclick="HandleContentOnDoubleClickAsync"
+             @onwheel="HandleOnWheelAsync">
 
             <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
                                                ElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
@@ -73,6 +74,7 @@
                                                     TabKeyOutput="@tabKeyOutput"/>
 
                                         <ScrollbarSection WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"/>
+                                        
                                     </CascadingValue>
                                 </CascadingValue>
                             </CascadingValue>

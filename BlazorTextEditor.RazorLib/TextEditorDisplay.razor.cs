@@ -1029,6 +1029,12 @@ public partial class TextEditorDisplay : TextEditorView
             PrimaryCursor.IndexCoordinates = (firstEntry.Index, 0);
         }
     }
+    
+    private async Task HandleOnWheelAsync(WheelEventArgs wheelEventArgs)
+    {
+        await MutateScrollVerticalPositionByPixelsAsync(
+            wheelEventArgs.DeltaY);
+    }
 
     protected override void Dispose(bool disposing)
     {
