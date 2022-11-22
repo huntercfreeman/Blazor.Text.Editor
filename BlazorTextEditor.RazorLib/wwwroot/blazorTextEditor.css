@@ -82,10 +82,8 @@
     position: absolute;
     top: calc(100% - var(--bte_scrollbar-size));
     height: var(--bte_scrollbar-size);
-    background-color: blue;
     cursor: default;
     z-index: 20;
-    color: white;
 }
 
 .bte_scrollbar-vertical {
@@ -94,11 +92,8 @@
     top: 0;
     width: var(--bte_scrollbar-size);
     height: calc(100% - var(--bte_scrollbar-size));
-    background-color: red;
     cursor: default;
     z-index: 20;
-    writing-mode: vertical-rl;
-    color: white;
 }
 
 .bte_scrollbar-connector {
@@ -107,10 +102,8 @@
     top: calc(100% - var(--bte_scrollbar-size));
     width: var(--bte_scrollbar-size);
     height: var(--bte_scrollbar-size);
-    background-color: green;
     cursor: default;
     z-index: 20;
-    color: white;
 }
 
 .bte_text-editor-cursor {
