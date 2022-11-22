@@ -78,32 +78,35 @@
     z-index: 20;
 }
 
-.bte_scrollbar-horizontal {
+.bte_scrollbar {
     position: absolute;
-    top: calc(100% - var(--bte_scrollbar-size));
-    height: var(--bte_scrollbar-size);
     cursor: default;
     z-index: 20;
+    opacity: var(--bte_scrollbar-opacity);
+    background-color: var(--bte_scrollbar-background-color);
+}
+
+.bte_scrollbar:hover {
+    opacity: var(--bte_scrollbar-opacity-on-hover);
+}
+
+.bte_scrollbar-horizontal {
+    top: calc(100% - var(--bte_scrollbar-size));
+    height: var(--bte_scrollbar-size);
 }
 
 .bte_scrollbar-vertical {
-    position: absolute;
     right: 0;
     top: 0;
     width: var(--bte_scrollbar-size);
     height: calc(100% - var(--bte_scrollbar-size));
-    cursor: default;
-    z-index: 20;
 }
 
 .bte_scrollbar-connector {
-    position: absolute;
     right: 0;
     top: calc(100% - var(--bte_scrollbar-size));
     width: var(--bte_scrollbar-size);
     height: var(--bte_scrollbar-size);
-    cursor: default;
-    z-index: 20;
 }
 
 .bte_text-editor-cursor {
