@@ -1,61 +1,34 @@
-﻿<div class="bte_scrollbar-section">
-    
-     @* hackily rendering out UI for debugging | TODO: delete this *@
-     <div style="position: fixed; left: 270px; top: 40px; background-color:  #ccd4dd; color:  black; z-index: 30; min-width: 600px; min-height: 200px;"
-         @onmousedown:stopPropagation="true"
-         @onmousemove:stopPropagation="true"
-         @ondblclick:stopPropagation="true"
-         @onclick:stopPropagation="true"
-         @oncontextmenu:stopPropagation="true">
-          
-          <div>
-               scrollLeft, scrollTop:
-               (@VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels,&nbsp;@VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels)
-          </div>
-          
-          <div>
-               scrollWidth, scrollHeight:
-               (@VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels,&nbsp;@VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels)
-          </div>
-          
-          <div>
-               editorWidth, editorHeight:
-               (@WidthAndHeightOfTextEditor.WidthInPixels,&nbsp;@WidthAndHeightOfTextEditor.HeightInPixels)
-          </div>
-     </div>
-    
-    <div class="bte_scrollbar bte_scrollbar-horizontal"
-         style="@GetScrollbarHorizontalStyleCss()"
+﻿@using BlazorTextEditor.RazorLib.Scrollbar
+
+<div class="bte_scrollbar-section">
+
+    @* hackily rendering out UI for debugging | TODO: delete this *@
+    <div style="position: fixed; left: 270px; top: 40px; background-color:  #ccd4dd; color:  black; z-index: 30; min-width: 600px; min-height: 200px;"
          @onmousedown:stopPropagation="true"
          @onmousemove:stopPropagation="true"
          @ondblclick:stopPropagation="true"
          @onclick:stopPropagation="true"
          @oncontextmenu:stopPropagation="true">
 
-        <div class="bte_scrollbar-slider"
-             style="@GetSliderHorizontalStyleCss()">
+        <div>
+            scrollLeft, scrollTop:
+            (@VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels,&nbsp;@VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels)
+        </div>
+
+        <div>
+            scrollWidth, scrollHeight:
+            (@VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels,&nbsp;@VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels)
+        </div>
+
+        <div>
+            editorWidth, editorHeight:
+            (@WidthAndHeightOfTextEditor.WidthInPixels,&nbsp;@WidthAndHeightOfTextEditor.HeightInPixels)
         </div>
     </div>
 
-    <div class="bte_scrollbar bte_scrollbar-vertical"
-         @onmousedown:stopPropagation="true"
-         @onmousemove:stopPropagation="true"
-         @ondblclick:stopPropagation="true"
-         @onclick:stopPropagation="true"
-         @oncontextmenu:stopPropagation="true">
-         
-         <div class="bte_scrollbar-slider"
-              style="background-color: red; left: 0; width: @(SCROLLBAR_SIZE_IN_PIXELS)px; @GetSliderVerticalStyleCss()">
-        </div>
-    </div>
+    <ScrollbarHorizontal WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"/>
 
-    @* TODO: Color the bte_scrollbar-connector differently and render the 'corner icon'? *@
-    <div class="bte_scrollbar bte_scrollbar-connector"
-         @onmousedown:stopPropagation="true"
-         @onmousemove:stopPropagation="true"
-         @ondblclick:stopPropagation="true"
-         @onclick:stopPropagation="true"
-         @oncontextmenu:stopPropagation="true">
-    </div>
+    <ScrollbarVertical WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"/>
+
+    <ScrollbarConnector/>
 </div>
-
