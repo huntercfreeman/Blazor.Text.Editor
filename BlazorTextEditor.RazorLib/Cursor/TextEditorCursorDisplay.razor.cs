@@ -295,8 +295,17 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     var lowerRowBoundInclusive = firstEntry.Index;
                     var upperRowBoundExclusive = lastEntry.Index + 1;
 
-                    if (lowerRowBoundInclusive <= textEditorCursorSnapshot.ImmutableCursor.RowIndex &&
-                        textEditorCursorSnapshot.ImmutableCursor.RowIndex < upperRowBoundExclusive)
+                    if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive ||
+                        textEditorCursorSnapshot.ImmutableCursor.RowIndex >= upperRowBoundExclusive)
+                    {
+                        Console.WriteLine("ROW ScrollIntoViewIfNotVisibleAsync");
+                        
+                        await JsRuntime.InvokeVoidAsync(
+                            "blazorTextEditor.scrollElementIntoView",
+                            _intersectionObserverMapKey.ToString(),
+                            TextEditorCursorDisplayId);
+                    }
+                    else
                     {
                         var lowerColumnPixelInclusive = mostRecentlyRenderedVirtualizationResult
                             .VirtualizationScrollPosition.ScrollLeftInPixels;
@@ -307,9 +316,11 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
                         var cursorColumnPixel = textEditorCursorSnapshot.ImmutableCursor.ColumnIndex;
 
-                        if (!(lowerColumnPixelInclusive <= cursorColumnPixel) ||
-                            !(cursorColumnPixel < upperColumnPixelExclusive))
-                        {
+                        if (cursorColumnPixel < lowerColumnPixelInclusive ||
+                            cursorColumnPixel >= upperColumnPixelExclusive)
+                        {                        
+                            Console.WriteLine("COLUMN ScrollIntoViewIfNotVisibleAsync");
+
                             await JsRuntime.InvokeVoidAsync(
                                 "blazorTextEditor.scrollElementIntoView",
                                 _intersectionObserverMapKey.ToString(),
