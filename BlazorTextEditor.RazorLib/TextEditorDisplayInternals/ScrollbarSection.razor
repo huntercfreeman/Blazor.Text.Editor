@@ -33,26 +33,19 @@
          @oncontextmenu:stopPropagation="true">
 
         <div class="bte_scrollbar-slider"
-             style="@GetScrollbarSliderHorizontalStyleCss()">
+             style="@GetSliderHorizontalStyleCss()">
         </div>
     </div>
 
     <div class="bte_scrollbar bte_scrollbar-vertical"
-         style="@GetScrollbarSliderVerticalStyleCss()"
          @onmousedown:stopPropagation="true"
          @onmousemove:stopPropagation="true"
          @ondblclick:stopPropagation="true"
          @onclick:stopPropagation="true"
          @oncontextmenu:stopPropagation="true">
-
-         @{
-              var proportionalTop = VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels * 
-                                    WidthAndHeightOfTextEditor.HeightInPixels /
-                                    VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
-         }
          
          <div class="bte_scrollbar-slider"
-              style="left: 0; top: @(proportionalTop)px; width: @(SCROLLBAR_SIZE_IN_PIXELS)px; height:  10px; background-color: red;">
+              style="background-color: red; left: 0; width: @(SCROLLBAR_SIZE_IN_PIXELS)px; @GetSliderVerticalStyleCss()">
         </div>
     </div>
 

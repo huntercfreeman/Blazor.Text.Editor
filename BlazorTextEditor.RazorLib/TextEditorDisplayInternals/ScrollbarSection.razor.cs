@@ -46,13 +46,28 @@ public partial class ScrollbarSection : ComponentBase
         return gutterWidthInPixels;
     }
 
-    private string GetScrollbarSliderHorizontalStyleCss()
+    private string GetSliderHorizontalStyleCss()
     {
         return string.Empty;
     }
 
-    private string GetScrollbarSliderVerticalStyleCss()
+    private string GetSliderVerticalStyleCss()
     {
-        return string.Empty;
+        // Top
+        var sliderProportionalTopInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels * 
+                                    WidthAndHeightOfTextEditor.HeightInPixels /
+                                    VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
+              
+        var top = $"top: {sliderProportionalTopInPixels}px;";
+        
+        // Height
+        var scrollbarHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels - SCROLLBAR_SIZE_IN_PIXELS;
+        var sliderProportionalHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels *
+                                               scrollbarHeightInPixels /
+                                               VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
+
+        var height = $"height: {sliderProportionalHeightInPixels}px;";
+        
+        return $"{top} {height}";
     }
 }
