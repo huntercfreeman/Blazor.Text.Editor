@@ -317,18 +317,26 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive ||
                         textEditorCursorSnapshot.ImmutableCursor.RowIndex >= upperRowBoundExclusive)
                     {
+                        // TODO: Sleep and then revisit this code it isn't written well and has bugs
+                        
+                        // Row out of bounds
+                        
                         await JsRuntime.InvokeVoidAsync(
                             "blazorTextEditor.scrollElementIntoView",
                             _intersectionObserverMapKey.ToString(),
                             TextEditorCursorDisplayId);
-
-                        if (mostRecentlyRenderedVirtualizationResult
-                            .VirtualizationScrollPosition.ScrollLeftInPixels <
-                            widthOfGutter)
+                        
+                        if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive)
                         {
                             await TextEditorDisplay
-                                .MutateScrollHorizontalPositionByPixelsAsync(
-                                    -1 * widthOfGutter);
+                                .MutateScrollVerticalPositionByPagesAsync(
+                                    -2);
+                        }
+                        else if(textEditorCursorSnapshot.ImmutableCursor.RowIndex >= upperRowBoundExclusive)
+                        {
+                            await TextEditorDisplay
+                                .MutateScrollVerticalPositionByPagesAsync(
+                                    2);
                         }
                     }
                     else
@@ -383,14 +391,24 @@ public partial class TextEditorCursorDisplay : TextEditorView
                                 .MutateScrollHorizontalPositionByPixelsAsync(
                                     widthOfGutter);
                         }
-                        else if (mostRecentlyRenderedVirtualizationResult
-                                    .VirtualizationScrollPosition.ScrollLeftInPixels <
-                                widthOfGutter)
-                        {
-                            await TextEditorDisplay
-                                .MutateScrollHorizontalPositionByPixelsAsync(
-                                    -1 * widthOfGutter);
-                        }
+                    }
+                    
+                    if (mostRecentlyRenderedVirtualizationResult
+                            .VirtualizationScrollPosition.ScrollLeftInPixels <
+                        widthOfGutter)
+                    {
+                        await TextEditorDisplay
+                            .MutateScrollHorizontalPositionByPixelsAsync(
+                                -1 * widthOfGutter);
+                    }
+                    
+                    if (mostRecentlyRenderedVirtualizationResult
+                            .VirtualizationScrollPosition.ScrollTopInPixels <
+                        CharacterWidthAndRowHeight.RowHeightInPixels)
+                    {
+                        await TextEditorDisplay
+                            .MutateScrollVerticalPositionByPixelsAsync(
+                                -1 * CharacterWidthAndRowHeight.RowHeightInPixels);
                     }
                 }
             } while (StartScrollIntoViewIfNotVisibleIfHasSkipped());
