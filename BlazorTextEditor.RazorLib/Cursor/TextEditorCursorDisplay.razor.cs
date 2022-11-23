@@ -298,8 +298,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive ||
                         textEditorCursorSnapshot.ImmutableCursor.RowIndex >= upperRowBoundExclusive)
                     {
-                        Console.WriteLine("ROW ScrollIntoViewIfNotVisibleAsync");
-                        
                         await JsRuntime.InvokeVoidAsync(
                             "blazorTextEditor.scrollElementIntoView",
                             _intersectionObserverMapKey.ToString(),
@@ -356,8 +354,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         if (leftInPixels < lowerColumnPixelInclusive ||
                             leftInPixels >= upperColumnPixelExclusive)
                         {                        
-                            Console.WriteLine("COLUMN ScrollIntoViewIfNotVisibleAsync");
-
                             await JsRuntime.InvokeVoidAsync(
                                 "blazorTextEditor.scrollElementIntoView",
                                 _intersectionObserverMapKey.ToString(),
