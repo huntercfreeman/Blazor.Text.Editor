@@ -313,11 +313,48 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         var upperColumnPixelExclusive =
                             lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
                             1;
+                        
+                        var textEditor = TextEditorStatesSelection.Value;
 
-                        var cursorColumnPixel = textEditorCursorSnapshot.ImmutableCursor.ColumnIndex;
+                        if (textEditor is null)
+                            return;
+                        
+                        var leftInPixels = 0d;
 
-                        if (cursorColumnPixel < lowerColumnPixelInclusive ||
-                            cursorColumnPixel >= upperColumnPixelExclusive)
+                        // Gutter padding column offset
+                        {
+                            leftInPixels +=
+                                TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS + TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+                        }
+
+                        // Tab key column offset
+                        {
+                            var tabsOnSameRowBeforeCursor = textEditor
+                                .GetTabsCountOnSameRowBeforeCursor(
+                                    textEditorCursorSnapshot.ImmutableCursor.RowIndex,
+                                    textEditorCursorSnapshot.ImmutableCursor.ColumnIndex);
+
+                            // 1 of the character width is already accounted for
+
+                            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+
+                            leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
+                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                        }
+
+                        // Line number column offset
+                        {
+                            var mostDigitsInARowLineNumber = textEditor.RowCount
+                                .ToString()
+                                .Length;
+
+                            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                        }
+
+                        leftInPixels += textEditorCursorSnapshot.ImmutableCursor.ColumnIndex * CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                         
+                        if (leftInPixels < lowerColumnPixelInclusive ||
+                            leftInPixels >= upperColumnPixelExclusive)
                         {                        
                             Console.WriteLine("COLUMN ScrollIntoViewIfNotVisibleAsync");
 
