@@ -88,7 +88,8 @@
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
                                                  TabIndex="TabIndex"
-                                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => _mostRecentlyRenderedVirtualizationResult">
+                                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => _mostRecentlyRenderedVirtualizationResult"
+                                                 TextEditorDisplay="this">
 
                             <OnContextMenuRenderFragment>
                                 @if (OnContextMenuRenderFragment is not null)

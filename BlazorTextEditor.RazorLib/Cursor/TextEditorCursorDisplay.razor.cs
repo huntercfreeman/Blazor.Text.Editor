@@ -16,6 +16,8 @@ public partial class TextEditorCursorDisplay : TextEditorView
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
     [Parameter, EditorRequired]
+    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
+    [Parameter, EditorRequired]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     [Parameter, EditorRequired]
     public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
@@ -282,10 +284,27 @@ public partial class TextEditorCursorDisplay : TextEditorView
         {
             do
             {
+                var textEditor = TextEditorStatesSelection.Value;
+
+                if (textEditor is null)
+                    return;
+                
                 var mostRecentlyRenderedVirtualizationResult = GetMostRecentlyRenderedVirtualizationResultFunc
                     .Invoke();
                 
                 var textEditorCursorSnapshot = new TextEditorCursorSnapshot(TextEditorCursor);
+                
+                var mostDigitsInARowLineNumber = textEditor.RowCount
+                    .ToString()
+                    .Length;
+                
+                var leftFromLargestLineNumber = mostDigitsInARowLineNumber *
+                                                CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                
+                var leftFromGutterPadding = TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
+                                            TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+
+                var widthOfGutter = leftFromLargestLineNumber + leftFromGutterPadding;
                 
                 if (mostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false)
                 {
@@ -302,6 +321,15 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             "blazorTextEditor.scrollElementIntoView",
                             _intersectionObserverMapKey.ToString(),
                             TextEditorCursorDisplayId);
+
+                        if (mostRecentlyRenderedVirtualizationResult
+                            .VirtualizationScrollPosition.ScrollLeftInPixels <
+                            widthOfGutter)
+                        {
+                            await TextEditorDisplay
+                                .MutateScrollHorizontalPositionByPixelsAsync(
+                                    -1 * widthOfGutter);
+                        }
                     }
                     else
                     {
@@ -311,20 +339,11 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         var upperColumnPixelExclusive =
                             lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
                             1;
-                        
-                        var textEditor = TextEditorStatesSelection.Value;
 
-                        if (textEditor is null)
-                            return;
-                        
                         var leftInPixels = 0d;
 
-                        // Gutter padding column offset
-                        {
-                            leftInPixels +=
-                                TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS + TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-                        }
-
+                        leftInPixels += widthOfGutter;
+                        
                         // Tab key column offset
                         {
                             var tabsOnSameRowBeforeCursor = textEditor
@@ -340,24 +359,37 @@ public partial class TextEditorCursorDisplay : TextEditorView
                                             CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
 
-                        // Line number column offset
-                        {
-                            var mostDigitsInARowLineNumber = textEditor.RowCount
-                                .ToString()
-                                .Length;
-
-                            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
-                        }
-
                         leftInPixels += textEditorCursorSnapshot.ImmutableCursor.ColumnIndex * CharacterWidthAndRowHeight.CharacterWidthInPixels;
-                         
-                        if (leftInPixels < lowerColumnPixelInclusive ||
-                            leftInPixels >= upperColumnPixelExclusive)
-                        {                        
+
+                        if (leftInPixels < lowerColumnPixelInclusive)
+                        {
                             await JsRuntime.InvokeVoidAsync(
                                 "blazorTextEditor.scrollElementIntoView",
                                 _intersectionObserverMapKey.ToString(),
                                 TextEditorCursorDisplayId);
+
+                            await TextEditorDisplay
+                                .MutateScrollHorizontalPositionByPixelsAsync(
+                                    -1 * widthOfGutter);
+                        }
+                        else if(leftInPixels >= upperColumnPixelExclusive)
+                        {
+                            await JsRuntime.InvokeVoidAsync(
+                                "blazorTextEditor.scrollElementIntoView",
+                                _intersectionObserverMapKey.ToString(),
+                                TextEditorCursorDisplayId);
+                            
+                            await TextEditorDisplay
+                                .MutateScrollHorizontalPositionByPixelsAsync(
+                                    widthOfGutter);
+                        }
+                        else if (mostRecentlyRenderedVirtualizationResult
+                                    .VirtualizationScrollPosition.ScrollLeftInPixels <
+                                widthOfGutter)
+                        {
+                            await TextEditorDisplay
+                                .MutateScrollHorizontalPositionByPixelsAsync(
+                                    -1 * widthOfGutter);
                         }
                     }
                 }
