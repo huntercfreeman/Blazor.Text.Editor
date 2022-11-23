@@ -45,7 +45,14 @@
          @onclick:stopPropagation="true"
          @oncontextmenu:stopPropagation="true">
 
-        <div class="bte_scrollbar-slider">
+         @{
+              var proportionalTop = VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels * 
+                                    WidthAndHeightOfTextEditor.HeightInPixels /
+                                    VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
+         }
+         
+         <div class="bte_scrollbar-slider"
+              style="left: 0; top: @(proportionalTop)px; width: @(SCROLLBAR_SIZE_IN_PIXELS)px; height:  10px; background-color: red;">
         </div>
     </div>
 

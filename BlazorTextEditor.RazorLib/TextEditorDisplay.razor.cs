@@ -860,7 +860,11 @@ public partial class TextEditorDisplay : TextEditorView
             rightBoundary,
             topBoundary,
             bottomBoundary,
-            request.ScrollPosition);
+            request.ScrollPosition with
+            {
+                ScrollWidthInPixels = totalWidth,
+                ScrollHeightInPixels = totalHeight
+            });
     }
 
     /// <summary>

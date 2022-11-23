@@ -88,6 +88,7 @@
 
 .bte_scrollbar-slider {
     background-color: black;
+    position: absolute;
 }
 
 .bte_scrollbar:hover {
