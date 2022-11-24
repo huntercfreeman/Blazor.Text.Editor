@@ -304,11 +304,12 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     var lowerRowBoundInclusive = firstEntry.Index;
                     var upperRowBoundExclusive = lastEntry.Index + 1;
                     
-                    // Set scroll margin for determining if a row is out of view
-                    {
-                        lowerRowBoundInclusive += 1;
-                        upperRowBoundExclusive -= 1;
-                    }
+                    // TODO: I am not sure where I was going with this scroll margin logic. It is not doing what I expected it to do. Perhaps I'm thinking of virtualization having padding because sometimes the final row does not render due to minor decimal place inaccuracies making the virtualization component think it is out of view.
+                    // // Set scroll margin for determining if a row is out of view
+                    // {
+                    //     lowerRowBoundInclusive += 1;
+                    //     upperRowBoundExclusive -= 1;
+                    // }
 
                     // Row is out of view
                     if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive ||
@@ -342,14 +343,15 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
                             1;
                         
-                        // Set scroll margin for determining if a column is out of view
-                        {
-                            var scrollMarginForColumnInPixels = SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW *
-                                                             WidthAndHeightOfTextEditor.WidthInPixels;
-                            
-                            lowerColumnPixelInclusive += scrollMarginForColumnInPixels;
-                            upperColumnPixelExclusive -= scrollMarginForColumnInPixels;
-                        }
+                        // TODO: I am not sure where I was going with this scroll margin logic. It is not doing what I expected it to do. Perhaps I'm thinking of virtualization having padding because sometimes the final row does not render due to minor decimal place inaccuracies making the virtualization component think it is out of view.
+                        // // Set scroll margin for determining if a column is out of view
+                        // {
+                        //     var scrollMarginForColumnInPixels = SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW *
+                        //                                      WidthAndHeightOfTextEditor.WidthInPixels;
+                        //     
+                        //     lowerColumnPixelInclusive += scrollMarginForColumnInPixels;
+                        //     upperColumnPixelExclusive -= scrollMarginForColumnInPixels;
+                        // }
 
                         var leftInPixels = 0d;
 
