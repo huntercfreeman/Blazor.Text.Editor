@@ -279,16 +279,15 @@ public partial class TextEditorDisplay : TextEditorView
         TextEditorStatesSelection.SelectedValueChanged += TextEditorStatesSelectionOnSelectedValueChanged;
     }
 
-    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
-    {
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
+
+            await JsRuntime.InvokeVoidAsync(
+                "blazorTextEditor.disableScrollEvents",
+                TextEditorContentId);
         }
 
         if (ShouldMeasureDimensions)
@@ -311,6 +310,11 @@ public partial class TextEditorDisplay : TextEditorView
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+    
+    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
     public async Task FocusTextEditorAsync()

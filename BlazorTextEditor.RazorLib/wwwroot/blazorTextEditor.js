@@ -71,6 +71,16 @@ window.blazorTextEditor = {
             inline: "nearest"
         });
     },
+    disableScrollEvents: function (elementId) {
+
+        let element = document.getElementById(elementId);
+        
+        element.addEventListener('wheel', (event) => {
+            event.preventDefault();
+        }, {
+            passive: false,
+        });
+    },
     disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
 
         let intersectionObserverMapValue = this.cursorIntersectionObserverMap
