@@ -355,7 +355,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             var mostDigitsInARowLineNumber = textEditor.RowCount
                                 .ToString()
                                 .Length;
-                // line 42 to line 43 is example of bug
+                            
                             var widthOfLargestLineNumber = mostDigitsInARowLineNumber *
                                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
                 
@@ -388,11 +388,15 @@ public partial class TextEditorCursorDisplay : TextEditorView
                                             CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
                         
-
                         if (leftInPixels < lowerColumnPixelInclusive ||
-                            leftInPixels >= upperColumnPixelExclusive) // TODO: try (lowerColumnPixelInclusive + widthOfGutter)
+                            leftInPixels >= upperColumnPixelExclusive)
                         {
                             setScrollLeftTo = leftInPixels;
+                        }
+                        
+                        if (leftInPixels < lowerColumnPixelInclusive + widthOfGutter)
+                        {
+                            setScrollLeftTo -= widthOfGutter;
                         }
                     }
 
