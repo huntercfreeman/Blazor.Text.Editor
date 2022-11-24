@@ -310,32 +310,30 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         upperRowBoundExclusive -= 1;
                     }
 
+                    double? setScrollTopTo = null;
+
                     // Row is out of view
-                    if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive ||
-                        textEditorCursorSnapshot.ImmutableCursor.RowIndex >= upperRowBoundExclusive)
                     {
-                        await JsRuntime.InvokeVoidAsync(
-                            "blazorTextEditor.scrollElementIntoView",
-                            _intersectionObserverMapKey.ToString(),
-                            TextEditorCursorDisplayId);
-                        
+                        int? scrollToRowIndex = null;
+                                                
                         if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive)
                         {
-                            await TextEditorDisplay
-                                .MutateScrollVerticalPositionByLinesAsync(
-                                    -1 * WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY);
+                            scrollToRowIndex = textEditorCursorSnapshot.ImmutableCursor.RowIndex -
+                                               WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY;
                         }
                         else if(textEditorCursorSnapshot.ImmutableCursor.RowIndex >= upperRowBoundExclusive)
                         {
-                            await TextEditorDisplay
-                                .MutateScrollVerticalPositionByLinesAsync(
-                                    WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY);
+                            scrollToRowIndex = textEditorCursorSnapshot.ImmutableCursor.RowIndex -
+                                               WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY;
+                        }
+
+                        if (scrollToRowIndex is not null)
+                        {
+                            setScrollTopTo = scrollToRowIndex.Value * CharacterWidthAndRowHeight.RowHeightInPixels;
                         }
                     }
-
-                    /*
-                     * TODO: fix bug: move cursor to end of a row which goes offscreen column wise. Then hit arrow up and the cursor will be erroneously placed in the margin if the row that was went to resulted in a lower enough column index as the gutter was not accounted for.
-                     */
+                    
+                    double? setScrollLeftTo = null;
                     
                     // Column is out of view
                     {
@@ -345,16 +343,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         var upperColumnPixelExclusive =
                             lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
                             1;
-                        
-                        // TODO: I am not sure where I was going with this scroll margin logic. It is not doing what I expected it to do. Perhaps I'm thinking of virtualization having padding because sometimes the final row does not render due to minor decimal place inaccuracies making the virtualization component think it is out of view.
-                        // // Set scroll margin for determining if a column is out of view
-                        // {
-                        //     var scrollMarginForColumnInPixels = SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW *
-                        //                                      WidthAndHeightOfTextEditor.WidthInPixels;
-                        //     
-                        //     lowerColumnPixelInclusive += scrollMarginForColumnInPixels;
-                        //     upperColumnPixelExclusive -= scrollMarginForColumnInPixels;
-                        // }
 
                         var leftInPixels = 0d;
 
@@ -367,7 +355,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             var mostDigitsInARowLineNumber = textEditor.RowCount
                                 .ToString()
                                 .Length;
-                
+                // line 42 to line 43 is example of bug
                             var widthOfLargestLineNumber = mostDigitsInARowLineNumber *
                                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
                 
@@ -399,31 +387,21 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             leftInPixels += textEditorCursorSnapshot.ImmutableCursor.ColumnIndex * 
                                             CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
+                        
 
-                        if (leftInPixels < lowerColumnPixelInclusive)
+                        if (leftInPixels < lowerColumnPixelInclusive ||
+                            leftInPixels >= upperColumnPixelExclusive) // TODO: try (lowerColumnPixelInclusive + widthOfGutter)
                         {
-                            await JsRuntime.InvokeVoidAsync(
-                                "blazorTextEditor.scrollElementIntoView",
-                                _intersectionObserverMapKey.ToString(),
-                                TextEditorCursorDisplayId);
+                            setScrollLeftTo = leftInPixels;
+                        }
+                    }
 
-                            // Displace scrollLeft by width of the Gutter
-                            await TextEditorDisplay
-                                .MutateScrollHorizontalPositionByPixelsAsync(
-                                    -1 * widthOfGutter);
-                        }
-                        else if(leftInPixels >= upperColumnPixelExclusive)
-                        {
-                            await JsRuntime.InvokeVoidAsync(
-                                "blazorTextEditor.scrollElementIntoView",
-                                _intersectionObserverMapKey.ToString(),
-                                TextEditorCursorDisplayId);
-                            
-                            // Displace scrollLeft by width of the Gutter
-                            await TextEditorDisplay
-                                .MutateScrollHorizontalPositionByPixelsAsync(
-                                    widthOfGutter);
-                        }
+                    if (setScrollTopTo is not null || 
+                        setScrollLeftTo is not null)
+                    {
+                        await TextEditorDisplay.SetScrollPositionAsync(
+                            setScrollLeftTo,
+                            setScrollTopTo);
                     }
                 }
             } while (StartScrollIntoViewIfNotVisibleIfHasSkipped());

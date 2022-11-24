@@ -1030,6 +1030,21 @@ public partial class TextEditorDisplay : TextEditorView
             pages * (WidthAndHeightOfTextEditor?.HeightInPixels ?? 0));
     }
     
+    /// <summary>
+    /// If a parameter is null the JavaScript will not modify that value
+    /// </summary>
+    public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
+    {
+        await JsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.setScrollPosition",
+            TextEditorContentId,
+            scrollLeft,
+            scrollTop);
+        
+        await InvokeAsync(StateHasChanged);
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+    }
+    
     public async Task CursorMovePageBottomAsync()
     {
         var localMostRecentlyRenderedVirtualizationResult = _mostRecentlyRenderedVirtualizationResult;
