@@ -7,7 +7,7 @@
         <Product>Blazor Text Editor</Product>
         <Description>A text editor written using Blazor. Contains API for syntax highlighting.</Description>
         <PackageId>Blazor.Text.Editor</PackageId>
-        <Version>5.0.0</Version>
+        <Version>5.1.0</Version>
         <Authors>Hunter Freeman</Authors>
         <Company />
         <PackageTags>DotNet CSharp Blazor RazorComponents</PackageTags>
