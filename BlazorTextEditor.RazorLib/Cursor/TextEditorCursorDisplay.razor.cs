@@ -73,18 +73,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var textEditor = TextEditorStatesSelection.Value;
-        
-        if (firstRender)
-        {
-            if (IsFocusTarget)
-            {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
-                    _intersectionObserverMapKey.ToString(),
-                    ScrollableContainerId,
-                    TextEditorCursorDisplayId);
-            }
-        }
 
         if (textEditor is null)
         {
@@ -499,16 +487,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
         {
             _blinkingCursorCancellationTokenSource.Cancel();
             _checkCursorIsInViewCancellationTokenSource.Cancel();
-
-            if (IsFocusTarget)
-            {
-                _ = Task.Run(async () =>
-                {
-                    await JsRuntime.InvokeVoidAsync(
-                        "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                        _intersectionObserverMapKey.ToString());
-                });
-            }
         }
         
         base.Dispose(true);

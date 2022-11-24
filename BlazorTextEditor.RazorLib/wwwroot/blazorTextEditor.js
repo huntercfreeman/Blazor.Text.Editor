@@ -1,66 +1,4 @@
 window.blazorTextEditor = {
-    cursorIntersectionObserverMap: new Map(),
-    initializeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey,
-                                                              scrollableParentElementId,
-                                                              cursorElementId) {
-
-        let scrollableParent = document.getElementById(scrollableParentElementId);
-
-        let options = {
-            root: scrollableParent,
-            rootMargin: '0px',
-            threshold: 0
-        }
-
-        let intersectionObserver = new IntersectionObserver((entries) => {
-            let intersectionObserverMapValue = this.cursorIntersectionObserverMap
-                .get(intersectionObserverMapKey);
-
-            for (let i = 0; i < entries.length; i++) {
-
-                let entry = entries[i];
-
-                let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
-                    .find(x => x.CursorElementId === entry.target.id);
-
-                cursorTuple.IsIntersecting = entry.isIntersecting;
-            }
-        }, options);
-
-        let cursorIsIntersectingTuples = [];
-
-        let cursorElement = document.getElementById(cursorElementId);
-        
-        intersectionObserver.observe(cursorElement);
-
-        cursorIsIntersectingTuples.push({
-            CursorElementId: cursorElementId,
-            IsIntersecting: false
-        });
-
-        this.cursorIntersectionObserverMap.set(intersectionObserverMapKey, {
-            IntersectionObserver: intersectionObserver,
-            CursorIsIntersectingTuples: cursorIsIntersectingTuples
-        });
-    },
-    revealCursor: function (intersectionObserverMapKey,
-                            cursorElementId) {
-
-        let intersectionObserverMapValue = this.cursorIntersectionObserverMap
-            .get(intersectionObserverMapKey);
-
-        let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
-            .find(x => x.CursorElementId === cursorElementId);
-
-        if (!cursorTuple.IsIntersecting) {
-            let cursorElement = document.getElementById(cursorElementId);
-
-            cursorElement.scrollIntoView({
-                block: "nearest",
-                inline: "nearest"
-            });
-        }
-    },
     scrollElementIntoView: function (intersectionObserverMapKey,
                                      elementId) {
 
@@ -80,17 +18,6 @@ window.blazorTextEditor = {
         }, {
             passive: false,
         });
-    },
-    disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
-
-        let intersectionObserverMapValue = this.cursorIntersectionObserverMap
-            .get(intersectionObserverMapKey);
-        
-        let intersectionObserver = intersectionObserverMapValue.IntersectionObserver;
-
-        this.cursorIntersectionObserverMap.delete(intersectionObserverMapKey);
-
-        intersectionObserver.disconnect();
     },
     measureCharacterWidthAndRowHeight: function (elementId, amountOfCharactersRendered) {
         let element = document.getElementById(elementId);
