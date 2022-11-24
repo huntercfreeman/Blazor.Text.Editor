@@ -71,7 +71,7 @@ window.blazorTextEditor = {
             inline: "nearest"
         });
     },
-    disableScrollEvents: function (elementId) {
+    preventDefaultOnWheelEvents: function (elementId) {
 
         let element = document.getElementById(elementId);
         

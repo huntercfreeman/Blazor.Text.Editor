@@ -286,7 +286,7 @@ public partial class TextEditorDisplay : TextEditorView
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
 
             await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.disableScrollEvents",
+                "blazorTextEditor.preventDefaultOnWheelEvents",
                 TextEditorContentId);
         }
 
