@@ -59,7 +59,19 @@ public partial class TextEditorCursorDisplay : TextEditorView
     private TextEditorMenuKind _textEditorMenuKind;
     private int _textEditorMenuShouldGetFocusRequestCount;
 
+    /// <summary>
+    /// Scroll by 2 more rows than necessary to bring an out of view row into view.
+    /// </summary>
     private const int WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY = 2;
+    
+    /// <summary>
+    /// Determine if a row is out of view with the lower and upper boundaries each being 1 row narrower.
+    /// </summary>
+    private const int SCROLL_MARGIN_FOR_ROW_OUT_OF_VIEW = 1;
+    /// <summary>
+    /// Determine if a column is out of view with the lower and upper boundaries each being 1 column narrower.
+    /// </summary>
+    private const int SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW = 1;
 
     public string TextEditorCursorDisplayId => $"bte_text-editor-cursor-display_{_intersectionObserverMapKey}";
 
@@ -291,6 +303,12 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     
                     var lowerRowBoundInclusive = firstEntry.Index;
                     var upperRowBoundExclusive = lastEntry.Index + 1;
+                    
+                    // Set scroll margin for determining if a row is out of view
+                    {
+                        lowerRowBoundInclusive += 1;
+                        upperRowBoundExclusive -= 1;
+                    }
 
                     // Row is out of view
                     if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive ||
@@ -323,6 +341,15 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         var upperColumnPixelExclusive =
                             lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
                             1;
+                        
+                        // Set scroll margin for determining if a column is out of view
+                        {
+                            var scrollMarginForColumnInPixels = SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW *
+                                                             WidthAndHeightOfTextEditor.WidthInPixels;
+                            
+                            lowerColumnPixelInclusive += scrollMarginForColumnInPixels;
+                            upperColumnPixelExclusive -= scrollMarginForColumnInPixels;
+                        }
 
                         var leftInPixels = 0d;
 
