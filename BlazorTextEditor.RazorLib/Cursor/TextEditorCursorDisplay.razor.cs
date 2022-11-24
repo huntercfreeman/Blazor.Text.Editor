@@ -345,27 +345,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             1;
 
                         var leftInPixels = 0d;
-
-                        // Capture widthOfGutter outside of upcoming code block
-                        // it is needed to displace scrollLeft after JavaScript scroll into view
-                        double widthOfGutter;
-
-                        // Account for Gutter Width
-                        {
-                            var mostDigitsInARowLineNumber = textEditor.RowCount
-                                .ToString()
-                                .Length;
-                            
-                            var widthOfLargestLineNumber = mostDigitsInARowLineNumber *
-                                                           CharacterWidthAndRowHeight.CharacterWidthInPixels;
-                
-                            var widthOfGutterPadding = TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                                                       TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-                            widthOfGutter = widthOfLargestLineNumber + widthOfGutterPadding;
-                        
-                            leftInPixels += widthOfGutter;
-                        }
                         
                         // Account for Tab Key Width
                         {
@@ -392,11 +371,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             leftInPixels >= upperColumnPixelExclusive)
                         {
                             setScrollLeftTo = leftInPixels;
-                        }
-                        
-                        if (leftInPixels < lowerColumnPixelInclusive + widthOfGutter)
-                        {
-                            setScrollLeftTo -= widthOfGutter;
                         }
                     }
 

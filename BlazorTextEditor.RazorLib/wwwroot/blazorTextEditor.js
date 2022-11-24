@@ -182,11 +182,11 @@ window.blazorTextEditor = {
     setScrollPosition: function (textEditorContentId, scrollLeft, scrollTop) {
         let textEditorContent = document.getElementById(textEditorContentId);
         
-        if (scrollLeft) {
+        if (scrollLeft || scrollLeft === 0) {
             textEditorContent.scrollLeft = scrollLeft;
         }
         
-        if (scrollTop) {
+        if (scrollTop || scrollTop === 0) {
             textEditorContent.scrollTop = scrollTop;
         }
     },
