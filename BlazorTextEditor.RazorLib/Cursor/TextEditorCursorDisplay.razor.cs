@@ -380,6 +380,13 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         await TextEditorDisplay.SetScrollPositionAsync(
                             setScrollLeftTo,
                             setScrollTopTo);
+
+                        // Blazor WebAssembly as of this comment is single threaded and
+                        // the UI freezes without this await Task.Delay
+                        //
+                        // This method is rather intensive so Task.Yield does not suffice.
+                        // The semaphore logic will run the most recent event and ignore any others.
+                        await Task.Delay(100);
                     }
                 }
             } while (StartScrollIntoViewIfNotVisibleIfHasSkipped());

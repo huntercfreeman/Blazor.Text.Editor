@@ -1003,7 +1003,10 @@ public partial class TextEditorDisplay : TextEditorView
             TextEditorContentId,
             pixels);
         
-        await InvokeAsync(StateHasChanged);
+        // Blazor WebAssembly as of this comment is single threaded and
+        // the UI freezes without this await Task.Yield
+        await Task.Yield();
+
         _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
     
@@ -1014,7 +1017,10 @@ public partial class TextEditorDisplay : TextEditorView
             TextEditorContentId,
             pixels);
         
-        await InvokeAsync(StateHasChanged);
+        // Blazor WebAssembly as of this comment is single threaded and
+        // the UI freezes without this await Task.Yield
+        await Task.Yield();
+        
         _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
