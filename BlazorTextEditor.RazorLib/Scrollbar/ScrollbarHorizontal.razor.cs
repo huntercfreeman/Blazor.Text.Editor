@@ -17,6 +17,8 @@ public partial class ScrollbarHorizontal : ComponentBase
     
     [Parameter, EditorRequired]
     public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
     
     private string GetScrollbarHorizontalStyleCss()
     {
