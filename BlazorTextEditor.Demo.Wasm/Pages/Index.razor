@@ -2,11 +2,12 @@
 @using BlazorTextEditor.RazorLib
 @using BlazorTextEditor.RazorLib.TextEditor
 @using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.Demo.Wasm.TextEditor
 
 <PageTitle>Index</PageTitle>
 
 <div>
-    Source code is v5.0.0:<br/>
+    Source code is v5.1.0:<br/>
     <a href="https://github.com/huntercfreeman/Blazor.Text.Editor"
        target="_blank">
         github.com/huntercfreeman/Blazor.Text.Editor
@@ -26,30 +27,30 @@
 <TextEditorInputTheme/>
 
 <button class="btn btn-primary"
-        @onclick="OpenTextEditorSettingsDialog">
+        @onclick="OpenSettingsDialogOnClick">
     Text Editor Settings
 </button>
 
-<TextEditorDisplay TextEditorKey="IndexTextEditorKey"/>
+<TextEditorDisplay TextEditorKey="TextEditorFacts.CSharpTextEditor"
+                   FileExtension="C#"/>
+                   
+<TextEditorDisplay TextEditorKey="TextEditorFacts.CssTextEditor"
+                   FileExtension="CSS"/>
 
-@code {
+<TextEditorDisplay TextEditorKey="TextEditorFacts.FSharpTextEditor"
+                   FileExtension="F#"/>
 
-    [Inject]
-    private ITextEditorService TextEditorService { get; set; } = null!;
+<TextEditorDisplay TextEditorKey="TextEditorFacts.HtmlTextEditor"
+                   FileExtension="HTML"/>
 
-    private static readonly TextEditorKey IndexTextEditorKey = TextEditorKey.NewTextEditorKey();
+<TextEditorDisplay TextEditorKey="TextEditorFacts.JavaScriptTextEditor"
+                   FileExtension="JavaScript"/>
 
-    protected override void OnInitialized()
-    {
-        TextEditorService.RegisterCSharpTextEditor(
-            IndexTextEditorKey,
-            string.Empty);
-        
-        base.OnInitialized();
-    }
+<TextEditorDisplay TextEditorKey="TextEditorFacts.PlainTextEditor"
+                   FileExtension="Plain"/>
 
-    private void OpenTextEditorSettingsDialog()
-    {
-        TextEditorService.ShowSettingsDialog(true);
-    }
-}
+<TextEditorDisplay TextEditorKey="TextEditorFacts.RazorTextEditor"
+                   FileExtension="Razor"/>
+
+<TextEditorDisplay TextEditorKey="TextEditorFacts.TypeScriptTextEditor"
+                   FileExtension="TypeScript"/>

@@ -1,0 +1,29 @@
+namespace BlazorTextEditor.Demo.Wasm.TestDataFolder;
+
+public static partial class TestData
+{
+    public static class Css
+    {
+        public const string EXAMPLE_TEXT_21_LINES = @"/* Applies to the entire body of the HTML document (except where overridden by more specific
+selectors). */
+body {
+  margin: 25px;
+  background-color: rgb(240,240,240);
+  font-family: arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Applies to all <h1>...</h1> elements. */
+h1 {
+  font-size: 35px;
+  font-weight: normal;
+  margin-top: 5px;
+}
+
+/* Applies to all elements with <... class=""someclass""> specified. */
+.someclass { color: red; }
+
+/* Applies to the element with <... id=""someid""> specified. */
+#someid { color: green; }";
+    }
+}
