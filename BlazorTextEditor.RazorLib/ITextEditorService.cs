@@ -1,6 +1,8 @@
 ﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
+using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript;
 using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
@@ -91,6 +93,36 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
+    /// </summary>
+    public void RegisterCssTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null);
+    /// <summary>
+    /// Constructs a new <see cref="TextEditorBase"/> using the
+    /// <see cref="TextEditorKey"/> provided. The text editor will
+    /// render with the <see cref="initialContent"/> provided.
+    /// <see cref="ITextEditorKeymap"/> is optional and it is likely
+    /// that one would prefer leaving it null as this will result
+    /// in the default keymap being used.
+    /// <br/><br/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorFSharpLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorFSharpDecorationMapper"/>
+    /// </summary>
+    public void RegisterFSharpTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null);
+    /// <summary>
+    /// Constructs a new <see cref="TextEditorBase"/> using the
+    /// <see cref="TextEditorKey"/> provided. The text editor will
+    /// render with the <see cref="initialContent"/> provided.
+    /// <see cref="ITextEditorKeymap"/> is optional and it is likely
+    /// that one would prefer leaving it null as this will result
+    /// in the default keymap being used.
+    /// <br/><br/>
     /// Used <see cref="ILexer"/>: <see cref="TextEditorRazorLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
     /// </summary>
@@ -106,8 +138,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorJavaScriptLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJavaScriptDecorationMapper"/>
     /// </summary>
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
@@ -121,8 +153,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorJavaScriptLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJavaScriptDecorationMapper"/>
     /// </summary>
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
@@ -136,8 +168,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="LexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="DecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
     /// </summary>
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,

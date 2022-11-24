@@ -1,0 +1,15 @@
+﻿using Microsoft.AspNetCore.Components;
+
+namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
+
+public partial class MeasureCharacterWidthAndRowHeight : ComponentBase
+{
+    [Parameter, EditorRequired]
+    public string ElementId { get; set; } = null!;
+    
+    private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
+    private int _testStringRepeatCount = 6;
+
+    public int CountOfTestCharacters => 
+        _testStringRepeatCount * _testStringForMeasurement.Length;
+}

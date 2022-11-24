@@ -6,6 +6,7 @@ public class TextEditorCommand
 {
     public TextEditorCommand(
         Func<ITextEditorCommandParameter, Task> doAsyncFunc,
+        bool shouldScrollCursorIntoView,
         string displayName,
         string internalIdentifier,
         TextEditKind textEditKind = TextEditKind.None,
@@ -19,6 +20,7 @@ public class TextEditorCommand
         }
 
         DoAsyncFunc = doAsyncFunc;
+        ShouldScrollCursorIntoView = shouldScrollCursorIntoView;
         DisplayName = displayName;
         InternalIdentifier = internalIdentifier;
         TextEditKind = textEditKind;
@@ -26,6 +28,7 @@ public class TextEditorCommand
     }
 
     public Func<ITextEditorCommandParameter, Task> DoAsyncFunc { get; }
+    public bool ShouldScrollCursorIntoView { get; }
     public string DisplayName { get; }
     public string InternalIdentifier { get; }
     public TextEditKind TextEditKind { get; }

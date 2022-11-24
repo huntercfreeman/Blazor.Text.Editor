@@ -11,6 +11,7 @@ using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -143,17 +144,15 @@ public partial class TextEditorDisplay : TextEditorView
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromSeconds(1);
     private int _skippedSyntaxHighlightingEventCount;
-    
+
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
-        
+
     private int? _previousGlobalFontSizeInPixels;
     private bool? _previousShouldRemeasureFlag;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
 
     private TextEditorKey? _previousTextEditorKey;
-    private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
-    private int _testStringRepeatCount = 6;
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private ElementReference _textEditorDisplayElementReference;
 
@@ -172,17 +171,21 @@ public partial class TextEditorDisplay : TextEditorView
     private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
     private TextEditorHeader? _textEditorHeader;
     private TextEditorFooter? _textEditorFooter;
+    private MeasureCharacterWidthAndRowHeight? _measureCharacterWidthAndRowHeightComponent;
+    
+    // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
+    private VirtualizationResult<List<RichCharacter>>? _mostRecentlyRenderedVirtualizationResult;
 
     public bool ShouldMeasureDimensions { get; set; } = true;
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
-    public WidthAndHeightOfTextEditor? TextEditorWidthAndHeight { get; private set; }
+    public WidthAndHeightOfTextEditor? WidthAndHeightOfTextEditor { get; private set; }
 
     public TextEditorBase? MutableReferenceToTextEditor => TextEditorStatesSelection.Value;
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
 
-    private string MeasureCharacterWidthAndRowHeightId =>
+    private string MeasureCharacterWidthAndRowHeightElementId =>
         $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
 
     private MarkupString GetAllTextEscaped => (MarkupString)(MutableReferenceToTextEditor?
@@ -239,7 +242,7 @@ public partial class TextEditorDisplay : TextEditorView
 
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
-            
+
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
@@ -260,7 +263,7 @@ public partial class TextEditorDisplay : TextEditorView
                 primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
-            
+
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
@@ -276,16 +279,15 @@ public partial class TextEditorDisplay : TextEditorView
         TextEditorStatesSelection.SelectedValueChanged += TextEditorStatesSelectionOnSelectedValueChanged;
     }
 
-    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
-    {
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _virtualizationDisplay?.InvokeEntriesProviderFunc();
+
+            await JsRuntime.InvokeVoidAsync(
+                "blazorTextEditor.preventDefaultOnWheelEvents",
+                TextEditorContentId);
         }
 
         if (ShouldMeasureDimensions)
@@ -293,10 +295,10 @@ public partial class TextEditorDisplay : TextEditorView
             CharacterWidthAndRowHeight = await JsRuntime
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
-                    MeasureCharacterWidthAndRowHeightId,
-                    _testStringRepeatCount * _testStringForMeasurement.Length);
+                    MeasureCharacterWidthAndRowHeightElementId,
+                    _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
-            TextEditorWidthAndHeight = await JsRuntime
+            WidthAndHeightOfTextEditor = await JsRuntime
                 .InvokeAsync<WidthAndHeightOfTextEditor>(
                     "blazorTextEditor.measureWidthAndHeightOfTextEditor",
                     TextEditorContentId);
@@ -308,6 +310,11 @@ public partial class TextEditorDisplay : TextEditorView
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+    
+    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
     }
 
     public async Task FocusTextEditorAsync()
@@ -329,8 +336,12 @@ public partial class TextEditorDisplay : TextEditorView
         {
             new(primaryCursorSnapshot.UserCursor),
         }.ToImmutableArray();
+        
+        var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
+            .Invoke(keyboardEventArgs);
 
-        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
+        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key) && 
+            command is null)
         {
             if ((KeyboardKeyFacts.MovementKeys.ARROW_DOWN == keyboardEventArgs.Key ||
                  KeyboardKeyFacts.MovementKeys.ARROW_UP == keyboardEventArgs.Key) &&
@@ -346,7 +357,7 @@ public partial class TextEditorDisplay : TextEditorView
                     keyboardEventArgs,
                     primaryCursorSnapshot.UserCursor,
                     safeTextEditorReference);
-            
+
                 _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
             }
         }
@@ -356,9 +367,6 @@ public partial class TextEditorDisplay : TextEditorView
         }
         else
         {
-            var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
-                .Invoke(keyboardEventArgs);
-
             if (command is not null)
             {
                 await command.DoAsyncFunc.Invoke(
@@ -381,7 +389,7 @@ public partial class TextEditorDisplay : TextEditorView
                         _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
                     }
                 }
-                
+
                 Dispatcher.Dispatch(
                     new KeyboardEventTextEditorBaseAction(
                         TextEditorKey,
@@ -393,7 +401,8 @@ public partial class TextEditorDisplay : TextEditorView
 
         if (keyboardEventArgs.Key != "Shift" &&
             keyboardEventArgs.Key != "Control" &&
-            keyboardEventArgs.Key != "Alt")
+            keyboardEventArgs.Key != "Alt" &&
+            (command?.ShouldScrollCursorIntoView ?? true))
         {
             primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
         }
@@ -613,7 +622,7 @@ public partial class TextEditorDisplay : TextEditorView
             }
             else
                 _thinksLeftMouseButtonIsDown = false;
-                
+
             await Task.Delay(_onMouseMoveDelay);
         }
         finally
@@ -706,238 +715,11 @@ public partial class TextEditorDisplay : TextEditorView
         return (rowIndex, columnIndexInt);
     }
 
-    private string GetCssClass(byte decorationByte)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        return safeTextEditorReference.DecorationMapper.Map(decorationByte);
-    }
-
-    private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        if (CharacterWidthAndRowHeight is null)
-            return string.Empty;
-
-        var top =
-            $"top:{index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var leftInPixels = widthOfGutterInPixels +
-                           virtualizedRowLeftInPixels +
-                           TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                           TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var left = $"left: {leftInPixels}px;";
-
-        return $"{top} {height} {left}";
-    }
-
-    private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        if (CharacterWidthAndRowHeight is null)
-            return string.Empty;
-
-        var top =
-            $"top: {index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-            .ToString()
-            .Length;
-
-        var widthInPixels = mostDigitsInARowLineNumber *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var width = $"width: {widthInPixels}px;";
-
-        var paddingLeft =
-            $"padding-left: {TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS}px;";
-        var paddingRight =
-            $"padding-right: {TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS}px;";
-
-        var left = $"left: {virtualizedRowLeftInPixels}px;";
-
-        return $"{left} {top} {height} {width} {paddingLeft} {paddingRight}";
-    }
-
-    private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
-    {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-
-        if (safeTextEditorReference is null)
-            return string.Empty;
-
-        if (CharacterWidthAndRowHeight is null ||
-            rowIndex >= safeTextEditorReference.RowEndingPositions.Length)
-            return string.Empty;
-
-        var startOfRowTuple = safeTextEditorReference.GetStartOfRowTuple(rowIndex);
-        var endOfRowTuple = safeTextEditorReference.RowEndingPositions[rowIndex];
-
-        var selectionStartingColumnIndex = 0;
-        var selectionEndingColumnIndex =
-            endOfRowTuple.positionIndex - 1;
-
-        var fullWidthOfRowIsSelected = true;
-
-        if (lowerBound > startOfRowTuple.positionIndex)
-        {
-            selectionStartingColumnIndex =
-                lowerBound - startOfRowTuple.positionIndex;
-
-            fullWidthOfRowIsSelected = false;
-        }
-
-        if (upperBound < endOfRowTuple.positionIndex)
-        {
-            selectionEndingColumnIndex =
-                upperBound - startOfRowTuple.positionIndex;
-
-            fullWidthOfRowIsSelected = false;
-        }
-
-        var top =
-            $"top: {rowIndex * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var gutterSizeInPixels =
-            widthOfGutterInPixels +
-            TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-            TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var selectionStartInPixels =
-            selectionStartingColumnIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        // selectionStartInPixels offset from Tab keys a width of many characters
-        {
-            var tabsOnSameRowBeforeCursor = safeTextEditorReference
-                .GetTabsCountOnSameRowBeforeCursor(
-                    rowIndex,
-                    selectionStartingColumnIndex);
-
-            // 1 of the character width is already accounted for
-
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
-
-            selectionStartInPixels += extraWidthPerTabKey *
-                                      tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
-
-        var selectionWidthInPixels =
-            selectionEndingColumnIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels -
-            selectionStartInPixels;
-
-        // Tab keys a width of many characters
-        {
-            var tabsOnSameRowBeforeCursor = safeTextEditorReference
-                .GetTabsCountOnSameRowBeforeCursor(
-                    rowIndex,
-                    selectionEndingColumnIndex);
-
-            // 1 of the character width is already accounted for
-
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
-
-            selectionWidthInPixels += extraWidthPerTabKey *
-                                      tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        var widthCssStyleString = "width: ";
-
-        if (fullWidthOfRowIsSelected)
-            widthCssStyleString += "100%";
-        else if (selectionStartingColumnIndex != 0 &&
-                 upperBound > endOfRowTuple.positionIndex - 1)
-            widthCssStyleString += $"calc(100% - {selectionStartInPixels}px);";
-        else
-            widthCssStyleString += $"{selectionWidthInPixels}px;";
-
-        return $"{top} {height} {left} {widthCssStyleString}";
-    }
-
-    private void AppendTextEscaped(
-        StringBuilder spanBuilder,
-        RichCharacter richCharacter,
-        string tabKeyOutput,
-        string spaceKeyOutput)
-    {
-        switch (richCharacter.Value)
-        {
-            case '\t':
-                spanBuilder.Append(tabKeyOutput);
-                break;
-            case ' ':
-                spanBuilder.Append(spaceKeyOutput);
-                break;
-            case '\r':
-                break;
-            case '\n':
-                break;
-            case '<':
-                spanBuilder.Append("&lt;");
-                break;
-            case '>':
-                spanBuilder.Append("&gt;");
-                break;
-            case '"':
-                spanBuilder.Append("&quot;");
-                break;
-            case '\'':
-                spanBuilder.Append("&#39;");
-                break;
-            case '&':
-                spanBuilder.Append("&amp;");
-                break;
-            default:
-                spanBuilder.Append(richCharacter.Value);
-                break;
-        }
-    }
-
     private VirtualizationResult<List<RichCharacter>>? EntriesProvider(
         VirtualizationRequest request)
     {
         if (CharacterWidthAndRowHeight is null ||
-            TextEditorWidthAndHeight is null ||
+            WidthAndHeightOfTextEditor is null ||
             request.CancellationToken.IsCancellationRequested)
             return null;
 
@@ -950,7 +732,8 @@ public partial class TextEditorDisplay : TextEditorView
                 new(0, 0, 0, 0),
                 new(0, 0, 0, 0),
                 new(0, 0, 0, 0),
-                new(0, 0, 0, 0));
+                new(0, 0, 0, 0),
+                request.ScrollPosition);
         }
 
         var verticalStartingIndex = (int)Math.Floor(
@@ -958,24 +741,35 @@ public partial class TextEditorDisplay : TextEditorView
             CharacterWidthAndRowHeight.RowHeightInPixels);
 
         var verticalTake = (int)Math.Ceiling(
-            TextEditorWidthAndHeight.HeightInPixels /
+            WidthAndHeightOfTextEditor.HeightInPixels /
             CharacterWidthAndRowHeight.RowHeightInPixels);
-
-        if (verticalStartingIndex + verticalTake >
-            safeTextEditorReference.RowEndingPositions.Length)
+        
+        // Vertical Padding (render some offscreen data)
         {
-            verticalTake = safeTextEditorReference.RowEndingPositions.Length -
-                           verticalStartingIndex;
+            verticalTake += 1;
         }
-
-        verticalTake = Math.Max(0, verticalTake);
+        
+        // Check index boundaries
+        {
+            verticalStartingIndex = Math.Max(0, verticalStartingIndex);
+            
+            
+            if (verticalStartingIndex + verticalTake >
+                safeTextEditorReference.RowEndingPositions.Length)
+            {
+                verticalTake = safeTextEditorReference.RowEndingPositions.Length -
+                               verticalStartingIndex;
+            }
+            
+            verticalTake = Math.Max(0, verticalTake);
+        }
 
         var horizontalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollLeftInPixels /
             CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var horizontalTake = (int)Math.Ceiling(
-            TextEditorWidthAndHeight.WidthInPixels /
+            WidthAndHeightOfTextEditor.WidthInPixels /
             CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var virtualizedEntries = safeTextEditorReference
@@ -1080,7 +874,12 @@ public partial class TextEditorDisplay : TextEditorView
             leftBoundary,
             rightBoundary,
             topBoundary,
-            bottomBoundary);
+            bottomBoundary,
+            request.ScrollPosition with
+            {
+                ScrollWidthInPixels = totalWidth,
+                ScrollHeightInPixels = totalHeight
+            });
     }
 
     /// <summary>
@@ -1113,16 +912,16 @@ public partial class TextEditorDisplay : TextEditorView
                 var word = textEditor.ReadPreviousWordOrDefault(
                     primaryCursorSnapshot.ImmutableCursor.RowIndex,
                     primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
-                
+
                 if (word is not null)
                     await AutocompleteIndexer.IndexWordAsync(word);
             }
         }
-        
+
         if (IsAutocompleteMenuInvoker(keyboardEventArgs))
         {
             await setTextEditorMenuKind.Invoke(
-                TextEditorMenuKind.AutoCompleteMenu, 
+                TextEditorMenuKind.AutoCompleteMenu,
                 true);
         }
         else if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
@@ -1158,14 +957,14 @@ public partial class TextEditorDisplay : TextEditorView
             if (_skippedSyntaxHighlightingEventCount > 0)
             {
                 _skippedSyntaxHighlightingEventCount = 0;
-                
+
                 return true;
             }
 
             return false;
         }
     }
-    
+
     private bool IsSyntaxHighlightingInvoker(KeyboardEventArgs keyboardEventArgs)
     {
         return keyboardEventArgs.Key == ";" ||
@@ -1174,7 +973,7 @@ public partial class TextEditorDisplay : TextEditorView
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
     }
-        
+
     private bool IsAutocompleteMenuInvoker(KeyboardEventArgs keyboardEventArgs)
     {
         // Is {Ctrl + Space} or LetterOrDigit was hit without Ctrl being held
@@ -1183,7 +982,7 @@ public partial class TextEditorDisplay : TextEditorView
                 !KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) &&
                 !KeyboardKeyFacts.IsMetaKey(keyboardEventArgs));
     }
-    
+
     /// <summary>
     /// All keyboardEventArgs that return true from "IsAutocompleteIndexerInvoker"
     /// are to be 1 character long, as well either whitespace or punctuation.
@@ -1193,8 +992,101 @@ public partial class TextEditorDisplay : TextEditorView
     private bool IsAutocompleteIndexerInvoker(KeyboardEventArgs keyboardEventArgs)
     {
         return (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
-               KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
-                !keyboardEventArgs.CtrlKey;
+                KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
+               !keyboardEventArgs.CtrlKey;
+    }
+    
+    public async Task MutateScrollHorizontalPositionByPixelsAsync(double pixels)
+    {
+        await JsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.mutateScrollHorizontalPositionByPixels",
+            TextEditorContentId,
+            pixels);
+        
+        await InvokeAsync(StateHasChanged);
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+    }
+    
+    public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
+    {
+        await JsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.mutateScrollVerticalPositionByPixels",
+            TextEditorContentId,
+            pixels);
+        
+        await InvokeAsync(StateHasChanged);
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+    }
+
+    public async Task MutateScrollVerticalPositionByLinesAsync(double lines)
+    {
+        await MutateScrollVerticalPositionByPixelsAsync(
+            lines * (CharacterWidthAndRowHeight?.RowHeightInPixels ?? 0));
+    }
+    
+    public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
+    {
+        await MutateScrollVerticalPositionByPixelsAsync(
+            pages * (WidthAndHeightOfTextEditor?.HeightInPixels ?? 0));
+    }
+    
+    /// <summary>
+    /// If a parameter is null the JavaScript will not modify that value
+    /// </summary>
+    public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
+    {
+        await JsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.setScrollPosition",
+            TextEditorContentId,
+            scrollLeft,
+            scrollTop);
+        
+        await InvokeAsync(StateHasChanged);
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+    }
+    
+    public async Task CursorMovePageBottomAsync()
+    {
+        var localMostRecentlyRenderedVirtualizationResult = _mostRecentlyRenderedVirtualizationResult;
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if ((localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false) &&
+            textEditor is not null)
+        {
+            var lastEntry = localMostRecentlyRenderedVirtualizationResult.Entries.Last();
+
+            var lastEntriesRowLength = textEditor.GetLengthOfRow(lastEntry.Index);
+            
+            PrimaryCursor.IndexCoordinates = (lastEntry.Index, lastEntriesRowLength);
+        }
+    }
+    
+    public async Task CursorMovePageTopAsync()
+    {
+        var localMostRecentlyRenderedVirtualizationResult = _mostRecentlyRenderedVirtualizationResult;
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if ((localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false) &&
+            textEditor is not null)
+        {
+            var firstEntry = localMostRecentlyRenderedVirtualizationResult.Entries.First();
+
+            PrimaryCursor.IndexCoordinates = (firstEntry.Index, 0);
+        }
+    }
+    
+    private async Task HandleOnWheelAsync(WheelEventArgs wheelEventArgs)
+    {
+        if (wheelEventArgs.ShiftKey)
+        {
+            await MutateScrollHorizontalPositionByPixelsAsync(
+                wheelEventArgs.DeltaY);
+        }
+        else
+        {
+            await MutateScrollVerticalPositionByPixelsAsync(
+                wheelEventArgs.DeltaY);
+        }
     }
 
     protected override void Dispose(bool disposing)

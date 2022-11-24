@@ -1,76 +1,23 @@
 window.blazorTextEditor = {
-    cursorIntersectionObserverMap: new Map(),
-    initializeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey,
-                                                              scrollableParentElementId,
-                                                              cursorElementId) {
+    scrollElementIntoView: function (intersectionObserverMapKey,
+                                     elementId) {
 
-        let scrollableParent = document.getElementById(scrollableParentElementId);
+        let element = document.getElementById(elementId);
 
-        let options = {
-            root: scrollableParent,
-            rootMargin: '0px',
-            threshold: 0
-        }
-
-        let intersectionObserver = new IntersectionObserver((entries) => {
-            let intersectionObserverMapValue = this.cursorIntersectionObserverMap
-                .get(intersectionObserverMapKey);
-
-            for (let i = 0; i < entries.length; i++) {
-
-                let entry = entries[i];
-
-                let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
-                    .find(x => x.CursorElementId === entry.target.id);
-
-                cursorTuple.IsIntersecting = entry.isIntersecting;
-            }
-        }, options);
-
-        let cursorIsIntersectingTuples = [];
-
-        let cursorElement = document.getElementById(cursorElementId);
-        
-        intersectionObserver.observe(cursorElement);
-
-        cursorIsIntersectingTuples.push({
-            CursorElementId: cursorElementId,
-            IsIntersecting: false
-        });
-
-        this.cursorIntersectionObserverMap.set(intersectionObserverMapKey, {
-            IntersectionObserver: intersectionObserver,
-            CursorIsIntersectingTuples: cursorIsIntersectingTuples
+        element.scrollIntoView({
+            block: "nearest",
+            inline: "nearest"
         });
     },
-    revealCursor: function (intersectionObserverMapKey,
-                            cursorElementId) {
+    preventDefaultOnWheelEvents: function (elementId) {
 
-        let intersectionObserverMapValue = this.cursorIntersectionObserverMap
-            .get(intersectionObserverMapKey);
-
-        let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
-            .find(x => x.CursorElementId === cursorElementId);
-
-        if (!cursorTuple.IsIntersecting) {
-            let cursorElement = document.getElementById(cursorElementId);
-
-            cursorElement.scrollIntoView({
-                block: "nearest",
-                inline: "nearest"
-            });
-        }
-    },
-    disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
-
-        let intersectionObserverMapValue = this.cursorIntersectionObserverMap
-            .get(intersectionObserverMapKey);
+        let element = document.getElementById(elementId);
         
-        let intersectionObserver = intersectionObserverMapValue.IntersectionObserver;
-
-        this.cursorIntersectionObserverMap.delete(intersectionObserverMapKey);
-
-        intersectionObserver.disconnect();
+        element.addEventListener('wheel', (event) => {
+            event.preventDefault();
+        }, {
+            passive: false,
+        });
     },
     measureCharacterWidthAndRowHeight: function (elementId, amountOfCharactersRendered) {
         let element = document.getElementById(elementId);
@@ -206,7 +153,9 @@ window.blazorTextEditor = {
         virtualizationDisplayDotNetObjectReference
             .invokeMethodAsync("OnScrollEventAsync", {
                 ScrollLeftInPixels: scrollableParent.scrollLeft,
-                ScrollTopInPixels: scrollableParent.scrollTop
+                ScrollTopInPixels: scrollableParent.scrollTop,
+                ScrollWidthInPixels: scrollableParent.scrollWidth,
+                ScrollHeightInPixels: scrollableParent.scrollHeight
             });
     },
     disposeVirtualizationIntersectionObserver: function (intersectionObserverMapKey) {
@@ -219,6 +168,27 @@ window.blazorTextEditor = {
         this.virtualizationIntersectionObserverMap.delete(intersectionObserverMapKey);
 
         intersectionObserver.disconnect();
+    },
+    mutateScrollVerticalPositionByPixels: function (textEditorContentId, pixels) {
+        let textEditorContent = document.getElementById(textEditorContentId);
+        
+        textEditorContent.scrollTop += pixels;
+    },
+    mutateScrollHorizontalPositionByPixels: function (textEditorContentId, pixels) {
+        let textEditorContent = document.getElementById(textEditorContentId);
+        
+        textEditorContent.scrollLeft += pixels;
+    },
+    setScrollPosition: function (textEditorContentId, scrollLeft, scrollTop) {
+        let textEditorContent = document.getElementById(textEditorContentId);
+        
+        if (scrollLeft || scrollLeft === 0) {
+            textEditorContent.scrollLeft = scrollLeft;
+        }
+        
+        if (scrollTop || scrollTop === 0) {
+            textEditorContent.scrollTop = scrollTop;
+        }
     },
     readClipboard: async function () {
         // First, ask the Permissions API if we have some kind of access to

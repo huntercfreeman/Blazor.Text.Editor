@@ -84,15 +84,6 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
         var parentElementWidth = ElementDimensions.DimensionAttributes
             .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
 
-        var parentElementHeight = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
-
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
-
         _northResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
         // Width
@@ -165,12 +156,6 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
 
         var parentElementHeight = ElementDimensions.DimensionAttributes
             .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
-
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
 
         _eastResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
@@ -247,12 +232,6 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
         var parentElementHeight = ElementDimensions.DimensionAttributes
             .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
 
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
-
         _southResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
         // Width
@@ -322,17 +301,8 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
 
     private string GetWestResizeHandleStyleCss()
     {
-        var parentElementWidth = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
-
         var parentElementHeight = ElementDimensions.DimensionAttributes
             .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
-
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
 
         _westResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
@@ -402,15 +372,6 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
     {
         var parentElementWidth = ElementDimensions.DimensionAttributes
             .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
-
-        var parentElementHeight = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
-
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
 
         _northEastResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
@@ -484,12 +445,6 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
         var parentElementHeight = ElementDimensions.DimensionAttributes
             .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
 
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
-
         _southEastResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
         // Width
@@ -559,17 +514,8 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
 
     private string GetSouthWestResizeHandleStyleCss()
     {
-        var parentElementWidth = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
-
         var parentElementHeight = ElementDimensions.DimensionAttributes
             .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
-
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
 
         _southWestResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
@@ -637,18 +583,6 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
 
     private string GetNorthWestResizeHandleStyleCss()
     {
-        var parentElementWidth = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
-
-        var parentElementHeight = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
-
-        var parentElementLeft = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
-
-        var parentElementTop = ElementDimensions.DimensionAttributes
-            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
-
         _northWestResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
 
         // Width

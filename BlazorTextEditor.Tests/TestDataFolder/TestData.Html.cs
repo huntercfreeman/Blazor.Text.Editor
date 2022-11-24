@@ -2,7 +2,9 @@
 
 public static partial class TestData
 {
-    public const string HTML_EXAMPLE_TEXT = @"<form>
+    public static class Html
+    {
+        public const string EXAMPLE_TEXT_19_LINES = @"<form>
   <label for=""username"">Username:</label>
     <input type=""text"" name=""username"" id=""username"" />
     <label for=""password"">Password:</label>
@@ -21,4 +23,5 @@ public static partial class TestData
     <input type=""color"" />
         <input type=""checkbox"" name=""correct"" value=""correct"" />Correct
         </form>";
+    }
 }

@@ -12,7 +12,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
     [Parameter, EditorRequired]
     public Func<VirtualizationRequest, VirtualizationResult<T>?> EntriesProviderFunc { get; set; } = null!;
     [Parameter, EditorRequired]
-    public RenderFragment<VirtualizationEntry<T>> ChildContent { get; set; } = null!;
+    public RenderFragment<VirtualizationResult<T>> ChildContent { get; set; } = null!;
 
     [Parameter]
     public bool UseHorizontalVirtualization { get; set; } = true;
@@ -27,7 +27,8 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
-        new VirtualizationBoundary(0, 0, 0, 0));
+        new VirtualizationBoundary(0, 0, 0, 0),
+        new(0, 0, 0, 0));
 
     private ElementReference _scrollableParentFinder;
 
@@ -44,6 +45,18 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
 
     private string BottomVirtualizationBoundaryDisplayId =>
         $"bte_bottom-virtualization-boundary-display-{_intersectionObserverMapKey}";
+
+    protected override void OnInitialized()
+    {
+        _scrollEventCancellationTokenSource.Cancel();
+        _scrollEventCancellationTokenSource = new CancellationTokenSource();
+        
+        _request = new(
+            new VirtualizationScrollPosition(0, 0, 0, 0),
+            _scrollEventCancellationTokenSource.Token);
+        
+        base.OnInitialized();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

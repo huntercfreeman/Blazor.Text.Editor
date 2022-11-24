@@ -1,0 +1,14 @@
+﻿<div class="bte_scrollbar bte_scrollbar-vertical"
+     id="@ScrollbarElementId"
+     @onmousedown:stopPropagation="true"
+     @onmousedown="HandleOnMouseDownAsync"
+     @onmousemove:stopPropagation="true"
+     @onmousemove="HandleOnMouseMoveAsync"
+     @ondblclick:stopPropagation="true"
+     @onclick:stopPropagation="true"
+     @oncontextmenu:stopPropagation="true">
+         
+    <div class="bte_scrollbar-slider"
+         style="left: 0; width: @(ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS)px; @GetSliderVerticalStyleCss()">
+    </div>
+</div>

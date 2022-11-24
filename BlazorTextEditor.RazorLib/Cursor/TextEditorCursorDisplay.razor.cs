@@ -1,6 +1,8 @@
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -14,7 +16,11 @@ public partial class TextEditorCursorDisplay : TextEditorView
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
     [Parameter, EditorRequired]
+    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
+    [Parameter, EditorRequired]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
     [Parameter, EditorRequired]
     public string ScrollableContainerId { get; set; } = null!;
     [Parameter, EditorRequired]
@@ -25,15 +31,47 @@ public partial class TextEditorCursorDisplay : TextEditorView
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
     public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
+    /// <summary>
+    /// <see cref="GetMostRecentlyRenderedVirtualizationResultFunc"/> is a Func because
+    /// the way <see cref="TextEditorDisplay"/> sets the <see cref="TextEditorDisplay._mostRecentlyRenderedVirtualizationResult"/>
+    /// is through an interaction with the UserInterface that feels rather hacky.
+    /// <br/><br/>
+    /// Thereby a func will get the value once the value is updated by rendering the virtualization display
+    /// and without having to render the cursor.
+    /// </summary>
+    [Parameter]
+    public Func<VirtualizationResult<List<RichCharacter>>?> GetMostRecentlyRenderedVirtualizationResultFunc
+    {
+        get;
+        set;
+    } = null!;
     
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
     private TimeSpan _blinkingCursorTaskDelay = TimeSpan.FromMilliseconds(1000);
     private bool _hasBlinkAnimation = true;
+    
+    private CancellationTokenSource _checkCursorIsInViewCancellationTokenSource = new();
+    private SemaphoreSlim _checkCursorIsInViewSemaphoreSlim = new(1, 1);
+    private int _skippedCheckCursorIsInViewCount;
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
     private int _textEditorMenuShouldGetFocusRequestCount;
+
+    /// <summary>
+    /// Scroll by 2 more rows than necessary to bring an out of view row into view.
+    /// </summary>
+    private const int WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY = 2;
+    
+    /// <summary>
+    /// Determine if a row is out of view with the lower and upper boundaries each being 1 row narrower.
+    /// </summary>
+    private const int SCROLL_MARGIN_FOR_ROW_OUT_OF_VIEW = 1;
+    /// <summary>
+    /// Determine if a column is out of view with the lower and upper boundaries each being 1 column narrower.
+    /// </summary>
+    private const int SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW = 1;
 
     public string TextEditorCursorDisplayId => $"bte_text-editor-cursor-display_{_intersectionObserverMapKey}";
 
@@ -49,18 +87,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var textEditor = TextEditorStatesSelection.Value;
-        
-        if (firstRender)
-        {
-            if (IsFocusTarget)
-            {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
-                    _intersectionObserverMapKey.ToString(),
-                    ScrollableContainerId,
-                    TextEditorCursorDisplayId);
-            }
-        }
 
         if (textEditor is null)
         {
@@ -228,7 +254,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
     {
         _hasBlinkAnimation = false;
 
-        var cancellationToken = CancelSourceAndCreateNewThenReturnToken();
+        var cancellationToken = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
 
         _ = Task.Run(async () =>
         {
@@ -246,11 +272,134 @@ public partial class TextEditorCursorDisplay : TextEditorView
     {
         if (_textEditorCursorDisplayElementReference is null)
             return;
+        
+        var success = await _checkCursorIsInViewSemaphoreSlim
+            .WaitAsync(TimeSpan.Zero);
 
-        await JsRuntime.InvokeVoidAsync(
-            "blazorTextEditor.revealCursor",
-            _intersectionObserverMapKey.ToString(),
-            TextEditorCursorDisplayId);
+        if (!success)
+        {
+            _skippedCheckCursorIsInViewCount++;
+            return;
+        }
+
+        try
+        {
+            do
+            {
+                var textEditor = TextEditorStatesSelection.Value;
+
+                if (textEditor is null)
+                    return;
+                
+                var mostRecentlyRenderedVirtualizationResult = GetMostRecentlyRenderedVirtualizationResultFunc
+                    .Invoke();
+                
+                var textEditorCursorSnapshot = new TextEditorCursorSnapshot(TextEditorCursor);
+                
+                if (mostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false)
+                {
+                    var firstEntry = mostRecentlyRenderedVirtualizationResult.Entries.First();
+                    var lastEntry = mostRecentlyRenderedVirtualizationResult.Entries.Last();
+                    
+                    var lowerRowBoundInclusive = firstEntry.Index;
+                    var upperRowBoundExclusive = lastEntry.Index + 1;
+                    
+                    // Set scroll margin for determining if a row is out of view
+                    {
+                        lowerRowBoundInclusive += 1;
+                        upperRowBoundExclusive -= 1;
+                    }
+
+                    double? setScrollTopTo = null;
+
+                    // Row is out of view
+                    {
+                        int? scrollToRowIndex = null;
+                                                
+                        if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive)
+                        {
+                            scrollToRowIndex = textEditorCursorSnapshot.ImmutableCursor.RowIndex -
+                                               WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY;
+                        }
+                        else if(textEditorCursorSnapshot.ImmutableCursor.RowIndex >= upperRowBoundExclusive)
+                        {
+                            scrollToRowIndex = textEditorCursorSnapshot.ImmutableCursor.RowIndex -
+                                               WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY;
+                        }
+
+                        if (scrollToRowIndex is not null)
+                        {
+                            setScrollTopTo = scrollToRowIndex.Value * CharacterWidthAndRowHeight.RowHeightInPixels;
+                        }
+                    }
+                    
+                    double? setScrollLeftTo = null;
+                    
+                    // Column is out of view
+                    {
+                        var lowerColumnPixelInclusive = mostRecentlyRenderedVirtualizationResult
+                            .VirtualizationScrollPosition.ScrollLeftInPixels;
+
+                        var upperColumnPixelExclusive =
+                            lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
+                            1;
+
+                        var leftInPixels = 0d;
+                        
+                        // Account for Tab Key Width
+                        {
+                            var tabsOnSameRowBeforeCursor = textEditor
+                                .GetTabsCountOnSameRowBeforeCursor(
+                                    textEditorCursorSnapshot.ImmutableCursor.RowIndex,
+                                    textEditorCursorSnapshot.ImmutableCursor.ColumnIndex);
+
+                            // 1 of the tab's character width is already accounted for
+                            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+
+                            leftInPixels += extraWidthPerTabKey * 
+                                            tabsOnSameRowBeforeCursor *
+                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                        }
+                        
+                        // Account for cursor column index
+                        {
+                            leftInPixels += textEditorCursorSnapshot.ImmutableCursor.ColumnIndex * 
+                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                        }
+                        
+                        if (leftInPixels < lowerColumnPixelInclusive ||
+                            leftInPixels >= upperColumnPixelExclusive)
+                        {
+                            setScrollLeftTo = leftInPixels;
+                        }
+                    }
+
+                    if (setScrollTopTo is not null || 
+                        setScrollLeftTo is not null)
+                    {
+                        await TextEditorDisplay.SetScrollPositionAsync(
+                            setScrollLeftTo,
+                            setScrollTopTo);
+                    }
+                }
+            } while (StartScrollIntoViewIfNotVisibleIfHasSkipped());
+        }
+        finally
+        {
+            _checkCursorIsInViewSemaphoreSlim.Release();
+        }
+
+        bool StartScrollIntoViewIfNotVisibleIfHasSkipped()
+        {
+            if (_skippedCheckCursorIsInViewCount > 0)
+            {
+                _skippedCheckCursorIsInViewCount = 0;
+
+                return true;
+            }
+
+            return false;
+        }
     }
 
     private void HandleOnKeyDown()
@@ -258,12 +407,20 @@ public partial class TextEditorCursorDisplay : TextEditorView
         PauseBlinkAnimation();
     }
 
-    private CancellationToken CancelSourceAndCreateNewThenReturnToken()
+    private CancellationToken CancelBlinkingCursorSourceAndCreateNewThenReturnToken()
     {
         _blinkingCursorCancellationTokenSource.Cancel();
         _blinkingCursorCancellationTokenSource = new CancellationTokenSource();
 
         return _blinkingCursorCancellationTokenSource.Token;
+    }
+    
+    private CancellationToken CancelCheckCursorInViewSourceAndCreateNewThenReturnToken()
+    {
+        _checkCursorIsInViewCancellationTokenSource.Cancel();
+        _checkCursorIsInViewCancellationTokenSource = new CancellationTokenSource();
+
+        return _checkCursorIsInViewCancellationTokenSource.Token;
     }
 
     public async Task SetShouldDisplayMenuAsync(
@@ -312,16 +469,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
         if (disposing)
         {
             _blinkingCursorCancellationTokenSource.Cancel();
-
-            if (IsFocusTarget)
-            {
-                _ = Task.Run(async () =>
-                {
-                    await JsRuntime.InvokeVoidAsync(
-                        "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                        _intersectionObserverMapKey.ToString());
-                });
-            }
+            _checkCursorIsInViewCancellationTokenSource.Cancel();
         }
         
         base.Dispose(true);

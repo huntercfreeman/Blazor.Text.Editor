@@ -10,10 +10,8 @@ namespace BlazorTextEditor.RazorLib.Commands;
 public static class TextEditorCommandFacts
 {
     public static readonly TextEditorCommand DoNothingDiscard = new(
-        _ =>
-        {
-            return Task.CompletedTask;
-        },
+        _ => Task.CompletedTask,
+        false,
         "DoNothingDiscard",
         "defaults_do-nothing-discard");
     
@@ -38,6 +36,7 @@ public static class TextEditorCommandFacts
                 await textEditorCommandParameter.TextEditorDisplay.FocusTextEditorAsync();
             }
         },
+        false,
         "Copy",
         "defaults_copy");
     
@@ -72,6 +71,7 @@ public static class TextEditorCommandFacts
                     },
                     CancellationToken.None));
         },
+        true,
         "Cut",
         "defaults_cut");
 
@@ -92,6 +92,7 @@ public static class TextEditorCommandFacts
                     clipboard,
                     CancellationToken.None));
         },
+        true,
         "Paste",
         "defaults_paste",
         TextEditKind.Other,
@@ -110,6 +111,7 @@ public static class TextEditorCommandFacts
             
             return Task.CompletedTask;
         },
+        false,
         "Save",
         "defaults_save");
 
@@ -129,6 +131,7 @@ public static class TextEditorCommandFacts
             
             return Task.CompletedTask;
         },
+        false,
         "Select All",
         "defaults_select-all");
     
@@ -139,6 +142,7 @@ public static class TextEditorCommandFacts
             
             return Task.CompletedTask;
         },
+        true,
         "Undo",
         "defaults_undo");
     
@@ -149,6 +153,7 @@ public static class TextEditorCommandFacts
 
             return Task.CompletedTask;
         },
+        true,
         "Redo",
         "defaults_redo");
     
@@ -161,6 +166,61 @@ public static class TextEditorCommandFacts
             
             return Task.CompletedTask;
         },
+        false,
         "Remeasure",
         "defaults_remeasure");
+    
+    public static readonly TextEditorCommand ScrollLineDown = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .MutateScrollVerticalPositionByLinesAsync(1);
+        },
+        false,
+        "Scroll Line Down",
+        "defaults_scroll-line-down");
+    
+    public static readonly TextEditorCommand ScrollLineUp = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .MutateScrollVerticalPositionByLinesAsync(-1);
+        },
+        false,
+        "Scroll Line Up",
+        "defaults_scroll-line-up");
+    
+    public static readonly TextEditorCommand ScrollPageDown = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .MutateScrollVerticalPositionByPagesAsync(1);
+        },
+        false,
+        "Scroll Page Down",
+        "defaults_scroll-page-down");
+    
+    public static readonly TextEditorCommand ScrollPageUp = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .MutateScrollVerticalPositionByPagesAsync(-1);
+        },
+        false,
+        "Scroll Page Up",
+        "defaults_scroll-page-up");
+    
+    public static readonly TextEditorCommand CursorMovePageBottom = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .CursorMovePageBottomAsync();
+        },
+        false,
+        "Move Cursor to Bottom of the Page",
+        "defaults_cursor-move-page-bottom");
+    
+    public static readonly TextEditorCommand CursorMovePageTop = new(async textEditorCommandParameter =>
+        {
+            await textEditorCommandParameter.TextEditorDisplay
+                .CursorMovePageTopAsync();
+        },
+        false,
+        "Move Cursor to Top of the Page",
+        "defaults_cursor-move-page-top");
 }

@@ -47,6 +47,10 @@
     --bte_tertiary-foreground-color: var(--bte_primary-font-color);
     --bte_hr-primary-background-color: currentColor;
     --bte_error-foreground-color: red;
+    --bte_scrollbar-opacity: 0.5;
+    --bte_scrollbar-background-color: #9090af;
+    --bte_scrollbar-opacity-on-hover: 0.8;
+    --bte_scrollbar-slider-background-color: black;
     --btv_outline-color: #33bcec;
     --btv_active-but-not-focused-background-color: #7f8e93;
     --btv_context-menu-background-color: red;

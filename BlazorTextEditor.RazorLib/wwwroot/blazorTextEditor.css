@@ -64,9 +64,53 @@
     cursor: text;
     position: relative;
     display: flex;
-    overflow: auto;
+    overflow: hidden;
     height: 100%;
     font-family: monospace;
+}
+
+.bte_scrollbar-section {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.bte_scrollbar {
+    position: absolute;
+    cursor: default;
+    opacity: var(--bte_scrollbar-opacity);
+    background-color: var(--bte_scrollbar-background-color);
+}
+
+.bte_scrollbar-slider {
+    background-color: var(--bte_scrollbar-slider-background-color);
+    position: absolute;
+}
+
+.bte_scrollbar:hover {
+    opacity: var(--bte_scrollbar-opacity-on-hover);
+}
+
+.bte_scrollbar-horizontal {
+    top: calc(100% - var(--bte_scrollbar-size));
+    height: var(--bte_scrollbar-size);
+}
+
+.bte_scrollbar-vertical {
+    right: 0;
+    top: 0;
+    width: var(--bte_scrollbar-size);
+    height: calc(100% - var(--bte_scrollbar-size));
+}
+
+.bte_scrollbar-connector {
+    right: 0;
+    top: calc(100% - var(--bte_scrollbar-size));
+    width: var(--bte_scrollbar-size);
+    height: var(--bte_scrollbar-size);
 }
 
 .bte_text-editor-cursor {
@@ -101,7 +145,7 @@
 
 .bte_text-editor-context-menu {
     position: absolute;
-    z-index: 5;
+    z-index: 30;
     background-color: var(--bte_secondary-background-color);
     color: var(--bte_secondary-font-color);
     box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);

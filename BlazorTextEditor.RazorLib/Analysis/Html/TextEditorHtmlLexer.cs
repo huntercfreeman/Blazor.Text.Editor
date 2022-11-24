@@ -6,9 +6,9 @@ namespace BlazorTextEditor.RazorLib.Analysis.Html;
 
 public class TextEditorHtmlLexer : ILexer
 {
-    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string content)
+    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
-        var htmlSyntaxUnit = HtmlSyntaxTree.ParseText(content);
+        var htmlSyntaxUnit = HtmlSyntaxTree.ParseText(text);
 
         var syntaxNodeRoot = htmlSyntaxUnit.RootTagSyntax;
 

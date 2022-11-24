@@ -1,6 +1,8 @@
 ﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
+using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript;
 using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
@@ -87,7 +89,9 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorBaseAction(textEditorBase));
     }
     
-    public void RegisterHtmlTextEditor(TextEditorKey textEditorKey, string initialContent,
+    public void RegisterHtmlTextEditor(
+        TextEditorKey textEditorKey, 
+        string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
@@ -106,7 +110,51 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorBaseAction(textEditorBase));
     }
 
-    public void RegisterRazorTextEditor(TextEditorKey textEditorKey, string initialContent,
+    public void RegisterCssTextEditor(
+        TextEditorKey textEditorKey, 
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            null,
+            null,
+            null,
+            textEditorKey);
+        
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
+    public void RegisterFSharpTextEditor(
+        TextEditorKey textEditorKey, 
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            new TextEditorFSharpLexer(),
+            new TextEditorFSharpDecorationMapper(),
+            null,
+            textEditorKey);
+        
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+
+    public void RegisterRazorTextEditor(
+        TextEditorKey textEditorKey, 
+        string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
@@ -132,8 +180,8 @@ public class TextEditorService : ITextEditorService
     {
         var textEditorBase = new TextEditorBase(
             initialContent,
-            null,
-            null,
+            new TextEditorJavaScriptLexer(),
+            new TextEditorJavaScriptDecorationMapper(),
             null,
             textEditorKey);
         
@@ -153,8 +201,8 @@ public class TextEditorService : ITextEditorService
     {
         var textEditorBase = new TextEditorBase(
             initialContent,
-            null,
-            null,
+            new TextEditorJavaScriptLexer(),
+            new TextEditorJavaScriptDecorationMapper(),
             null,
             textEditorKey);
         
@@ -167,7 +215,9 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorBaseAction(textEditorBase));
     }
     
-    public void RegisterPlainTextEditor(TextEditorKey textEditorKey, string initialContent,
+    public void RegisterPlainTextEditor(
+        TextEditorKey textEditorKey, 
+        string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(

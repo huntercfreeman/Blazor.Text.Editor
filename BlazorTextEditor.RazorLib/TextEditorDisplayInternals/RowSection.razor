@@ -1,0 +1,72 @@
+﻿@using BlazorTextEditor.RazorLib.Row
+@using System.Text
+<div class="bte_row-section">
+
+    @foreach (var virtualizedRow in VirtualizationResult.Entries)
+    {
+        <div class="bte_row"
+             style="@GetRowStyleCss(virtualizedRow.Index, virtualizedRow.LeftInPixels)">
+            @if (virtualizedRow.Item.Any())
+            {
+                var spanBuilder = new StringBuilder();
+                var currentDecorationByte = virtualizedRow.Item.First().DecorationByte;
+
+                foreach (var richCharacter in virtualizedRow.Item)
+                {
+                    if (currentDecorationByte == richCharacter.DecorationByte)
+                    {
+                        AppendTextEscaped(
+                            spanBuilder,
+                            richCharacter,
+                            TabKeyOutput,
+                            SpaceKeyOutput);
+                    }
+                    else
+                    {
+                        <span class="@GetCssClass(currentDecorationByte)">
+                            @((MarkupString)spanBuilder.ToString())
+                        </span>
+
+                        spanBuilder.Clear();
+
+                        AppendTextEscaped(
+                            spanBuilder,
+                            richCharacter,
+                            TabKeyOutput,
+                            SpaceKeyOutput);
+
+                        currentDecorationByte = richCharacter.DecorationByte;
+                    }
+                }
+
+                /* Final grouping of contiguous characters */
+                <span class="@GetCssClass(currentDecorationByte)">
+                    @((MarkupString)spanBuilder.ToString())
+                </span>
+            }
+
+            @if (GlobalShowNewlines &&
+                 virtualizedRow.Index < TextEditor.RowCount - 1)
+            {
+                var amountOfLeftInCharacterWidthUnits =
+                    virtualizedRow.LeftInPixels /
+                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+                var lengthOfRow = TextEditor
+                    .GetLengthOfRow(
+                        virtualizedRow.Index,
+                        true);
+
+                if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
+                {
+                    var rowEndingTuple = TextEditor
+                        .RowEndingPositions[virtualizedRow.Index];
+
+                    <span class="bte_newline">
+                        @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()
+                    </span>
+                }
+            }
+        </div>
+    }
+</div>

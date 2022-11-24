@@ -12,8 +12,8 @@ public partial class TextEditorBase
         IDecorationMapper? decorationMapper,
         ITextEditorKeymap? textEditorKeymap)
     {
-        Lexer = lexer ?? new LexerDefault();
-        DecorationMapper = decorationMapper ?? new DecorationMapperDefault();
+        Lexer = lexer ?? new TextEditorLexerDefault();
+        DecorationMapper = decorationMapper ?? new TextEditorDecorationMapperDefault();
         TextEditorKeymap = textEditorKeymap ?? new TextEditorKeymapDefault();
         
         SetContent(content);

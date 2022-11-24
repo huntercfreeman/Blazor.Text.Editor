@@ -243,6 +243,8 @@ public static class KeyboardKeyFacts
         public const string ESCAPE = "Escape";
         public const string DELETE = "Delete";
         public const string F10 = "F10";
+        public const string PAGE_UP = "PageUp";
+        public const string PAGE_DOWN = "PageDown";
     }
 
     public static class WhitespaceCharacters

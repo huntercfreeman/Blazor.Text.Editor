@@ -22,7 +22,4 @@
                                    VirtualizationBoundary="_result.BottomVirtualizationBoundary"/>
 }
 
-@foreach (var entry in _result.Entries)
-{
-    @ChildContent(entry)
-}
+@ChildContent(_result)

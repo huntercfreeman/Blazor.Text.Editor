@@ -14,8 +14,13 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
 
             if (keyboardEventArgs.AltKey)
                 return AltModifiedKeymap(keyboardEventArgs);
-
-            return null;
+            
+            return keyboardEventArgs.Key switch
+            {
+                KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.ScrollPageDown,
+                KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.ScrollPageUp,
+                _ => null,
+            };
         };
 
     private static TextEditorCommand? CtrlModifiedKeymap(
@@ -33,6 +38,10 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "a" => TextEditorCommandFacts.SelectAll,
             "z" => TextEditorCommandFacts.Undo,
             "y" => TextEditorCommandFacts.Redo,
+            KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandFacts.ScrollLineDown,
+            KeyboardKeyFacts.MovementKeys.ARROW_UP => TextEditorCommandFacts.ScrollLineUp,
+            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.CursorMovePageBottom,
+            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.CursorMovePageTop,
             _ => null,
         };
 

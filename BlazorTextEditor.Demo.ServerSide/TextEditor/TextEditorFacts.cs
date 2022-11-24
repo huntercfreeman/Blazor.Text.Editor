@@ -9,5 +9,7 @@ public static class TextEditorFacts
     public static readonly TextEditorKey RazorTextEditor = TextEditorKey.NewTextEditorKey();
     public static readonly TextEditorKey HtmlTextEditor = TextEditorKey.NewTextEditorKey();
     public static readonly TextEditorKey CSharpTextEditor = TextEditorKey.NewTextEditorKey();
+    public static readonly TextEditorKey CssTextEditor = TextEditorKey.NewTextEditorKey();
+    public static readonly TextEditorKey FSharpTextEditor = TextEditorKey.NewTextEditorKey();
     public static readonly TextEditorKey PlainTextEditor = TextEditorKey.NewTextEditorKey();
 }

@@ -1,10 +1,7 @@
-﻿@using System.Text
-@using BlazorTextEditor.RazorLib.Cursor
+﻿@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.HelperComponents
-@using BlazorTextEditor.RazorLib.Row
+@using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
 @using BlazorTextEditor.RazorLib.Virtualization
-@using System.Collections.Immutable
-@using BlazorTextEditor.RazorLib.TextEditor
 
 @inherits TextEditorView
 
@@ -28,18 +25,11 @@
              id="@TextEditorContentId"
              @onmousedown="HandleContentOnMouseDownAsync"
              @onmousemove="HandleContentOnMouseMoveAsync"
-             @ondblclick="HandleContentOnDoubleClickAsync">
+             @ondblclick="HandleContentOnDoubleClickAsync"
+             @onwheel="HandleOnWheelAsync">
 
-            <div class="bte_measure-character-width-and-row-height bte_row"
-                 id="@MeasureCharacterWidthAndRowHeightId">
-
-                @for (var i = 0; i < _testStringRepeatCount; i++)
-                {
-                    <text>
-                        @_testStringForMeasurement
-                    </text>
-                }
-            </div>
+            <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
+                                               ElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
 
             @{
                 var textEditor = TextEditorStatesSelection.Value;
@@ -48,40 +38,13 @@
                 {
                     var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
-                    <div class="bte_text-selection-group">
-                        @if (TextEditorSelectionHelper.HasSelectedText(
-                            primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
-                        {
-                            var selectionBounds = TextEditorSelectionHelper
-                                .GetSelectionBounds(
-                                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
-
-                            var firstRowToSelectData =
-                                textEditor
-                                    .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                                        selectionBounds.lowerBound);
-
-                            var lastRowToSelectData =
-                                textEditor
-                                    .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                                        selectionBounds.upperBound);
-
-                            for (var i = firstRowToSelectData.rowIndex;
-                                i <= lastRowToSelectData.rowIndex;
-                                i++)
-                            {
-                                var rowIndex = i;
-
-                                <div class="bte_text-selection"
-                                     style="@GetTextSelectionStyleCss(selectionBounds.lowerBound, selectionBounds.upperBound, rowIndex)">
-                                </div>
-                            }
-                        }
-                    </div>
-
                     if (CharacterWidthAndRowHeight is not null &&
-                        TextEditorWidthAndHeight is not null)
+                        WidthAndHeightOfTextEditor is not null)
                     {
+                        <TextSelectionGroup TextEditor="textEditor"
+                                            PrimaryCursorSnapshot="primaryCursorSnapshot"
+                                            CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"/>
+
                         var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
                         var spaceKeyOutput = "&nbsp;";
 
@@ -93,93 +56,41 @@
 
                         <VirtualizationDisplay @ref="_virtualizationDisplay"
                                                EntriesProviderFunc="EntriesProvider"
-                                               Context="virtualizedRow">
+                                               Context="virtualizationResult">
+
                             @{
-                                var index = virtualizedRow.Index;
-                                var row = virtualizedRow.Item;
+                                // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
+                                _mostRecentlyRenderedVirtualizationResult = virtualizationResult;
                             }
+                            
+                            <CascadingValue Value="textEditor">
+                                <CascadingValue Value="CharacterWidthAndRowHeight">
+                                    <CascadingValue Value="virtualizationResult">
+                                        
+                                        <GutterSection/>
 
-                            <div class="bte_gutter"
-                                 style="@GetGutterStyleCss(index, virtualizedRow.LeftInPixels)">
-                                @(index + 1)
-                            </div>
+                                        <RowSection GlobalShowNewlines="GlobalShowNewlines"
+                                                    SpaceKeyOutput="@spaceKeyOutput"
+                                                    TabKeyOutput="@tabKeyOutput"/>
 
-                            <div class="bte_row"
-                                 style="@GetRowStyleCss(index, virtualizedRow.LeftInPixels)">
-                                @if (row.Any())
-                                {
-                                    var spanBuilder = new StringBuilder();
-                                    var currentDecorationByte = row.First().DecorationByte;
-
-                                    foreach (var richCharacter in row)
-                                    {
-                                        if (currentDecorationByte == richCharacter.DecorationByte)
-                                        {
-                                            AppendTextEscaped(
-                                                spanBuilder,
-                                                richCharacter,
-                                                tabKeyOutput,
-                                                spaceKeyOutput);
-                                        }
-                                        else
-                                        {
-                                            <span class="@GetCssClass(currentDecorationByte)">
-                                                @((MarkupString)spanBuilder.ToString())
-                                            </span>
-
-                                            spanBuilder.Clear();
-
-                                            AppendTextEscaped(
-                                                spanBuilder,
-                                                richCharacter,
-                                                tabKeyOutput,
-                                                spaceKeyOutput);
-
-                                            currentDecorationByte = richCharacter.DecorationByte;
-                                        }
-                                    }
-
-                                    /* Final grouping of contiguous characters */
-                                    <span class="@GetCssClass(currentDecorationByte)">
-                                        @((MarkupString)spanBuilder.ToString())
-                                    </span>
-                                }
-
-                                @if (GlobalShowNewlines &&
-                                     index < textEditor.RowCount - 1)
-                                {
-                                    var amountOfLeftInCharacterWidthUnits =
-                                        virtualizedRow.LeftInPixels /
-                                        CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-                                    var lengthOfRow = textEditor
-                                        .GetLengthOfRow(
-                                            index,
-                                            true);
-
-                                    if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
-                                    {
-                                        var rowEndingTuple = textEditor
-                                            .RowEndingPositions[index];
-
-                                        <span class="bte_newline">
-                                            @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()
-                                        </span>
-                                    }
-                                }
-                            </div>
+                                        <ScrollbarSection WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
+                                                          TextEditorDisplay="this"/>
+                                        
+                                    </CascadingValue>
+                                </CascadingValue>
+                            </CascadingValue>
                         </VirtualizationDisplay>
-                    }
 
-                    if (CharacterWidthAndRowHeight is not null)
-                    {
                         <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
                                                  TextEditorCursor="PrimaryCursor"
                                                  CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
+                                                 WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
                                                  TextEditorKey="TextEditorKey"
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
-                                                 TabIndex="TabIndex">
+                                                 TabIndex="TabIndex"
+                                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => _mostRecentlyRenderedVirtualizationResult"
+                                                 TextEditorDisplay="this">
 
                             <OnContextMenuRenderFragment>
                                 @if (OnContextMenuRenderFragment is not null)
