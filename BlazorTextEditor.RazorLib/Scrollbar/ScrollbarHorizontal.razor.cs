@@ -46,15 +46,18 @@ public partial class ScrollbarHorizontal : ComponentBase
 
     private string GetSliderHorizontalStyleCss()
     {
-        // Left
-        var sliderProportionalLeftInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels * 
-                                            WidthAndHeightOfTextEditor.WidthInPixels /
+        var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
+                                     ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS - 
+                                     GetGutterWidthInPixels();
+        
+        // Proportional Left
+        var sliderProportionalLeftInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels *
+                                             scrollbarWidthInPixels /
                                             VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels;
 
         var left = $"left: {sliderProportionalLeftInPixels}px;";
         
-        // Width
-        var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
+        // Proportional Width
         var sliderProportionalWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels *
                                                scrollbarWidthInPixels /
                                                VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels;

@@ -20,15 +20,17 @@ public partial class ScrollbarVertical : ComponentBase
     
     private string GetSliderVerticalStyleCss()
     {
-        // Top
-        var sliderProportionalTopInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels * 
-                                            WidthAndHeightOfTextEditor.HeightInPixels /
+        var scrollbarHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels - 
+                                      ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
+        
+        // Proportional Top
+        var sliderProportionalTopInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels *
+                                            scrollbarHeightInPixels /
                                             VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
               
         var top = $"top: {sliderProportionalTopInPixels}px;";
         
-        // Height
-        var scrollbarHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels - ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
+        // Proportional Height
         var sliderProportionalHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels *
                                                scrollbarHeightInPixels /
                                                VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
