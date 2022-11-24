@@ -743,15 +743,26 @@ public partial class TextEditorDisplay : TextEditorView
         var verticalTake = (int)Math.Ceiling(
             WidthAndHeightOfTextEditor.HeightInPixels /
             CharacterWidthAndRowHeight.RowHeightInPixels);
-
-        if (verticalStartingIndex + verticalTake >
-            safeTextEditorReference.RowEndingPositions.Length)
+        
+        // Vertical Padding (render some offscreen data)
         {
-            verticalTake = safeTextEditorReference.RowEndingPositions.Length -
-                           verticalStartingIndex;
+            verticalTake += 1;
         }
-
-        verticalTake = Math.Max(0, verticalTake);
+        
+        // Check index boundaries
+        {
+            verticalStartingIndex = Math.Max(0, verticalStartingIndex);
+            
+            
+            if (verticalStartingIndex + verticalTake >
+                safeTextEditorReference.RowEndingPositions.Length)
+            {
+                verticalTake = safeTextEditorReference.RowEndingPositions.Length -
+                               verticalStartingIndex;
+            }
+            
+            verticalTake = Math.Max(0, verticalTake);
+        }
 
         var horizontalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollLeftInPixels /
