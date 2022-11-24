@@ -304,12 +304,11 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     var lowerRowBoundInclusive = firstEntry.Index;
                     var upperRowBoundExclusive = lastEntry.Index + 1;
                     
-                    // TODO: I am not sure where I was going with this scroll margin logic. It is not doing what I expected it to do. Perhaps I'm thinking of virtualization having padding because sometimes the final row does not render due to minor decimal place inaccuracies making the virtualization component think it is out of view.
-                    // // Set scroll margin for determining if a row is out of view
-                    // {
-                    //     lowerRowBoundInclusive += 1;
-                    //     upperRowBoundExclusive -= 1;
-                    // }
+                    // Set scroll margin for determining if a row is out of view
+                    {
+                        lowerRowBoundInclusive += 1;
+                        upperRowBoundExclusive -= 1;
+                    }
 
                     // Row is out of view
                     if (textEditorCursorSnapshot.ImmutableCursor.RowIndex < lowerRowBoundInclusive ||
@@ -334,6 +333,10 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         }
                     }
 
+                    /*
+                     * TODO: fix bug: move cursor to end of a row which goes offscreen column wise. Then hit arrow up and the cursor will be erroneously placed in the margin if the row that was went to resulted in a lower enough column index as the gutter was not accounted for.
+                     */
+                    
                     // Column is out of view
                     {
                         var lowerColumnPixelInclusive = mostRecentlyRenderedVirtualizationResult
