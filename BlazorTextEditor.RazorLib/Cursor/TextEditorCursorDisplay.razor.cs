@@ -290,8 +290,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
         {
             do
             {
-                Console.WriteLine("Infinite loop check");
-                
                 var textEditor = TextEditorStatesSelection.Value;
 
                 if (textEditor is null)
@@ -373,9 +371,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                                             CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
                         
-                        // TODO: Do not forget to remove this write line, using temporarily for debugging a bug
-                        Console.WriteLine($"(low, actual, high):({lowerColumnPixelInclusive}, {leftInPixels}, {upperColumnPixelExclusive})");
-                        
                         if (leftInPixels < lowerColumnPixelInclusive ||
                             leftInPixels >= upperColumnPixelExclusive)
                         {
@@ -383,14 +378,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         }
                     }
 
-                    // TODO: Do not forget to remove this write line, using temporarily for debugging a bug
-                    Console.WriteLine($"(left, top):({setScrollLeftTo?.ToString() ?? "null"}, {setScrollTopTo?.ToString() ?? "null"})");
-                    
-                    /*
-                     * Is it the case that:
-                     * When the scrollLeft > textEditorWidth that the gutter needs to be accounted for?
-                     */
-                    
                     if (setScrollLeftTo is not null || 
                         setScrollTopTo is not null)
                     {
