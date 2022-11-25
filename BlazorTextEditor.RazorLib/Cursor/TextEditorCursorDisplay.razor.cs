@@ -54,6 +54,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
     private CancellationTokenSource _checkCursorIsInViewCancellationTokenSource = new();
     private SemaphoreSlim _checkCursorIsInViewSemaphoreSlim = new(1, 1);
     private int _skippedCheckCursorIsInViewCount;
+    private readonly TimeSpan _checkCursorIsInViewDelay = TimeSpan.FromMilliseconds(25);
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
@@ -384,6 +385,8 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         await TextEditorDisplay.SetScrollPositionAsync(
                             setScrollLeftTo,
                             setScrollTopTo);
+
+                        await Task.Delay(_checkCursorIsInViewDelay);
                     }
                 }
             } while (StartScrollIntoViewIfNotVisibleIfHasSkipped());
