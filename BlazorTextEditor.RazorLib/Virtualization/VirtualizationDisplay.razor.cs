@@ -119,6 +119,24 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
         }
     }
     
+    /// <summary>
+    /// BUG: Introduced after changing from overflow: auto to overflow: hidden
+    /// <br/><br/>
+    /// get new request force from virtualization request is not being updated
+    /// overflow-hidden results in width: 100% no longer filling the viewable AND scrollable area
+    /// instead only the initial location of the viewable area has the width of virtualization correct
+    /// as the scrollbar width/height is no longer being included.
+    /// Make a force reload virtualization method
+    /// </summary>
+    public async Task ForceReadScrollPosition(string elementId)
+    {
+        var scrollPosition = await JsRuntime.InvokeAsync<VirtualizationScrollPosition>(
+            "blazorTextEditor.getScrollPosition",
+            elementId);
+
+        await OnScrollEventAsync(scrollPosition);
+    }
+    
     public void Dispose()
     {
         _scrollEventCancellationTokenSource.Cancel();

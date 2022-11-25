@@ -243,7 +243,7 @@ public partial class TextEditorDisplay : TextEditorView
             ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
 
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            await ForceVirtualizationInvocation();
         }
 
         if (_previousTextEditorKey is null ||
@@ -264,10 +264,16 @@ public partial class TextEditorDisplay : TextEditorView
                     .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
 
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            await ForceVirtualizationInvocation();
         }
 
         await base.OnParametersSetAsync();
+    }
+
+    private async Task ForceVirtualizationInvocation()
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        _virtualizationDisplay?.ForceReadScrollPosition(TextEditorContentId);
     }
 
     protected override void OnInitialized()
@@ -283,7 +289,7 @@ public partial class TextEditorDisplay : TextEditorView
     {
         if (firstRender)
         {
-            _virtualizationDisplay?.InvokeEntriesProviderFunc();
+            await ForceVirtualizationInvocation();
 
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.preventDefaultOnWheelEvents",
@@ -312,9 +318,9 @@ public partial class TextEditorDisplay : TextEditorView
         await base.OnAfterRenderAsync(firstRender);
     }
     
-    private void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
+    private async void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
     {
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        await ForceVirtualizationInvocation();
     }
 
     public async Task FocusTextEditorAsync()
@@ -1007,7 +1013,7 @@ public partial class TextEditorDisplay : TextEditorView
         // the UI freezes without this await Task.Yield
         await Task.Yield();
 
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        await ForceVirtualizationInvocation();
     }
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
@@ -1021,7 +1027,7 @@ public partial class TextEditorDisplay : TextEditorView
         // the UI freezes without this await Task.Yield
         await Task.Yield();
         
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        await ForceVirtualizationInvocation();
     }
 
     public async Task MutateScrollVerticalPositionByLinesAsync(double lines)
@@ -1053,7 +1059,7 @@ public partial class TextEditorDisplay : TextEditorView
         // the UI freezes without this await Task.Yield
         await Task.Yield();
         
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        await ForceVirtualizationInvocation();
     }
     
     public async Task CursorMovePageBottomAsync()

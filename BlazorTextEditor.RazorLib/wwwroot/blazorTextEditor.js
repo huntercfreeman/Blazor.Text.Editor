@@ -190,6 +190,14 @@ window.blazorTextEditor = {
             textEditorContent.scrollTop = scrollTop;
         }
     },
+    getScrollPosition: function (textEditorContentId) {
+        let textEditorContent = document.getElementById(textEditorContentId);
+
+        return {
+            ScrollLeftInPixels: textEditorContent.scrollLeft,
+            ScrollTopInPixels: textEditorContent.scrollTop
+        };
+    },
     readClipboard: async function () {
         // First, ask the Permissions API if we have some kind of access to
         // the "clipboard-read" feature.
