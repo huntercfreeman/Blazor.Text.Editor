@@ -120,7 +120,11 @@ public partial class TextEditorCursorDisplay : TextEditorView
         {
             TextEditorCursor.ShouldRevealCursor = false;
         
-            await ScrollIntoViewIfNotVisibleAsync();
+            // Do not block UI thread
+            _ = Task.Run(async () =>
+            {
+                await ScrollIntoViewIfNotVisibleAsync();
+            });
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -286,6 +290,8 @@ public partial class TextEditorCursorDisplay : TextEditorView
         {
             do
             {
+                Console.WriteLine("Infinite loop check");
+                
                 var textEditor = TextEditorStatesSelection.Value;
 
                 if (textEditor is null)
@@ -367,6 +373,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
                                             CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
                         
+                        // TODO: Do not forget to remove this write line, using temporarily for debugging a bug
+                        Console.WriteLine($"(low, actual, high):({lowerColumnPixelInclusive}, {leftInPixels}, {upperColumnPixelExclusive})");
+                        
                         if (leftInPixels < lowerColumnPixelInclusive ||
                             leftInPixels >= upperColumnPixelExclusive)
                         {
@@ -374,19 +383,20 @@ public partial class TextEditorCursorDisplay : TextEditorView
                         }
                     }
 
-                    if (setScrollTopTo is not null || 
-                        setScrollLeftTo is not null)
+                    // TODO: Do not forget to remove this write line, using temporarily for debugging a bug
+                    Console.WriteLine($"(left, top):({setScrollLeftTo?.ToString() ?? "null"}, {setScrollTopTo?.ToString() ?? "null"})");
+                    
+                    /*
+                     * Is it the case that:
+                     * When the scrollLeft > textEditorWidth that the gutter needs to be accounted for?
+                     */
+                    
+                    if (setScrollLeftTo is not null || 
+                        setScrollTopTo is not null)
                     {
                         await TextEditorDisplay.SetScrollPositionAsync(
                             setScrollLeftTo,
                             setScrollTopTo);
-
-                        // Blazor WebAssembly as of this comment is single threaded and
-                        // the UI freezes without this await Task.Delay
-                        //
-                        // This method is rather intensive so Task.Yield does not suffice.
-                        // The semaphore logic will run the most recent event and ignore any others.
-                        await Task.Delay(100);
                     }
                 }
             } while (StartScrollIntoViewIfNotVisibleIfHasSkipped());
