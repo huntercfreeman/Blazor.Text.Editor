@@ -168,4 +168,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bug fix: Pasting carriage return will now paste the LineEnding being used in the TextEditor instead of being treated as two separate newline characters.
 - Throttle syntax highlighting 1 second
 - 50 ms on mouse move throttle
-- 
+
+## [5.1.0] - 2022-11-25 (Scrolling Changes)
+
+### Added
+
+- Keymap
+    - PageDown
+        - Scroll vertically down at most the height of the view
+    - PageUp
+        - Scroll vertically up at most the height of the view
+    - Ctrl + PageDown
+        - Move cursor to the last viewable row given the current view.
+    - Ctrl + PageUp
+        - Move cursor to the first viewable row given the current view.
+    - Ctrl + ArrowDown
+        - Scroll the view down by the height of one line without moving the cursor.
+    - Ctrl + ArrowUp
+        - Scroll the view up by the height of one line without moving the cursor.
+- Scrollbar changes
+    - The scrollbars are now custom made by way of overflow: hidden as opposed to the native scrollbars that were used by way of overflow: auto.
+    - Now will prevent propagation on all mouse events when interacting with the scrollbar.
+        - Explanation: previously clicking the native scrollbar would propagate that click event to the text editor causing a janky and mostly unusable scrolling behavior to occur.
+    - Scrolling the cursor into view if it is out of view is now done using C# as opposed to the way it was of a JavaScript intersection observer.
+    - A keyboard event which results in the cursor going out of view will automatically scroll the cursor into view.
+        - Explanation: previously a cursor going out of view would sometimes not scroll the cursor into view
+                    until the next keyboard event after having gone out of view.
+    - The line numbers are no longer part of the horizontal scrollbar.
+    - Fixed cursor rendering erroneously within the gutter.
+        - Explanation: When scrolling horizontally beyond a scrollLeft of 0. It previously was the case that a keyboard event which brought the cursor to column 0 would display the cursor inside the gutter/margin because the scrollLeft was not accounting for the gutter width.
+- ILexer changes
+    - F# ILexer added
+        - Keywords are syntax highlighted
+    - JavaScript ILexer
+        - Keywords are syntax highlighted
+    - TypeScript ILexer
+        - Keywords are syntax highlighted
+- TextEditorLexerDefault rename
+- TextEditorDecorationMapperDefault rename
+
+### Bugs found but not yet fixed
+
+- This bug exists in previous versions as well: When doing horizontal virtualization it seems tab key width is not accounted for?
+    - Seeing nothing when using tab key to put text horizontally out of view then horizontally scrolling that text into view.
+    - Proceeding to put an enter key to split the line and all the text appears again.
+- This bug exists in previous versions as well: 
+    - Pick line ending of CR and then proceed to hit Enter key. 
+    - Afterwards pick line ending of LF then proceed to hit Enter key. 
+    - Something weird regarding carriage return line feed is happening here. 
+    - I saw the length of the document go up by 1 for the CR. 
+    - But then the LF which has a length of 1 added 2 length.
