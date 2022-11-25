@@ -15,7 +15,11 @@ public partial class Index
     {
         TextEditorService.RegisterCSharpTextEditor(
             TextEditorFacts.CSharpTextEditor,
-            TestData.CSharp.EXAMPLE_TEXT_173_LINES);
+            string.Empty);
+        
+        // TextEditorService.RegisterCSharpTextEditor(
+        //     TextEditorFacts.CSharpTextEditor,
+        //     TestData.CSharp.EXAMPLE_TEXT_173_LINES);
         
         TextEditorService.RegisterCssTextEditor(
             TextEditorFacts.CssTextEditor,
