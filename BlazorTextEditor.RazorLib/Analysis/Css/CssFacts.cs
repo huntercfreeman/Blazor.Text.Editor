@@ -3,5 +3,5 @@
 public static class CssFacts
 {
     public const string COMMENT_START = "/*";
-    public const string COMMENT_END = "/*";
+    public const string COMMENT_END = "*/";
 }

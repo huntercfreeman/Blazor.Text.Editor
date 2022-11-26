@@ -11,8 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddBlazorTextEditor(options => 
-    options.InitialTheme = ThemeFacts.VisualStudioLightClone);
+builder.Services.AddBlazorTextEditor();
 
 var app = builder.Build();
 

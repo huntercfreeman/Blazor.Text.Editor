@@ -37,7 +37,7 @@ public class CssSyntaxTree
 
                     var commentTextSpan = new TextEditorTextSpan(
                         pendingTokenStartingPositionIndex,
-                        stringWalker.PositionIndex,
+                        stringWalker.PositionIndex + 1,
                         (byte)CssDecorationKind.Comment);                    
                     
                     var commentToken = new CssCommentSyntax(
