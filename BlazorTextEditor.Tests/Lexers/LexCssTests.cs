@@ -14,11 +14,19 @@ public class LexCssTests
     }
     
     [Fact]
-    public async Task LexCommentSingleValid()
+    public async Task LexCommentManyValid()
     {
         var text = TestData.Css.EXAMPLE_TEXT_21_LINES
             .ReplaceLineEndings("\n");
 
+        var expectedTextEditorTextSpans = new[]
+        {
+            new TextEditorTextSpan(0, 107, 2),
+            new TextEditorTextSpan(225, 268, 2),
+            new TextEditorTextSpan(338, 407, 2),
+            new TextEditorTextSpan(436, 498, 2),
+        };
+        
         var cssLexer = new TextEditorCssLexer();
 
         var textEditorTextSpans = 
@@ -29,13 +37,7 @@ public class LexCssTests
             .OrderBy(x => x.StartingIndexInclusive)
             .ToImmutableArray();
 
-        Assert.Empty(textEditorTextSpans);
-    }
-    
-    [Fact]
-    public async Task LexCommentManyValid()
-    {
-        throw new NotImplementedException();
+        Assert.Equal(expectedTextEditorTextSpans, textEditorTextSpans);
     }
     
     [Fact]
