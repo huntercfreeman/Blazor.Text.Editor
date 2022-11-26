@@ -58,9 +58,9 @@ public class StringWalker
     ///     Starting with <see cref="Peek" /> evaluated at 0
     ///     return that and the rest of the <see cref="_content" />
     ///     <br /><br />
-    ///     <see cref="CurrentSubstring" /> => _content.Substring(PositionIndex);
+    ///     <see cref="RemainingText" /> => _content.Substring(PositionIndex);
     /// </summary>
-    public string CurrentSubstring => _content.Substring(PositionIndex);
+    public string RemainingText => _content.Substring(PositionIndex);
 
     /// <summary>
     ///     If <see cref="PositionIndex" /> is within bounds of the <see cref="_content" />.

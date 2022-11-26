@@ -4,6 +4,15 @@ public static partial class TestData
 {
     public static class Css
     {
+        public const string EXAMPLE_COMMENTS_NESTED_ARE_INVALID = @"/*
+Top Comment
+
+    /*
+    Inner Comment
+
+    */
+*/";
+        
         public const string EXAMPLE_TEXT_21_LINES = @"/* Applies to the entire body of the HTML document (except where overridden by more specific
 selectors). */
 body {

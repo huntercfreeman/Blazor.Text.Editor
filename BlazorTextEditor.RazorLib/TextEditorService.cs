@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
+using BlazorTextEditor.RazorLib.Analysis.Css;
 using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
@@ -117,8 +118,8 @@ public class TextEditorService : ITextEditorService
     {
         var textEditorBase = new TextEditorBase(
             initialContent,
-            null,
-            null,
+            new TextEditorCssLexer(),
+            new TextEditorCssDecorationMapper(),
             null,
             textEditorKey);
         

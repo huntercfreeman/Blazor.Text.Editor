@@ -1,8 +1,8 @@
 ﻿namespace BlazorTextEditor.RazorLib.Analysis.Css;
 
-public enum CssDecorationKind
+public enum CssSyntaxKind
 {
-    None,
     TagSelector,
-    Comment
+    Comment,
+    Document,
 }
