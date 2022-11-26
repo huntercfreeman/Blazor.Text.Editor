@@ -14,12 +14,12 @@ public class CssSyntaxWalker
         switch (cssSyntax.CssSyntaxKind)
         {
             case CssSyntaxKind.Comment:
-                VisitAttributeNameSyntax((CssCommentSyntax)cssSyntax);
+                VisitCssCommentSyntax((CssCommentSyntax)cssSyntax);
                 break;
         }
     }
 
-    public virtual void VisitAttributeNameSyntax(CssCommentSyntax cssCommentSyntax)
+    public virtual void VisitCssCommentSyntax(CssCommentSyntax cssCommentSyntax)
     {
         CssCommentSyntaxes.Add(cssCommentSyntax);
     }
