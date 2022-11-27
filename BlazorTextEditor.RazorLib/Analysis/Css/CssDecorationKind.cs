@@ -4,5 +4,7 @@ public enum CssDecorationKind
 {
     None,
     TagSelector,
-    Comment
+    Comment,
+    PropertyName,
+    PropertyValue
 }

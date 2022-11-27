@@ -267,11 +267,13 @@ public class StringWalker
     }
     
     /// <summary>
-    /// While writing the keyword lexing for the various
-    /// ILexer implementations.
+    /// <see cref="ConsumeWord"/> will return immediately upon encountering whitespace.
     /// <br/><br/>
-    /// I found a 'consume word' like logic was common
-    /// so adding this method here to be shared.
+    /// That is to say, one should invoke <see cref="MoveToNextWord"/>
+    /// if they want to modify the position index to be at the next word.
+    /// <br/><br/>
+    /// Otherwise, <see cref="ConsumeWord"/> must be invoked foreach whitespace character
+    /// between each word.
     /// </summary>
     /// <returns></returns>
     public (TextEditorTextSpan textSpan, string value) ConsumeWord()
@@ -312,6 +314,28 @@ public class StringWalker
             PositionIndex,
             0),
                 wordBuilder.ToString());
+    }
+    
+    /// <summary>
+    /// <see cref="MoveToNextWord"/> moves <see cref="PositionIndex"/> such that
+    /// <see cref="CurrentCharacter"/> is a non-whitespace character.
+    /// <br/><br/>
+    /// After invocation of <see cref="MoveToNextWord"/>, one might invoke <see cref="ConsumeWord"/>
+    /// to get <see cref="CurrentCharacter"/> and all of the contiguous
+    /// non-whitespace characters that follow as a string
+    /// </summary>
+    public void MoveToNextWord()
+    {
+        WhileNotEndOfFile(() =>
+        {
+            if (WhitespaceFacts.ALL
+                .Contains(CurrentCharacter))
+            {
+                return false;
+            }
+
+            return true;
+        });
     }
 
     public string GetText(TextEditorTextSpan textEditorTextSpan)
