@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
+using System.Text;
 using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxItems;
+using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
@@ -32,10 +34,9 @@ public class CssSyntaxTree
                 // If the comment just started track its starting position index
                 if (pendingTokenStartingPositionIndex == -1)
                 {
-                    pendingTokenStartingPositionIndex = stringWalker.PositionIndex;
-                    
-                    // Skip the rest of the comment opening text
-                    _ = stringWalker.ConsumeRange(CssFacts.COMMENT_START.Length - 1);   
+                    // Moved the assignment of token starting position index
+                    // to inside the case itself therefore 1 character too far now so - 1.
+                    pendingTokenStartingPositionIndex = stringWalker.PositionIndex - 1; 
                 }
 
                 // Check comment end
@@ -66,7 +67,7 @@ public class CssSyntaxTree
             }
             else if (withinStyleBlock)
             {
-                stringWalker.MoveToNextWord();
+                stringWalker.SkipWhitespace();
                 
                 // Comment start
                 {
@@ -75,7 +76,77 @@ public class CssSyntaxTree
                         return false;
                 }
 
-                var wordTuple = stringWalker.ConsumeWord();
+                var delimiters = WhitespaceFacts.ALL
+                    .Union(new[]
+                    {
+                        KeyboardKeyFacts.PunctuationCharacters.OPEN_CURLY_BRACE,
+                        KeyboardKeyFacts.PunctuationCharacters.CLOSE_CURLY_BRACE,
+                    })
+                    .ToList();
+
+                // Set the expected text delimiters
+                switch (expectedStyleBlockChild)
+                {
+                    case CssSyntaxKind.PropertyName:
+                        delimiters.Add(CssFacts.PROPERTY_NAME_END);
+                        break;
+                    case CssSyntaxKind.PropertyValue:
+                        delimiters.Add(CssFacts.PROPERTY_NAME_END);
+                        break;
+                }
+
+                var startingPositionIndex = stringWalker.CurrentCharacter;
+
+                while (stringWalker.CurrentCharacter != ParserFacts.END_OF_FILE &&
+                       !delimiters.Contains(stringWalker.CurrentCharacter))
+                {
+                    _ = stringWalker.Consume();
+                }
+
+                if (stringWalker.PositionIndex - startingPositionIndex != 1)
+                {
+                    // did NOT immediately find EOF or a delimiter
+                    // so create the corresponding token and add it to the list of results
+
+                    var textSpan = new TextEditorTextSpan(
+                        startingPositionIndex,
+                        stringWalker.PositionIndex,
+                        default);
+                    
+                    switch (expectedStyleBlockChild)
+                    {
+                        case CssSyntaxKind.PropertyName:
+                        {
+                            var propertyNameToken = new CssPropertyNameSyntax(
+                                textSpan with
+                                {
+                                    DecorationByte = (byte)CssDecorationKind.PropertyName
+                                },
+                                ImmutableArray<ICssSyntax>.Empty);
+                        
+                            cssDocumentChildren.Add(propertyNameToken);
+
+                            expectedStyleBlockChild = CssSyntaxKind.PropertyValue;
+                        
+                            break;
+                        }
+                        case CssSyntaxKind.PropertyValue:
+                        {
+                            var propertyValueToken = new CssPropertyValueSyntax(
+                                textSpan with
+                                {
+                                    DecorationByte = (byte)CssDecorationKind.PropertyValue
+                                },
+                                ImmutableArray<ICssSyntax>.Empty);
+                        
+                            cssDocumentChildren.Add(propertyValueToken);
+
+                            expectedStyleBlockChild = CssSyntaxKind.PropertyName;
+                        
+                            break;
+                        }
+                    }
+                }
 
                 // Check style block end
                 {
@@ -86,41 +157,6 @@ public class CssSyntaxTree
                     {
                         withinStyleBlock = false;
                         return false;
-                    }
-                }
-
-                // Get corresponding token
-                switch (expectedStyleBlockChild)
-                {
-                    case CssSyntaxKind.PropertyName:
-                    {
-                        var propertyNameToken = new CssPropertyNameSyntax(
-                            wordTuple.textSpan with
-                            {
-                                DecorationByte = (byte)CssDecorationKind.PropertyName
-                            },
-                            ImmutableArray<ICssSyntax>.Empty);
-                        
-                        cssDocumentChildren.Add(propertyNameToken);
-
-                        expectedStyleBlockChild = CssSyntaxKind.PropertyValue;
-                        
-                        break;
-                    }
-                    case CssSyntaxKind.PropertyValue:
-                    {
-                        var propertyValueToken = new CssPropertyValueSyntax(
-                            wordTuple.textSpan with
-                            {
-                                DecorationByte = (byte)CssDecorationKind.PropertyValue
-                            },
-                            ImmutableArray<ICssSyntax>.Empty);
-                        
-                        cssDocumentChildren.Add(propertyValueToken);
-
-                        expectedStyleBlockChild = CssSyntaxKind.PropertyName;
-                        
-                        break;
                     }
                 }
             }

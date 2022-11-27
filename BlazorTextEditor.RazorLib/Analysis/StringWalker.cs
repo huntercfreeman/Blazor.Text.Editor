@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.TextEditor;
 
@@ -269,7 +270,7 @@ public class StringWalker
     /// <summary>
     /// <see cref="ConsumeWord"/> will return immediately upon encountering whitespace.
     /// <br/><br/>
-    /// That is to say, one should invoke <see cref="MoveToNextWord"/>
+    /// That is to say, one should invoke <see cref="SkipWhitespace"/>
     /// if they want to modify the position index to be at the next word.
     /// <br/><br/>
     /// Otherwise, <see cref="ConsumeWord"/> must be invoked foreach whitespace character
@@ -290,8 +291,7 @@ public class StringWalker
         
         WhileNotEndOfFile(() =>
         {
-            if (WhitespaceFacts.ALL
-                .Contains(CurrentCharacter))
+            if (WhitespaceFacts.ALL.Contains(CurrentCharacter))
             {
                 return true;
             }
@@ -317,19 +317,18 @@ public class StringWalker
     }
     
     /// <summary>
-    /// <see cref="MoveToNextWord"/> moves <see cref="PositionIndex"/> such that
+    /// <see cref="SkipWhitespace"/> moves <see cref="PositionIndex"/> such that
     /// <see cref="CurrentCharacter"/> is a non-whitespace character.
     /// <br/><br/>
-    /// After invocation of <see cref="MoveToNextWord"/>, one might invoke <see cref="ConsumeWord"/>
+    /// After invocation of <see cref="SkipWhitespace"/>, one might invoke <see cref="ConsumeWord"/>
     /// to get <see cref="CurrentCharacter"/> and all of the contiguous
     /// non-whitespace characters that follow as a string
     /// </summary>
-    public void MoveToNextWord()
+    public void SkipWhitespace()
     {
         WhileNotEndOfFile(() =>
         {
-            if (WhitespaceFacts.ALL
-                .Contains(CurrentCharacter))
+            if (WhitespaceFacts.ALL.Contains(CurrentCharacter))
             {
                 return false;
             }
