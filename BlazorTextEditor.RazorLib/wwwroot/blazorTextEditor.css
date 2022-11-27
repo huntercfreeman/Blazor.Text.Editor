@@ -40,6 +40,14 @@
     color: var(--bte_injected-language-fragment-color);
 }
 
+.bte_css-property-name {
+    color: var(--bte_css-property-name-color);
+}
+
+.bte_css-property-value {
+    color: var(--bte_css-property-value-color);
+}
+
 .bte_measure-character-width-and-row-height {
     top: 0;
     left: 0;

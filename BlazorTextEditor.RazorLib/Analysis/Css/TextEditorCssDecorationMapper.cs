@@ -12,6 +12,8 @@ public class TextEditorCssDecorationMapper : IDecorationMapper
         {
             CssDecorationKind.None => string.Empty,
             CssDecorationKind.TagSelector => "bte_tag-selector",
+            CssDecorationKind.PropertyName => "bte_css-property-name",
+            CssDecorationKind.PropertyValue => "bte_css-property-value",
             CssDecorationKind.Comment => "bte_comment",
             _ => string.Empty,
         };

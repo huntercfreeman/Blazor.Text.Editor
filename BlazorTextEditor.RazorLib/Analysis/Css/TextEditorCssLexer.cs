@@ -21,6 +21,14 @@ public class TextEditorCssLexer : ILexer
         textEditorTextSpans.AddRange(
             cssSyntaxWalker.CssCommentSyntaxes.Select(ccs =>
                 ccs.TextEditorTextSpan));
+        
+        textEditorTextSpans.AddRange(
+            cssSyntaxWalker.CssPropertyNameSyntaxes.Select(ccs =>
+                ccs.TextEditorTextSpan));
+        
+        textEditorTextSpans.AddRange(
+            cssSyntaxWalker.CssPropertyValueSyntaxes.Select(ccs =>
+                ccs.TextEditorTextSpan));
 
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }
