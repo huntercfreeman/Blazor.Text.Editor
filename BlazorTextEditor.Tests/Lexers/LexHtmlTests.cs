@@ -158,6 +158,7 @@ public class LexHtmlTests
         Assert.Equal(expectedTextEditorTextSpans, textEditorTextSpans);
     }
     
+    // TODO: A more extensive test should be made this is only top level comment tags. I checked manually and a HTML element containing a comment works fine but there should be a test for deeply nested comments.
     [Fact]
     public async Task LexComment()
     {
@@ -166,8 +167,10 @@ public class LexHtmlTests
 
         var expectedTextEditorTextSpans = new[]
         {
-            // TODO: Replace with real data
-            new TextEditorTextSpan(21, 29, 2),
+            new TextEditorTextSpan(35, 82, 3 ),
+            new TextEditorTextSpan(118, 140, 3 ),
+            new TextEditorTextSpan(154, 210, 3 ),
+            new TextEditorTextSpan(426, 450, 3 ),
         };
         
         var htmlLexer = new TextEditorHtmlLexer();

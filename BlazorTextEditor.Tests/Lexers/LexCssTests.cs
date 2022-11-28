@@ -8,12 +8,6 @@ namespace BlazorTextEditor.Tests.Lexers;
 public class LexCssTests
 {
     [Fact]
-    public async Task LexTagSelectors()
-    {
-        throw new NotImplementedException();
-    }
-    
-    [Fact]
     public async Task LexCommentManyValid()
     {
         var text = TestData.Css.EXAMPLE_TEXT_21_LINES
@@ -129,11 +123,5 @@ public class LexCssTests
             .ToImmutableArray();
 
         Assert.Equal(expectedTextEditorTextSpans, textEditorTextSpans);
-    }
-    
-    [Fact]
-    public async Task LexCommentSingleInvalid()
-    {
-        throw new NotImplementedException();
     }
 }
