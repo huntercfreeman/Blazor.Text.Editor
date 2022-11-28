@@ -13,184 +13,192 @@ public class CssSyntaxTree
         // Items to return wrapped in a CssSyntaxUnit
         var cssDocumentChildren = new List<ICssSyntax>();
         var textEditorCssDiagnosticBag = new TextEditorCssDiagnosticBag();
-        
+
         // Step through the string 'character by character'
         var stringWalker = new StringWalker(content);
-
-        // States
-        var withinComment = false;
-        var withinStyleBlock = false;
-        var expectedStyleBlockChild = CssSyntaxKind.PropertyName;
-
-        // pendingTokenStartingPositionIndex == -1
-        // is to imply that there is no pending
-        // token starting position index.
-        var pendingTokenStartingPositionIndex = -1;
-
-        stringWalker.WhileNotEndOfFile(() =>
+        
+        while (!stringWalker.IsEof)
         {
-            if (withinComment)
-            {
-                // If the comment just started track its starting position index
-                if (pendingTokenStartingPositionIndex == -1)
-                {
-                    // Moved the assignment of token starting position index
-                    // to inside the case itself therefore 1 character too far now so - 1.
-                    pendingTokenStartingPositionIndex = stringWalker.PositionIndex - 1; 
-                }
+            if (stringWalker.CheckForSubstring(CssFacts.COMMENT_START))
+                ConsumeComment(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
 
-                // Check comment end
-                {
-                    var closingOfCommentTextFound = stringWalker
-                        .CheckForSubstring(CssFacts.COMMENT_END);
+            if (stringWalker.CurrentCharacter == CssFacts.STYLE_BLOCK_START)
+                ConsumeStyleBlock(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
 
-                    if (closingOfCommentTextFound)
-                    {
-                        // Skip the rest of the comment closing text
-                        _ = stringWalker.ConsumeRange(CssFacts.COMMENT_END.Length - 1);
-
-                        var commentTextSpan = new TextEditorTextSpan(
-                            pendingTokenStartingPositionIndex,
-                            stringWalker.PositionIndex + 1,
-                            (byte)CssDecorationKind.Comment);                    
-                    
-                        var commentToken = new CssCommentSyntax(
-                            commentTextSpan,
-                            ImmutableArray<ICssSyntax>.Empty);
-
-                        cssDocumentChildren.Add(commentToken);
-
-                        pendingTokenStartingPositionIndex = -1;
-                        withinComment = false;
-                    }
-                }
-            }
-            else if (withinStyleBlock)
-            {
-                stringWalker.SkipWhitespace();
-                
-                // Comment start
-                {
-                    withinComment = stringWalker.CheckForSubstring(CssFacts.COMMENT_START);
-                    if (withinComment)
-                        return false;
-                }
-
-                var delimiters = WhitespaceFacts.ALL
-                    .Union(new[]
-                    {
-                        KeyboardKeyFacts.PunctuationCharacters.OPEN_CURLY_BRACE,
-                        KeyboardKeyFacts.PunctuationCharacters.CLOSE_CURLY_BRACE,
-                    })
-                    .ToList();
-
-                // Set the expected text delimiters
-                switch (expectedStyleBlockChild)
-                {
-                    case CssSyntaxKind.PropertyName:
-                        delimiters.Add(CssFacts.PROPERTY_NAME_END);
-                        break;
-                    case CssSyntaxKind.PropertyValue:
-                        delimiters.Add(CssFacts.PROPERTY_NAME_END);
-                        break;
-                }
-
-                var startingPositionIndex = stringWalker.CurrentCharacter;
-
-                while (stringWalker.CurrentCharacter != ParserFacts.END_OF_FILE &&
-                       !delimiters.Contains(stringWalker.CurrentCharacter))
-                {
-                    _ = stringWalker.Consume();
-                }
-
-                if (stringWalker.PositionIndex - startingPositionIndex != 1)
-                {
-                    // did NOT immediately find EOF or a delimiter
-                    // so create the corresponding token and add it to the list of results
-
-                    var textSpan = new TextEditorTextSpan(
-                        startingPositionIndex,
-                        stringWalker.PositionIndex,
-                        default);
-                    
-                    switch (expectedStyleBlockChild)
-                    {
-                        case CssSyntaxKind.PropertyName:
-                        {
-                            var propertyNameToken = new CssPropertyNameSyntax(
-                                textSpan with
-                                {
-                                    DecorationByte = (byte)CssDecorationKind.PropertyName
-                                },
-                                ImmutableArray<ICssSyntax>.Empty);
-                        
-                            cssDocumentChildren.Add(propertyNameToken);
-
-                            expectedStyleBlockChild = CssSyntaxKind.PropertyValue;
-                        
-                            break;
-                        }
-                        case CssSyntaxKind.PropertyValue:
-                        {
-                            var propertyValueToken = new CssPropertyValueSyntax(
-                                textSpan with
-                                {
-                                    DecorationByte = (byte)CssDecorationKind.PropertyValue
-                                },
-                                ImmutableArray<ICssSyntax>.Empty);
-                        
-                            cssDocumentChildren.Add(propertyValueToken);
-
-                            expectedStyleBlockChild = CssSyntaxKind.PropertyName;
-                        
-                            break;
-                        }
-                    }
-                }
-
-                // Check style block end
-                {
-                    var closingOfStyleBlockTextFound = stringWalker.CurrentCharacter == 
-                                                       CssFacts.STYLE_BLOCK_END;
-                    
-                    if (closingOfStyleBlockTextFound)
-                    {
-                        withinStyleBlock = false;
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                // Comment start
-                {
-                    withinComment = stringWalker.CheckForSubstring(CssFacts.COMMENT_START);
-                    if (withinComment)
-                        return false;
-                }
-
-                // Style Block start
-                {
-                    withinStyleBlock = stringWalker.CurrentCharacter == CssFacts.STYLE_BLOCK_START;
-                    if (withinStyleBlock)
-                        return false;
-                }
-            }
-            
-            return false;
-        });
+            _ = stringWalker.Consume();
+        }
 
         var cssDocumentSyntax = new CssDocumentSyntax(
             new TextEditorTextSpan(
-                0, 
-                stringWalker.PositionIndex, 
+                0,
+                stringWalker.PositionIndex,
                 (byte)CssDecorationKind.None),
             cssDocumentChildren.ToImmutableArray());
-        
+
         var cssSyntaxUnit = new CssSyntaxUnit(
             cssDocumentSyntax,
             textEditorCssDiagnosticBag);
-        
+
         return cssSyntaxUnit;
+    }
+
+    private static void ConsumeComment(
+        StringWalker stringWalker, 
+        List<ICssSyntax> cssDocumentChildren,
+        TextEditorCssDiagnosticBag textEditorCssDiagnosticBag)
+    {
+        var commentStartingPositionIndex = stringWalker.PositionIndex;
+
+        while (!stringWalker.IsEof)
+        {
+            var closingOfCommentTextFound = stringWalker
+                .CheckForSubstring(CssFacts.COMMENT_END);
+
+            if (closingOfCommentTextFound)
+            {
+                // Skip the rest of the comment closing text
+                _ = stringWalker.ConsumeRange(CssFacts.COMMENT_END.Length - 1);
+
+                var commentTextSpan = new TextEditorTextSpan(
+                    commentStartingPositionIndex,
+                    stringWalker.PositionIndex + 1,
+                    (byte)CssDecorationKind.Comment);
+
+                var commentToken = new CssCommentSyntax(
+                    commentTextSpan,
+                    ImmutableArray<ICssSyntax>.Empty);
+
+                cssDocumentChildren.Add(commentToken);
+
+                return;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Assumes invoker found <see cref="CssFacts.STYLE_BLOCK_START"/>
+    /// and did not <see cref="StringWalker.Consume"/>
+    /// to increment the position index.
+    /// <br/><br/>
+    /// In other words the first action this method takes is
+    /// <see cref="StringWalker.Consume"/> to increment
+    /// the position index.
+    /// </summary>
+    private static void ConsumeStyleBlock(
+        StringWalker stringWalker, 
+        List<ICssSyntax> cssDocumentChildren,
+        TextEditorCssDiagnosticBag textEditorCssDiagnosticBag)
+    {
+        var expectedStyleBlockChild = CssSyntaxKind.PropertyName;
+        
+        // when pendingChildStartingPositionIndex == -1 it is to
+        // mean that there is NOT a pending child
+        var pendingChildStartingPositionIndex = -1;
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+            
+            if (stringWalker.CheckForSubstring(CssFacts.COMMENT_START))
+                ConsumeComment(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
+
+            char childEndingCharacter;
+            CssDecorationKind childDecorationKind;
+            
+            switch (expectedStyleBlockChild)
+            {
+                case CssSyntaxKind.PropertyName:
+                    childEndingCharacter = CssFacts.PROPERTY_NAME_END;
+                    childDecorationKind = CssDecorationKind.PropertyName;
+                    break;
+                case CssSyntaxKind.PropertyValue:
+                    childEndingCharacter = CssFacts.PROPERTY_VALUE_END;
+                    childDecorationKind = CssDecorationKind.PropertyValue;
+                    break;
+                default:
+                    throw new ApplicationException($"The {nameof(CssSyntaxKind)} of" +
+                                                   $" {expectedStyleBlockChild} was unexpected.");
+            }
+            
+            // Skip preceding and trailing whitespace
+            // relative to the child's text
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) &&
+                pendingChildStartingPositionIndex == -1)
+            {
+                continue;
+            }
+            
+            // Start of a child's text
+            if (pendingChildStartingPositionIndex == -1)
+            {
+                pendingChildStartingPositionIndex = stringWalker.PositionIndex;
+                continue;
+            }
+            
+            // End of a child's text
+            if (stringWalker.CurrentCharacter == childEndingCharacter ||
+                WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+            {   
+                var childTextSpan = new TextEditorTextSpan(
+                    pendingChildStartingPositionIndex,
+                    stringWalker.PositionIndex,
+                    (byte)childDecorationKind);
+
+                ICssSyntax childSyntax;
+                
+                switch (expectedStyleBlockChild)
+                {
+                    case CssSyntaxKind.PropertyName:
+                        childSyntax = new CssPropertyNameSyntax(
+                            childTextSpan,
+                            ImmutableArray<ICssSyntax>.Empty);
+                        break;
+                    case CssSyntaxKind.PropertyValue:
+                        childSyntax = new CssPropertyValueSyntax(
+                            childTextSpan,
+                            ImmutableArray<ICssSyntax>.Empty);
+                        break;
+                    default:
+                        throw new ApplicationException($"The {nameof(CssSyntaxKind)} of" +
+                                                       $" {expectedStyleBlockChild} was unexpected.");
+                }
+                
+                cssDocumentChildren.Add(childSyntax);
+                
+                if (stringWalker.CurrentCharacter == childEndingCharacter)
+                {
+                    switch (expectedStyleBlockChild)
+                    {
+                        case CssSyntaxKind.PropertyName:
+                            expectedStyleBlockChild = CssSyntaxKind.PropertyValue;
+                            break;
+                        case CssSyntaxKind.PropertyValue:
+                            expectedStyleBlockChild = CssSyntaxKind.PropertyName;
+                            break;
+                        default:
+                            throw new ApplicationException($"The {nameof(CssSyntaxKind)} of" +
+                                                           $" {expectedStyleBlockChild} was unexpected.");
+                    }
+                }
+
+                continue;
+            }
+            
+            // Relies on the if statement before this that ensures
+            // the current character is not whitespace
+            if (stringWalker.CurrentCharacter != childEndingCharacter)
+            {
+                var unexpectedTokenTextSpan = new TextEditorTextSpan(
+                    pendingChildStartingPositionIndex,
+                    stringWalker.PositionIndex,
+                    (byte)CssDecorationKind.UnexpectedToken);
+                
+                textEditorCssDiagnosticBag.ReportUnexpectedToken(
+                    unexpectedTokenTextSpan,
+                    stringWalker.CurrentCharacter.ToString());
+
+                continue;
+            }
+        }
     }
 }

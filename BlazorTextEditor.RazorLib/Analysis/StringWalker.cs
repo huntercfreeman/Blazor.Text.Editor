@@ -62,6 +62,11 @@ public class StringWalker
     ///     <see cref="RemainingText" /> => _content.Substring(PositionIndex);
     /// </summary>
     public string RemainingText => _content.Substring(PositionIndex);
+    
+    /// <summary>
+    /// Returns if the current character is the end of file character
+    /// </summary>
+    public bool IsEof => CurrentCharacter != ParserFacts.END_OF_FILE;
 
     /// <summary>
     ///     If <see cref="PositionIndex" /> is within bounds of the <see cref="_content" />.

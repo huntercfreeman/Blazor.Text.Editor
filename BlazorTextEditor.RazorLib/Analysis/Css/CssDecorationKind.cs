@@ -6,5 +6,6 @@ public enum CssDecorationKind
     TagSelector,
     Comment,
     PropertyName,
-    PropertyValue
+    PropertyValue,
+    UnexpectedToken
 }
