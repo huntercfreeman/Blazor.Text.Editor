@@ -48,6 +48,10 @@
     color: var(--bte_css-property-value-color);
 }
 
+.bte_css-identifier {
+    color: var(--bte_css-identifier-color);
+}
+
 .bte_measure-character-width-and-row-height {
     top: 0;
     left: 0;

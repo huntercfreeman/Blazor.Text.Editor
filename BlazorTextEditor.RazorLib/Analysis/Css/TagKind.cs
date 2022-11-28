@@ -2,9 +2,9 @@
 
 public enum CssSyntaxKind
 {
-    TagSelector,
     Comment,
     Document,
     PropertyName,
-    PropertyValue
+    PropertyValue,
+    Identifier
 }

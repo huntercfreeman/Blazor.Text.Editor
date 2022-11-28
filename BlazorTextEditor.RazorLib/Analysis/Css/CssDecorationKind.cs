@@ -7,5 +7,6 @@ public enum CssDecorationKind
     Comment,
     PropertyName,
     PropertyValue,
-    UnexpectedToken
+    UnexpectedToken,
+    Identifier
 }

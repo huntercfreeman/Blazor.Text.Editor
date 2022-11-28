@@ -17,8 +17,13 @@ public class CssSyntaxTree
         // Step through the string 'character by character'
         var stringWalker = new StringWalker(content);
 
+        // Order matters with the methods of pattern, 'Consume{Something}'
+        // Example: 'ConsumeComment'
         while (!stringWalker.IsEof)
         {
+            if (char.IsLetterOrDigit(stringWalker.CurrentCharacter))
+                ConsumeIdentifier(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
+            
             if (stringWalker.CheckForSubstring(CssFacts.COMMENT_START))
                 ConsumeComment(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
 
@@ -218,5 +223,40 @@ public class CssSyntaxTree
                 continue;
             }
         }
+    }
+    
+    /// <summary>
+    /// <see cref="ConsumeStyleBlock"/> firstly grabs the
+    /// starting position index for the identifier.
+    /// Afterwards it invokes <see cref="StringWalker.Consume"/>.
+    /// </summary>
+    private static void ConsumeIdentifier(
+        StringWalker stringWalker, 
+        List<ICssSyntax> cssDocumentChildren,
+        TextEditorCssDiagnosticBag textEditorCssDiagnosticBag)
+    {
+        var startingPositionIndex = stringWalker.PositionIndex;
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) || 
+                CssFacts.STYLE_BLOCK_START == stringWalker.CurrentCharacter)
+            {
+                break;
+            }
+        }
+        
+        var identifierTextSpan = new TextEditorTextSpan(
+            startingPositionIndex,
+            stringWalker.PositionIndex,
+            (byte)CssDecorationKind.Identifier);
+
+        var identifierSyntax = new CssPropertyNameSyntax(
+            identifierTextSpan,
+            ImmutableArray<ICssSyntax>.Empty);
+                
+        cssDocumentChildren.Add(identifierSyntax);
     }
 }
