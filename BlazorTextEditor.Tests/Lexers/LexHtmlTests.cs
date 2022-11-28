@@ -161,7 +161,7 @@ public class LexHtmlTests
     [Fact]
     public async Task LexComment()
     {
-        var text = TestData.Html.EXAMPLE_TEXT_19_LINES
+        var text = TestData.Html.EXAMPLE_TEXT_COMMENTS
             .ReplaceLineEndings("\n");
 
         var expectedTextEditorTextSpans = new[]

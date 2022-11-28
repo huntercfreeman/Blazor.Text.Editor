@@ -41,6 +41,12 @@ public class TextEditorHtmlLexer : ILexer
             textEditorTextSpans.AddRange(htmlSyntaxWalker.AttributeValueSyntaxes
                 .Select(av => av.TextEditorTextSpan));
         }
+        
+        // Comments
+        {
+            textEditorTextSpans.AddRange(htmlSyntaxWalker.CommentSyntaxes
+                .Select(c => c.TextEditorTextSpan));
+        }
 
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }

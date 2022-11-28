@@ -8,6 +8,7 @@ public class HtmlSyntaxWalker
     public List<AttributeValueSyntax> AttributeValueSyntaxes { get; } = new();
     public List<InjectedLanguageFragmentSyntax> InjectedLanguageFragmentSyntaxes { get; } = new();
     public List<TagNameSyntax> TagNameSyntaxes { get; } = new();
+    public List<CommentSyntax> CommentSyntaxes { get; } = new();
     public List<TagSyntax> TagSyntaxes { get; } = new();
     
     public void Visit(IHtmlSyntax syntaxNode)
@@ -48,6 +49,14 @@ public class HtmlSyntaxWalker
                 
                 break;
             }
+            case HtmlSyntaxKind.Comment:
+            {
+                var commentSyntax = (CommentSyntax)syntaxNode;
+
+                VisitCommentSyntax(commentSyntax);
+                
+                break;
+            }
         }
     }
 
@@ -71,6 +80,11 @@ public class HtmlSyntaxWalker
         TagNameSyntaxes.Add(tagNameSyntax);
     }
 
+    public void VisitCommentSyntax(CommentSyntax commentSyntax)
+    {
+        CommentSyntaxes.Add(commentSyntax);
+    }
+    
     public void VisitTagSyntax(TagSyntax tagSyntax)
     {
         TagSyntaxes.Add(tagSyntax);

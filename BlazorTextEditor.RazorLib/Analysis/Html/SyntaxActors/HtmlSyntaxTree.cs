@@ -313,11 +313,23 @@ public static class HtmlSyntaxTree
                     // add a new TextNode to the List of TagSyntax
                     AddTextNode();
 
-                    htmlSyntaxes.Add(
-                        ParseTag(
-                            stringWalker,
-                            textEditorHtmlDiagnosticBag,
-                            injectedLanguageDefinition));
+                    if (stringWalker.CheckForSubstring(
+                            HtmlFacts.COMMENT_TAG_BEGINNING))
+                    {
+                        htmlSyntaxes.Add(
+                            ParseComment(
+                                stringWalker,
+                                textEditorHtmlDiagnosticBag,
+                                injectedLanguageDefinition));
+                    }
+                    else
+                    {
+                        htmlSyntaxes.Add(
+                            ParseTag(
+                                stringWalker,
+                                textEditorHtmlDiagnosticBag,
+                                injectedLanguageDefinition));
+                    }
 
                     return false;
                 }
@@ -490,6 +502,32 @@ public static class HtmlSyntaxTree
                 (byte)HtmlDecorationKind.AttributeValue);
             
             return new AttributeValueSyntax(attributeValueTextSpan);
+        }
+        
+        public static CommentSyntax ParseComment(
+            StringWalker stringWalker,
+            TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+            InjectedLanguageDefinition? injectedLanguageDefinition)
+        {
+            var startingPositionIndex = stringWalker.PositionIndex;
+            
+            while (!stringWalker.IsEof)
+            {
+                _ = stringWalker.Consume();
+                
+                if (stringWalker.CheckForSubstring(HtmlFacts.COMMENT_TAG_ENDING))
+                    break;
+            }
+
+            // Skip the remaining characters in the comment tag ending string
+            _ = stringWalker.ConsumeRange(HtmlFacts.COMMENT_TAG_ENDING.Length - 1);
+            
+            var commentTagTextSpan = new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex + 1,
+                (byte)HtmlDecorationKind.Comment);
+            
+            return new CommentSyntax(commentTagTextSpan);
         }
     }
 }
