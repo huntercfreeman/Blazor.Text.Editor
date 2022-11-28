@@ -16,4 +16,8 @@
       <ProjectReference Include="..\BlazorTextEditor.Demo.RazorLib\BlazorTextEditor.Demo.RazorLib.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+    </ItemGroup>
+
 </Project>
