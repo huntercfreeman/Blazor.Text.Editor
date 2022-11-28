@@ -1,3 +1,8 @@
+/* 
+    The default colors are
+    a clone of Visual Studio Dark Theme
+*/
+
 :root {
     --bte_primary-font-color: #DCDCDC;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
