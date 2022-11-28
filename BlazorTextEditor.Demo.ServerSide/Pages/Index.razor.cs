@@ -13,9 +13,9 @@ public partial class Index
 
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterHtmlTextEditor(
-            TextEditorFacts.HtmlTextEditorKey,
-            TestData.Html.EXAMPLE_TEXT_COMMENTS);
+        // TextEditorService.RegisterHtmlTextEditor(
+        //     TextEditorFacts.HtmlTextEditorKey,
+        //     TestData.Html.EXAMPLE_TEXT_COMMENTS);
         
         // TextEditorService.RegisterCSharpTextEditor(
         //     TextEditorFacts.CSharpTextEditorKey,
@@ -24,15 +24,15 @@ public partial class Index
         // TextEditorService.RegisterCSharpTextEditor(
         //     TextEditorFacts.CSharpTextEditorKey,
         //     TestData.CSharp.EXAMPLE_TEXT_173_LINES);
-        
+        //
         // TextEditorService.RegisterCssTextEditor(
         //     TextEditorFacts.CssTextEditorKey,
         //     TestData.Css.EXAMPLE_TEXT_21_LINES);
-        
+        //
         // TextEditorService.RegisterFSharpTextEditor(
         //     TextEditorFacts.FSharpTextEditorKey,
         //     TestData.FSharp.EXAMPLE_TEXT_21_LINES);
-        
+        //
         // TextEditorService.RegisterJavaScriptTextEditor(
         //     TextEditorFacts.JavaScriptTextEditorKey,
         //     TestData.JavaScript.EXAMPLE_TEXT_28_LINES);
@@ -41,9 +41,9 @@ public partial class Index
         //     TextEditorFacts.PlainTextEditorKey,
         //     TestData.Plain.EXAMPLE_TEXT_25_LINES);
         //
-        // TextEditorService.RegisterRazorTextEditor(
-        //     TextEditorFacts.RazorTextEditorKey,
-        //     TestData.Razor.EXAMPLE_TEXT_20_LINES);
+        TextEditorService.RegisterRazorTextEditor(
+            TextEditorFacts.RazorTextEditorKey,
+            TestData.Razor.EXAMPLE_TEXT_20_LINES);
         //
         // TextEditorService.RegisterTypeScriptTextEditor(
         //     TextEditorFacts.TypeScriptTextEditorKey,
