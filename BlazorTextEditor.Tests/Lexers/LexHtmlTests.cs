@@ -55,4 +55,22 @@ public class LexHtmlTests
         
         Assert.Equal(expectedTagNameTextEditorTextSpans, textEditorTextSpans);
     }
+    
+    [Fact]
+    public async Task LexAttributeName()
+    {
+        throw new NotImplementedException();
+    }
+    
+    [Fact]
+    public async Task LexAttributeValue()
+    {
+        throw new NotImplementedException();
+    }
+    
+    [Fact]
+    public async Task LexComment()
+    {
+        throw new NotImplementedException();
+    }
 }
