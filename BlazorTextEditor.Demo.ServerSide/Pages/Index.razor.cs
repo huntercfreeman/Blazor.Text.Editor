@@ -15,7 +15,7 @@ public partial class Index
     {
         TextEditorService.RegisterHtmlTextEditor(
             TextEditorFacts.HtmlTextEditorKey,
-            TestData.Html.EXAMPLE_TEXT_19_LINES);
+            TestData.Html.EXAMPLE_TEXT_COMMENTS);
         
         // TextEditorService.RegisterCSharpTextEditor(
         //     TextEditorFacts.CSharpTextEditorKey,

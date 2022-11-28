@@ -161,6 +161,25 @@ public class LexHtmlTests
     [Fact]
     public async Task LexComment()
     {
-        throw new NotImplementedException();
+        var text = TestData.Html.EXAMPLE_TEXT_19_LINES
+            .ReplaceLineEndings("\n");
+
+        var expectedTextEditorTextSpans = new[]
+        {
+            // TODO: Replace with real data
+            new TextEditorTextSpan(21, 29, 2),
+        };
+        
+        var htmlLexer = new TextEditorHtmlLexer();
+
+        var textEditorTextSpans = 
+            await htmlLexer.Lex(text);
+
+        textEditorTextSpans = textEditorTextSpans
+            .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.Comment)
+            .OrderBy(x => x.StartingIndexInclusive)
+            .ToImmutableArray();
+        
+        Assert.Equal(expectedTextEditorTextSpans, textEditorTextSpans);
     }
 }
