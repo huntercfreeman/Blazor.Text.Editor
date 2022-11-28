@@ -66,7 +66,7 @@ public class StringWalker
     /// <summary>
     /// Returns if the current character is the end of file character
     /// </summary>
-    public bool IsEof => CurrentCharacter != ParserFacts.END_OF_FILE;
+    public bool IsEof => CurrentCharacter == ParserFacts.END_OF_FILE;
 
     /// <summary>
     ///     If <see cref="PositionIndex" /> is within bounds of the <see cref="_content" />.
