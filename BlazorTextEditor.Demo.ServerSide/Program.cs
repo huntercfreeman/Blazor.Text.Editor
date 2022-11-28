@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using BlazorTextEditor.Demo.ServerSide.Data;
 using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
 
 var builder = WebApplication.CreateBuilder(args);
 

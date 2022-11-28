@@ -8,16 +8,20 @@ public class TextEditorJsonLexer : ILexer
 {
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
-        var cssSyntaxUnit = JsonSyntaxTree.ParseText(text);
+        var jsonSyntaxUnit = JsonSyntaxTree.ParseText(text);
         
-        var syntaxNodeRoot = cssSyntaxUnit.JsonDocumentSyntax;
+        var syntaxNodeRoot = jsonSyntaxUnit.JsonDocumentSyntax;
 
-        var cssSyntaxWalker = new JsonSyntaxWalker();
+        var jsonSyntaxWalker = new JsonSyntaxWalker();
 
-        cssSyntaxWalker.Visit(syntaxNodeRoot);
+        jsonSyntaxWalker.Visit(syntaxNodeRoot);
 
         List<TextEditorTextSpan> textEditorTextSpans = new();
 
+        textEditorTextSpans.AddRange(
+            jsonSyntaxWalker.JsonLineCommentSyntaxes.Select(lineComment =>
+                lineComment.TextEditorTextSpan));
+        
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }
 }

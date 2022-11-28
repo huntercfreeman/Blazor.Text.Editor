@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.TextEditor;
 

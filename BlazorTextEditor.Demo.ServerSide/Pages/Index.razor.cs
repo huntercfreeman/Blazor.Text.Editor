@@ -1,6 +1,5 @@
 ﻿using BlazorTextEditor.Demo.ServerSide.TextEditor;
 using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.Tests.TestDataFolder;
 using Microsoft.AspNetCore.Components;
 
