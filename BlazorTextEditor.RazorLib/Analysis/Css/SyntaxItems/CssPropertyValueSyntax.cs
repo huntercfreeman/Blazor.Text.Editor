@@ -3,9 +3,9 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Css.SyntaxItems;
 
-public class CssPropertyNameSyntax : ICssSyntax
+public class CssPropertyValueSyntax : ICssSyntax
 {
-    public CssPropertyNameSyntax(
+    public CssPropertyValueSyntax(
         TextEditorTextSpan textEditorTextSpan,
         ImmutableArray<ICssSyntax> childCssSyntaxes)
     {
@@ -16,5 +16,5 @@ public class CssPropertyNameSyntax : ICssSyntax
     public TextEditorTextSpan TextEditorTextSpan { get; }
     public ImmutableArray<ICssSyntax> ChildCssSyntaxes { get; }
     
-    public CssSyntaxKind CssSyntaxKind => CssSyntaxKind.PropertyName;
+    public CssSyntaxKind CssSyntaxKind => CssSyntaxKind.PropertyValue;
 }

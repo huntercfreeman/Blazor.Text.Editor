@@ -4,6 +4,7 @@ namespace BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
 
 public class CssSyntaxWalker
 {
+    public List<CssIdentifierSyntax> CssIdentifierSyntaxes { get; } = new();
     public List<CssCommentSyntax> CssCommentSyntaxes { get; } = new();
     public List<CssPropertyNameSyntax> CssPropertyNameSyntaxes { get; } = new();
     public List<CssPropertyValueSyntax> CssPropertyValueSyntaxes { get; } = new();
@@ -15,6 +16,9 @@ public class CssSyntaxWalker
 
         switch (cssSyntax.CssSyntaxKind)
         {
+            case CssSyntaxKind.Identifier:
+                VisitCssIdentifierSyntax((CssIdentifierSyntax)cssSyntax);
+                break;
             case CssSyntaxKind.Comment:
                 VisitCssCommentSyntax((CssCommentSyntax)cssSyntax);
                 break;
@@ -27,6 +31,11 @@ public class CssSyntaxWalker
         }
     }
 
+    public virtual void VisitCssIdentifierSyntax(CssIdentifierSyntax cssIdentifierSyntax)
+    {
+        CssIdentifierSyntaxes.Add(cssIdentifierSyntax);
+    }
+    
     public virtual void VisitCssCommentSyntax(CssCommentSyntax cssCommentSyntax)
     {
         CssCommentSyntaxes.Add(cssCommentSyntax);

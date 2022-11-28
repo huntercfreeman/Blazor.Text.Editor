@@ -253,7 +253,7 @@ public class CssSyntaxTree
             stringWalker.PositionIndex,
             (byte)CssDecorationKind.Identifier);
 
-        var identifierSyntax = new CssPropertyNameSyntax(
+        var identifierSyntax = new CssIdentifierSyntax(
             identifierTextSpan,
             ImmutableArray<ICssSyntax>.Empty);
                 

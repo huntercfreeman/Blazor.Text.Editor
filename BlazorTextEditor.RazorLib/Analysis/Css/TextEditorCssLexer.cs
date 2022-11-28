@@ -19,16 +19,20 @@ public class TextEditorCssLexer : ILexer
         List<TextEditorTextSpan> textEditorTextSpans = new();
 
         textEditorTextSpans.AddRange(
-            cssSyntaxWalker.CssCommentSyntaxes.Select(ccs =>
-                ccs.TextEditorTextSpan));
+            cssSyntaxWalker.CssIdentifierSyntaxes.Select(identifier =>
+                identifier.TextEditorTextSpan));
         
         textEditorTextSpans.AddRange(
-            cssSyntaxWalker.CssPropertyNameSyntaxes.Select(ccs =>
-                ccs.TextEditorTextSpan));
+            cssSyntaxWalker.CssCommentSyntaxes.Select(comment =>
+                comment.TextEditorTextSpan));
         
         textEditorTextSpans.AddRange(
-            cssSyntaxWalker.CssPropertyValueSyntaxes.Select(ccs =>
-                ccs.TextEditorTextSpan));
+            cssSyntaxWalker.CssPropertyNameSyntaxes.Select(propertyName =>
+                propertyName.TextEditorTextSpan));
+        
+        textEditorTextSpans.AddRange(
+            cssSyntaxWalker.CssPropertyValueSyntaxes.Select(propertyValue =>
+                propertyValue.TextEditorTextSpan));
 
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }
