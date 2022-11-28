@@ -13,6 +13,8 @@ public static class HtmlFacts
 
     public const string CLOSE_TAG_WITH_CHILD_CONTENT_BEGINNING = "</";
     public const string CLOSE_TAG_WITH_CHILD_CONTENT_ENDING = ">";
+    
+    public const char ATTRIBUTE_NAME_ENDING = '=';
 
     public static readonly ImmutableArray<string> OPEN_TAG_ENDING_OPTIONS = new[]
     {

@@ -3,18 +3,18 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 
-public class InjectedLanguageFragmentSyntax : TagSyntax
+public class InjectedLanguageFragmentSyntax : TagSyntax, IHtmlSyntax
 {
     public InjectedLanguageFragmentSyntax(
-        ImmutableArray<TagSyntax> childTagSyntaxes,
+        ImmutableArray<IHtmlSyntax> childHtmlSyntaxes,
         string value,
         TextEditorTextSpan textEditorTextSpan,
         bool hasSpecialHtmlCharacter = false)
         : base(
             null,
             null,
-            ImmutableArray<AttributeTupleSyntax>.Empty,
-            childTagSyntaxes,
+            ImmutableArray<AttributeSyntax>.Empty,
+            childHtmlSyntaxes,
             TagKind.InjectedLanguageCodeBlock,
             hasSpecialHtmlCharacter)
     {
@@ -24,4 +24,6 @@ public class InjectedLanguageFragmentSyntax : TagSyntax
 
     public string Value { get; }
     public TextEditorTextSpan TextEditorTextSpan { get; }
+    
+    public override HtmlSyntaxKind HtmlSyntaxKind => HtmlSyntaxKind.InjectedLanguageFragment;
 }

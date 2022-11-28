@@ -38,7 +38,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                     // Given these follow an "@" character (example in .razor files)
                     injectedLanguageFragmentSyntaxes.Add(
                         new InjectedLanguageFragmentSyntax(
-                            ImmutableArray<TagSyntax>.Empty,
+                            ImmutableArray<IHtmlSyntax>.Empty,
                             string.Empty,
                             new TextEditorTextSpan(
                                 codeBlockOrExpressionStartingPositionIndex,
@@ -83,7 +83,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                             // end of a code block.
                             injectedLanguageFragmentSyntaxes.Add(
                                 new InjectedLanguageFragmentSyntax(
-                                    ImmutableArray<TagSyntax>.Empty,
+                                    ImmutableArray<IHtmlSyntax>.Empty,
                                     string.Empty,
                                     new TextEditorTextSpan(
                                         stringWalker.PositionIndex,
@@ -139,7 +139,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                                 };
 
                                 injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                                    ImmutableArray<TagSyntax>.Empty,
+                                    ImmutableArray<IHtmlSyntax>.Empty,
                                     stringWalker.GetText(razorMethodTextSpan),
                                     razorMethodTextSpan));
 
@@ -153,7 +153,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                                 };
 
                                 injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                                    ImmutableArray<TagSyntax>.Empty,
+                                    ImmutableArray<IHtmlSyntax>.Empty,
                                     stringWalker.GetText(razorTypeTextSpan),
                                     razorTypeTextSpan));
 
@@ -167,7 +167,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                                 };
 
                                 injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                                    ImmutableArray<TagSyntax>.Empty,
+                                    ImmutableArray<IHtmlSyntax>.Empty,
                                     stringWalker.GetText(razorVariableTextSpan),
                                     razorVariableTextSpan));
 
@@ -181,7 +181,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                                 };
 
                                 injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                                    ImmutableArray<TagSyntax>.Empty,
+                                    ImmutableArray<IHtmlSyntax>.Empty,
                                     stringWalker.GetText(razorStringLiteralTextSpan),
                                     razorStringLiteralTextSpan));
 
@@ -195,7 +195,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                                 };
 
                                 injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                                    ImmutableArray<TagSyntax>.Empty,
+                                    ImmutableArray<IHtmlSyntax>.Empty,
                                     stringWalker.GetText(razorKeywordTextSpan),
                                     razorKeywordTextSpan));
 
@@ -209,7 +209,7 @@ public static class ParserInjectedLanguageFragmentCSharp
                                 };
 
                                 injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                                    ImmutableArray<TagSyntax>.Empty,
+                                    ImmutableArray<IHtmlSyntax>.Empty,
                                     stringWalker.GetText(razorCommentTextSpan),
                                     razorCommentTextSpan));
 

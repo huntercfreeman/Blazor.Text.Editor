@@ -2,18 +2,18 @@
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 
-public class TagTextSyntax : TagSyntax
+public class TagTextSyntax : TagSyntax, IHtmlSyntax
 {
     public TagTextSyntax(
-        ImmutableArray<AttributeTupleSyntax> attributeTupleSyntaxes,
-        ImmutableArray<TagSyntax> childTagSyntaxes,
+        ImmutableArray<AttributeSyntax> attributeSyntaxes,
+        ImmutableArray<IHtmlSyntax> childHtmlSyntaxes,
         string value,
         bool hasSpecialHtmlCharacter = false)
         : base(
             null,
             null,
-            attributeTupleSyntaxes,
-            childTagSyntaxes,
+            attributeSyntaxes,
+            childHtmlSyntaxes,
             TagKind.Text,
             hasSpecialHtmlCharacter)
     {
@@ -21,4 +21,6 @@ public class TagTextSyntax : TagSyntax
     }
 
     public string Value { get; }
+
+    public override HtmlSyntaxKind HtmlSyntaxKind => HtmlSyntaxKind.TagText;
 }

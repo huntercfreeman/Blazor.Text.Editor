@@ -14,7 +14,7 @@ public class LexHtmlTests
         var text = TestData.Html.EXAMPLE_TEXT_19_LINES
             .ReplaceLineEndings("\n");
 
-        var expectedTagNameTextEditorTextSpans = new[]
+        var expectedTextEditorTextSpans = new[]
         {
             new TextEditorTextSpan(1, 5, 8),
             new TextEditorTextSpan(10, 15, 8),
@@ -53,13 +53,32 @@ public class LexHtmlTests
             .OrderBy(x => x.StartingIndexInclusive)
             .ToImmutableArray();
         
-        Assert.Equal(expectedTagNameTextEditorTextSpans, textEditorTextSpans);
+        Assert.Equal(expectedTextEditorTextSpans, textEditorTextSpans);
     }
     
     [Fact]
     public async Task LexAttributeName()
     {
-        throw new NotImplementedException();
+        var text = TestData.Html.EXAMPLE_TEXT_19_LINES
+            .ReplaceLineEndings("\n");
+
+        var expectedTextEditorTextSpans = new[]
+        {
+            // TODO: Replace the expected - this is just placeholder data
+            new TextEditorTextSpan(1, 5, 8),
+        };
+        
+        var htmlLexer = new TextEditorHtmlLexer();
+
+        var textEditorTextSpans = 
+            await htmlLexer.Lex(text);
+
+        textEditorTextSpans = textEditorTextSpans
+            .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.AttributeName)
+            .OrderBy(x => x.StartingIndexInclusive)
+            .ToImmutableArray();
+        
+        Assert.Equal(expectedTextEditorTextSpans, textEditorTextSpans);
     }
     
     [Fact]

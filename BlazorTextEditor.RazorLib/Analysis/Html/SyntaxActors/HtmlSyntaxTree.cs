@@ -29,7 +29,7 @@ public static class HtmlSyntaxTree
 
         var textEditorHtmlDiagnosticBag = new TextEditorHtmlDiagnosticBag();
 
-        rootTagSyntaxBuilder.ChildTagSyntaxes = HtmlSyntaxTreeStateMachine
+        rootTagSyntaxBuilder.ChildHtmlSyntaxes = HtmlSyntaxTreeStateMachine
             .ParseTagChildContent(
                 stringWalker,
                 textEditorHtmlDiagnosticBag,
@@ -119,7 +119,7 @@ public static class HtmlSyntaxTree
                     // character of the child content
                     _ = stringWalker.Consume();
 
-                    tagBuilder.ChildTagSyntaxes = ParseTagChildContent(
+                    tagBuilder.ChildHtmlSyntaxes = ParseTagChildContent(
                         stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition);
@@ -201,9 +201,12 @@ public static class HtmlSyntaxTree
                 else
                 {
                     // Attribute
-
-                    // TODO: Parse attributes - until then Consume to avoid infinite loop
-                    _ = stringWalker.Consume();
+                    var attributeSyntax = ParseAttribute(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition);
+                    
+                    tagBuilder.AttributeSyntaxes.Add(attributeSyntax);
                 }
             }
         }
@@ -270,14 +273,14 @@ public static class HtmlSyntaxTree
                     (byte)HtmlDecorationKind.TagName));
         }
 
-        public static List<TagSyntax> ParseTagChildContent(
+        public static List<IHtmlSyntax> ParseTagChildContent(
             StringWalker stringWalker,
             TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
             InjectedLanguageDefinition? injectedLanguageDefinition)
         {
             var startingPositionIndex = stringWalker.PositionIndex;
 
-            List<TagSyntax> tagSyntaxes = new();
+            List<IHtmlSyntax> htmlSyntaxes = new();
 
             var textNodeBuilder = new StringBuilder();
 
@@ -289,11 +292,11 @@ public static class HtmlSyntaxTree
                     return;
 
                 var tagTextSyntax = new TagTextSyntax(
-                    ImmutableArray<AttributeTupleSyntax>.Empty,
-                    ImmutableArray<TagSyntax>.Empty,
+                    ImmutableArray<AttributeSyntax>.Empty,
+                    ImmutableArray<IHtmlSyntax>.Empty,
                     textNodeBuilder.ToString());
 
-                tagSyntaxes.Add(tagTextSyntax);
+                htmlSyntaxes.Add(tagTextSyntax);
                 textNodeBuilder.Clear();
             }
 
@@ -310,7 +313,7 @@ public static class HtmlSyntaxTree
                     // add a new TextNode to the List of TagSyntax
                     AddTextNode();
 
-                    tagSyntaxes.Add(
+                    htmlSyntaxes.Add(
                         ParseTag(
                             stringWalker,
                             textEditorHtmlDiagnosticBag,
@@ -326,7 +329,7 @@ public static class HtmlSyntaxTree
                     // add a new TextNode to the List of TagSyntax
                     AddTextNode();
 
-                    tagSyntaxes.AddRange(
+                    htmlSyntaxes.AddRange(
                         ParseInjectedLanguageCodeBlock(
                             stringWalker,
                             textEditorHtmlDiagnosticBag,
@@ -352,7 +355,7 @@ public static class HtmlSyntaxTree
             // add a new TextNode to the List of TagSyntax
             AddTextNode();
 
-            return tagSyntaxes;
+            return htmlSyntaxes;
         }
 
         public static List<TagSyntax> ParseInjectedLanguageCodeBlock(
@@ -367,7 +370,7 @@ public static class HtmlSyntaxTree
             // Track text span of the "@" sign (example in .razor files)
             injectedLanguageFragmentSyntaxes.Add(
                 new InjectedLanguageFragmentSyntax(
-                    ImmutableArray<TagSyntax>.Empty,
+                    ImmutableArray<IHtmlSyntax>.Empty,
                     string.Empty,
                     new TextEditorTextSpan(
                         injectedLanguageFragmentSyntaxStartingPositionIndex,
@@ -385,6 +388,94 @@ public static class HtmlSyntaxTree
                         injectedLanguageDefinition));
 
             return injectedLanguageFragmentSyntaxes;
+        }
+        
+        public static AttributeSyntax ParseAttribute(
+            StringWalker stringWalker,
+            TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+            InjectedLanguageDefinition? injectedLanguageDefinition)
+        {
+            var attributeNameSyntax = ParseAttributeName(
+                stringWalker,
+                textEditorHtmlDiagnosticBag,
+                injectedLanguageDefinition);
+            
+            var attributeValueSyntax = ParseAttributeValue(
+                stringWalker,
+                textEditorHtmlDiagnosticBag,
+                injectedLanguageDefinition);
+
+            return new AttributeSyntax(
+                attributeNameSyntax,
+                attributeValueSyntax);
+        }
+
+        public static AttributeNameSyntax ParseAttributeName(
+            StringWalker stringWalker,
+            TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+            InjectedLanguageDefinition? injectedLanguageDefinition)
+        {
+            // When ParseAttributeName is invoked
+            // the PositionIndex
+            // is always 1 character too far
+            _ = stringWalker.Backtrack();
+
+            var startingPositionIndex = stringWalker.PositionIndex;
+            
+            while (!stringWalker.IsEof)
+            {
+                _ = stringWalker.Consume();
+
+                if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
+                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter)
+                    break;
+            }
+
+            var attributeNameTextSpan = new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex,
+                (byte)HtmlDecorationKind.AttributeName);
+            
+            return new AttributeNameSyntax(attributeNameTextSpan);
+        }
+        
+        public static AttributeValueSyntax ParseAttributeValue(
+            StringWalker stringWalker,
+            TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+            InjectedLanguageDefinition? injectedLanguageDefinition)
+        {
+            // When ParseAttributeValue is invoked
+            // There might be:
+            //     -preceding whitespace
+            //     -an '=' character | more specifically the attribute name ending
+            
+            while (!stringWalker.IsEof)
+            {
+                _ = stringWalker.Consume();
+
+                // Skip whitespace / attribute name ending '=' character
+                if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) &&
+                    HtmlFacts.ATTRIBUTE_NAME_ENDING != stringWalker.CurrentCharacter)
+                    break;
+            }
+
+            var startingPositionIndex = stringWalker.PositionIndex;
+            
+            while (!stringWalker.IsEof)
+            {
+                _ = stringWalker.Consume();
+
+                if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
+                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter)
+                    break;
+            }
+
+            var attributeValueTextSpan = new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex,
+                (byte)HtmlDecorationKind.AttributeValue);
+            
+            return new AttributeValueSyntax(attributeValueTextSpan);
         }
     }
 }

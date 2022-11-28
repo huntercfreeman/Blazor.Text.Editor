@@ -52,6 +52,14 @@
     color: var(--bte_css-identifier-color);
 }
 
+.bte_attribute-name {
+    color: var(--bte_attribute-name-color);
+}
+
+.bte_attribute-value {
+    color: var(--bte_attribute-value-color);
+}
+
 .bte_measure-character-width-and-row-height {
     top: 0;
     left: 0;
