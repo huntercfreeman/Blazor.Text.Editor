@@ -13,40 +13,40 @@ public partial class Index
 
     protected override void OnInitialized()
     {
+        TextEditorService.RegisterHtmlTextEditor(
+            TextEditorFacts.HtmlTextEditorKey,
+            TestData.Html.EXAMPLE_TEXT_19_LINES);
+        
         // TextEditorService.RegisterCSharpTextEditor(
-        //     TextEditorFacts.CSharpTextEditor,
+        //     TextEditorFacts.CSharpTextEditorKey,
         //     string.Empty);
         
         // TextEditorService.RegisterCSharpTextEditor(
-        //     TextEditorFacts.CSharpTextEditor,
+        //     TextEditorFacts.CSharpTextEditorKey,
         //     TestData.CSharp.EXAMPLE_TEXT_173_LINES);
         
-        TextEditorService.RegisterCssTextEditor(
-            TextEditorFacts.CssTextEditorKey,
-            TestData.Css.EXAMPLE_TEXT_21_LINES);
+        // TextEditorService.RegisterCssTextEditor(
+        //     TextEditorFacts.CssTextEditorKey,
+        //     TestData.Css.EXAMPLE_TEXT_21_LINES);
         
         // TextEditorService.RegisterFSharpTextEditor(
-        //     TextEditorFacts.FSharpTextEditor,
+        //     TextEditorFacts.FSharpTextEditorKey,
         //     TestData.FSharp.EXAMPLE_TEXT_21_LINES);
-        //
-        // TextEditorService.RegisterHtmlTextEditor(
-        //     TextEditorFacts.HtmlTextEditor,
-        //     TestData.Html.EXAMPLE_TEXT_19_LINES);
-        //
+        
         // TextEditorService.RegisterJavaScriptTextEditor(
-        //     TextEditorFacts.JavaScriptTextEditor,
+        //     TextEditorFacts.JavaScriptTextEditorKey,
         //     TestData.JavaScript.EXAMPLE_TEXT_28_LINES);
         //
         // TextEditorService.RegisterPlainTextEditor(
-        //     TextEditorFacts.PlainTextEditor,
+        //     TextEditorFacts.PlainTextEditorKey,
         //     TestData.Plain.EXAMPLE_TEXT_25_LINES);
         //
         // TextEditorService.RegisterRazorTextEditor(
-        //     TextEditorFacts.RazorTextEditor,
+        //     TextEditorFacts.RazorTextEditorKey,
         //     TestData.Razor.EXAMPLE_TEXT_20_LINES);
         //
         // TextEditorService.RegisterTypeScriptTextEditor(
-        //     TextEditorFacts.TypeScriptTextEditor,
+        //     TextEditorFacts.TypeScriptTextEditorKey,
         //     TestData.TypeScript.EXAMPLE_TEXT_28_LINES);
         
         base.OnInitialized();
