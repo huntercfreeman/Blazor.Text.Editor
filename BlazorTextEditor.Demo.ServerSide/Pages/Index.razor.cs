@@ -21,9 +21,9 @@ public partial class Index
         //     TextEditorFacts.CSharpTextEditorKey,
         //     string.Empty);
         
-        // TextEditorService.RegisterCSharpTextEditor(
-        //     TextEditorFacts.CSharpTextEditorKey,
-        //     TestData.CSharp.EXAMPLE_TEXT_173_LINES);
+        TextEditorService.RegisterCSharpTextEditor(
+            TextEditorFacts.CSharpTextEditorKey,
+            TestData.CSharp.EXAMPLE_TEXT_173_LINES);
         //
         // TextEditorService.RegisterCssTextEditor(
         //     TextEditorFacts.CssTextEditorKey,
@@ -41,9 +41,9 @@ public partial class Index
         //     TextEditorFacts.PlainTextEditorKey,
         //     TestData.Plain.EXAMPLE_TEXT_25_LINES);
         //
-        TextEditorService.RegisterRazorTextEditor(
-            TextEditorFacts.RazorTextEditorKey,
-            TestData.Razor.EXAMPLE_TEXT_20_LINES);
+        // TextEditorService.RegisterRazorTextEditor(
+        //     TextEditorFacts.RazorTextEditorKey,
+        //     TestData.Razor.EXAMPLE_TEXT_20_LINES);
         //
         // TextEditorService.RegisterTypeScriptTextEditor(
         //     TextEditorFacts.TypeScriptTextEditorKey,
