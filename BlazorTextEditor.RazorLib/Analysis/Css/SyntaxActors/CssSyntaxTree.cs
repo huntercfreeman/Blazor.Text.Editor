@@ -103,10 +103,16 @@ public class CssSyntaxTree
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.Consume();
-            
-            if (stringWalker.CheckForSubstring(CssFacts.COMMENT_START))
-                ConsumeComment(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
 
+            if (pendingChildStartingPositionIndex == -1)
+            {
+                if (stringWalker.CurrentCharacter == CssFacts.STYLE_BLOCK_END)
+                    break;
+                
+                if (stringWalker.CheckForSubstring(CssFacts.COMMENT_START))
+                    ConsumeComment(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);    
+            }
+            
             char childEndingCharacter;
             CssDecorationKind childDecorationKind;
             
