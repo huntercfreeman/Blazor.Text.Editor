@@ -16,7 +16,7 @@ public class CssSyntaxTree
 
         // Step through the string 'character by character'
         var stringWalker = new StringWalker(content);
-        
+
         while (!stringWalker.IsEof)
         {
             if (stringWalker.CheckForSubstring(CssFacts.COMMENT_START))
@@ -42,6 +42,11 @@ public class CssSyntaxTree
         return cssSyntaxUnit;
     }
 
+    /// <summary>
+    /// <see cref="ConsumeComment"/> will immediately invoke
+    /// <see cref="StringWalker.Consume"/> once
+    ///  invoked.
+    /// </summary>
     private static void ConsumeComment(
         StringWalker stringWalker, 
         List<ICssSyntax> cssDocumentChildren,
@@ -51,6 +56,8 @@ public class CssSyntaxTree
 
         while (!stringWalker.IsEof)
         {
+            _ = stringWalker.Consume();
+            
             var closingOfCommentTextFound = stringWalker
                 .CheckForSubstring(CssFacts.COMMENT_END);
 
@@ -76,13 +83,9 @@ public class CssSyntaxTree
     }
     
     /// <summary>
-    /// Assumes invoker found <see cref="CssFacts.STYLE_BLOCK_START"/>
-    /// and did not <see cref="StringWalker.Consume"/>
-    /// to increment the position index.
-    /// <br/><br/>
-    /// In other words the first action this method takes is
-    /// <see cref="StringWalker.Consume"/> to increment
-    /// the position index.
+    /// <see cref="ConsumeStyleBlock"/> will immediately invoke
+    /// <see cref="StringWalker.Consume"/> once
+    ///  invoked.
     /// </summary>
     private static void ConsumeStyleBlock(
         StringWalker stringWalker, 
