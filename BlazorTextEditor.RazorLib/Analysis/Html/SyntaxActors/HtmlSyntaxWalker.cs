@@ -34,6 +34,9 @@ public class HtmlSyntaxWalker
                         (InjectedLanguageFragmentSyntax)tagSyntax);
                 }
                 
+                foreach (var attributeSyntax in tagSyntax.AttributeSyntaxes)
+                    Visit(attributeSyntax);
+                
                 break;
             }
             case HtmlSyntaxKind.Attribute:

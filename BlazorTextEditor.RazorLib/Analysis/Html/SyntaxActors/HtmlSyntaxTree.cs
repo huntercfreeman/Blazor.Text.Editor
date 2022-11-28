@@ -404,6 +404,17 @@ public static class HtmlSyntaxTree
                 stringWalker,
                 textEditorHtmlDiagnosticBag,
                 injectedLanguageDefinition);
+            
+            // Move to the first whitespace or end of opening tag
+            while (!stringWalker.IsEof)
+            {
+                _ = stringWalker.Consume();
+
+                if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
+                    HtmlFacts.OPEN_TAG_ENDING_OPTIONS
+                        .Contains(stringWalker.CurrentCharacter.ToString()))
+                    break;
+            }
 
             return new AttributeSyntax(
                 attributeNameSyntax,
@@ -448,6 +459,7 @@ public static class HtmlSyntaxTree
             // There might be:
             //     -preceding whitespace
             //     -an '=' character | more specifically the attribute name ending
+            //     -an '"' character | more specifically the attribute value starting
             
             while (!stringWalker.IsEof)
             {
@@ -455,7 +467,8 @@ public static class HtmlSyntaxTree
 
                 // Skip whitespace / attribute name ending '=' character
                 if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) &&
-                    HtmlFacts.ATTRIBUTE_NAME_ENDING != stringWalker.CurrentCharacter)
+                    HtmlFacts.ATTRIBUTE_NAME_ENDING != stringWalker.CurrentCharacter &&
+                    HtmlFacts.ATTRIBUTE_VALUE_STARTING != stringWalker.CurrentCharacter)
                     break;
             }
 
@@ -466,7 +479,8 @@ public static class HtmlSyntaxTree
                 _ = stringWalker.Consume();
 
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
-                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter)
+                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter ||
+                    HtmlFacts.ATTRIBUTE_VALUE_ENDING == stringWalker.CurrentCharacter)
                     break;
             }
 
