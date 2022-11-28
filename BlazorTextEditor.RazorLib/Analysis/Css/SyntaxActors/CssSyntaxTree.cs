@@ -98,6 +98,8 @@ public class CssSyntaxTree
         // mean that there is NOT a pending child
         var pendingChildStartingPositionIndex = -1;
         
+        var textOfChildAlreadyFound = false;
+        
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.Consume();
@@ -139,8 +141,8 @@ public class CssSyntaxTree
             }
             
             // End of a child's text
-            if (stringWalker.CurrentCharacter == childEndingCharacter ||
-                WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+            if (!textOfChildAlreadyFound && 
+                stringWalker.CurrentCharacter == childEndingCharacter)
             {   
                 var childTextSpan = new TextEditorTextSpan(
                     pendingChildStartingPositionIndex,
@@ -167,24 +169,28 @@ public class CssSyntaxTree
                 }
                 
                 cssDocumentChildren.Add(childSyntax);
-                
-                if (stringWalker.CurrentCharacter == childEndingCharacter)
-                {
-                    switch (expectedStyleBlockChild)
-                    {
-                        case CssSyntaxKind.PropertyName:
-                            expectedStyleBlockChild = CssSyntaxKind.PropertyValue;
-                            break;
-                        case CssSyntaxKind.PropertyValue:
-                            expectedStyleBlockChild = CssSyntaxKind.PropertyName;
-                            break;
-                        default:
-                            throw new ApplicationException($"The {nameof(CssSyntaxKind)} of" +
-                                                           $" {expectedStyleBlockChild} was unexpected.");
-                    }
-                }
 
-                continue;
+                textOfChildAlreadyFound = true;
+            }
+            
+            // Clear and ready state for finding the next expected child
+            if (stringWalker.CurrentCharacter == childEndingCharacter)
+            {
+                pendingChildStartingPositionIndex = -1;
+                textOfChildAlreadyFound = false;
+                
+                switch (expectedStyleBlockChild)
+                {
+                    case CssSyntaxKind.PropertyName:
+                        expectedStyleBlockChild = CssSyntaxKind.PropertyValue;
+                        break;
+                    case CssSyntaxKind.PropertyValue:
+                        expectedStyleBlockChild = CssSyntaxKind.PropertyName;
+                        break;
+                    default:
+                        throw new ApplicationException($"The {nameof(CssSyntaxKind)} of" +
+                                                       $" {expectedStyleBlockChild} was unexpected.");
+                }
             }
             
             // Relies on the if statement before this that ensures
