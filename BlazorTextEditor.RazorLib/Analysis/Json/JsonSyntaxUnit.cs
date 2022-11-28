@@ -5,10 +5,10 @@ namespace BlazorTextEditor.RazorLib.Analysis.Json;
 public class JsonSyntaxUnit
 {
     public JsonSyntaxUnit(
-        JsonDocumentSyntax cssDocumentSyntax,
+        JsonDocumentSyntax jsonDocumentSyntax,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        JsonDocumentSyntax = cssDocumentSyntax;
+        JsonDocumentSyntax = jsonDocumentSyntax;
         TextEditorJsonDiagnosticBag = textEditorJsonDiagnosticBag;
     }
     
