@@ -4,6 +4,32 @@ public static partial class TestData
 {
     public static class Json
     {
+        public const string EXAMPLE_TEXT_ARRAY_AS_TOP_LEVEL = @"[
+  {
+    ""Name"": ""Joyce"",
+    ""Sex"": ""F"",
+    ""Age"": 11,
+    ""Height"": 51.3,
+    ""Weight"": 50.5
+  },
+  {
+    ""Name"": ""Thomas"",
+    ""Sex"": ""M"",
+    ""Age"": 11,
+    ""Height"": 57.5,
+    ""Weight"": 85
+  }
+]";
+        
+        /// <summary>
+        /// https://www.w3schools.com/js/js_json_arrays.asp
+        /// </summary>
+        public const string EXAMPLE_TEXT_OBJECT_WITH_ARRAY = @"{
+""name"":""John"",
+""age"":30,
+""cars"":[""Ford"", ""BMW"", ""Fiat""]
+}";
+        
         /// <summary>
         /// launchSettings.json of a Blazor ServerSide application
         /// </summary>
