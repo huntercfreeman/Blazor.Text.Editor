@@ -108,9 +108,12 @@ public class CssSyntaxTree
             {
                 if (stringWalker.CurrentCharacter == CssFacts.STYLE_BLOCK_END)
                     break;
-                
+
                 if (stringWalker.CheckForSubstring(CssFacts.COMMENT_START))
-                    ConsumeComment(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);    
+                {
+                    ConsumeComment(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
+                    continue;
+                }
             }
             
             char childEndingCharacter;
