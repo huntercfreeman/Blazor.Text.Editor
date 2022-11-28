@@ -226,7 +226,7 @@
 }
 
 .bte_text-editor-footer-entry:not(:last-child) {
-    border-right: 2px solid var(--bte_text-editor-caret-row-border-color-editor-focus-within);
+    border-right: 2px solid var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
     margin-right: 5px;
 }
 
@@ -248,7 +248,7 @@
 }
 
 .bte_text-editor-header-entry:not(:last-child) {
-    border-right: 2px solid var(--bte_text-editor-caret-row-border-color-editor-focus-within);
+    border-right: 2px solid var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
     margin-right: 5px;
 }
 
