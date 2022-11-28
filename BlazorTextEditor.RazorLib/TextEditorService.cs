@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript;
+using BlazorTextEditor.RazorLib.Analysis.Json;
 using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
@@ -120,6 +121,27 @@ public class TextEditorService : ITextEditorService
             initialContent,
             new TextEditorCssLexer(),
             new TextEditorCssDecorationMapper(),
+            null,
+            textEditorKey);
+        
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+    
+    public void RegisterJsonTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            new TextEditorJsonLexer(),
+            new TextEditorJsonDecorationMapper(),
             null,
             textEditorKey);
         

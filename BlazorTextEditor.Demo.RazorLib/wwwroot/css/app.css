@@ -62,3 +62,11 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.sidebar {
+    overflow-y: auto;
+}
+    
+.bte_text-editor-css-wrapper.bte_demo-text-editor {
+    height: 500px;
+}
