@@ -7,8 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BlazorTextEditor.RazorLib\BlazorTextEditor.RazorLib.csproj" />
-      <ProjectReference Include="..\BlazorTextEditor.Tests\BlazorTextEditor.Tests.csproj" />
+      <ProjectReference Include="..\BlazorTextEditor.Demo.RazorLib\BlazorTextEditor.Demo.RazorLib.csproj" />
     </ItemGroup>
 
 </Project>

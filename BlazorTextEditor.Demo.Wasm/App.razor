@@ -1,13 +1,13 @@
 ﻿<BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/>
 
-<Router AppAssembly="@typeof(App).Assembly">
+<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="new [] { typeof(BlazorTextEditor.Demo.RazorLib.ServiceCollectionExtensions).Assembly }">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(BlazorTextEditor.Demo.RazorLib.Shared.MainLayout)"/>
         <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
+        <LayoutView Layout="@typeof(BlazorTextEditor.Demo.RazorLib.Shared.MainLayout)">
             <p role="alert">Sorry, there's nothing at this address.</p>
         </LayoutView>
     </NotFound>
