@@ -16,6 +16,7 @@ public class GeneralSyntaxCollector : CSharpSyntaxWalker
     public List<ClassDeclarationSyntax> ClassDeclarationSyntaxes { get; } = new();
     public List<MethodDeclarationSyntax> MethodDeclarationSyntaxes { get; } = new();
     public List<InvocationExpressionSyntax> InvocationExpressionSyntaxes { get; } = new();
+    public List<VariableDeclaratorSyntax> VariableDeclaratorSyntaxes { get; } = new();
     public List<ArgumentSyntax> ArgumentSyntaxes { get; } = new();
     public List<ParameterSyntax> ParameterSyntaxes { get; } = new();
     public List<LiteralExpressionSyntax> StringLiteralExpressionSyntaxes { get; } = new();
@@ -43,6 +44,13 @@ public class GeneralSyntaxCollector : CSharpSyntaxWalker
         MethodDeclarationSyntaxes.Add(node);
 
         base.VisitMethodDeclaration(node);
+    }
+
+    public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
+    {
+        VariableDeclaratorSyntaxes.Add(node);
+        
+        base.VisitVariableDeclarator(node);
     }
 
     public override void VisitArgument(ArgumentSyntax node)

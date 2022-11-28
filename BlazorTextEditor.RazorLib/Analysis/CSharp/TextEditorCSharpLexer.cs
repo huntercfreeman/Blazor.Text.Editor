@@ -24,6 +24,28 @@ public class TextEditorCSharpLexer : ILexer
         {
             var decorationByte = (byte)CSharpDecorationKind.Parameter;
 
+            // Variable declarators of local declaration statements
+            textEditorTextSpans.AddRange(generalSyntaxCollector.VariableDeclaratorSyntaxes
+                .Where(variableDeclarationSyntax =>
+                {
+                    if (variableDeclarationSyntax.Parent.IsKind(SyntaxKind.VariableDeclaration))
+                    {
+                        if (variableDeclarationSyntax.Parent.Parent.IsKind(SyntaxKind.LocalDeclarationStatement))
+                        {
+                            return true;                            
+                        }
+                    }
+
+                    return false;
+                })
+                .Select(variableDeclarationSyntax =>
+                    variableDeclarationSyntax.Identifier.Span)
+                .Select(roslynSpan =>
+                    new TextEditorTextSpan(
+                        roslynSpan.Start,
+                        roslynSpan.End,
+                        decorationByte)));
+            
             // Parameter declaration identifier
             textEditorTextSpans.AddRange(generalSyntaxCollector.ParameterSyntaxes
                 .Select(ps =>
