@@ -3,9 +3,12 @@
 public enum JsonSyntaxKind
 {
     PropertyKey,
+    PropertyValue,
     String,
     Keyword,
     LineComment,
     BlockComment,
-    Document
+    Document,
+    Object,
+    Property
 }

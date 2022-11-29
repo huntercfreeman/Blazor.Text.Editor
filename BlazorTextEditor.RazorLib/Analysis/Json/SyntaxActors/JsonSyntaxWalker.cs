@@ -5,6 +5,7 @@ namespace BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 public class JsonSyntaxWalker
 {
     public List<JsonLineCommentSyntax> JsonLineCommentSyntaxes { get; } = new();
+    public List<JsonPropertySyntax> JsonPropertySyntaxes { get; } = new();
 
     public void Visit(IJsonSyntax jsonSyntax)
     {
@@ -16,11 +17,19 @@ public class JsonSyntaxWalker
             case JsonSyntaxKind.LineComment:
                 VisitJsonLineCommentSyntax((JsonLineCommentSyntax)jsonSyntax);
                 break;
+            case JsonSyntaxKind.Property:
+                VisitJsonPropertySyntax((JsonPropertySyntax)jsonSyntax);
+                break;
         }
     }
 
     private void VisitJsonLineCommentSyntax(JsonLineCommentSyntax jsonSyntax)
     {
         JsonLineCommentSyntaxes.Add(jsonSyntax);
+    }
+    
+    private void VisitJsonPropertySyntax(JsonPropertySyntax jsonSyntax)
+    {
+        JsonPropertySyntaxes.Add(jsonSyntax);
     }
 }

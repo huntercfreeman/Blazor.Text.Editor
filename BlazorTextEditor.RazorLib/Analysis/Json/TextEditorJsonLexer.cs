@@ -18,6 +18,20 @@ public class TextEditorJsonLexer : ILexer
 
         List<TextEditorTextSpan> textEditorTextSpans = new();
 
+        // Values must be colored before keys as Values are more vague
+        textEditorTextSpans.AddRange(
+            jsonSyntaxWalker.JsonPropertySyntaxes.Select(property =>
+                property.JsonPropertyValueSyntax.TextEditorTextSpan));
+        
+        textEditorTextSpans.AddRange(
+            jsonSyntaxWalker.JsonPropertySyntaxes.Select(property =>
+                property.JsonPropertyKeySyntax.TextEditorTextSpan));
+        
+        // TODO: Property value and other lexing
+        // textEditorTextSpans.AddRange(
+        //     jsonSyntaxWalker.JsonPropertySyntaxes.Select(property =>
+        //         property.JsonPropertyValueSyntax.TextEditorTextSpan));
+        
         textEditorTextSpans.AddRange(
             jsonSyntaxWalker.JsonLineCommentSyntaxes.Select(lineComment =>
                 lineComment.TextEditorTextSpan));

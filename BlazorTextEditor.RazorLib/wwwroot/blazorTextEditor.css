@@ -60,6 +60,14 @@
     color: var(--bte_attribute-value-color);
 }
 
+.bte_json-property-key {
+    color: var(--bte_json-property-key-color);
+}
+
+.bte_json-property-value {
+    color: var(--bte_json-property-value-color);
+}
+
 .bte_measure-character-width-and-row-height {
     top: 0;
     left: 0;

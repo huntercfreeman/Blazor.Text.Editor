@@ -16,13 +16,13 @@ public partial class JsonExamples : ComponentBase
             TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey,
             TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
         
-        TextEditorService.RegisterJsonTextEditor(
-            TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey,
-            TestData.Json.EXAMPLE_TEXT_ARRAY_AS_TOP_LEVEL);
-        
-        TextEditorService.RegisterJsonTextEditor(
-            TextEditorFacts.Json.JsonObjectWithArrayTextEditorKey,
-            TestData.Json.EXAMPLE_TEXT_OBJECT_WITH_ARRAY);
+        // TextEditorService.RegisterJsonTextEditor(
+        //     TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey,
+        //     TestData.Json.EXAMPLE_TEXT_ARRAY_AS_TOP_LEVEL);
+        //
+        // TextEditorService.RegisterJsonTextEditor(
+        //     TextEditorFacts.Json.JsonObjectWithArrayTextEditorKey,
+        //     TestData.Json.EXAMPLE_TEXT_OBJECT_WITH_ARRAY);
         
         base.OnInitialized();
     }

@@ -224,7 +224,7 @@ public class CssSyntaxTree
     }
     
     /// <summary>
-    /// <see cref="ConsumeStyleBlock"/> firstly grabs the
+    /// <see cref="ConsumeIdentifier"/> firstly grabs the
     /// starting position index for the identifier.
     /// Afterwards it invokes <see cref="StringWalker.Consume"/>.
     /// </summary>

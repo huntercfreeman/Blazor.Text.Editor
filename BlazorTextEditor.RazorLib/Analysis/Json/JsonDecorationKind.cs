@@ -8,5 +8,7 @@ public enum JsonDecorationKind
     Keyword,
     LineComment,
     BlockComment,
-    Document
+    Document,
+    Error,
+    PropertyValue
 }
