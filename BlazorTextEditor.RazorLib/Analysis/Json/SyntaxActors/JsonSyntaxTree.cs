@@ -78,6 +78,9 @@ public class JsonSyntaxTree
             if (JsonFacts.OBJECT_END == stringWalker.CurrentCharacter)
                 break;
 
+            if (JsonFacts.PROPERTY_LIST_DELIMITER == stringWalker.CurrentCharacter)
+                continue;
+
             if (pendingJsonPropertyKeySyntax is null)
             {
                 pendingJsonPropertyKeySyntax = ConsumePropertyKey(
@@ -124,8 +127,8 @@ public class JsonSyntaxTree
 
         if (pendingJsonPropertyKeySyntax is not null)
         {
-            // This is to mean the property value invalid
-            // in one of various ways
+            // This is to mean the property value is
+            // invalid in some regard
             //
             // Still however, render the syntax highlighting
             // for the valid property key.
