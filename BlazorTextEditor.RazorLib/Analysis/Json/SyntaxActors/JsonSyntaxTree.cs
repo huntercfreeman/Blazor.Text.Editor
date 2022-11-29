@@ -25,11 +25,6 @@ public class JsonSyntaxTree
             {
                 ConsumeObject(stringWalker, jsonDocumentChildren, textEditorJsonDiagnosticBag);
             }
-            
-            // TODO: The following 'ConsumeIdentifier' invocation is just an example and needs replaced with actual lexing for JSON
-            //
-            // if (char.IsLetterOrDigit(stringWalker.CurrentCharacter))
-            //     ConsumeIdentifier(stringWalker, jsonDocumentChildren, textEditorJsonDiagnosticBag);
 
             _ = stringWalker.Consume();
         }
@@ -79,11 +74,20 @@ public class JsonSyntaxTree
                     pendingJsonPropertyKeySyntax = ConsumePropertyKey(
                         stringWalker,
                         textEditorJsonDiagnosticBag);
+                    
+                    // Skip the delimiter between the property's key and value.
+                    while (!stringWalker.IsEof)
+                    {
+                        _ = stringWalker.Consume();
+
+                        if (JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE == stringWalker.CurrentCharacter)
+                            break;
+                    }
                 }
             }
             else
             {
-                if (JsonFacts.PROPERTY_VALUE_TEXT_STARTING == stringWalker.CurrentCharacter)
+                if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING == stringWalker.CurrentCharacter)
                 {
                     pendingJsonPropertyValueSyntax = ConsumePropertyValue(
                         stringWalker,
@@ -136,7 +140,8 @@ public class JsonSyntaxTree
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        var startingPositionIndex = stringWalker.PositionIndex;
+        // +1 to not include the quote that beings the key's text
+        var startingPositionIndex = stringWalker.PositionIndex + 1;
         
         while (!stringWalker.IsEof)
         {
@@ -167,29 +172,77 @@ public class JsonSyntaxTree
     
     /// <summary>
     /// <see cref="ConsumePropertyValue"/> will immediately invoke
-    /// <see cref="StringWalker.Consume"/> once
-    ///  invoked.
+    /// <see cref="StringWalker.Backtrack"/> once to move
+    /// position index to the starting quote.
     /// </summary>
     private static JsonPropertyValueSyntax ConsumePropertyValue(
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        var startingPositionIndex = stringWalker.PositionIndex;
+        int startingPositionIndex;
+
+        if (stringWalker.CurrentCharacter == JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING)
+        {
+            // +1 to not include the quote that beings this values's text
+            startingPositionIndex = stringWalker.PositionIndex + 1;
+        }
+        else
+        {
+            startingPositionIndex = stringWalker.PositionIndex;
+        }
+
+        stringWalker.Backtrack();
+        
+        bool hasSkippedWhitespace = false;
+        bool? valueIsTypeString = null;
         
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.Consume();
 
-            if (JsonFacts.PROPERTY_VALUE_TEXT_ENDING == stringWalker.CurrentCharacter)
-                break;
+            if (hasSkippedWhitespace)
+            {
+                if (valueIsTypeString is null)
+                {
+                    if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING == stringWalker.CurrentCharacter)
+                    {
+                        valueIsTypeString = true;
+                        continue;
+                    }
+
+                    valueIsTypeString = false;
+                }
+                else
+                {
+                    if (valueIsTypeString.Value)
+                    {
+                        if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_ENDING == stringWalker.CurrentCharacter)
+                            break;
+                    }
+                    else
+                    {
+                        if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                {
+                    hasSkippedWhitespace = true;
+                    stringWalker.Backtrack();
+                }
+            }
         }
 
-        if (JsonFacts.PROPERTY_VALUE_TEXT_ENDING != stringWalker.CurrentCharacter)
+        if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_ENDING != stringWalker.CurrentCharacter)
         {
+            // TODO: The StartingIndexInclusive and EndingIndexExclusive for EOF are?
             textEditorJsonDiagnosticBag.ReportEndOfFileUnexpected(
                 new TextEditorTextSpan(
-                    stringWalker.PositionIndex, 
-                    stringWalker.PositionIndex + 1,
+                    stringWalker.PositionIndex - 1, 
+                    stringWalker.PositionIndex,
                     (byte)JsonDecorationKind.Error));
         }
         
