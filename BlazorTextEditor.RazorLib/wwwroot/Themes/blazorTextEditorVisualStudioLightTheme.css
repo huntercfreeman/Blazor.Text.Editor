@@ -20,8 +20,8 @@
     --bte_css-identifier-color: #ad01d0;
     --bte_attribute-name-color: #0000FF;
     --bte_attribute-value-color : #A31515;
-    --bte_json-property-key-color : red;
-    --bte_json-property-value-color : blue;
+    --bte_json-property-key-color : #0000FF;
+    --bte_json-property-value-color : #A31515;
     --bte_text-editor-gutter-border-color: #28ae0c;
     --bte_text-editor-gutter-background-color: #e7c9a9;
     --bte_secondary-font-color: var(--bte_primary-font-color);
