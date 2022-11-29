@@ -141,7 +141,7 @@ public class JsonSyntaxTree
             jsonPropertySyntaxes.Add(jsonPropertySyntax);
         }
         
-        if (JsonFacts.OBJECT_END != stringWalker.CurrentCharacter)
+        if (stringWalker.IsEof)
         {
             textEditorJsonDiagnosticBag.ReportEndOfFileUnexpected(
                 new TextEditorTextSpan(
@@ -173,23 +173,7 @@ public class JsonSyntaxTree
     {
         // +1 to not include the quote that begins the key's text
         var startingPositionIndex = stringWalker.PositionIndex + 1;
-        
-        if (JsonFacts.PROPERTY_KEY_TEXT_STARTING == stringWalker.CurrentCharacter)
-        {
-            pendingJsonPropertyKeySyntax = ConsumePropertyKey(
-                stringWalker,
-                textEditorJsonDiagnosticBag);
-                    
-            // Skip the delimiter between the property's key and value.
-            while (!stringWalker.IsEof)
-            {
-                _ = stringWalker.Consume();
 
-                if (JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE == stringWalker.CurrentCharacter)
-                    break;
-            }
-        }
-        
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.Consume();
@@ -198,7 +182,7 @@ public class JsonSyntaxTree
                 break;
         }
 
-        if (JsonFacts.PROPERTY_KEY_TEXT_ENDING != stringWalker.CurrentCharacter)
+        if (stringWalker.IsEof)
         {
             textEditorJsonDiagnosticBag.ReportEndOfFileUnexpected(
                 new TextEditorTextSpan(
@@ -223,20 +207,13 @@ public class JsonSyntaxTree
     /// <br/>
     /// currentCharacterOut:<br/>
     /// - <see cref="JsonFacts.PROPERTY_LIST_DELIMITER"/><br/>
-    /// - <see cref="WhitespaceFacts.ALL"/><br/>
+    /// - <see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
     /// - The <see cref="JsonFacts.OBJECT_END"/> of the object which contains the property value<br/>
     /// </summary>
     private static JsonPropertyValueSyntax ConsumePropertyValue(
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING == stringWalker.CurrentCharacter)
-        {
-            pendingJsonPropertyValueSyntax = ConsumePropertyValue(
-                stringWalker,
-                textEditorJsonDiagnosticBag);
-        }
-        
         int startingPositionIndex;
 
         if (stringWalker.CurrentCharacter == JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING)
