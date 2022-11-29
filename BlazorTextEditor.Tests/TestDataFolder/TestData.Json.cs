@@ -29,6 +29,21 @@ public static partial class TestData
 ""age"":30,
 ""cars"":[""Ford"", ""BMW"", ""Fiat""]
 }";
+
+        /// <summary>
+        /// Adhoc test data
+        /// </summary>
+        public const string EXAMPLE_ADHOC = @"{
+    ""firstName"": ""Hunter"",
+    ""lastName"": ""Freeman"",
+    ""IIS Express"": {
+        ""commandName"": ""IISExpress"",
+        ""launchBrowser"": true,
+        ""environmentVariables"": {
+            ""ASPNETCORE_ENVIRONMENT"": ""Development""
+        }
+    }
+}";
         
         /// <summary>
         /// launchSettings.json of a Blazor ServerSide application

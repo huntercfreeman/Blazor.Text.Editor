@@ -55,4 +55,29 @@ public class LexJsonTests
     {
         throw new NotImplementedException();
     }
+    
+    [Fact]
+    public async Task AdhocTest()
+    {
+        var text = TestData.Json.EXAMPLE_ADHOC
+            .ReplaceLineEndings("\n");
+
+        var expectedTextEditorTextSpans = new[]
+        {
+            // TODO: Replace this placeholder data with the real TextEditorTextSpan(s)
+            new TextEditorTextSpan( 108, 112, 6),
+        };
+        
+        var jsonLexer = new TextEditorJsonLexer();
+
+        var textEditorTextSpans = 
+            await jsonLexer.Lex(text);
+        
+        textEditorTextSpans = textEditorTextSpans
+            .Where(x => x.DecorationByte == (byte)JsonDecorationKind.PropertyKey)
+            .OrderBy(x => x.StartingIndexInclusive)
+            .ToImmutableArray();
+
+        Assert.Equal(expectedTextEditorTextSpans, textEditorTextSpans);
+    }
 }

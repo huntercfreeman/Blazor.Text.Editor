@@ -26,6 +26,8 @@ public static class JsonFacts
     
     public const char PROPERTY_VALUE_STRING_TEXT_STARTING = '"';
     public const char PROPERTY_VALUE_STRING_TEXT_ENDING = '"';
+ 
+    public const char PROPERTY_LIST_DELIMITER = ',';
     
     public const char PROPERTY_VALUE_END = ',';
 }

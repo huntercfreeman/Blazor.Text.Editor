@@ -1,6 +1,4 @@
-﻿
-
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxItems;
 using BlazorTextEditor.RazorLib.Lexing;
 
@@ -44,9 +42,11 @@ public class JsonSyntaxTree
     }
     
     /// <summary>
-    /// <see cref="ConsumeObject"/> will immediately invoke
-    /// <see cref="StringWalker.Consume"/> once
-    ///  invoked.
+    /// currentCharacterIn:<br/>
+    /// - <see cref="JsonFacts.OBJECT_START"/><br/>
+    /// <br/>
+    /// currentCharacterOut:<br/>
+    /// - <see cref="JsonFacts.OBJECT_END"/><br/>
     /// </summary>
     private static void ConsumeObject(
         StringWalker stringWalker, 
@@ -57,47 +57,54 @@ public class JsonSyntaxTree
 
         var jsonPropertySyntaxes = new List<JsonPropertySyntax>();
 
+        // While loop state
         JsonPropertyKeySyntax? pendingJsonPropertyKeySyntax = null;
+        var foundPropertyDelimiterBetweenKeyAndValue = false;
         JsonPropertyValueSyntax? pendingJsonPropertyValueSyntax = null;
         
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.Consume();
 
+            // Skip whitespace
+            while (!stringWalker.IsEof)
+            {
+                if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                    _ = stringWalker.Consume();
+                else
+                    break;
+            }
+            
             if (JsonFacts.OBJECT_END == stringWalker.CurrentCharacter)
                 break;
 
             if (pendingJsonPropertyKeySyntax is null)
             {
-                if (JsonFacts.PROPERTY_KEY_TEXT_STARTING == stringWalker.CurrentCharacter)
+                pendingJsonPropertyKeySyntax = ConsumePropertyKey(
+                    stringWalker,
+                    textEditorJsonDiagnosticBag);
+            }
+            else if (!foundPropertyDelimiterBetweenKeyAndValue)
+            {
+                while (!stringWalker.IsEof)
                 {
-                    pendingJsonPropertyKeySyntax = ConsumePropertyKey(
-                        stringWalker,
-                        textEditorJsonDiagnosticBag);
-                    
-                    // Skip the delimiter between the property's key and value.
-                    while (!stringWalker.IsEof)
-                    {
+                    if (JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE != stringWalker.CurrentCharacter)
                         _ = stringWalker.Consume();
-
-                        if (JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE == stringWalker.CurrentCharacter)
-                            break;
-                    }
+                    else
+                        break;
                 }
+
+                // If Eof ended the loop to find the delimiter
+                // the outer while loop will finish as well so
+                // no EOF if is needed just set found to true
+                foundPropertyDelimiterBetweenKeyAndValue = true;
             }
             else
             {
-                if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING == stringWalker.CurrentCharacter)
-                {
-                    pendingJsonPropertyValueSyntax = ConsumePropertyValue(
-                        stringWalker,
-                        textEditorJsonDiagnosticBag);
-                }
-            }
-
-            if (pendingJsonPropertyKeySyntax is not null &&
-                pendingJsonPropertyValueSyntax is not null)
-            {
+                pendingJsonPropertyValueSyntax = ConsumePropertyValue(
+                    stringWalker,
+                    textEditorJsonDiagnosticBag);
+                
                 var jsonPropertySyntax = new JsonPropertySyntax(
                     new TextEditorTextSpan(
                         startingPositionIndex,
@@ -105,23 +112,36 @@ public class JsonSyntaxTree
                         (byte)JsonDecorationKind.PropertyKey),
                     pendingJsonPropertyKeySyntax,
                     pendingJsonPropertyValueSyntax);
+
+                // Reset while loop state
+                pendingJsonPropertyKeySyntax = null;
+                foundPropertyDelimiterBetweenKeyAndValue = false;
+                pendingJsonPropertyValueSyntax = null;
                 
                 jsonPropertySyntaxes.Add(jsonPropertySyntax);
             }
         }
 
-        if (JsonFacts.OBJECT_END == stringWalker.CurrentCharacter)
+        if (pendingJsonPropertyKeySyntax is not null)
         {
-            var jsonObjectSyntax = new JsonObjectSyntax(
+            // This is to mean the property value invalid
+            // in one of various ways
+            //
+            // Still however, render the syntax highlighting
+            // for the valid property key.
+            
+            var jsonPropertySyntax = new JsonPropertySyntax(
                 new TextEditorTextSpan(
                     startingPositionIndex,
                     stringWalker.PositionIndex,
-                    (byte)JsonDecorationKind.PropertyValue),
-                jsonPropertySyntaxes.ToImmutableArray());
+                    (byte)JsonDecorationKind.PropertyKey),
+                pendingJsonPropertyKeySyntax,
+                JsonPropertyValueSyntax.GetInvalidJsonPropertyValueSyntax());
             
-            jsonDocumentChildren.Add(jsonObjectSyntax);
+            jsonPropertySyntaxes.Add(jsonPropertySyntax);
         }
-        else
+        
+        if (JsonFacts.OBJECT_END != stringWalker.CurrentCharacter)
         {
             textEditorJsonDiagnosticBag.ReportEndOfFileUnexpected(
                 new TextEditorTextSpan(
@@ -129,19 +149,46 @@ public class JsonSyntaxTree
                     stringWalker.PositionIndex + 1,
                     (byte)JsonDecorationKind.Error));
         }
+        
+        var jsonObjectSyntax = new JsonObjectSyntax(
+            new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex,
+                (byte)JsonDecorationKind.PropertyValue),
+            jsonPropertySyntaxes.ToImmutableArray());
+            
+        jsonDocumentChildren.Add(jsonObjectSyntax);
     }
     
     /// <summary>
-    /// <see cref="ConsumePropertyKey"/> will immediately invoke
-    /// <see cref="StringWalker.Consume"/> once
-    ///  invoked.
+    /// currentCharacterIn:<br/>
+    /// - <see cref="JsonFacts.PROPERTY_KEY_TEXT_STARTING"/><br/>
+    /// <br/>
+    /// currentCharacterOut:<br/>
+    /// - <see cref="JsonFacts.PROPERTY_KEY_TEXT_ENDING"/><br/>
     /// </summary>
     private static JsonPropertyKeySyntax ConsumePropertyKey(
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        // +1 to not include the quote that beings the key's text
+        // +1 to not include the quote that begins the key's text
         var startingPositionIndex = stringWalker.PositionIndex + 1;
+        
+        if (JsonFacts.PROPERTY_KEY_TEXT_STARTING == stringWalker.CurrentCharacter)
+        {
+            pendingJsonPropertyKeySyntax = ConsumePropertyKey(
+                stringWalker,
+                textEditorJsonDiagnosticBag);
+                    
+            // Skip the delimiter between the property's key and value.
+            while (!stringWalker.IsEof)
+            {
+                _ = stringWalker.Consume();
+
+                if (JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE == stringWalker.CurrentCharacter)
+                    break;
+            }
+        }
         
         while (!stringWalker.IsEof)
         {
@@ -171,14 +218,25 @@ public class JsonSyntaxTree
     }
     
     /// <summary>
-    /// <see cref="ConsumePropertyValue"/> will immediately invoke
-    /// <see cref="StringWalker.Backtrack"/> once to move
-    /// position index to the starting quote.
+    /// currentCharacterIn:<br/>
+    /// - <see cref="JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE"/><br/>
+    /// <br/>
+    /// currentCharacterOut:<br/>
+    /// - <see cref="JsonFacts.PROPERTY_LIST_DELIMITER"/><br/>
+    /// - <see cref="WhitespaceFacts.ALL"/><br/>
+    /// - The <see cref="JsonFacts.OBJECT_END"/> of the object which contains the property value<br/>
     /// </summary>
     private static JsonPropertyValueSyntax ConsumePropertyValue(
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
+        if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING == stringWalker.CurrentCharacter)
+        {
+            pendingJsonPropertyValueSyntax = ConsumePropertyValue(
+                stringWalker,
+                textEditorJsonDiagnosticBag);
+        }
+        
         int startingPositionIndex;
 
         if (stringWalker.CurrentCharacter == JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING)

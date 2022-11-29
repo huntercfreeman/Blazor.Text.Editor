@@ -13,8 +13,12 @@ public partial class JsonExamples : ComponentBase
     protected override void OnInitialized()
     {
         TextEditorService.RegisterJsonTextEditor(
-            TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey,
-            TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
+            TextEditorFacts.Json.JsonAdhocTextEditorKey,
+            TestData.Json.EXAMPLE_ADHOC);
+        
+        // TextEditorService.RegisterJsonTextEditor(
+        //     TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey,
+        //     TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
         
         // TextEditorService.RegisterJsonTextEditor(
         //     TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey,

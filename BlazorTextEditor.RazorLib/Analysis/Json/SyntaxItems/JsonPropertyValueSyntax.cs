@@ -13,6 +13,14 @@ public class JsonPropertyValueSyntax : IJsonSyntax
         TextEditorTextSpan = textEditorTextSpan;
     }
 
+    public static JsonPropertyValueSyntax GetInvalidJsonPropertyValueSyntax()
+    {
+        return new JsonPropertyValueSyntax(
+            new TextEditorTextSpan(
+                0,0, default),
+            null);
+    }
+
     public IJsonSyntax UnderlyingJsonSyntax { get; }
     public TextEditorTextSpan TextEditorTextSpan { get; }
     public ImmutableArray<IJsonSyntax> ChildJsonSyntaxes => new IJsonSyntax[]
