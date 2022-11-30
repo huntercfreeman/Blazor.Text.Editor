@@ -168,7 +168,7 @@ public class JsonSyntaxTree
             new TextEditorTextSpan(
                 startingPositionIndex,
                 stringWalker.PositionIndex,
-                (byte)JsonDecorationKind.PropertyValue),
+                (byte)JsonDecorationKind.None),
             jsonPropertySyntaxes.ToImmutableArray());
             
         return jsonObjectSyntax;
@@ -273,7 +273,7 @@ public class JsonSyntaxTree
             new TextEditorTextSpan(
                 startingPositionIndex,
                 stringWalker.PositionIndex,
-                (byte)JsonDecorationKind.PropertyValue),
+                (byte)JsonDecorationKind.None),
             underlyingJsonSyntax);
 
         return jsonPropertyValue;

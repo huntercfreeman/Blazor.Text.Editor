@@ -18,23 +18,29 @@ public class TextEditorJsonLexer : ILexer
 
         List<TextEditorTextSpan> textEditorTextSpans = new();
 
-        // Values must be colored before keys as Values are more vague
         textEditorTextSpans.AddRange(
-            jsonSyntaxWalker.JsonPropertySyntaxes.Select(property =>
-                property.JsonPropertyValueSyntax.TextEditorTextSpan));
+            jsonSyntaxWalker.JsonPropertyKeySyntaxes.Select(propertyKey =>
+                propertyKey.TextEditorTextSpan));
         
         textEditorTextSpans.AddRange(
-            jsonSyntaxWalker.JsonPropertySyntaxes.Select(property =>
-                property.JsonPropertyKeySyntax.TextEditorTextSpan));
-        
-        // TODO: Property value and other lexing
-        // textEditorTextSpans.AddRange(
-        //     jsonSyntaxWalker.JsonPropertySyntaxes.Select(property =>
-        //         property.JsonPropertyValueSyntax.TextEditorTextSpan));
+            jsonSyntaxWalker.JsonBooleanSyntaxes.Select(boolean =>
+                boolean.TextEditorTextSpan));
         
         textEditorTextSpans.AddRange(
-            jsonSyntaxWalker.JsonLineCommentSyntaxes.Select(lineComment =>
-                lineComment.TextEditorTextSpan));
+            jsonSyntaxWalker.JsonIntegerSyntaxes.Select(integer =>
+                integer.TextEditorTextSpan));
+        
+        textEditorTextSpans.AddRange(
+            jsonSyntaxWalker.JsonNullSyntaxes.Select(n =>
+                n.TextEditorTextSpan));
+        
+        textEditorTextSpans.AddRange(
+            jsonSyntaxWalker.JsonNumberSyntaxes.Select(number =>
+                number.TextEditorTextSpan));
+        
+        textEditorTextSpans.AddRange(
+            jsonSyntaxWalker.JsonStringSyntaxes.Select(s =>
+                s.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }

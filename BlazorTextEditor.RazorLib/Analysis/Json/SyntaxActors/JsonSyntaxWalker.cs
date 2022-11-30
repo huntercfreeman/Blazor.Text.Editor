@@ -4,8 +4,12 @@ namespace BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 
 public class JsonSyntaxWalker
 {
-    public List<JsonLineCommentSyntax> JsonLineCommentSyntaxes { get; } = new();
-    public List<JsonPropertySyntax> JsonPropertySyntaxes { get; } = new();
+    public List<JsonPropertyKeySyntax> JsonPropertyKeySyntaxes { get; } = new();
+    public List<JsonBooleanSyntax> JsonBooleanSyntaxes { get; } = new();
+    public List<JsonIntegerSyntax> JsonIntegerSyntaxes { get; } = new();
+    public List<JsonNullSyntax> JsonNullSyntaxes { get; } = new();
+    public List<JsonNumberSyntax> JsonNumberSyntaxes { get; } = new();
+    public List<JsonStringSyntax> JsonStringSyntaxes { get; } = new();
 
     public void Visit(IJsonSyntax jsonSyntax)
     {
@@ -14,22 +18,54 @@ public class JsonSyntaxWalker
 
         switch (jsonSyntax.JsonSyntaxKind)
         {
-            case JsonSyntaxKind.LineComment:
-                VisitJsonLineCommentSyntax((JsonLineCommentSyntax)jsonSyntax);
+            case JsonSyntaxKind.PropertyKey:
+                VisitJsonPropertyKeySyntax((JsonPropertyKeySyntax)jsonSyntax);
                 break;
-            case JsonSyntaxKind.Property:
-                VisitJsonPropertySyntax((JsonPropertySyntax)jsonSyntax);
+            case JsonSyntaxKind.Boolean:
+                VisitJsonBooleanSyntax((JsonBooleanSyntax)jsonSyntax);
+                break;
+            case JsonSyntaxKind.Integer:
+                VisitJsonIntegerSyntax((JsonIntegerSyntax)jsonSyntax);
+                break;
+            case JsonSyntaxKind.Null:
+                VisitJsonNullSyntax((JsonNullSyntax)jsonSyntax);
+                break;
+            case JsonSyntaxKind.Number:
+                VisitJsonNumberSyntax((JsonNumberSyntax)jsonSyntax);
+                break;
+            case JsonSyntaxKind.String:
+                VisitJsonStringSyntax((JsonStringSyntax)jsonSyntax);
                 break;
         }
     }
-
-    private void VisitJsonLineCommentSyntax(JsonLineCommentSyntax jsonSyntax)
+    
+    private void VisitJsonPropertyKeySyntax(JsonPropertyKeySyntax jsonPropertyKeySyntax)
     {
-        JsonLineCommentSyntaxes.Add(jsonSyntax);
+        JsonPropertyKeySyntaxes.Add(jsonPropertyKeySyntax);
     }
     
-    private void VisitJsonPropertySyntax(JsonPropertySyntax jsonSyntax)
+    private void VisitJsonBooleanSyntax(JsonBooleanSyntax jsonBooleanSyntax)
     {
-        JsonPropertySyntaxes.Add(jsonSyntax);
+        JsonBooleanSyntaxes.Add(jsonBooleanSyntax);
     }
+    
+    private void VisitJsonIntegerSyntax(JsonIntegerSyntax jsonIntegerSyntax)
+    {
+        JsonIntegerSyntaxes.Add(jsonIntegerSyntax);
+    }
+    private void VisitJsonNullSyntax(JsonNullSyntax jsonNullSyntax)
+    {
+        JsonNullSyntaxes.Add(jsonNullSyntax);
+    }
+    
+    private void VisitJsonNumberSyntax(JsonNumberSyntax jsonNumberSyntax)
+    {
+        JsonNumberSyntaxes.Add(jsonNumberSyntax);
+    }
+
+    private void VisitJsonStringSyntax(JsonStringSyntax jsonStringSyntax)
+    {
+        JsonStringSyntaxes.Add(jsonStringSyntax);
+    }
+
 }
