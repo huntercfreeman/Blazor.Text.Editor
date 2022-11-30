@@ -1,5 +1,4 @@
-﻿using System.Text;
-using BlazorTextEditor.RazorLib.Lexing;
+﻿using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.FSharp;
 

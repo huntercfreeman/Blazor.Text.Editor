@@ -3,5 +3,10 @@
 public enum CssDecorationKind
 {
     None,
-    Keyword,
+    TagSelector,
+    Comment,
+    PropertyName,
+    PropertyValue,
+    UnexpectedToken,
+    Identifier
 }

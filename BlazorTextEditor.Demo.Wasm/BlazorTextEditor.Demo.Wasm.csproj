@@ -8,9 +8,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazor.Text.Editor" Version="5.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BlazorTextEditor.Demo.RazorLib\BlazorTextEditor.Demo.RazorLib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
     </ItemGroup>
 
 </Project>

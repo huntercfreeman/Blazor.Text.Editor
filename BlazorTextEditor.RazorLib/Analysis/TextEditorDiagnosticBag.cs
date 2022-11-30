@@ -32,8 +32,17 @@ public class TextEditorDiagnosticBag : IEnumerable<TextEditorDiagnostic>
     {
         Report(
             DiagnosticLevel.Error,
-            "'End of file' was unexpected." +
-            " Wanted an ['attribute' OR 'closing tag'].",
+            "'End of file' was unexpected.",
+            textEditorTextSpan);
+    }
+    
+    public void ReportUnexpectedToken(
+        TextEditorTextSpan textEditorTextSpan,
+        string unexpectedToken)
+    {
+        Report(
+            DiagnosticLevel.Error,
+            $"Unexpected token: '{unexpectedToken}'",
             textEditorTextSpan);
     }
 }

@@ -13,8 +13,16 @@
     --bte_string-literal-foreground-color: #A31515;
     --bte_keyword-foreground-color: #0000FF;
     --bte_comment-foreground-color: #007F00;
-    --bte_tag-name-foreground-color: #0000FF;
-    --bte_injected-language-fragment-color: red;
+    --bte_tag-name-foreground-color: #ad01d0;
+    --bte_injected-language-fragment-color: var(--bte_primary-font-color);
+    --bte_injected-language-fragment-background-color: #FBFB64;
+    --bte_css-property-name-color: #0000FF;
+    --bte_css-property-value-color: #A31515;
+    --bte_css-identifier-color: #ad01d0;
+    --bte_attribute-name-color: #0000FF;
+    --bte_attribute-value-color : #A31515;
+    --bte_json-property-key-color : #AA0BAA;
+    --bte_json-property-value-color : #A31515;
     --bte_text-editor-gutter-border-color: #28ae0c;
     --bte_text-editor-gutter-background-color: #e7c9a9;
     --bte_secondary-font-color: var(--bte_primary-font-color);

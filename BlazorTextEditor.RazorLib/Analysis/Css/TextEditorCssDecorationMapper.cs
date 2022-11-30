@@ -11,7 +11,10 @@ public class TextEditorCssDecorationMapper : IDecorationMapper
         return decoration switch
         {
             CssDecorationKind.None => string.Empty,
-            CssDecorationKind.Keyword => "bte_keyword",
+            CssDecorationKind.Identifier => "bte_css-identifier",
+            CssDecorationKind.PropertyName => "bte_css-property-name",
+            CssDecorationKind.PropertyValue => "bte_css-property-value",
+            CssDecorationKind.Comment => "bte_comment",
             _ => string.Empty,
         };
     }

@@ -1,8 +1,10 @@
 ﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
+using BlazorTextEditor.RazorLib.Analysis.Css;
 using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript;
+using BlazorTextEditor.RazorLib.Analysis.Json;
 using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
@@ -93,10 +95,25 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorCssLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorCssDecorationMapper"/>
     /// </summary>
     public void RegisterCssTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null);
+    /// <summary>
+    /// Constructs a new <see cref="TextEditorBase"/> using the
+    /// <see cref="TextEditorKey"/> provided. The text editor will
+    /// render with the <see cref="initialContent"/> provided.
+    /// <see cref="ITextEditorKeymap"/> is optional and it is likely
+    /// that one would prefer leaving it null as this will result
+    /// in the default keymap being used.
+    /// <br/><br/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorJsonLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJsonDecorationMapper"/>
+    /// </summary>
+    public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);

@@ -2,19 +2,19 @@
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
 
-public class TagSyntax
+public class TagSyntax : IHtmlSyntax
 {
     public TagSyntax(
         TagNameSyntax? openTagNameSyntax,
         TagNameSyntax? closeTagNameSyntax,
-        ImmutableArray<AttributeTupleSyntax> attributeTupleSyntaxes,
-        ImmutableArray<TagSyntax> childTagSyntaxes,
+        ImmutableArray<AttributeSyntax> attributeSyntaxes,
+        ImmutableArray<IHtmlSyntax> childHtmlSyntaxes,
         TagKind tagKind,
         bool hasSpecialHtmlCharacter = false)
     {
-        ChildTagSyntaxes = childTagSyntaxes;
+        ChildHtmlSyntaxes = childHtmlSyntaxes;
         HasSpecialHtmlCharacter = hasSpecialHtmlCharacter;
-        AttributeTupleSyntaxes = attributeTupleSyntaxes;
+        AttributeSyntaxes = attributeSyntaxes;
         OpenTagNameSyntax = openTagNameSyntax;
         CloseTagNameSyntax = closeTagNameSyntax;
         TagKind = tagKind;
@@ -22,17 +22,19 @@ public class TagSyntax
 
     public TagNameSyntax? OpenTagNameSyntax { get; }
     public TagNameSyntax? CloseTagNameSyntax { get; }
-    public ImmutableArray<AttributeTupleSyntax> AttributeTupleSyntaxes { get; }
-    public ImmutableArray<TagSyntax> ChildTagSyntaxes { get; }
+    public ImmutableArray<AttributeSyntax> AttributeSyntaxes { get; }
+    public ImmutableArray<IHtmlSyntax> ChildHtmlSyntaxes { get; }
     public TagKind TagKind { get; }
     public bool HasSpecialHtmlCharacter { get; }
+    
+    public virtual HtmlSyntaxKind HtmlSyntaxKind => HtmlSyntaxKind.Tag;
 
     public class TagSyntaxBuilder
     {
         public TagNameSyntax? OpenTagNameSyntax { get; set; }
         public TagNameSyntax? CloseTagNameSyntax { get; set; }
-        public List<AttributeTupleSyntax> AttributeTupleSyntaxes { get; set; } = new();
-        public List<TagSyntax> ChildTagSyntaxes { get; set; } = new();
+        public List<AttributeSyntax> AttributeSyntaxes { get; set; } = new();
+        public List<IHtmlSyntax> ChildHtmlSyntaxes { get; set; } = new();
         public TagKind TagKind { get; set; }
         public bool HasSpecialHtmlCharacter { get; set; }
 
@@ -41,8 +43,8 @@ public class TagSyntax
             return new TagSyntax(
                 OpenTagNameSyntax,
                 CloseTagNameSyntax,
-                AttributeTupleSyntaxes.ToImmutableArray(),
-                ChildTagSyntaxes.ToImmutableArray(),
+                AttributeSyntaxes.ToImmutableArray(),
+                ChildHtmlSyntaxes.ToImmutableArray(),
                 TagKind,
                 HasSpecialHtmlCharacter);
         }

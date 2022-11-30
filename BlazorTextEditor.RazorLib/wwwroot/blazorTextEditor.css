@@ -38,6 +38,35 @@
 
 .bte_injected-language-fragment {
     color: var(--bte_injected-language-fragment-color);
+    background-color: var(--bte_injected-language-fragment-background-color);
+}
+
+.bte_css-property-name {
+    color: var(--bte_css-property-name-color);
+}
+
+.bte_css-property-value {
+    color: var(--bte_css-property-value-color);
+}
+
+.bte_css-identifier {
+    color: var(--bte_css-identifier-color);
+}
+
+.bte_attribute-name {
+    color: var(--bte_attribute-name-color);
+}
+
+.bte_attribute-value {
+    color: var(--bte_attribute-value-color);
+}
+
+.bte_json-property-key {
+    color: var(--bte_json-property-key-color);
+}
+
+.bte_json-property-value {
+    color: var(--bte_json-property-value-color);
 }
 
 .bte_measure-character-width-and-row-height {
@@ -206,7 +235,7 @@
 }
 
 .bte_text-editor-footer-entry:not(:last-child) {
-    border-right: 2px solid var(--bte_text-editor-caret-row-border-color);
+    border-right: 2px solid var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
     margin-right: 5px;
 }
 
@@ -228,7 +257,7 @@
 }
 
 .bte_text-editor-header-entry:not(:last-child) {
-    border-right: 2px solid var(--bte_text-editor-caret-row-border-color);
+    border-right: 2px solid var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
     margin-right: 5px;
 }
 

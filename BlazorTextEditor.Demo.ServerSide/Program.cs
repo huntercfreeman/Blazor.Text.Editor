@@ -1,18 +1,13 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using BlazorTextEditor.Demo.ServerSide.Data;
+using BlazorTextEditor.Demo.RazorLib;
 using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddBlazorTextEditor(options => 
-    options.InitialTheme = ThemeFacts.VisualStudioLightClone);
+builder.Services.AddBlazorTextEditorDemoRazorLibServices();
 
 var app = builder.Build();
 

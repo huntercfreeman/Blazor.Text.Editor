@@ -20,6 +20,59 @@ public class TextEditorCSharpLexer : ILexer
 
         List<TextEditorTextSpan> textEditorTextSpans = new();
 
+        // Local variable decorations
+        {
+            var decorationByte = (byte)CSharpDecorationKind.Parameter;
+
+            // Variable declarators of local declaration statements
+            textEditorTextSpans.AddRange(generalSyntaxCollector.VariableDeclaratorSyntaxes
+                .Where(variableDeclarationSyntax =>
+                {
+                    if (variableDeclarationSyntax.Parent.IsKind(SyntaxKind.VariableDeclaration))
+                    {
+                        if (variableDeclarationSyntax.Parent.Parent.IsKind(SyntaxKind.LocalDeclarationStatement))
+                        {
+                            return true;                            
+                        }
+                    }
+
+                    return false;
+                })
+                .Select(variableDeclarationSyntax =>
+                    variableDeclarationSyntax.Identifier.Span)
+                .Select(roslynSpan =>
+                    new TextEditorTextSpan(
+                        roslynSpan.Start,
+                        roslynSpan.End,
+                        decorationByte)));
+            
+            // Parameter declaration identifier
+            textEditorTextSpans.AddRange(generalSyntaxCollector.ParameterSyntaxes
+                .Select(ps =>
+                {
+                    var identifierToken =
+                        ps.ChildTokens()
+                            .FirstOrDefault(x =>
+                                x.IsKind(SyntaxKind.IdentifierToken));
+
+                    return identifierToken.Span;
+                })
+                .Select(roslynSpan =>
+                    new TextEditorTextSpan(
+                        roslynSpan.Start,
+                        roslynSpan.End,
+                        decorationByte)));
+
+            // Argument declaration identifier
+            textEditorTextSpans.AddRange(generalSyntaxCollector.ArgumentSyntaxes
+                .Select(argumentSyntax => argumentSyntax.Span)
+                .Select(roslynSpan =>
+                    new TextEditorTextSpan(
+                        roslynSpan.Start,
+                        roslynSpan.End,
+                        decorationByte)));
+        }
+        
         // Type decorations
         {
             var decorationByte = (byte)CSharpDecorationKind.Type;
@@ -99,37 +152,6 @@ public class TextEditorCSharpLexer : ILexer
 
                     return lastNode?.Span ?? TextSpan.FromBounds(0, 0);
                 })
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-        }
-
-        // Local variable decorations
-        {
-            var decorationByte = (byte)CSharpDecorationKind.Parameter;
-
-            // Parameter declaration identifier
-            textEditorTextSpans.AddRange(generalSyntaxCollector.ParameterSyntaxes
-                .Select(ps =>
-                {
-                    var identifierToken =
-                        ps.ChildTokens()
-                            .FirstOrDefault(x =>
-                                x.IsKind(SyntaxKind.IdentifierToken));
-
-                    return identifierToken.Span;
-                })
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // Argument declaration identifier
-            textEditorTextSpans.AddRange(generalSyntaxCollector.ArgumentSyntaxes
-                .Select(argumentSyntax => argumentSyntax.Span)
                 .Select(roslynSpan =>
                     new TextEditorTextSpan(
                         roslynSpan.Start,

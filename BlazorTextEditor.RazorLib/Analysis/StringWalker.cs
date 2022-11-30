@@ -58,9 +58,14 @@ public class StringWalker
     ///     Starting with <see cref="Peek" /> evaluated at 0
     ///     return that and the rest of the <see cref="_content" />
     ///     <br /><br />
-    ///     <see cref="CurrentSubstring" /> => _content.Substring(PositionIndex);
+    ///     <see cref="RemainingText" /> => _content.Substring(PositionIndex);
     /// </summary>
-    public string CurrentSubstring => _content.Substring(PositionIndex);
+    public string RemainingText => _content.Substring(PositionIndex);
+    
+    /// <summary>
+    /// Returns if the current character is the end of file character
+    /// </summary>
+    public bool IsEof => CurrentCharacter == ParserFacts.END_OF_FILE;
 
     /// <summary>
     ///     If <see cref="PositionIndex" /> is within bounds of the <see cref="_content" />.
@@ -267,15 +272,20 @@ public class StringWalker
     }
     
     /// <summary>
-    /// While writing the keyword lexing for the various
-    /// ILexer implementations.
+    /// <see cref="ConsumeWord"/> will return immediately upon encountering whitespace.
     /// <br/><br/>
-    /// I found a 'consume word' like logic was common
-    /// so adding this method here to be shared.
+    /// That is to say, one should invoke <see cref="SkipWhitespace"/>
+    /// if they want to modify the position index to be at the next word.
+    /// <br/><br/>
+    /// Otherwise, <see cref="ConsumeWord"/> must be invoked foreach whitespace character
+    /// between each word.
     /// </summary>
     /// <returns></returns>
-    public (TextEditorTextSpan textSpan, string value) ConsumeWord()
+    public (TextEditorTextSpan textSpan, string value) ConsumeWord(
+        ImmutableArray<char>? additionalCharactersToBreakOn = null)
     {
+        additionalCharactersToBreakOn ??= ImmutableArray<char>.Empty;
+        
         // The wordBuilder is appended to everytime a
         // character is consumed.
         var wordBuilder = new StringBuilder();
@@ -288,8 +298,8 @@ public class StringWalker
         
         WhileNotEndOfFile(() =>
         {
-            if (WhitespaceFacts.ALL
-                .Contains(CurrentCharacter))
+            if (WhitespaceFacts.ALL.Contains(CurrentCharacter) ||
+                additionalCharactersToBreakOn.Value.Contains(CurrentCharacter))
             {
                 return true;
             }
@@ -312,6 +322,27 @@ public class StringWalker
             PositionIndex,
             0),
                 wordBuilder.ToString());
+    }
+    
+    /// <summary>
+    /// <see cref="SkipWhitespace"/> moves <see cref="PositionIndex"/> such that
+    /// <see cref="CurrentCharacter"/> is a non-whitespace character.
+    /// <br/><br/>
+    /// After invocation of <see cref="SkipWhitespace"/>, one might invoke <see cref="ConsumeWord"/>
+    /// to get <see cref="CurrentCharacter"/> and all of the contiguous
+    /// non-whitespace characters that follow as a string
+    /// </summary>
+    public void SkipWhitespace()
+    {
+        WhileNotEndOfFile(() =>
+        {
+            if (WhitespaceFacts.ALL.Contains(CurrentCharacter))
+            {
+                return false;
+            }
+
+            return true;
+        });
     }
 
     public string GetText(TextEditorTextSpan textEditorTextSpan)

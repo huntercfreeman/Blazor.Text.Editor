@@ -1,3 +1,8 @@
+/* 
+    The default colors are
+    a clone of Visual Studio Dark Theme
+*/
+
 :root {
     --bte_primary-font-color: #DCDCDC;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
@@ -15,6 +20,14 @@
     --bte_comment-foreground-color: #57A64A;
     --bte_tag-name-foreground-color: #E8BF6A;
     --bte_injected-language-fragment-color: #BA09E2;
+    --bte_injected-language-fragment-background-color: var(--bte_body-background-color);
+    --bte_css-property-name-color: #b692e2;
+    --bte_css-property-value-color: #D69D85;
+    --bte_css-identifier-color: #30a7e6;
+    --bte_attribute-name-color: #b692e2;
+    --bte_attribute-value-color : #D69D85;
+    --bte_json-property-key-color : #b692e2;
+    --bte_json-property-value-color : #D69D85;
     --bte_text-editor-gutter-border-color: #273840;
     --bte_text-editor-gutter-background-color: #1f2229;
     --bte_secondary-font-color: #d1d2ca;
