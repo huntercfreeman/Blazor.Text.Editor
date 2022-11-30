@@ -2,6 +2,7 @@
 
 public enum JsonSyntaxKind
 {
+    Unknown,
     PropertyKey,
     PropertyValue,
     String,
@@ -10,5 +11,10 @@ public enum JsonSyntaxKind
     BlockComment,
     Document,
     Object,
-    Property
+    Property,
+    Array,
+    Number,
+    Integer,
+    Boolean,
+    Null
 }

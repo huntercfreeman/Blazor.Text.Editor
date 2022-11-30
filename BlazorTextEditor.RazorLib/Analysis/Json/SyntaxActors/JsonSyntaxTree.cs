@@ -165,10 +165,10 @@ public class JsonSyntaxTree
     
     /// <summary>
     /// currentCharacterIn:<br/>
-    /// - <see cref="JsonFacts.PROPERTY_KEY_TEXT_STARTING"/><br/>
+    /// - <see cref="JsonFacts.PROPERTY_KEY_START"/><br/>
     /// <br/>
     /// currentCharacterOut:<br/>
-    /// - <see cref="JsonFacts.PROPERTY_KEY_TEXT_ENDING"/><br/>
+    /// - <see cref="JsonFacts.PROPERTY_KEY_END"/><br/>
     /// </summary>
     private static JsonPropertyKeySyntax ConsumePropertyKey(
         StringWalker stringWalker,
@@ -181,7 +181,7 @@ public class JsonSyntaxTree
         {
             _ = stringWalker.Consume();
 
-            if (JsonFacts.PROPERTY_KEY_TEXT_ENDING == stringWalker.CurrentCharacter)
+            if (JsonFacts.PROPERTY_KEY_END == stringWalker.CurrentCharacter)
                 break;
         }
 
@@ -206,7 +206,7 @@ public class JsonSyntaxTree
     
     /// <summary>
     /// currentCharacterIn:<br/>
-    /// - <see cref="JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE"/><br/>
+    /// - Any character that is not <see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
     /// <br/>
     /// currentCharacterOut:<br/>
     /// - <see cref="JsonFacts.PROPERTY_LIST_DELIMITER"/><br/>
@@ -217,70 +217,45 @@ public class JsonSyntaxTree
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        int startingPositionIndex;
+        int startingPositionIndex = stringWalker.PositionIndex;
+        JsonSyntaxKind jsonSyntaxKindOfValue;
 
-        if (stringWalker.CurrentCharacter == JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING)
+        IJsonSyntax underlyingJsonSyntax;
+        
+        if (stringWalker.CurrentCharacter == JsonFacts.ARRAY_START)
         {
-            // +1 to not include the quote that beings this values's text
-            startingPositionIndex = stringWalker.PositionIndex + 1;
+            underlyingJsonSyntax = ConsumeArray(
+                stringWalker, 
+                textEditorJsonDiagnosticBag);
+        }
+        else if (stringWalker.CurrentCharacter == JsonFacts.OBJECT_START)
+        {
+            underlyingJsonSyntax = ConsumeObject(
+                stringWalker, 
+                textEditorJsonDiagnosticBag);
         }
         else
         {
-            startingPositionIndex = stringWalker.PositionIndex;
-        }
-
-        stringWalker.Backtrack();
-        
-        bool hasSkippedWhitespace = false;
-        bool? valueIsTypeString = null;
-        
-        while (!stringWalker.IsEof)
-        {
-            _ = stringWalker.Consume();
-
-            if (hasSkippedWhitespace)
+            if (stringWalker.CurrentCharacter == JsonFacts.STRING_START)
             {
-                if (valueIsTypeString is null)
-                {
-                    if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_STARTING == stringWalker.CurrentCharacter)
-                    {
-                        valueIsTypeString = true;
-                        continue;
-                    }
-
-                    valueIsTypeString = false;
-                }
-                else
-                {
-                    if (valueIsTypeString.Value)
-                    {
-                        if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_ENDING == stringWalker.CurrentCharacter)
-                            break;
-                    }
-                    else
-                    {
-                        if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
-                            break;
-                    }
-                }
+                underlyingJsonSyntax = ConsumeString(
+                    stringWalker, 
+                    textEditorJsonDiagnosticBag);
             }
             else
             {
-                if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
-                {
-                    hasSkippedWhitespace = true;
-                    stringWalker.Backtrack();
-                }
+                underlyingJsonSyntax = ConsumeAmbiguousValue(
+                    stringWalker, 
+                    textEditorJsonDiagnosticBag);
             }
         }
 
-        if (JsonFacts.PROPERTY_VALUE_STRING_TEXT_ENDING != stringWalker.CurrentCharacter)
+        if (stringWalker.IsEof)
         {
-            // TODO: The StartingIndexInclusive and EndingIndexExclusive for EOF are?
             textEditorJsonDiagnosticBag.ReportEndOfFileUnexpected(
                 new TextEditorTextSpan(
-                    stringWalker.PositionIndex - 1, 
-                    stringWalker.PositionIndex,
+                    stringWalker.PositionIndex, 
+                    stringWalker.PositionIndex + 1,
                     (byte)JsonDecorationKind.Error));
         }
         
@@ -289,8 +264,51 @@ public class JsonSyntaxTree
                 startingPositionIndex,
                 stringWalker.PositionIndex,
                 (byte)JsonDecorationKind.PropertyValue),
-            null);
+            underlyingJsonSyntax);
 
         return jsonPropertyValue;
+    }
+    
+    private static JsonPropertyValueSyntax ConsumeArray(
+        StringWalker stringWalker,
+        TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
+    {
+        throw new NotImplementedException();
+    }
+    
+    private static JsonPropertyValueSyntax ConsumeObject(
+        StringWalker stringWalker,
+        TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
+    {
+        throw new NotImplementedException();
+    }
+    
+    private static JsonPropertyValueSyntax ConsumeString(
+        StringWalker stringWalker,
+        TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
+    {
+        
+        // +1 to not include the quote that beings this values's text
+        startingPositionIndex = stringWalker.PositionIndex + 1;
+    }
+    
+    /// <summary>
+    /// The JSON DataTypes which qualify as ambiguous are:<br/>
+    /// -number<br/>
+    /// -integer<br/>
+    /// -boolean<br/>
+    /// -null<br/>
+    /// <br/>
+    /// One must ensure the value cannot be the following
+    /// DataTypes prior to invoking this method:<br/>
+    /// -array<br/>
+    /// -object<br/>
+    /// -string<br/>
+    /// </summary>
+    private static JsonPropertyValueSyntax ConsumeAmbiguousValue(
+        StringWalker stringWalker,
+        TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
+    {
+        throw new NotImplementedException();
     }
 }
