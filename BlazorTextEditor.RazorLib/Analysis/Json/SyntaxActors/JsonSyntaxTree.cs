@@ -81,7 +81,7 @@ public class JsonSyntaxTree
             if (JsonFacts.OBJECT_END == stringWalker.CurrentCharacter)
                 break;
 
-            if (JsonFacts.PROPERTY_LIST_DELIMITER == stringWalker.CurrentCharacter)
+            if (JsonFacts.PROPERTY_ENTRY_DELIMITER == stringWalker.CurrentCharacter)
                 continue;
 
             if (pendingJsonPropertyKeySyntax is null)
@@ -212,7 +212,7 @@ public class JsonSyntaxTree
     /// - Any character that is not <see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
     /// <br/>
     /// currentCharacterOut:<br/>
-    /// - <see cref="JsonFacts.PROPERTY_LIST_DELIMITER"/><br/>
+    /// - <see cref="JsonFacts.PROPERTY_ENTRY_DELIMITER"/><br/>
     /// - <see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
     /// - The <see cref="JsonFacts.OBJECT_END"/> of the object which contains the property value<br/>
     /// </summary>
@@ -271,11 +271,57 @@ public class JsonSyntaxTree
         return jsonPropertyValue;
     }
     
-    private static JsonPropertyValueSyntax ConsumeArray(
+    /// <summary>
+    /// currentCharacterIn:<br/>
+    /// - <see cref="JsonFacts.ARRAY_START"/><br/>
+    /// <br/>
+    /// currentCharacterOut:<br/>
+    /// - <see cref="JsonFacts.ARRAY_END"/><br/>
+    /// </summary>
+    private static JsonArraySyntax ConsumeArray(
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        throw new NotImplementedException();
+        // +1 to not include the bracket that begins this values's text
+        var startingPositionIndex = stringWalker.PositionIndex + 1;
+
+        var jsonObjectSyntaxes = new List<JsonObjectSyntax>();
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            // Skip whitespace
+            while (!stringWalker.IsEof)
+            {
+                if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                    _ = stringWalker.Consume();
+                else
+                    break;
+            }
+            
+            if (JsonFacts.ARRAY_END == stringWalker.CurrentCharacter)
+                break;
+
+            if (JsonFacts.ARRAY_ENTRY_DELIMITER == stringWalker.CurrentCharacter)
+                continue;
+            
+            if (stringWalker.CurrentCharacter == JsonFacts.OBJECT_START)
+            {
+                var jsonObjectSyntax = ConsumeObject(
+                    stringWalker, 
+                    textEditorJsonDiagnosticBag);
+
+                jsonObjectSyntaxes.Add(jsonObjectSyntax);
+            }
+        }
+
+        return new JsonArraySyntax(
+            new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex,
+                (byte)JsonDecorationKind.None),
+            jsonObjectSyntaxes.ToImmutableArray());
     }
     
     /// <summary>
@@ -289,7 +335,7 @@ public class JsonSyntaxTree
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        // +1 to not include the quote that beings this values's text
+        // +1 to not include the quote that begins this values's text
         var startingPositionIndex = stringWalker.PositionIndex + 1;
 
         while (!stringWalker.IsEof)

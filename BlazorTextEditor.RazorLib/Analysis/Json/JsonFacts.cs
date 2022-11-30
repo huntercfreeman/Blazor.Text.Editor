@@ -28,5 +28,6 @@ public static class JsonFacts
     public const char ARRAY_START = '[';
     public const char ARRAY_END = ']';
  
-    public const char PROPERTY_LIST_DELIMITER = ',';
+    public const char PROPERTY_ENTRY_DELIMITER = ',';
+    public const char ARRAY_ENTRY_DELIMITER = ',';
 }
