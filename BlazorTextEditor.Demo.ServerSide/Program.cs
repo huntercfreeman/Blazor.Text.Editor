@@ -1,3 +1,4 @@
+using BlazorTextEditor.Demo.RazorLib;
 using BlazorTextEditor.RazorLib;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddBlazorTextEditor();
+builder.Services.AddBlazorTextEditorDemoRazorLibServices();
 
 var app = builder.Build();
 

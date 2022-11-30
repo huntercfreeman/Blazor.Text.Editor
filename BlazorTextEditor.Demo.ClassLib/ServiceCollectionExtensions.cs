@@ -7,8 +7,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBlazorTextEditorDemoClassLibServices(this IServiceCollection services)
     {
-        return services
-            .AddFluxor(options => options
-                .ScanAssemblies(typeof(ServiceCollectionExtensions).Assembly));
+        return services;
     }
 }

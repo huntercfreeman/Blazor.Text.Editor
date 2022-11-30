@@ -20,6 +20,7 @@
     --bte_comment-foreground-color: #57A64A;
     --bte_tag-name-foreground-color: #E8BF6A;
     --bte_injected-language-fragment-color: #BA09E2;
+    --bte_injected-language-fragment-background-color: var(--bte_body-background-color);
     --bte_css-property-name-color: #b692e2;
     --bte_css-property-value-color: #D69D85;
     --bte_css-identifier-color: #30a7e6;
