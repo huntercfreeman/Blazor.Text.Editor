@@ -27,6 +27,14 @@ public class JsonSyntaxTree
 
                 jsonDocumentChildren.Add(jsonObjectSyntax);
             }
+            else if (stringWalker.CurrentCharacter == JsonFacts.ARRAY_START)
+            {
+                var jsonObjectSyntax = ConsumeArray(
+                    stringWalker, 
+                    textEditorJsonDiagnosticBag);
+
+                jsonDocumentChildren.Add(jsonObjectSyntax);
+            }
 
             _ = stringWalker.Consume();
         }
@@ -360,7 +368,7 @@ public class JsonSyntaxTree
     /// -boolean<br/>
     /// -null<br/>
     /// <br/>
-    /// One must ensure the value cannot be the following
+    /// One must ensure the value cannot be of the following
     /// DataTypes prior to invoking this method:<br/>
     /// -array<br/>
     /// -object<br/>
