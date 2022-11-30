@@ -380,7 +380,10 @@ public class JsonSyntaxTree
     {
         var startingPositionIndex = stringWalker.PositionIndex;
 
-        var firstWordTuple = stringWalker.ConsumeWord();
+        var firstWordTuple = stringWalker.ConsumeWord(new []
+        {
+            ','
+        }.ToImmutableArray());
 
         if (JsonFacts.NULL_STRING_VALUE == firstWordTuple.value)
         {
@@ -388,14 +391,14 @@ public class JsonSyntaxTree
                 new TextEditorTextSpan(
                     startingPositionIndex,
                     stringWalker.PositionIndex,
-                    (byte)JsonDecorationKind.Null));
+                    (byte)JsonDecorationKind.Keyword));
         }
         else if (JsonFacts.BOOLEAN_ALL_STRING_VALUES.Contains(firstWordTuple.value))
         {
             return new JsonBooleanSyntax(new TextEditorTextSpan(
                 startingPositionIndex,
                 stringWalker.PositionIndex,
-                (byte)JsonDecorationKind.Null));
+                (byte)JsonDecorationKind.Keyword));
         }
         else
         {
@@ -404,13 +407,13 @@ public class JsonSyntaxTree
                 return new JsonNumberSyntax(new TextEditorTextSpan(
                     startingPositionIndex,
                     stringWalker.PositionIndex,
-                    (byte)JsonDecorationKind.Null));
+                    (byte)JsonDecorationKind.None));
             }
 
             return new JsonIntegerSyntax(new TextEditorTextSpan(
                 startingPositionIndex,
                 stringWalker.PositionIndex,
-                (byte)JsonDecorationKind.Null));
+                (byte)JsonDecorationKind.None));
         }
     }
 }

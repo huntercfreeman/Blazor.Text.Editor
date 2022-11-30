@@ -281,8 +281,11 @@ public class StringWalker
     /// between each word.
     /// </summary>
     /// <returns></returns>
-    public (TextEditorTextSpan textSpan, string value) ConsumeWord()
+    public (TextEditorTextSpan textSpan, string value) ConsumeWord(
+        ImmutableArray<char>? additionalCharactersToBreakOn = null)
     {
+        additionalCharactersToBreakOn ??= ImmutableArray<char>.Empty;
+        
         // The wordBuilder is appended to everytime a
         // character is consumed.
         var wordBuilder = new StringBuilder();
@@ -295,7 +298,8 @@ public class StringWalker
         
         WhileNotEndOfFile(() =>
         {
-            if (WhitespaceFacts.ALL.Contains(CurrentCharacter))
+            if (WhitespaceFacts.ALL.Contains(CurrentCharacter) ||
+                additionalCharactersToBreakOn.Value.Contains(CurrentCharacter))
             {
                 return true;
             }
