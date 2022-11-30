@@ -6,15 +6,13 @@ namespace BlazorTextEditor.RazorLib.Analysis.Json.SyntaxItems;
 public class JsonBooleanSyntax : IJsonSyntax
 {
     public JsonBooleanSyntax(
-        TextEditorTextSpan textEditorTextSpan,
-        ImmutableArray<IJsonSyntax> childJsonSyntaxes)
+        TextEditorTextSpan textEditorTextSpan)
     {
-        ChildJsonSyntaxes = childJsonSyntaxes;
         TextEditorTextSpan = textEditorTextSpan;
     }
     
     public TextEditorTextSpan TextEditorTextSpan { get; }
-    public ImmutableArray<IJsonSyntax> ChildJsonSyntaxes { get; }
-    
+    public ImmutableArray<IJsonSyntax> ChildJsonSyntaxes => ImmutableArray<IJsonSyntax>.Empty;
+
     public JsonSyntaxKind JsonSyntaxKind => JsonSyntaxKind.Boolean;
 }

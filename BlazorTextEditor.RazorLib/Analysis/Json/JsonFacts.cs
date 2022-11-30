@@ -30,4 +30,34 @@ public static class JsonFacts
  
     public const char PROPERTY_ENTRY_DELIMITER = ',';
     public const char ARRAY_ENTRY_DELIMITER = ',';
+    
+    public const char NUMBER_DECIMAL_PLACE_SEPARATOR = '.';
+ 
+    /// <summary>
+    /// Json schema states that the booleans are to be case sensitive.
+    /// <br/><br/>
+    /// https://json-schema.org/understanding-json-schema/reference/boolean.html#boolean
+    /// </summary>
+    public const string BOOLEAN_TRUE_STRING_VALUE = "true";
+    /// <summary>
+    /// Json schema states that the booleans are to be case sensitive.
+    /// <br/><br/>
+    /// https://json-schema.org/understanding-json-schema/reference/boolean.html#boolean
+    /// </summary>
+    public const string BOOLEAN_FALSE_STRING_VALUE = "false";
+    
+    public static readonly ImmutableArray<string> BOOLEAN_ALL_STRING_VALUES = new[]
+    {
+        BOOLEAN_TRUE_STRING_VALUE,
+        BOOLEAN_FALSE_STRING_VALUE,
+    }.ToImmutableArray();
+    
+    /// <summary>
+    /// Json schema does not directly state that null is to be case sensitive.
+    /// However, the JSON schema does not have an example of not using null in all lowercase.
+    /// Therefore, the presumption that null is to be case sensitive will be made.
+    /// <br/><br/>
+    /// https://json-schema.org/understanding-json-schema/reference/null.html#null
+    /// </summary>
+    public const string NULL_STRING_VALUE = "null";
 }

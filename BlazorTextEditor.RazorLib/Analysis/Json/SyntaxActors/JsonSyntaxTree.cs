@@ -374,10 +374,44 @@ public class JsonSyntaxTree
     /// -object<br/>
     /// -string<br/>
     /// </summary>
-    private static JsonPropertyValueSyntax ConsumeAmbiguousValue(
+    private static IJsonSyntax ConsumeAmbiguousValue(
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        throw new NotImplementedException();
+        var startingPositionIndex = stringWalker.PositionIndex;
+
+        var firstWordTuple = stringWalker.ConsumeWord();
+
+        if (JsonFacts.NULL_STRING_VALUE == firstWordTuple.value)
+        {
+            return new JsonNullSyntax(
+                new TextEditorTextSpan(
+                    startingPositionIndex,
+                    stringWalker.PositionIndex,
+                    (byte)JsonDecorationKind.Null));
+        }
+        else if (JsonFacts.BOOLEAN_ALL_STRING_VALUES.Contains(firstWordTuple.value))
+        {
+            return new JsonBooleanSyntax(new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex,
+                (byte)JsonDecorationKind.Null));
+        }
+        else
+        {
+            if (firstWordTuple.value.Contains(JsonFacts.NUMBER_DECIMAL_PLACE_SEPARATOR))
+            {
+                return new JsonNumberSyntax(new TextEditorTextSpan(
+                    startingPositionIndex,
+                    stringWalker.PositionIndex,
+                    (byte)JsonDecorationKind.Null));
+            }
+
+            return new JsonIntegerSyntax(new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex,
+                (byte)JsonDecorationKind.Null));
+        }
     }
 }
+

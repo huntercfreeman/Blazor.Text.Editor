@@ -10,5 +10,6 @@ public enum JsonDecorationKind
     BlockComment,
     Document,
     Error,
-    PropertyValue
+    PropertyValue,
+    Null
 }

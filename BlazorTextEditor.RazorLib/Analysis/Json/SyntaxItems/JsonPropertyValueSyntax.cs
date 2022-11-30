@@ -25,7 +25,7 @@ public class JsonPropertyValueSyntax : IJsonSyntax
     public TextEditorTextSpan TextEditorTextSpan { get; }
     public ImmutableArray<IJsonSyntax> ChildJsonSyntaxes => new IJsonSyntax[]
     {
-        // TODO: UnderlyingJsonSyntax
+        UnderlyingJsonSyntax
     }.ToImmutableArray();
     
     public JsonSyntaxKind JsonSyntaxKind => JsonSyntaxKind.PropertyValue;
