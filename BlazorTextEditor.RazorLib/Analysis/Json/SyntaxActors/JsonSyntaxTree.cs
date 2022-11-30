@@ -21,7 +21,11 @@ public class JsonSyntaxTree
         {
             if (stringWalker.CurrentCharacter == JsonFacts.OBJECT_START)
             {
-                ConsumeObject(stringWalker, jsonDocumentChildren, textEditorJsonDiagnosticBag);
+                var jsonObjectSyntax = ConsumeObject(
+                    stringWalker, 
+                    textEditorJsonDiagnosticBag);
+
+                jsonDocumentChildren.Add(jsonObjectSyntax);
             }
 
             _ = stringWalker.Consume();
@@ -48,9 +52,8 @@ public class JsonSyntaxTree
     /// currentCharacterOut:<br/>
     /// - <see cref="JsonFacts.OBJECT_END"/><br/>
     /// </summary>
-    private static void ConsumeObject(
-        StringWalker stringWalker, 
-        List<IJsonSyntax> jsonDocumentChildren,
+    private static JsonObjectSyntax ConsumeObject(
+        StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
         var startingPositionIndex = stringWalker.PositionIndex;
@@ -160,7 +163,7 @@ public class JsonSyntaxTree
                 (byte)JsonDecorationKind.PropertyValue),
             jsonPropertySyntaxes.ToImmutableArray());
             
-        jsonDocumentChildren.Add(jsonObjectSyntax);
+        return jsonObjectSyntax;
     }
     
     /// <summary>
@@ -218,7 +221,6 @@ public class JsonSyntaxTree
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
         int startingPositionIndex = stringWalker.PositionIndex;
-        JsonSyntaxKind jsonSyntaxKindOfValue;
 
         IJsonSyntax underlyingJsonSyntax;
         
@@ -231,7 +233,7 @@ public class JsonSyntaxTree
         else if (stringWalker.CurrentCharacter == JsonFacts.OBJECT_START)
         {
             underlyingJsonSyntax = ConsumeObject(
-                stringWalker, 
+                stringWalker,
                 textEditorJsonDiagnosticBag);
         }
         else
@@ -276,20 +278,33 @@ public class JsonSyntaxTree
         throw new NotImplementedException();
     }
     
-    private static JsonPropertyValueSyntax ConsumeObject(
+    /// <summary>
+    /// currentCharacterIn:<br/>
+    /// - <see cref="JsonFacts.STRING_START"/><br/>
+    /// <br/>
+    /// currentCharacterOut:<br/>
+    /// - <see cref="JsonFacts.STRING_END"/><br/>
+    /// </summary>
+    private static JsonStringSyntax ConsumeString(
         StringWalker stringWalker,
         TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
     {
-        throw new NotImplementedException();
-    }
-    
-    private static JsonPropertyValueSyntax ConsumeString(
-        StringWalker stringWalker,
-        TextEditorJsonDiagnosticBag textEditorJsonDiagnosticBag)
-    {
-        
         // +1 to not include the quote that beings this values's text
-        startingPositionIndex = stringWalker.PositionIndex + 1;
+        var startingPositionIndex = stringWalker.PositionIndex + 1;
+
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            if (JsonFacts.STRING_END == stringWalker.CurrentCharacter)
+                break;
+        }
+
+        return new JsonStringSyntax(
+            new TextEditorTextSpan(
+                startingPositionIndex,
+                stringWalker.PositionIndex,
+                (byte)JsonDecorationKind.String));
     }
     
     /// <summary>
