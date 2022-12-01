@@ -13,6 +13,7 @@ public record ThemeStates(ImmutableArray<Theme> Themes)
             ThemeFacts.Unset,
             ThemeFacts.VisualStudioDarkClone,
             ThemeFacts.VisualStudioLightClone,
+            ThemeFacts.BlazorTextEditorLightTheme
         });
     }
 }

@@ -16,6 +16,13 @@ public static class ThemeFacts
         ContrastKind.Default,
         ColorKind.Light);
     
+    public static readonly Theme BlazorTextEditorLightTheme = new(
+        ThemeKey.NewThemeKey(),
+        "bte_light-theme",
+        "Blazor Text Editor Light Theme",
+        ContrastKind.Default,
+        ColorKind.Light);
+    
     public static readonly Theme Unset = new(
         ThemeKey.NewThemeKey(),
         string.Empty,
