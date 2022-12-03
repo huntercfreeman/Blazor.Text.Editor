@@ -15,6 +15,13 @@ public class JavaScriptSyntaxTree
 
         while (!stringWalker.IsEof)
         {
+            if (stringWalker.CurrentCharacter == JavaScriptFacts.STRING_STARTING_CHARACTER)
+            {
+                var javaScriptStringSyntax = ReadString(stringWalker, diagnosticBag);
+                
+                documentChildren.Add(javaScriptStringSyntax);
+            }
+            
             /*
              * string:
              *     if (currentCharacter == '"')
@@ -47,5 +54,43 @@ public class JavaScriptSyntaxTree
         return new JavaScriptSyntaxUnit(
             javaScriptDocumentSyntax,
             diagnosticBag);
+    }
+
+    /// <summary>
+    /// currentCharacterIn:<br/>
+    /// -<see cref="JavaScriptFacts.STRING_STARTING_CHARACTER"/>
+    /// </summary>
+    private static JavaScriptStringSyntax ReadString(
+        StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag)
+    {
+        // var example = "apple";
+
+        var startingPositionIndex = stringWalker.PositionIndex + 1;
+
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            if (stringWalker.CurrentCharacter == JavaScriptFacts.STRING_ENDING_CHARACTER)
+                break;
+        }
+
+        if (stringWalker.IsEof)
+        {
+            diagnosticBag.ReportEndOfFileUnexpected(
+                new TextEditorTextSpan(
+                    startingPositionIndex,
+                    stringWalker.PositionIndex,
+                    (byte)JavaScriptDecorationKind.Error));
+        }
+
+        var stringTextEditorTextSpan = new TextEditorTextSpan(
+            startingPositionIndex,
+            stringWalker.PositionIndex,
+            (byte)JavaScriptDecorationKind.String);
+        
+        return new JavaScriptStringSyntax(
+            stringTextEditorTextSpan);
     }
 }

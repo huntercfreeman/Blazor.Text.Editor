@@ -4,4 +4,6 @@ public enum JavaScriptDecorationKind
 {
     None,
     Keyword,
+    Error,
+    String,
 }
