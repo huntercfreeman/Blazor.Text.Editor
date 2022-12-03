@@ -1,39 +1,51 @@
-﻿using BlazorTextEditor.RazorLib.Lexing;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxItems;
+using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 
 public class JavaScriptSyntaxTree
 {
-    public static List<TextEditorTextSpan> ParseText(string content)
+    public static JavaScriptSyntaxUnit ParseText(string content)
     {
-        // Will contain the final result which will be returned.
-        var textEditorTextSpans = new List<TextEditorTextSpan>();
+        var documentChildren = new List<IJavaScriptSyntax>();
+        var diagnosticBag = new TextEditorDiagnosticBag();
         
-        // A single while loop will go character by character
-        // until the end of the file for this method.
         var stringWalker = new StringWalker(content);
-        
-        stringWalker.WhileNotEndOfFile(() =>
+
+        while (!stringWalker.IsEof)
         {
-            var wordTuple = stringWalker.ConsumeWord();
+            /*
+             * string:
+             *     if (currentCharacter == '"')
+             *         var javaScriptStringSyntax = readString(stringWalker)
+             *         documentChildren.Add(javaScriptStringSyntax);
+             * comment:
+             *     if (currentCharacter == '/')
+             *         if (nextCharacter == '/')
+             *             var javaScriptSingleLineCommentSyntax = readSingleLineComment();
+             *             documentChildren.Add(javaScriptSingleLineCommentSyntax);
+             *         else if (nextCharacter == '*')
+             *            var javaScriptMultiLineCommentSyntax = readMultiLineComment();
+             *            documentChildren.Add(javaScriptMultiLineCommentSyntax);
+             * keyword:
+             *     if (listOfKeywords.Contains(nextWord))
+             *         var javaScriptKeywordSyntax = readKeyword();
+             *         documentChildren.Add(javaScriptKeywordSyntax);
+             */
             
-            var foundKeyword = JavaScriptKeywords.ALL
-                .FirstOrDefault(keyword =>
-                    keyword == wordTuple.value);
+            _ = stringWalker.Consume();
+        }
+
+        var javaScriptDocumentSyntax = new JavaScriptDocumentSyntax(
+            new TextEditorTextSpan(
+                0,
+                stringWalker.PositionIndex,
+                (byte)JavaScriptDecorationKind.None),
+            documentChildren.ToImmutableArray());
         
-            if (foundKeyword is not null)
-            {
-                textEditorTextSpans.Add(
-                    wordTuple.textSpan with
-                    {
-                        DecorationByte = 
-                        (byte)JavaScriptDecorationKind.Keyword 
-                    });
-            }
-
-            return false;
-        });
-
-        return textEditorTextSpans;
+        return new JavaScriptSyntaxUnit(
+            javaScriptDocumentSyntax,
+            diagnosticBag);
     }
 }
