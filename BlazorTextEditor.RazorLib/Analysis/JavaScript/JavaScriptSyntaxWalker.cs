@@ -4,6 +4,7 @@ public class JavaScriptSyntaxWalker
 {
     public List<JavaScriptStringSyntax> JavaScriptStringSyntaxes { get; } = new();
     public List<JavaScriptCommentSyntax> JavaScriptCommentSyntaxes { get; } = new();
+    public List<JavaScriptKeywordSyntax> JavaScriptKeywordSyntaxes { get; } = new();
 
     public void Visit(IJavaScriptSyntax node)
     {
@@ -20,6 +21,9 @@ public class JavaScriptSyntaxWalker
             case JavaScriptSyntaxKind.Comment:
                 VisitJavaScriptCommentSyntax((JavaScriptCommentSyntax)node);
                 break;
+            case JavaScriptSyntaxKind.Keyword:
+                VisitJavaScriptKeywordSyntax((JavaScriptKeywordSyntax)node);
+                break;
         }
     }
 
@@ -31,5 +35,10 @@ public class JavaScriptSyntaxWalker
     private void VisitJavaScriptCommentSyntax(JavaScriptCommentSyntax node)
     {
         JavaScriptCommentSyntaxes.Add(node);
+    }
+    
+    private void VisitJavaScriptKeywordSyntax(JavaScriptKeywordSyntax node)
+    {
+        JavaScriptKeywordSyntaxes.Add(node);
     }
 }

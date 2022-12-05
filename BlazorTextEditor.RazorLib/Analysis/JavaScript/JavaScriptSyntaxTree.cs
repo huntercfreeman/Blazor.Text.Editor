@@ -33,16 +33,16 @@ public class JavaScriptSyntaxTree
                 
                 documentChildren.Add(javaScriptCommentSyntax);
             }
+            else
+            {
+                if (TryReadKeyword(stringWalker, diagnosticBag, out var javaScriptKeywordSyntax) &&
+                    javaScriptKeywordSyntax is not null)
+                {
+                    documentChildren.Add(javaScriptKeywordSyntax);
+                }
+            }
             
             /*
-             * comment:
-             *     if (currentCharacter == )
-             *         if (nextCharacter == '/')
-             *             var javaScriptSingleLineCommentSyntax = readSingleLineComment();
-             *             documentChildren.Add(javaScriptSingleLineCommentSyntax);
-             *         else if (nextCharacter == '*')
-             *            var javaScriptMultiLineCommentSyntax = readMultiLineComment();
-             *            documentChildren.Add(javaScriptMultiLineCommentSyntax);
              * keyword:
              *     if (listOfKeywords.Contains(nextWord))
              *         var javaScriptKeywordSyntax = readKeyword();
@@ -170,5 +170,42 @@ public class JavaScriptSyntaxTree
         
         return new JavaScriptStringSyntax(
             commentTextEditorTextSpan);
+    }
+    
+    /// <summary>
+    /// currentCharacterIn:<br/>
+    /// -Any CurrentCharacter value is valid as this method is 'try'
+    /// </summary>
+    private static bool TryReadKeyword(
+        StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag, 
+        out JavaScriptKeywordSyntax? javaScriptKeywordSyntax)
+    {
+        var wordTuple = stringWalker.ConsumeWord();
+            
+        var foundKeyword = JavaScriptKeywords.ALL
+            .FirstOrDefault(keyword =>
+                keyword == wordTuple.value);
+        
+        if (foundKeyword is not null)
+        {
+            javaScriptKeywordSyntax = new JavaScriptKeywordSyntax(
+                wordTuple.textSpan with
+                {
+                    DecorationByte =
+                    (byte)JavaScriptDecorationKind.Keyword
+                });
+
+            return true;
+        }
+
+        if (wordTuple.textSpan.StartingIndexInclusive != -1)
+        {
+            // backtrack by the length of the word as it was not an actual keyword.
+            stringWalker.BacktrackRange(wordTuple.value.Length);
+        }
+        
+        javaScriptKeywordSyntax = null;
+        return false;
     }
 }

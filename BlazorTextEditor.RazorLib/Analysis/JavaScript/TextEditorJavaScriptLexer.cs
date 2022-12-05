@@ -24,6 +24,10 @@ public class TextEditorJavaScriptLexer : ILexer
             .AddRange(javaScriptSyntaxWalker.JavaScriptCommentSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
+        textEditorTextSpans
+            .AddRange(javaScriptSyntaxWalker.JavaScriptKeywordSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }
 }
