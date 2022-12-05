@@ -13,6 +13,7 @@ public class TextEditorJavaScriptDecorationMapper : IDecorationMapper
             JavaScriptDecorationKind.None => string.Empty,
             JavaScriptDecorationKind.Keyword => "bte_keyword",
             JavaScriptDecorationKind.String => "bte_string-literal",
+            JavaScriptDecorationKind.Comment => "bte_comment",
             _ => string.Empty,
         };
     }

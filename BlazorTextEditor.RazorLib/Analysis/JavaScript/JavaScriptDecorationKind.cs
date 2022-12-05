@@ -6,4 +6,5 @@ public enum JavaScriptDecorationKind
     Keyword,
     Error,
     String,
+    Comment
 }

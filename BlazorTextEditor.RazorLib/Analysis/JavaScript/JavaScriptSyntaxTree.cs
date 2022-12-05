@@ -27,6 +27,12 @@ public class JavaScriptSyntaxTree
                 
                 documentChildren.Add(javaScriptCommentSyntax);
             }
+            else if (stringWalker.CheckForSubstring(JavaScriptFacts.COMMENT_MULTI_LINE_START))
+            {
+                var javaScriptCommentSyntax = ReadCommentMultiLine(stringWalker, diagnosticBag);
+                
+                documentChildren.Add(javaScriptCommentSyntax);
+            }
             
             /*
              * comment:
@@ -124,7 +130,43 @@ public class JavaScriptSyntaxTree
         var commentTextEditorTextSpan = new TextEditorTextSpan(
             startingPositionIndex,
             stringWalker.PositionIndex,
-            (byte)JavaScriptDecorationKind.String);
+            (byte)JavaScriptDecorationKind.Comment);
+        
+        return new JavaScriptStringSyntax(
+            commentTextEditorTextSpan);
+    }
+    
+    /// <summary>
+    /// currentCharacterIn:<br/>
+    /// -<see cref="JavaScriptFacts.COMMENT_MULTI_LINE_START"/>
+    /// </summary>
+    private static JavaScriptStringSyntax ReadCommentMultiLine(
+        StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag)
+    {
+        var startingPositionIndex = stringWalker.PositionIndex;
+
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            if (stringWalker.CheckForSubstring(JavaScriptFacts.COMMENT_MULTI_LINE_END))
+                break;
+        }
+
+        if (stringWalker.IsEof)
+        {
+            diagnosticBag.ReportEndOfFileUnexpected(
+                new TextEditorTextSpan(
+                    startingPositionIndex,
+                    stringWalker.PositionIndex,
+                    (byte)JavaScriptDecorationKind.Error));
+        }
+
+        var commentTextEditorTextSpan = new TextEditorTextSpan(
+            startingPositionIndex,
+            stringWalker.PositionIndex + JavaScriptFacts.COMMENT_MULTI_LINE_END.Length,
+            (byte)JavaScriptDecorationKind.Comment);
         
         return new JavaScriptStringSyntax(
             commentTextEditorTextSpan);
