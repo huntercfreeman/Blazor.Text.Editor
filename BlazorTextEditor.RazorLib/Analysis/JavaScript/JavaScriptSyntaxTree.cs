@@ -21,14 +21,16 @@ public class JavaScriptSyntaxTree
                 
                 documentChildren.Add(javaScriptStringSyntax);
             }
+            else if (stringWalker.CheckForSubstring(JavaScriptFacts.COMMENT_SINGLE_LINE_START))
+            {
+                var javaScriptCommentSyntax = ReadCommentSingleLine(stringWalker, diagnosticBag);
+                
+                documentChildren.Add(javaScriptCommentSyntax);
+            }
             
             /*
-             * string:
-             *     if (currentCharacter == '"')
-             *         var javaScriptStringSyntax = readString(stringWalker)
-             *         documentChildren.Add(javaScriptStringSyntax);
              * comment:
-             *     if (currentCharacter == '/')
+             *     if (currentCharacter == )
              *         if (nextCharacter == '/')
              *             var javaScriptSingleLineCommentSyntax = readSingleLineComment();
              *             documentChildren.Add(javaScriptSingleLineCommentSyntax);
@@ -64,9 +66,7 @@ public class JavaScriptSyntaxTree
         StringWalker stringWalker,
         TextEditorDiagnosticBag diagnosticBag)
     {
-        // var example = "apple";
-
-        var startingPositionIndex = stringWalker.PositionIndex + 1;
+        var startingPositionIndex = stringWalker.PositionIndex;
 
         while (!stringWalker.IsEof)
         {
@@ -87,10 +87,46 @@ public class JavaScriptSyntaxTree
 
         var stringTextEditorTextSpan = new TextEditorTextSpan(
             startingPositionIndex,
-            stringWalker.PositionIndex,
+            stringWalker.PositionIndex + 1,
             (byte)JavaScriptDecorationKind.String);
         
         return new JavaScriptStringSyntax(
             stringTextEditorTextSpan);
+    }
+    
+    /// <summary>
+    /// currentCharacterIn:<br/>
+    /// -<see cref="JavaScriptFacts.COMMENT_SINGLE_LINE_START"/>
+    /// </summary>
+    private static JavaScriptStringSyntax ReadCommentSingleLine(
+        StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag)
+    {
+        var startingPositionIndex = stringWalker.PositionIndex;
+
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            if (JavaScriptFacts.COMMENT_SINGLE_LINE_ENDINGS.Contains(stringWalker.CurrentCharacter))
+                break;
+        }
+
+        if (stringWalker.IsEof)
+        {
+            diagnosticBag.ReportEndOfFileUnexpected(
+                new TextEditorTextSpan(
+                    startingPositionIndex,
+                    stringWalker.PositionIndex,
+                    (byte)JavaScriptDecorationKind.Error));
+        }
+
+        var commentTextEditorTextSpan = new TextEditorTextSpan(
+            startingPositionIndex,
+            stringWalker.PositionIndex,
+            (byte)JavaScriptDecorationKind.String);
+        
+        return new JavaScriptStringSyntax(
+            commentTextEditorTextSpan);
     }
 }

@@ -348,29 +348,30 @@ public partial class TextEditorBase
     /// </summary>
     public void ApplyDecorationRange(IEnumerable<TextEditorTextSpan> textEditorTextSpans)
     {
+        var positionsPainted = new HashSet<int>();
+        
         foreach (var textEditorTextSpan in textEditorTextSpans)
         {
             for (var i = textEditorTextSpan.StartingIndexInclusive; i < textEditorTextSpan.EndingIndexExclusive; i++)
+            {
                 _content[i].DecorationByte = textEditorTextSpan.DecorationByte;
+
+                positionsPainted.Add(i);
+            }
+        }
+
+        for (var i = 0; i < _content.Count - 1; i++)
+        {
+            if (!positionsPainted.Contains(i))
+            {
+                // DecorationByte of 0 is to be 'None'
+                _content[i].DecorationByte = 0;
+            }
         }
     }
 
-    public async Task ApplySyntaxHighlightingAsync(bool clearSyntaxHighlightingBeforeApplication = true)
+    public async Task ApplySyntaxHighlightingAsync()
     {
-        // TODO: this did not work out it caused flashing colors to occur find other way to clear old syntax highlighting
-        //
-        // if (clearSyntaxHighlightingBeforeApplication)
-        // {
-        //     ApplyDecorationRange(new []
-        //     {
-        //         new TextEditorTextSpan(
-        //             0,
-        //             _content.Count,
-        //             // 0 is decoration none
-        //             0)
-        //     });
-        // }
-
         var textEditorTextSpans = await Lexer.Lex(GetAllText());
 
         ApplyDecorationRange(textEditorTextSpans);

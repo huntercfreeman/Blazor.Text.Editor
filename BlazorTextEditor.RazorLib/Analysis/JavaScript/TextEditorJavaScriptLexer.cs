@@ -14,8 +14,16 @@ public class TextEditorJavaScriptLexer : ILexer
 
         javaScriptSyntaxWalker.Visit(javaScriptSyntaxUnit.JavaScriptDocumentSyntax);
 
-        return Task.FromResult(javaScriptSyntaxWalker.JavaScriptStringSyntaxes
-            .Select(x => x.TextEditorTextSpan)
-            .ToImmutableArray());
+        var textEditorTextSpans = new List<TextEditorTextSpan>();
+
+        textEditorTextSpans
+            .AddRange(javaScriptSyntaxWalker.JavaScriptStringSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(javaScriptSyntaxWalker.JavaScriptCommentSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }
 }
