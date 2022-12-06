@@ -10,7 +10,7 @@ public class TextEditorFSharpLexer : ILexer
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
         var textEditorTextSpans = 
-            TypeScriptSyntaxTree.ParseText(text);
+            FSharpSyntaxTree.ParseText(text);
 
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }
