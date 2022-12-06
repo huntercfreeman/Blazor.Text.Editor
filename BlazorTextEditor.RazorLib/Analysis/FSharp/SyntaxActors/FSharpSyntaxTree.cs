@@ -51,7 +51,7 @@ public class FSharpSyntaxTree
              *         documentChildren.Add(fSharpKeywordSyntax);
              */
             
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
         }
 
         var fSharpDocumentSyntax = new FSharpDocumentSyntax(
@@ -78,7 +78,7 @@ public class FSharpSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CurrentCharacter == FSharpFacts.STRING_ENDING_CHARACTER)
                 break;
@@ -114,7 +114,7 @@ public class FSharpSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (FSharpFacts.COMMENT_SINGLE_LINE_ENDINGS.Contains(stringWalker.CurrentCharacter))
                 break;
@@ -150,7 +150,7 @@ public class FSharpSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CheckForSubstring(FSharpFacts.COMMENT_MULTI_LINE_END))
                 break;

@@ -47,7 +47,7 @@ public static class HtmlSyntaxTree
     {
         /// <summary>
         ///     Invocation of this method requires the
-        ///     stringWalker to have <see cref="StringWalker.Peek" />
+        ///     stringWalker to have <see cref="StringWalker.PeekCharacter" />
         ///     of 0 be equal to
         ///     <see cref="HtmlFacts.OPEN_TAG_BEGINNING" />
         /// </summary>
@@ -61,13 +61,13 @@ public static class HtmlSyntaxTree
             var tagBuilder = new TagSyntax.TagSyntaxBuilder();
 
             // HtmlFacts.TAG_OPENING_CHARACTER
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             // Example: <!DOCTYPE html>
-            if (stringWalker.Peek(0) == HtmlFacts.SPECIAL_HTML_TAG)
+            if (stringWalker.PeekCharacter(0) == HtmlFacts.SPECIAL_HTML_TAG)
             {
                 // HtmlFacts.SPECIAL_HTML_TAG_CHARACTER
-                stringWalker.Consume();
+                stringWalker.ReadCharacter();
 
                 tagBuilder.HasSpecialHtmlCharacter = true;
             }
@@ -85,7 +85,7 @@ public static class HtmlSyntaxTree
                 // Skip Whitespace
                 stringWalker.WhileNotEndOfFile(() =>
                 {
-                    var consumedCharacter = stringWalker.Consume();
+                    var consumedCharacter = stringWalker.ReadCharacter();
 
                     if (WhitespaceFacts.ALL.Contains(
                             consumedCharacter))
@@ -109,7 +109,7 @@ public static class HtmlSyntaxTree
                 // Eager Skipping of Whitespace
                 // results in the StringWalker going
                 // 1 PositionIndex further than is wanted
-                _ = stringWalker.Backtrack();
+                _ = stringWalker.BacktrackCharacter();
 
                 if (stringWalker.CheckForSubstring(HtmlFacts.OPEN_TAG_WITH_CHILD_CONTENT_ENDING))
                 {
@@ -118,7 +118,7 @@ public static class HtmlSyntaxTree
 
                     // Skip the '>' character to set stringWalker at the first
                     // character of the child content
-                    _ = stringWalker.Consume();
+                    _ = stringWalker.ReadCharacter();
 
                     tagBuilder.ChildHtmlSyntaxes = ParseTagChildContent(
                         stringWalker,
@@ -137,7 +137,7 @@ public static class HtmlSyntaxTree
                 }
                 else if (stringWalker.CheckForSubstring(HtmlFacts.OPEN_TAG_SELF_CLOSING_ENDING))
                 {
-                    _ = stringWalker.ConsumeRange(
+                    _ = stringWalker.ReadRange(
                         HtmlFacts.OPEN_TAG_SELF_CLOSING_ENDING
                             .Length);
 
@@ -148,7 +148,7 @@ public static class HtmlSyntaxTree
                 }
                 else if (stringWalker.CheckForSubstring(HtmlFacts.CLOSE_TAG_WITH_CHILD_CONTENT_BEGINNING))
                 {
-                    _ = stringWalker.ConsumeRange(
+                    _ = stringWalker.ReadRange(
                         HtmlFacts.CLOSE_TAG_WITH_CHILD_CONTENT_BEGINNING
                             .Length);
 
@@ -168,7 +168,7 @@ public static class HtmlSyntaxTree
                                     stringWalker.PositionIndex,
                                     (byte)HtmlDecorationKind.TagName));
 
-                            _ = stringWalker.ConsumeRange(
+                            _ = stringWalker.ReadRange(
                                 HtmlFacts.CLOSE_TAG_WITH_CHILD_CONTENT_ENDING
                                     .Length);
 
@@ -214,7 +214,7 @@ public static class HtmlSyntaxTree
 
         /// <summary>
         ///     Invocation of this method requires the
-        ///     stringWalker to have <see cref="StringWalker.Peek" />
+        ///     stringWalker to have <see cref="StringWalker.PeekCharacter" />
         ///     of 0 be equal to the first
         ///     character that is part of the tag's name
         /// </summary>
@@ -419,7 +419,7 @@ public static class HtmlSyntaxTree
             // Move to the first whitespace or end of opening tag
             while (!stringWalker.IsEof)
             {
-                _ = stringWalker.Consume();
+                _ = stringWalker.ReadCharacter();
 
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
                     HtmlFacts.OPEN_TAG_ENDING_OPTIONS
@@ -440,13 +440,13 @@ public static class HtmlSyntaxTree
             // When ParseAttributeName is invoked
             // the PositionIndex
             // is always 1 character too far
-            _ = stringWalker.Backtrack();
+            _ = stringWalker.BacktrackCharacter();
 
             var startingPositionIndex = stringWalker.PositionIndex;
             
             while (!stringWalker.IsEof)
             {
-                _ = stringWalker.Consume();
+                _ = stringWalker.ReadCharacter();
 
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
                     HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter)
@@ -474,7 +474,7 @@ public static class HtmlSyntaxTree
             
             while (!stringWalker.IsEof)
             {
-                _ = stringWalker.Consume();
+                _ = stringWalker.ReadCharacter();
 
                 // Skip whitespace / attribute name ending '=' character
                 if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) &&
@@ -487,7 +487,7 @@ public static class HtmlSyntaxTree
             
             while (!stringWalker.IsEof)
             {
-                _ = stringWalker.Consume();
+                _ = stringWalker.ReadCharacter();
 
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
                     HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter ||
@@ -512,14 +512,14 @@ public static class HtmlSyntaxTree
             
             while (!stringWalker.IsEof)
             {
-                _ = stringWalker.Consume();
+                _ = stringWalker.ReadCharacter();
                 
                 if (stringWalker.CheckForSubstring(HtmlFacts.COMMENT_TAG_ENDING))
                     break;
             }
 
             // Skip the remaining characters in the comment tag ending string
-            _ = stringWalker.ConsumeRange(HtmlFacts.COMMENT_TAG_ENDING.Length - 1);
+            _ = stringWalker.ReadRange(HtmlFacts.COMMENT_TAG_ENDING.Length - 1);
             
             var commentTagTextSpan = new TextEditorTextSpan(
                 startingPositionIndex,

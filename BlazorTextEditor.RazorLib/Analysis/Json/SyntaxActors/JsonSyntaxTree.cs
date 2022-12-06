@@ -38,7 +38,7 @@ public class JsonSyntaxTree
                 jsonDocumentChildren.Add(jsonObjectSyntax);
             }
 
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
         }
 
         var jsonDocumentSyntax = new JsonDocumentSyntax(
@@ -77,13 +77,13 @@ public class JsonSyntaxTree
         
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             // Skip whitespace
             while (!stringWalker.IsEof)
             {
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
-                    _ = stringWalker.Consume();
+                    _ = stringWalker.ReadCharacter();
                 else
                     break;
             }
@@ -105,7 +105,7 @@ public class JsonSyntaxTree
                 while (!stringWalker.IsEof)
                 {
                     if (JsonFacts.PROPERTY_DELIMITER_BETWEEN_KEY_AND_VALUE != stringWalker.CurrentCharacter)
-                        _ = stringWalker.Consume();
+                        _ = stringWalker.ReadCharacter();
                     else
                         break;
                 }
@@ -192,7 +192,7 @@ public class JsonSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (JsonFacts.PROPERTY_KEY_END == stringWalker.CurrentCharacter)
                 break;
@@ -299,13 +299,13 @@ public class JsonSyntaxTree
         
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             // Skip whitespace
             while (!stringWalker.IsEof)
             {
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
-                    _ = stringWalker.Consume();
+                    _ = stringWalker.ReadCharacter();
                 else
                     break;
             }
@@ -350,7 +350,7 @@ public class JsonSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (JsonFacts.STRING_END == stringWalker.CurrentCharacter)
                 break;

@@ -53,7 +53,7 @@ public class JavaScriptSyntaxTree
              *         documentChildren.Add(javaScriptKeywordSyntax);
              */
             
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
         }
 
         var javaScriptDocumentSyntax = new JavaScriptDocumentSyntax(
@@ -80,7 +80,7 @@ public class JavaScriptSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CurrentCharacter == JavaScriptFacts.STRING_ENDING_CHARACTER)
                 break;
@@ -116,7 +116,7 @@ public class JavaScriptSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (JavaScriptFacts.COMMENT_SINGLE_LINE_ENDINGS.Contains(stringWalker.CurrentCharacter))
                 break;
@@ -152,7 +152,7 @@ public class JavaScriptSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CheckForSubstring(JavaScriptFacts.COMMENT_MULTI_LINE_END))
                 break;

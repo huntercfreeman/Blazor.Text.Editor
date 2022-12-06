@@ -19,7 +19,7 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        _ = stringWalker.Consume();
+        _ = stringWalker.ReadCharacter();
 
         string? matchedOn = null;
 
@@ -108,7 +108,7 @@ public class RazorSyntaxTree
         
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
                 seenCodeBlockStarts++;
@@ -118,9 +118,7 @@ public class RazorSyntaxTree
                 seenCodeBlockStarts--;
 
                 if (seenCodeBlockStarts == 0)
-                {
                     break;
-                }
             }
         }
         
@@ -156,7 +154,29 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        throw new NotImplementedException();
+        var startingPositionIndex = stringWalker.PositionIndex;
+        
+        // Enters the while loop on the '('
+        var seenExplicitExpressionStarts = 1;
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
+                seenExplicitExpressionStarts++;
+            
+            if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_END)
+            {
+                seenExplicitExpressionStarts--;
+
+                if (seenExplicitExpressionStarts == 0)
+                    break;
+            }
+        }
+        
+        // TODO: Syntax highlighting
+        return new List<TagSyntax>();
     }
 
     /// <summary>
@@ -167,7 +187,10 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        throw new NotImplementedException();
+        var startingPositionIndex = stringWalker.PositionIndex;
+        
+        // TODO: This method needs to break the a while loop on whitespace EXCEPT in the cases where the ending is obvious such as a method invocation
+        return new List<TagSyntax>();
     }
 
     /// <summary>
@@ -194,7 +217,7 @@ public class RazorSyntaxTree
                         (byte)HtmlDecorationKind.InjectedLanguageFragment)));
 
             _ = stringWalker
-                .ConsumeRange(matchedOn.Length);
+                .ReadRange(matchedOn.Length);
         }
 
         // TODO: See the "I expect to use a switch here" comment. For now just return and revisit this.
@@ -260,7 +283,7 @@ public class RazorSyntaxTree
                         (byte)HtmlDecorationKind.InjectedLanguageFragment)));
 
             _ = stringWalker
-                .ConsumeRange(matchedOn.Length);
+                .ReadRange(matchedOn.Length);
         }
 
         // TODO: See the "Perhaps a switch is needed here" comment. For now just return and revisit this.
@@ -300,6 +323,22 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        throw new NotImplementedException();
+        var startingPositionIndex = stringWalker.PositionIndex;
+        
+        // Enters the while loop on the '*'
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            if (stringWalker.CurrentCharacter == RazorFacts.COMMENT_END &&
+               stringWalker.NextCharacter.ToString() == RazorFacts.TRANSITION_SUBSTRING)
+            {
+                break;
+            }
+        }
+        
+        // TODO: Syntax highlighting
+        return new List<TagSyntax>();
     }
 }

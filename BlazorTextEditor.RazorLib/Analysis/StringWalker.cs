@@ -46,16 +46,16 @@ public class StringWalker
     public int PositionIndex { get; private set; }
 
     /// <summary>
-    ///     Returns <see cref="Peek" /> invoked with the value of zero
+    ///     Returns <see cref="PeekCharacter" /> invoked with the value of zero
     /// </summary>
-    public char CurrentCharacter => Peek(0);
+    public char CurrentCharacter => PeekCharacter(0);
     /// <summary>
-    ///     Returns <see cref="Peek" /> invoked with the value of one
+    ///     Returns <see cref="PeekCharacter" /> invoked with the value of one
     /// </summary>
-    public char NextCharacter => Peek(1);
+    public char NextCharacter => PeekCharacter(1);
 
     /// <summary>
-    ///     Starting with <see cref="Peek" /> evaluated at 0
+    ///     Starting with <see cref="PeekCharacter" /> evaluated at 0
     ///     return that and the rest of the <see cref="_content" />
     ///     <br /><br />
     ///     <see cref="RemainingText" /> => _content.Substring(PositionIndex);
@@ -77,7 +77,7 @@ public class StringWalker
     ///     Otherwise, <see cref="ParserFacts.END_OF_FILE" /> is returned and
     ///     the value of <see cref="PositionIndex" /> is unchanged.
     /// </summary>
-    public char Consume()
+    public char ReadCharacter()
     {
         if (PositionIndex >= _content.Length)
             return ParserFacts.END_OF_FILE;
@@ -97,7 +97,7 @@ public class StringWalker
     ///     the value of <see cref="PositionIndex" /> is unchanged.
     /// </summary>
     /// <param name="offset">Must be > -1</param>
-    public char Peek(int offset)
+    public char PeekCharacter(int offset)
     {
         if (offset <= -1)
             throw new ApplicationException($"{nameof(offset)} must be > -1");
@@ -121,40 +121,40 @@ public class StringWalker
     /// </summary>
     /// <returns>
     ///     The character one would get
-    ///     if one invoked <see cref="Backtrack" /> and then immediately
-    ///     afterwards invoked <see cref="Peek" /> with a value of 0 passed in.
+    ///     if one invoked <see cref="BacktrackCharacter" /> and then immediately
+    ///     afterwards invoked <see cref="PeekCharacter" /> with a value of 0 passed in.
     /// </returns>
-    public char Backtrack()
+    public char BacktrackCharacter()
     {
         if (PositionIndex == 0)
             return ParserFacts.END_OF_FILE;
 
         PositionIndex--;
 
-        return Peek(0);
+        return PeekCharacter(0);
     }
 
     /// <summary>
     ///     Iterates a counter from 0 until the counter is equal to <see cref="length" />.
     ///     <br /><br />
-    ///     Each iteration <see cref="Consume" /> will be invoked.
+    ///     Each iteration <see cref="ReadCharacter" /> will be invoked.
     ///     <br /><br />
-    ///     If an iteration's invocation of <see cref="Consume" /> returned
+    ///     If an iteration's invocation of <see cref="ReadCharacter" /> returned
     ///     <see cref="ParserFacts.END_OF_FILE" /> then the method will short circuit
     ///     and return regardless of whether it finished iterating to <see cref="length" />
     ///     or not.
     /// </summary>
     /// <returns>
-    ///     The cumulative string that was built from invoking <see cref="Consume" />
+    ///     The cumulative string that was built from invoking <see cref="ReadCharacter" />
     ///     <see cref="length" /> times.
     /// </returns>
-    public string ConsumeRange(int length)
+    public string ReadRange(int length)
     {
         var consumeBuilder = new StringBuilder();
 
         for (var i = 0; i < length; i++)
         {
-            var currentCharacter = Consume();
+            var currentCharacter = ReadCharacter();
 
             consumeBuilder.Append(currentCharacter);
 
@@ -168,16 +168,16 @@ public class StringWalker
     /// <summary>
     ///     Iterates a counter from 0 until the counter is equal to <see cref="length" />.
     ///     <br /><br />
-    ///     Each iteration <see cref="Peek" /> will be invoked using the
+    ///     Each iteration <see cref="PeekCharacter" /> will be invoked using the
     ///     (<see cref="offset" /> + counter).
     ///     <br /><br />
-    ///     If an iteration's invocation of <see cref="Peek" /> returned
+    ///     If an iteration's invocation of <see cref="PeekCharacter" /> returned
     ///     <see cref="ParserFacts.END_OF_FILE" /> then the method will short circuit
     ///     and return regardless of whether it finished iterating to <see cref="length" />
     ///     or not.
     /// </summary>
     /// <returns>
-    ///     The cumulative string that was built from invoking <see cref="Peek" />
+    ///     The cumulative string that was built from invoking <see cref="PeekCharacter" />
     ///     <see cref="length" /> times.
     /// </returns>
     public string PeekRange(int offset, int length)
@@ -186,7 +186,7 @@ public class StringWalker
 
         for (var i = 0; i < length; i++)
         {
-            var currentCharacter = Peek(offset + i);
+            var currentCharacter = PeekCharacter(offset + i);
 
             peekBuilder.Append(currentCharacter);
 
@@ -200,15 +200,15 @@ public class StringWalker
     /// <summary>
     ///     Iterates a counter from 0 until the counter is equal to <see cref="length" />.
     ///     <br /><br />
-    ///     Each iteration <see cref="Backtrack" /> will be invoked using the.
+    ///     Each iteration <see cref="BacktrackCharacter" /> will be invoked using the.
     ///     <br /><br />
-    ///     If an iteration's invocation of <see cref="Backtrack" /> returned
+    ///     If an iteration's invocation of <see cref="BacktrackCharacter" /> returned
     ///     <see cref="ParserFacts.END_OF_FILE" /> then the method will short circuit
     ///     and return regardless of whether it finished iterating to <see cref="length" />
     ///     or not.
     /// </summary>
     /// <returns>
-    ///     The cumulative string that was built from invoking <see cref="Backtrack" />
+    ///     The cumulative string that was built from invoking <see cref="BacktrackCharacter" />
     ///     <see cref="length" /> times.
     /// </returns>
     public string BacktrackRange(int length)
@@ -223,9 +223,9 @@ public class StringWalker
                 return backtrackBuilder.ToString();
             }
 
-            Backtrack();
+            BacktrackCharacter();
 
-            backtrackBuilder.Append(Peek(0));
+            backtrackBuilder.Append(PeekCharacter(0));
         }
 
         return backtrackBuilder.ToString();
@@ -271,7 +271,7 @@ public class StringWalker
             if (shouldBreakFunc.Invoke())
                 break;
 
-            _ = Consume();
+            _ = ReadCharacter();
         }
     }
     
@@ -326,33 +326,5 @@ public class StringWalker
             PositionIndex,
             0),
                 wordBuilder.ToString());
-    }
-    
-    /// <summary>
-    /// <see cref="SkipWhitespace"/> moves <see cref="PositionIndex"/> such that
-    /// <see cref="CurrentCharacter"/> is a non-whitespace character.
-    /// <br/><br/>
-    /// After invocation of <see cref="SkipWhitespace"/>, one might invoke <see cref="ConsumeWord"/>
-    /// to get <see cref="CurrentCharacter"/> and all of the contiguous
-    /// non-whitespace characters that follow as a string
-    /// </summary>
-    public void SkipWhitespace()
-    {
-        WhileNotEndOfFile(() =>
-        {
-            if (WhitespaceFacts.ALL.Contains(CurrentCharacter))
-            {
-                return false;
-            }
-
-            return true;
-        });
-    }
-
-    public string GetText(TextEditorTextSpan textEditorTextSpan)
-    {
-        return _content.Substring(
-            textEditorTextSpan.StartingIndexInclusive,
-            textEditorTextSpan.EndingIndexExclusive - textEditorTextSpan.StartingIndexInclusive);
     }
 }
