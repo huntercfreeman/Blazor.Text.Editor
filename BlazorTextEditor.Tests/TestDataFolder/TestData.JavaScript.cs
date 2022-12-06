@@ -4,10 +4,16 @@ public static partial class TestData
 {
     public static class JavaScript
     {
-        public const string EXAMPLE_TEXT_28_LINES = @"// program to perform intersection between two arrays using Set
+        public const string EXAMPLE_TEXT = @"// program to perform intersection between two arrays using Set
 // intersection contains the elements of array1 that are also in array2
 
 let testString = ""string syntax highlighting"";
+
+/* Multi Line Comment */
+
+/*
+	Another Multi Line Comment
+*/
 
 function performIntersection(arr1, arr2) {
 
