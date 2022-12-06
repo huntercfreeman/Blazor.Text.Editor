@@ -409,13 +409,13 @@ public class JsonSyntaxTree
                 return new JsonNumberSyntax(new TextEditorTextSpan(
                     startingPositionIndex,
                     stringWalker.PositionIndex,
-                    (byte)JsonDecorationKind.None));
+                    (byte)JsonDecorationKind.Number));
             }
 
             return new JsonIntegerSyntax(new TextEditorTextSpan(
                 startingPositionIndex,
                 stringWalker.PositionIndex,
-                (byte)JsonDecorationKind.None));
+                (byte)JsonDecorationKind.Integer));
         }
     }
 }
