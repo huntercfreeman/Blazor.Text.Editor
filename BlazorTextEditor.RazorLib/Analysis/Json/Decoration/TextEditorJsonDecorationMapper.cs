@@ -12,8 +12,8 @@ public class TextEditorJsonDecorationMapper : IDecorationMapper
         {
             JsonDecorationKind.PropertyKey => "bte_json-property-key",
             JsonDecorationKind.String => "bte_string-literal",
-            JsonDecorationKind.Number => string.Empty,
-            JsonDecorationKind.Integer => string.Empty,
+            JsonDecorationKind.Number => "bte_number",
+            JsonDecorationKind.Integer => "bte_integer",
             JsonDecorationKind.Keyword => "bte_keyword",
             JsonDecorationKind.LineComment => "bte_comment",
             JsonDecorationKind.BlockComment => "bte_comment",
