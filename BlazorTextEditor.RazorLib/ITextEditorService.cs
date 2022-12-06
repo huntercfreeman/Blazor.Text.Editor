@@ -18,6 +18,8 @@ using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -182,8 +184,8 @@ public interface ITextEditorService : IDisposable
     /// that one would prefer leaving it null as this will result
     /// in the default keymap being used.
     /// <br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorJavaScriptLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJavaScriptDecorationMapper"/>
+    /// Used <see cref="ILexer"/>: <see cref="TextEditorTypeScriptLexer"/><br/>
+    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorTypeScriptDecorationMapper"/>
     /// </summary>
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,

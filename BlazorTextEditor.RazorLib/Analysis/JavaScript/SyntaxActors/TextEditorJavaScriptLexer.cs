@@ -1,14 +1,29 @@
 ﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript.Facts;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
 
 public class TextEditorJavaScriptLexer : ILexer
 {
+    private readonly ImmutableArray<string> _keywords;
+
+    public TextEditorJavaScriptLexer(ImmutableArray<string> keywords)
+    {
+        _keywords = keywords;
+    }
+    
+    public TextEditorJavaScriptLexer()
+        : this(JavaScriptKeywords.ALL)
+    {
+    }
+    
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
         var javaScriptSyntaxUnit = 
-            JavaScriptSyntaxTree.ParseText(text);
+            JavaScriptSyntaxTree.ParseText(
+                text, 
+                _keywords);
 
         var javaScriptSyntaxWalker = new JavaScriptSyntaxWalker();
 

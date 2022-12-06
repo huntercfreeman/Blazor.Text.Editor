@@ -12,6 +12,7 @@ using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript.Facts;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Json;
 using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;

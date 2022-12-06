@@ -12,6 +12,8 @@ public class TextEditorTypeScriptDecorationMapper : IDecorationMapper
         {
             TypeScriptDecorationKind.None => string.Empty,
             TypeScriptDecorationKind.Keyword => "bte_keyword",
+            TypeScriptDecorationKind.String => "bte_string-literal",
+            TypeScriptDecorationKind.Comment => "bte_comment",
             _ => string.Empty,
         };
     }

@@ -8,7 +8,9 @@ namespace BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
 
 public class JavaScriptSyntaxTree
 {
-    public static JavaScriptSyntaxUnit ParseText(string content)
+    public static JavaScriptSyntaxUnit ParseText(
+        string content,
+        ImmutableArray<string> keywords)
     {
         var documentChildren = new List<IJavaScriptSyntax>();
         var diagnosticBag = new TextEditorDiagnosticBag();
@@ -37,7 +39,7 @@ public class JavaScriptSyntaxTree
             }
             else
             {
-                if (TryReadKeyword(stringWalker, diagnosticBag, out var javaScriptKeywordSyntax) &&
+                if (TryReadKeyword(stringWalker, diagnosticBag, keywords, out var javaScriptKeywordSyntax) &&
                     javaScriptKeywordSyntax is not null)
                 {
                     documentChildren.Add(javaScriptKeywordSyntax);
@@ -178,14 +180,14 @@ public class JavaScriptSyntaxTree
     /// currentCharacterIn:<br/>
     /// -Any CurrentCharacter value is valid as this method is 'try'
     /// </summary>
-    private static bool TryReadKeyword(
-        StringWalker stringWalker,
-        TextEditorDiagnosticBag diagnosticBag, 
+    private static bool TryReadKeyword(StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag,
+        ImmutableArray<string> keywords,
         out JavaScriptKeywordSyntax? javaScriptKeywordSyntax)
     {
         var wordTuple = stringWalker.ConsumeWord();
             
-        var foundKeyword = JavaScriptKeywords.ALL
+        var foundKeyword = keywords
             .FirstOrDefault(keyword =>
                 keyword == wordTuple.value);
         

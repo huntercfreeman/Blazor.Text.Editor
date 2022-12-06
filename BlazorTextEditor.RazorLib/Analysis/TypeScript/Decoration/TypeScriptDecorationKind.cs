@@ -4,4 +4,7 @@ public enum TypeScriptDecorationKind
 {
     None,
     Keyword,
+    Error,
+    String,
+    Comment
 }
