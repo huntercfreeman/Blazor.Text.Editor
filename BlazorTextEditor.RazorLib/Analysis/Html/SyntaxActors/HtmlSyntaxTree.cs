@@ -390,9 +390,6 @@ public static class HtmlSyntaxTree
                         stringWalker.PositionIndex + 1,
                         (byte)HtmlDecorationKind.InjectedLanguageFragment)));
 
-            // Skip the "@" to give a .razor file example
-            _ = stringWalker.Consume();
-
             injectedLanguageFragmentSyntaxes.AddRange(
                 injectedLanguageDefinition.ParseInjectedLanguageFunc
                     .Invoke(

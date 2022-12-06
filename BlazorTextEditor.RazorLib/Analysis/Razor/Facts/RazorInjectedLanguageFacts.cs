@@ -9,26 +9,6 @@ public static class RazorInjectedLanguageFacts
         RazorInjectedLanguageDefinition = new(
             "@",
             "@@",
-            ParserInjectedLanguageFragmentCSharp
-                .ParseInjectedLanguageFragment,
-            new[]
-            {
-                new InjectedLanguageCodeBlock(
-                    "@",
-                    "{",
-                    "}"),
-                new InjectedLanguageCodeBlock(
-                    "@",
-                    "(",
-                    ")"),
-                new InjectedLanguageCodeBlock(
-                    "@",
-                    // @if (myExpression) { <div>true</div> }
-                    "TODO: any control keyword (like for, if, or switch)",
-                    "}"),
-                new InjectedLanguageCodeBlock(
-                    "@",
-                    "code{",
-                    "}"),
-            });
+            RazorSyntaxTree
+                .ParseInjectedLanguageFragment);
 }

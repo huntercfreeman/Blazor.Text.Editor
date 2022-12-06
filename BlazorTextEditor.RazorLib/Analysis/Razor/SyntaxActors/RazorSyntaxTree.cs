@@ -10,7 +10,7 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 
-public static class ParserInjectedLanguageFragmentCSharp
+public class RazorSyntaxTree
 {
     public static List<TagSyntax> ParseInjectedLanguageFragment(
         StringWalker stringWalker,
@@ -22,6 +22,59 @@ public static class ParserInjectedLanguageFragmentCSharp
         var codeBlockOrExpressionStartingPositionIndex = stringWalker.PositionIndex;
 
         var foundCodeBlock = false;
+
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            if (true)
+            {
+                // Razor Keyword
+                //
+                // Example: if (true) { ... } else { ... }
+            }
+            else if (true)
+            {
+                // Razor Comment
+                //
+                // Example: @* This is a comment*@
+            }
+            else if (true)
+            {
+                // Razor Inline Expression
+                //
+                // Example: @myVariable
+                // Example: @(myVariable)
+
+                if (true)
+                {
+                    // Razor Implicit Inline Expression
+                    //
+                    // Example: @myVariable
+                }
+                else
+                {
+                    // Razor Explicit Inline Expression
+                    //
+                    // Example: @(myVariable)
+                }
+            }
+            else
+            {
+                // Razor Code Block
+                //
+                // NOTE: There might be a mixture
+                // of C# and HTML in the Razor Code Blocks.
+                //
+                // NOTE:
+                // -<text></text>
+                //     Render multiple lines of text without rendering an HTML Element
+                // -@:
+                //     Render a single line of text without rendering an HTML Element
+                // -ANY tag can be used within the razor code blocks
+                //     Example: <div></div> or <MyBlazorComponent/>
+            }
+        }
 
         stringWalker.WhileNotEndOfFile(() =>
         {
