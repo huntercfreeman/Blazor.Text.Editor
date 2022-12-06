@@ -42,6 +42,25 @@ public class RazorSyntaxTree
                 // Razor Keyword
                 //
                 // @page "/counter"
+                
+                // Syntax highlight the keyword as a razor keyword specifically
+                {
+                    injectedLanguageFragmentSyntaxes.Add(
+                        new InjectedLanguageFragmentSyntax(
+                            ImmutableArray<IHtmlSyntax>.Empty,
+                            string.Empty,
+                            new TextEditorTextSpan(
+                                codeBlockOrExpressionStartingPositionIndex,
+                                stringWalker.PositionIndex +
+                                matchedOn.Length,
+                                (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+
+                    _ = stringWalker
+                        .ConsumeRange(matchedOn.Length);
+                }
+
+                // TODO: See the "Perhaps a switch is needed here" comment. For now just return and revisit this.
+                return injectedLanguageFragmentSyntaxes;
 
                 // Perhaps a switch is needed here due to
                 // the keywords having parameters which might vary in type?
@@ -49,24 +68,24 @@ public class RazorSyntaxTree
                 // @page takes a string
                 // what do the others take?
                 // all others take a string or something else?
-                switch (matchedOn)
-                {
-                    case RazorKeywords.PAGE_KEYWORD:
-                        break;
-                    case RazorKeywords.NAMESPACE_KEYWORD:
-                        break;
-                    case RazorKeywords.FUNCTIONS_KEYWORD:
-                        break;
-                    case RazorKeywords.INHERITS_KEYWORD:
-                        break;
-                    case RazorKeywords.MODEL_KEYWORD:
-                        break;
-                    case RazorKeywords.SECTION_KEYWORD:
-                        break;
-                    case RazorKeywords.HELPER_KEYWORD:
-                        break;
-                }
-                
+                //
+                // switch (matchedOn)
+                // {
+                //     case RazorKeywords.PAGE_KEYWORD:
+                //         break;
+                //     case RazorKeywords.NAMESPACE_KEYWORD:
+                //         break;
+                //     case RazorKeywords.FUNCTIONS_KEYWORD:
+                //         break;
+                //     case RazorKeywords.INHERITS_KEYWORD:
+                //         break;
+                //     case RazorKeywords.MODEL_KEYWORD:
+                //         break;
+                //     case RazorKeywords.SECTION_KEYWORD:
+                //         break;
+                //     case RazorKeywords.HELPER_KEYWORD:
+                //         break;
+                // }
             }
             else if (stringWalker.CheckForSubstringRange(
                          CSharpRazorKeywords.ALL,
@@ -76,7 +95,27 @@ public class RazorSyntaxTree
                 // C# Razor Keyword
                 //
                 // Example: if (true) { ... } else { ... }
+                
+                // Syntax highlight the keyword as a razor keyword specifically
+                {
+                    injectedLanguageFragmentSyntaxes.Add(
+                        new InjectedLanguageFragmentSyntax(
+                            ImmutableArray<IHtmlSyntax>.Empty,
+                            string.Empty,
+                            new TextEditorTextSpan(
+                                codeBlockOrExpressionStartingPositionIndex,
+                                stringWalker.PositionIndex +
+                                codeBlock.CodeBlockOpening.Length,
+                                (byte)HtmlDecorationKind.InjectedLanguageFragment)));
 
+                    _ = stringWalker
+                        .ConsumeRange(codeBlock.CodeBlockOpening.Length);
+                }
+
+                // I expect to use a switch here
+                //
+                // an if statement for example would require
+                // a check for an (else if)/(else) block
                 switch (matchedOn)
                 {
                     case CSharpRazorKeywords.CASE_KEYWORD:
@@ -162,22 +201,7 @@ public class RazorSyntaxTree
                 {
                     foundCodeBlock = true;
 
-                    // Track text span of the "{" character (example in .razor files)
-                    // also will track the word "code"
-                    //
-                    // Given these follow an "@" character (example in .razor files)
-                    injectedLanguageFragmentSyntaxes.Add(
-                        new InjectedLanguageFragmentSyntax(
-                            ImmutableArray<IHtmlSyntax>.Empty,
-                            string.Empty,
-                            new TextEditorTextSpan(
-                                codeBlockOrExpressionStartingPositionIndex,
-                                stringWalker.PositionIndex +
-                                codeBlock.CodeBlockOpening.Length,
-                                (byte)HtmlDecorationKind.InjectedLanguageFragment)));
-
-                    _ = stringWalker
-                        .ConsumeRange(codeBlock.CodeBlockOpening.Length);
+                    
 
                     var injectedLanguageOffsetPositionIndex = stringWalker.PositionIndex;
 
