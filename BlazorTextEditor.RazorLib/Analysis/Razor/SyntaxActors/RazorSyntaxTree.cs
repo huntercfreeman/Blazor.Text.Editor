@@ -100,8 +100,33 @@ public class RazorSyntaxTree
         //     Render a single line of text without rendering an HTML Element
         // -ANY tag can be used within the razor code blocks
         //     Example: <div></div> or <MyBlazorComponent/>
+
+        var startingPositionIndex = stringWalker.PositionIndex;
         
-        throw new NotImplementedException();
+        // Enters the while loop on the '{'
+        var seenCodeBlockStarts = 1;
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.Consume();
+
+            if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
+                seenCodeBlockStarts++;
+            
+            if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_END)
+            {
+                seenCodeBlockStarts--;
+
+                if (seenCodeBlockStarts == 0)
+                {
+                    break;
+                }
+            }
+        }
+        
+        // TODO: In the while loop extract all the C# code and use roslyn to syntax highlight it
+        // TODO: In the while loop extract all the HTML code and use TextEditorHtmlLexer.cs to syntax highlight it
+        return new List<TagSyntax>();
     }
 
     private static List<TagSyntax> ReadInlineExpression(
