@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxItems;
+﻿using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxObjects;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Css;
 

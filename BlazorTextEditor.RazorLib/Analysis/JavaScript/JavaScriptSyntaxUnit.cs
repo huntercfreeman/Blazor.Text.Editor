@@ -1,4 +1,6 @@
-﻿namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
+﻿using BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxObjects;
+
+namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
 
 public class JavaScriptSyntaxUnit
 {

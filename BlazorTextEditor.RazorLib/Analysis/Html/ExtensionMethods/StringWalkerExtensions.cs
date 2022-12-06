@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
+﻿using BlazorTextEditor.RazorLib.Analysis.Html.InjectedLanguage;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.ExtensionMethods;
 

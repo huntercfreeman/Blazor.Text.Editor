@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxItems;
+using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Json.Facts;
+using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;

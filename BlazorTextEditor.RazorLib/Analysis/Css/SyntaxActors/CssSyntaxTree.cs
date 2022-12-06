@@ -1,5 +1,8 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxItems;
+using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Css.Facts;
+using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxEnums;
+using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;

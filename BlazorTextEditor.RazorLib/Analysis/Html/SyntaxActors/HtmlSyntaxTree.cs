@@ -3,8 +3,9 @@ using System.Text;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.ExtensionMethods;
 using BlazorTextEditor.RazorLib.Analysis.Html.Facts;
-using BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
-using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxItems;
+using BlazorTextEditor.RazorLib.Analysis.Html.InjectedLanguage;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxEnums;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;

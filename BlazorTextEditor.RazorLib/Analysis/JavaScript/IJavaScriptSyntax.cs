@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxEnums;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.JavaScript;
