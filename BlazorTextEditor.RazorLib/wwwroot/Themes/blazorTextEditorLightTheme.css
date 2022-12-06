@@ -14,8 +14,7 @@
     --bte_keyword-foreground-color: #D26E00;
     --bte_comment-foreground-color: #767676;
     --bte_tag-name-foreground-color: #D26E00;
-    --bte_injected-language-fragment-color: var(--bte_primary-font-color);
-    --bte_injected-language-fragment-background-color: #FBFB64;
+    --bte_injected-language-fragment-color: #d010ce;
     --bte_css-property-name-color: #00A0B4;
     --bte_css-property-value-color: #D26E00;
     --bte_css-identifier-color: #0032F0;
