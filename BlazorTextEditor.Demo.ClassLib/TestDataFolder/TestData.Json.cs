@@ -29,7 +29,7 @@ public static partial class TestData
 ""age"":30,
 ""cars"":[""Ford"", ""BMW"", ""Fiat""]
 }";
-        
+
         /// <summary>
         /// Adhoc test data
         /// </summary>
