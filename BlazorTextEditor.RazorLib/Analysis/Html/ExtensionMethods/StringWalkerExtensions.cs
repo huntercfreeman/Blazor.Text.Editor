@@ -8,7 +8,9 @@ public static class StringWalkerExtensions
         this StringWalker stringWalker,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        return stringWalker.CheckForSubstring(injectedLanguageDefinition.InjectedLanguageCodeBlockTag) &&
-               !stringWalker.CheckForSubstring(injectedLanguageDefinition.InjectedLanguageCodeBlockTagEscaped);
+        var isMatch = stringWalker.CheckForSubstring(injectedLanguageDefinition.InjectedLanguageCodeBlockTag);
+        var isEscaped = stringWalker.CheckForSubstring(injectedLanguageDefinition.InjectedLanguageCodeBlockTagEscaped);
+        
+        return isMatch && !isEscaped;
     }
 }
