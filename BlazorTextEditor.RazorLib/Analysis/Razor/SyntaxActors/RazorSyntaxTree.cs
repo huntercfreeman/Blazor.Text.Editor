@@ -6,12 +6,17 @@ using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.InjectedLanguage;
 using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxObjects;
+using BlazorTextEditor.RazorLib.Analysis.Razor.Facts;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 
 public class RazorSyntaxTree
 {
+    /// <summary>
+    /// currentCharacterIn:<br/>
+    /// - <see cref="RazorInjectedLanguageFacts.RazorInjectedLanguageDefinition.TransitionSubstring"/><br/>
+    /// </summary>
     public static List<TagSyntax> ParseInjectedLanguageFragment(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
@@ -27,9 +32,29 @@ public class RazorSyntaxTree
         {
             _ = stringWalker.Consume();
 
-            if (true)
+            if (stringWalker.CheckForSubstringRange(RazorKeywords.ALL,
+                    out var matchedOn))
             {
                 // Razor Keyword
+                //
+                // @page "/counter"
+
+                switch ()
+                {
+                    
+                }
+                // PAGE_KEYWORD,
+                // NAMESPACE_KEYWORD,
+                // FUNCTIONS_KEYWORD,
+                // INHERITS_KEYWORD,
+                // MODEL_KEYWORD,
+                // SECTION_KEYWORD,
+                // HELPER_KEYWORD,
+            }
+            else if (stringWalker.CheckForSubstringRange(CSharpRazorKeywords.ALL,
+                         out var matchedOn))
+            {
+                // C# Razor Keyword
                 //
                 // Example: if (true) { ... } else { ... }
             }

@@ -1,26 +1,16 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
-using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
+﻿using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.Css;
 using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.FSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.JavaScript;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript.Decoration;
-using BlazorTextEditor.RazorLib.Analysis.JavaScript.Facts;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.Json;
 using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.Svelte.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.TypeScript;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.HelperComponents;
@@ -243,27 +233,6 @@ public class TextEditorService : ITextEditorService
             initialContent,
             new TextEditorTypeScriptLexer(),
             new TextEditorTypeScriptDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
-    }
-    
-    public void RegisterSvelteTextEditor(
-        TextEditorKey textEditorKey,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
-    {
-        var textEditorBase = new TextEditorBase(
-            initialContent,
-            new TextEditorSvelteLexer(),
-            new TextEditorHtmlDecorationMapper(),
             null,
             textEditorKey);
         

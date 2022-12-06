@@ -249,14 +249,18 @@ public class StringWalker
         return peekedSubstring == substring;
     }
 
-    public bool CheckForSubstringRange(ImmutableArray<string> substrings)
+    public bool CheckForSubstringRange(ImmutableArray<string> substrings, out string? matchedOn)
     {
         foreach (var substring in substrings)
         {
             if (CheckForSubstring(substring))
+            {
+                matchedOn = substring;
                 return true;
+            }
         }
 
+        matchedOn = null;
         return false;
     }
 

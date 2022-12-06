@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.Json;
 using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;

@@ -1,5 +1,4 @@
-﻿using Fluxor;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorTextEditor.Demo.ClassLib;
 

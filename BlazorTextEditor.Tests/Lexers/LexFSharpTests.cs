@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.FSharp;
 using BlazorTextEditor.RazorLib.Analysis.FSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;

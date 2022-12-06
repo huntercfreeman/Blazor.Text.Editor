@@ -230,7 +230,8 @@ public static class HtmlSyntaxTree
             stringWalker.WhileNotEndOfFile(() =>
             {
                 if (stringWalker.CheckForSubstringRange(
-                        HtmlFacts.TAG_NAME_STOP_DELIMITERS))
+                        HtmlFacts.TAG_NAME_STOP_DELIMITERS,
+                        out var matchedOn))
                     return true;
 
                 tagNameBuilder.Append(stringWalker.CurrentCharacter);
