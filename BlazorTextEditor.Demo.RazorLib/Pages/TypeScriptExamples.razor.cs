@@ -14,7 +14,7 @@ public partial class TypeScriptExamples : ComponentBase
     {
         TextEditorService.RegisterTypeScriptTextEditor(
             TextEditorFacts.TypeScript.TypeScriptTextEditorKey,
-            TestData.TypeScript.EXAMPLE_TEXT_28_LINES);
+            TestData.TypeScript.EXAMPLE_TEXT);
         
         base.OnInitialized();
     }
