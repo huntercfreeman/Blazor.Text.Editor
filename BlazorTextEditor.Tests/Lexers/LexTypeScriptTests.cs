@@ -17,16 +17,16 @@ public class LexTypeScriptTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(0, 6, 1),
-            new TextEditorTextSpan(31, 35, 1),
-            new TextEditorTextSpan(60, 66, 1),
-            new TextEditorTextSpan(82, 86, 1),
-            new TextEditorTextSpan(108, 113, 1),
-            new TextEditorTextSpan(148, 157, 1),
-            new TextEditorTextSpan(481, 489, 1),
-            new TextEditorTextSpan(556, 562, 1),
-            new TextEditorTextSpan(739, 744, 1),
-            new TextEditorTextSpan(825, 830, 1),
+            new TextEditorTextSpan(0, 6, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(31, 35, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(60, 66, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(82, 86, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(108, 113, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(148, 157, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(481, 489, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(556, 562, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(739, 744, (byte)TypeScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(825, 830, (byte)TypeScriptDecorationKind.Keyword),
         };
         
         var typeScriptLexer = new TextEditorTypeScriptLexer();
@@ -50,8 +50,8 @@ public class LexTypeScriptTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(181, 241, 4),
-            new TextEditorTextSpan(264, 479, 4),
+            new TextEditorTextSpan(181, 241, (byte)TypeScriptDecorationKind.Comment),
+            new TextEditorTextSpan(264, 479, (byte)TypeScriptDecorationKind.Comment),
         };
         
         var javaScriptLexer = new TextEditorTypeScriptLexer();
@@ -75,10 +75,10 @@ public class LexTypeScriptTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(36, 57, 3),
-            new TextEditorTextSpan(87, 105, 3),
-            new TextEditorTextSpan(808, 822, 3),
-            new TextEditorTextSpan(895, 911, 3),
+            new TextEditorTextSpan(36, 57, (byte)TypeScriptDecorationKind.String),
+            new TextEditorTextSpan(87, 105, (byte)TypeScriptDecorationKind.String),
+            new TextEditorTextSpan(808, 822, (byte)TypeScriptDecorationKind.String),
+            new TextEditorTextSpan(895, 911, (byte)TypeScriptDecorationKind.String),
         };
         
         var javaScriptLexer = new TextEditorTypeScriptLexer();

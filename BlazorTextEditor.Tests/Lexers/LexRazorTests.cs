@@ -17,16 +17,16 @@ public class LexRazorTests
 
         var expectedTagNameTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(1, 4, 8),
-            new TextEditorTextSpan(44, 47, 8),
-            new TextEditorTextSpan(76, 78, 8),
-            new TextEditorTextSpan(106, 108, 8),
-            new TextEditorTextSpan(119, 120, 8),
-            new TextEditorTextSpan(154, 155, 8),
-            new TextEditorTextSpan(166, 172, 8),
-            new TextEditorTextSpan(196, 202, 8),
-            new TextEditorTextSpan(210, 213, 8),
-            new TextEditorTextSpan(217, 220, 8),
+            new TextEditorTextSpan(1, 4, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(44, 47, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(76, 78, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(106, 108, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(119, 120, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(154, 155, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(166, 172, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(196, 202, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(210, 213, (byte)HtmlDecorationKind.TagName),
+            new TextEditorTextSpan(217, 220, (byte)HtmlDecorationKind.TagName),
         };
         
         var razorLexer = new TextEditorRazorLexer();
@@ -43,22 +43,22 @@ public class LexRazorTests
     }
     
     [Fact]
-    public async Task LexKeywords()
+    public async Task LexInjectedLanguageKeywords()
     {
         var text = TestData.Razor.EXAMPLE_TEXT_20_LINES
             .ReplaceLineEndings("\n");
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(250, 256, 13),
-            new TextEditorTextSpan(288, 291, 13),
-            new TextEditorTextSpan(293, 296, 13),
-            new TextEditorTextSpan(321, 327, 13),
-            new TextEditorTextSpan(328, 334, 13),
-            new TextEditorTextSpan(344, 347, 13),
-            new TextEditorTextSpan(349, 352, 13),
-            new TextEditorTextSpan(361, 368, 13),
-            new TextEditorTextSpan(369, 373, 13),
+            new TextEditorTextSpan(250, 256, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(288, 291, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(293, 296, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(321, 327, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(328, 334, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(344, 347, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(349, 352, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(361, 368, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
+            new TextEditorTextSpan(369, 373, (byte)HtmlDecorationKind.InjectedLanguageKeyword),
         };
         
         var razorLexer = new TextEditorRazorLexer();

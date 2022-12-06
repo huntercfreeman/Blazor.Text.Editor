@@ -17,12 +17,12 @@ public class LexCSharpTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(0, 9, 5), 
-            new TextEditorTextSpan(35, 41, 5), 
-            new TextEditorTextSpan(42, 47, 5), 
-            new TextEditorTextSpan(62, 68, 5), 
-            new TextEditorTextSpan(69, 73, 5), 
-            new TextEditorTextSpan(99, 105, 5),
+            new TextEditorTextSpan(0, 9, (byte)CSharpDecorationKind.Keyword), 
+            new TextEditorTextSpan(35, 41, (byte)CSharpDecorationKind.Keyword), 
+            new TextEditorTextSpan(42, 47, (byte)CSharpDecorationKind.Keyword), 
+            new TextEditorTextSpan(62, 68, (byte)CSharpDecorationKind.Keyword), 
+            new TextEditorTextSpan(69, 73, (byte)CSharpDecorationKind.Keyword), 
+            new TextEditorTextSpan(99, 105, (byte)CSharpDecorationKind.Keyword),
         };
         
         var cSharpLexer = new TextEditorCSharpLexer();

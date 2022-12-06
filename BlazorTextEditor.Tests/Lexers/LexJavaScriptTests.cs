@@ -18,22 +18,22 @@ public class LexJavaScriptTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(137, 140, 1),
-            new TextEditorTextSpan(246, 254, 1),
-            new TextEditorTextSpan(321, 326, 1),
-            new TextEditorTextSpan(334, 337, 1),
-            new TextEditorTextSpan(353, 358, 1),
-            new TextEditorTextSpan(366, 369, 1),
-            new TextEditorTextSpan(386, 389, 1),
-            new TextEditorTextSpan(420, 423, 1),
-            new TextEditorTextSpan(446, 449, 1),
-            new TextEditorTextSpan(451, 454, 1),
-            new TextEditorTextSpan(481, 483, 1),
-            new TextEditorTextSpan(574, 580, 1),
-            new TextEditorTextSpan(605, 608, 1),
-            new TextEditorTextSpan(627, 632, 1),
-            new TextEditorTextSpan(659, 664, 1),
-            new TextEditorTextSpan(689, 694, 1),
+            new TextEditorTextSpan(137, 140, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(246, 254, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(321, 326, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(334, 337, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(353, 358, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(366, 369, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(386, 389, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(420, 423, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(446, 449, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(451, 454, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(481, 483, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(574, 580, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(605, 608, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(627, 632, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(659, 664, (byte)JavaScriptDecorationKind.Keyword),
+            new TextEditorTextSpan(689, 694, (byte)JavaScriptDecorationKind.Keyword),
         };
         
         var javaScriptLexer = new TextEditorJavaScriptLexer();
@@ -57,11 +57,11 @@ public class LexJavaScriptTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(0, 63, 4),
-            new TextEditorTextSpan(64, 135, 4),
-            new TextEditorTextSpan(185, 209, 4),
-            new TextEditorTextSpan(211, 244, 4),
-            new TextEditorTextSpan(294, 316, 4),
+            new TextEditorTextSpan(0, 63, (byte)JavaScriptDecorationKind.Comment),
+            new TextEditorTextSpan(64, 135, (byte)JavaScriptDecorationKind.Comment),
+            new TextEditorTextSpan(185, 209, (byte)JavaScriptDecorationKind.Comment),
+            new TextEditorTextSpan(211, 244, (byte)JavaScriptDecorationKind.Comment),
+            new TextEditorTextSpan(294, 316, (byte)JavaScriptDecorationKind.Comment),
         };
         
         var javaScriptLexer = new TextEditorJavaScriptLexer();
@@ -85,9 +85,9 @@ public class LexJavaScriptTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(154,182, 3),
-            new TextEditorTextSpan(432,439, 3),
-            new TextEditorTextSpan(617,624, 3),
+            new TextEditorTextSpan(154,182, (byte)JavaScriptDecorationKind.String),
+            new TextEditorTextSpan(432,439, (byte)JavaScriptDecorationKind.String),
+            new TextEditorTextSpan(617,624, (byte)JavaScriptDecorationKind.String),
         };
         
         var javaScriptLexer = new TextEditorJavaScriptLexer();
