@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace BlazorTextEditor.RazorLib.Analysis.Razor.Facts;
+﻿namespace BlazorTextEditor.RazorLib.Analysis.Razor.Facts;
 
 public static class RazorFacts
 {
@@ -11,9 +9,11 @@ public static class RazorFacts
     /// Only valid if follows immediately after <see cref="TRANSITION_SUBSTRING"/>
     /// </summary>
     public const char COMMENT_START = '*';
-    
     /// <summary>
     /// Only valid if is immediately before <see cref="TRANSITION_SUBSTRING"/>
     /// </summary>
     public const char COMMENT_END = '*';
+    
+    public const char CODE_BLOCK_START = '{';
+    public const char CODE_BLOCK_END = '}';
 }

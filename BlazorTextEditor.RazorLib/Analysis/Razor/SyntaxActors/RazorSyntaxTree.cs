@@ -1,7 +1,4 @@
 using System.Collections.Immutable;
-using System.Text;
-using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
-using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.InjectedLanguage;
@@ -22,65 +19,69 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
+        _ = stringWalker.Consume();
 
-        var codeBlockOrExpressionStartingPositionIndex = stringWalker.PositionIndex;
+        string? matchedOn = null;
 
-        var foundCodeBlock = false;
-
-        while (!stringWalker.IsEof)
+        if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
         {
-            _ = stringWalker.Consume();
+            textEditorHtmlDiagnosticBag.Report(
+                DiagnosticLevel.Error,
+                "Whitespace immediately following the Razor transition character is unexpected.",
+                new TextEditorTextSpan(
+                    stringWalker.PositionIndex,
+                    stringWalker.PositionIndex + 1,
+                    (byte)HtmlDecorationKind.None));
 
-            string? matchedOn = null;
-
-            if (stringWalker.CheckForSubstringRange(
-                    RazorKeywords.ALL,
-                    out matchedOn) &&
-                matchedOn is not null)
-            {
-                var aaa = ReadRazorKeyword(
-                    stringWalker,
-                    textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
-            }
-            else if (stringWalker.CheckForSubstringRange(
-                         CSharpRazorKeywords.ALL,
-                         out matchedOn) &&
-                     matchedOn is not null)
-            {
-                var aaa = ReadCSharpRazorKeyword(
-                    stringWalker,
-                    textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
-            }
-            else if (stringWalker.CurrentCharacter == RazorFacts.COMMENT_START)
-            {
-                var aaa = ReadComment(
-                    stringWalker,
-                    textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
-            }
-            else if (true)
-            {
-                var aaa = ReadInlineExpression(
-                    stringWalker,
-                    textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
-            }
-            else
-            {
-                var aaa = ReadCodeBlock(
-                    stringWalker,
-                    textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
-            }
+            return new List<TagSyntax>();
+        }
+        
+        if (stringWalker.CheckForSubstringRange(
+                RazorKeywords.ALL,
+                out matchedOn) &&
+            matchedOn is not null)
+        {
+            return ReadRazorKeyword(
+                stringWalker,
+                textEditorHtmlDiagnosticBag,
+                injectedLanguageDefinition);
+        }
+        
+        if (stringWalker.CheckForSubstringRange(
+                     CSharpRazorKeywords.ALL,
+                     out matchedOn) &&
+                 matchedOn is not null)
+        {
+            return ReadCSharpRazorKeyword(
+                stringWalker,
+                textEditorHtmlDiagnosticBag,
+                injectedLanguageDefinition);
+        }
+        
+        if (stringWalker.CurrentCharacter == RazorFacts.COMMENT_START)
+        {
+            return ReadComment(
+                stringWalker,
+                textEditorHtmlDiagnosticBag,
+                injectedLanguageDefinition);
         }
 
-        return injectedLanguageFragmentSyntaxes;
+        if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
+        {
+            return ReadCodeBlock(
+                stringWalker,
+                textEditorHtmlDiagnosticBag,
+                injectedLanguageDefinition);
+        }
+
+        // TODO: Check for invalid expressions
+        return ReadInlineExpression(
+            stringWalker,
+            textEditorHtmlDiagnosticBag,
+            injectedLanguageDefinition);
     }
 
-    private static object ReadCodeBlock(
+    private static List<TagSyntax> ReadCodeBlock(
         StringWalker stringWalker, 
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag, 
         InjectedLanguageDefinition injectedLanguageDefinition)
@@ -99,7 +100,7 @@ public class RazorSyntaxTree
         //     Example: <div></div> or <MyBlazorComponent/>
     }
 
-    private static object ReadInlineExpression(
+    private static List<TagSyntax> ReadInlineExpression(
         StringWalker stringWalker, 
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag, 
         InjectedLanguageDefinition injectedLanguageDefinition)
@@ -125,7 +126,7 @@ public class RazorSyntaxTree
         }
     }
 
-    private static object ReadImplicitInlineExpression(
+    private static List<TagSyntax> ReadImplicitInlineExpression(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
@@ -135,7 +136,7 @@ public class RazorSyntaxTree
         // Example: @myVariable
     }
     
-    private static object ReadExplicitInlineExpression(
+    private static List<TagSyntax> ReadExplicitInlineExpression(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
@@ -145,7 +146,7 @@ public class RazorSyntaxTree
         // Example: @(myVariable)
     }
 
-    private static object ReadCSharpRazorKeyword(
+    private static List<TagSyntax> ReadCSharpRazorKeyword(
         StringWalker stringWalker, 
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag, 
         InjectedLanguageDefinition injectedLanguageDefinition)
@@ -211,7 +212,7 @@ public class RazorSyntaxTree
                 // }
     }
 
-    private static object ReadRazorKeyword(
+    private static List<TagSyntax> ReadRazorKeyword(
         StringWalker stringWalker, 
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag, 
         InjectedLanguageDefinition injectedLanguageDefinition)
@@ -265,7 +266,7 @@ public class RazorSyntaxTree
                 // }
     }
 
-    private static object ReadComment(
+    private static List<TagSyntax> ReadComment(
         StringWalker stringWalker, 
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag, 
         InjectedLanguageDefinition injectedLanguageDefinition)
