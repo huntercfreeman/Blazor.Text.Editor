@@ -5,8 +5,8 @@ namespace BlazorTextEditor.RazorLib.Analysis.Html.InjectedLanguage;
 public class InjectedLanguageDefinition
 {
     public InjectedLanguageDefinition(
-        string injectedLanguageCodeBlockTag, 
-        string injectedLanguageCodeBlockTagEscaped, 
+        string injectedLanguageCodeBlockTag,
+        string injectedLanguageCodeBlockTagEscaped,
         Func<StringWalker, TextEditorHtmlDiagnosticBag, InjectedLanguageDefinition, List<TagSyntax>> parseInjectedLanguageFunc, 
         InjectedLanguageCodeBlock[] injectedLanguageCodeBlocks)
     {
