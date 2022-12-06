@@ -4,4 +4,5 @@ public enum FSharpDecorationKind
 {
     None,
     Keyword,
+    Comment,
 }

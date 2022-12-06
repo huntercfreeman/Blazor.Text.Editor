@@ -40,4 +40,36 @@ public class LexFSharpTests
 
         Assert.Equal(expectedKeywordTextEditorTextSpans, textEditorTextSpans);
     }
+    
+    [Fact]
+    public async Task LexComments()
+    {
+        var text = TestData.FSharp.EXAMPLE_TEXT_21_LINES
+            .ReplaceLineEndings("\n");
+
+        var expectedKeywordTextEditorTextSpans = new[]
+        {
+            new TextEditorTextSpan(0, 3, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(26, 30, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(65, 68, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(94, 97, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(123, 126, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(129, 131, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(145, 147, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(160, 163, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(247, 250, (byte)FSharpDecorationKind.Comment),
+        };
+        
+        var fSharpLexer = new TextEditorFSharpLexer();
+
+        var textEditorTextSpans = 
+            await fSharpLexer.Lex(text);
+
+        textEditorTextSpans = textEditorTextSpans
+            .Where(x => x.DecorationByte == (byte)FSharpDecorationKind.Comment)
+            .OrderBy(x => x.StartingIndexInclusive)
+            .ToImmutableArray();
+
+        Assert.Equal(expectedKeywordTextEditorTextSpans, textEditorTextSpans);
+    }
 }
