@@ -7,8 +7,8 @@ public static class RazorInjectedLanguageFacts
 {
     public static readonly InjectedLanguageDefinition
         RazorInjectedLanguageDefinition = new(
-            "@",
-            "@@",
+            RazorFacts.TRANSITION_SUBSTRING,
+            RazorFacts.TRANSITION_SUBSTRING_ESCAPED,
             RazorSyntaxTree
                 .ParseInjectedLanguageFragment);
 }
