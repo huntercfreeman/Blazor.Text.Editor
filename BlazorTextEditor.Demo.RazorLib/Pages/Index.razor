@@ -1,5 +1,16 @@
 ﻿@page "/"
 
+@using BlazorTextEditor.RazorLib
+@using BlazorTextEditor.Demo.ClassLib.TextEditor
+
 <PageTitle>Index</PageTitle>
 
 <div>Use the NavMenu to view various TextEditor examples, categorized by file extension.</div>
+
+<TextEditorDisplay TextEditorKey="TextEditorFacts.Razor.RazorTextEditorKey"
+                   FileExtension="Razor"
+                   ClassCssString="bte_demo-text-editor"/>
+
+<TextEditorDisplay TextEditorKey="TextEditorFacts.Svelte.SvelteTextEditorKey"
+                   FileExtension="Svelte"
+                   ClassCssString="bte_demo-text-editor"/>

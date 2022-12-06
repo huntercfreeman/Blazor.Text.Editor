@@ -19,6 +19,7 @@ using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.Svelte.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
@@ -242,6 +243,27 @@ public class TextEditorService : ITextEditorService
             initialContent,
             new TextEditorTypeScriptLexer(),
             new TextEditorTypeScriptDecorationMapper(),
+            null,
+            textEditorKey);
+        
+        _ = Task.Run(async () =>
+        {
+            await textEditorBase.ApplySyntaxHighlightingAsync();
+        });
+        
+        _dispatcher.Dispatch(
+            new RegisterTextEditorBaseAction(textEditorBase));
+    }
+    
+    public void RegisterSvelteTextEditor(
+        TextEditorKey textEditorKey,
+        string initialContent,
+        ITextEditorKeymap? textEditorKeymapOverride = null)
+    {
+        var textEditorBase = new TextEditorBase(
+            initialContent,
+            new TextEditorSvelteLexer(),
+            new TextEditorHtmlDecorationMapper(),
             null,
             textEditorKey);
         
