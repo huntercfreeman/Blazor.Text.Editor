@@ -12,6 +12,8 @@ public class TextEditorFSharpDecorationMapper : IDecorationMapper
         {
             FSharpDecorationKind.None => string.Empty,
             FSharpDecorationKind.Keyword => "bte_keyword",
+            FSharpDecorationKind.String => "bte_string-literal",
+            FSharpDecorationKind.Comment => "bte_comment",
             _ => string.Empty,
         };
     }
