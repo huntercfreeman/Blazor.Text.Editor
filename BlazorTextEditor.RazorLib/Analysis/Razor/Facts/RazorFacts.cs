@@ -16,4 +16,7 @@ public static class RazorFacts
     
     public const char CODE_BLOCK_START = '{';
     public const char CODE_BLOCK_END = '}';
+    
+    public const char EXPLICIT_EXPRESSION_START = '(';
+    public const char EXPLICIT_EXPRESSION_END = ')';
 }
