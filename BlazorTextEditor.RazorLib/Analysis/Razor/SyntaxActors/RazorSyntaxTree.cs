@@ -32,31 +32,82 @@ public class RazorSyntaxTree
         {
             _ = stringWalker.Consume();
 
-            if (stringWalker.CheckForSubstringRange(RazorKeywords.ALL,
-                    out var matchedOn))
+            string? matchedOn = null;
+
+            if (stringWalker.CheckForSubstringRange(
+                    RazorKeywords.ALL,
+                    out matchedOn) &&
+                matchedOn is not null)
             {
                 // Razor Keyword
                 //
                 // @page "/counter"
 
-                switch ()
+                // Perhaps a switch is needed here due to
+                // the keywords having parameters which might vary in type?
+                //
+                // @page takes a string
+                // what do the others take?
+                // all others take a string or something else?
+                switch (matchedOn)
                 {
-                    
+                    case RazorKeywords.PAGE_KEYWORD:
+                        break;
+                    case RazorKeywords.NAMESPACE_KEYWORD:
+                        break;
+                    case RazorKeywords.FUNCTIONS_KEYWORD:
+                        break;
+                    case RazorKeywords.INHERITS_KEYWORD:
+                        break;
+                    case RazorKeywords.MODEL_KEYWORD:
+                        break;
+                    case RazorKeywords.SECTION_KEYWORD:
+                        break;
+                    case RazorKeywords.HELPER_KEYWORD:
+                        break;
                 }
-                // PAGE_KEYWORD,
-                // NAMESPACE_KEYWORD,
-                // FUNCTIONS_KEYWORD,
-                // INHERITS_KEYWORD,
-                // MODEL_KEYWORD,
-                // SECTION_KEYWORD,
-                // HELPER_KEYWORD,
+                
             }
-            else if (stringWalker.CheckForSubstringRange(CSharpRazorKeywords.ALL,
-                         out var matchedOn))
+            else if (stringWalker.CheckForSubstringRange(
+                         CSharpRazorKeywords.ALL,
+                         out matchedOn) &&
+                     matchedOn is not null)
             {
                 // C# Razor Keyword
                 //
                 // Example: if (true) { ... } else { ... }
+
+                switch (matchedOn)
+                {
+                    case CSharpRazorKeywords.CASE_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.DO_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.DEFAULT_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.FOR_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.FOREACH_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.IF_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.ELSE_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.LOCK_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.SWITCH_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.TRY_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.CATCH_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.FINALLY_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.USING_KEYWORD:
+                        break;
+                    case CSharpRazorKeywords.WHILE_KEYWORD:
+                        break;
+                }
             }
             else if (true)
             {
