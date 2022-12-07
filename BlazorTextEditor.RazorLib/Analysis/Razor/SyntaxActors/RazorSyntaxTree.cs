@@ -294,6 +294,9 @@ public class RazorSyntaxTree
                 // Example: "@if(predicate) {"
                 stringWalker.BacktrackCharacter();
 
+                // TODO: "positionIndexCheckpoint" logic might be useful?
+                // var positionIndexCheckpoint = stringWalker.PositionIndex;
+                
                 if (!TryReadExplicitInlineExpression(
                         stringWalker, 
                         textEditorHtmlDiagnosticBag,
@@ -302,6 +305,10 @@ public class RazorSyntaxTree
                         out var explicitExpressionTagSyntaxes) ||
                     explicitExpressionTagSyntaxes is null)
                 {
+                    // TODO: "positionIndexCheckpoint" logic might be useful?
+                    // stringWalker.BacktrackRange(
+                    //     stringWalker.PositionIndex - positionIndexCheckpoint);
+                    
                     break;
                 }
                 

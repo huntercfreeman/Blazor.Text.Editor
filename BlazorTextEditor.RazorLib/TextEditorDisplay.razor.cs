@@ -142,7 +142,7 @@ public partial class TextEditorDisplay : TextEditorView
     public bool IncludeDefaultAutocompleteMenu { get; set; } = true;
 
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
-    private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromSeconds(1);
+    private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromMilliseconds(750);
     private int _skippedSyntaxHighlightingEventCount;
 
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
