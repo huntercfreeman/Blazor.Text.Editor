@@ -11,6 +11,32 @@ public static partial class TestData
         <button @onclick=""OnYes"">Yes!</button>
     </div>
 
+	@switch (colorName)
+	{
+		case ""Blue"":
+			<div>
+				Blue was the color name
+			</div>
+			break;
+		case ""Red"":
+			<div>
+				Red was the color name
+			</div>
+			break;
+		default:
+			<div>
+				You stumped me
+			</div>
+			break;
+	}
+
+	@do
+	{
+		<div>
+			Do-While loop
+		</div>
+	} while (false)
+
 	@while (false)
 	{
 		<div>
@@ -19,12 +45,6 @@ public static partial class TestData
 	}
 
 	@if (true)
-	{
-		<div>
-			My Text Content!
-		</div>
-	}
-	else if (false)
 	{
 		<div>
 			My Text Content!
