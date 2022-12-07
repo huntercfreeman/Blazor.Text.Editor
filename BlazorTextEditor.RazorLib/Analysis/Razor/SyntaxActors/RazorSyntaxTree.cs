@@ -387,7 +387,37 @@ public class RazorSyntaxTree
             case CSharpRazorKeywords.LOCK_KEYWORD:
                 break;
             case CSharpRazorKeywords.SWITCH_KEYWORD:
+            {
+                // Necessary in the case where the switch statement's predicate expression immediately follows the 'switch' text
+                // Example: "@switch(predicate) {"
+                stringWalker.BacktrackCharacter();
+
+                if (!TryReadExplicitInlineExpression(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var explicitExpressionTagSyntaxes) ||
+                    explicitExpressionTagSyntaxes is null)
+                {
+                    break;
+                }
+
+                injectedLanguageFragmentSyntaxes.AddRange(explicitExpressionTagSyntaxes);
+
+                if (TryReadCodeBlock(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
+                {
+                    injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
+                }
+
                 break;
+            }
             case CSharpRazorKeywords.TRY_KEYWORD:
                 break;
             case CSharpRazorKeywords.CATCH_KEYWORD:
