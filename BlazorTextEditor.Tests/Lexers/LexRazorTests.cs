@@ -11,7 +11,7 @@ public class LexRazorTests
     [Fact]
     public async Task LexTagNames()
     {
-        var text = TestData.Razor.EXAMPLE_TEXT_20_LINES
+        var text = TestData.Razor.EXAMPLE_TEXT
             .ReplaceLineEndings("\n");
 
         var expectedTagNameTextEditorTextSpans = new[]
@@ -44,7 +44,7 @@ public class LexRazorTests
     [Fact]
     public async Task LexInjectedLanguageKeywords()
     {
-        var text = TestData.Razor.EXAMPLE_TEXT_20_LINES
+        var text = TestData.Razor.EXAMPLE_TEXT
             .ReplaceLineEndings("\n");
 
         var expectedKeywordTextEditorTextSpans = new[]

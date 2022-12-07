@@ -291,7 +291,7 @@ public class RazorSyntaxTree
                         stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
-                        CSharpRazorKeywords.IF_KEYWORD,
+                        CSharpRazorKeywords.DO_KEYWORD,
                         out var codeBlockTagSyntaxes) ||
                     codeBlockTagSyntaxes is null)
                 {
@@ -304,7 +304,7 @@ public class RazorSyntaxTree
                         stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
-                        CSharpRazorKeywords.IF_KEYWORD,
+                        CSharpRazorKeywords.DO_KEYWORD,
                         out var whileOfDoWhileTagSyntaxes) &&
                     whileOfDoWhileTagSyntaxes is not null)
                 {
@@ -316,9 +316,69 @@ public class RazorSyntaxTree
             case CSharpRazorKeywords.DEFAULT_KEYWORD:
                 break;
             case CSharpRazorKeywords.FOR_KEYWORD:
+            {
+                // Necessary in the case where the switch statement's predicate expression immediately follows the 'switch' text
+                // Example: "@switch(predicate) {"
+                stringWalker.BacktrackCharacter();
+
+                if (!TryReadExplicitInlineExpression(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.FOR_KEYWORD,
+                        out var explicitExpressionTagSyntaxes) ||
+                    explicitExpressionTagSyntaxes is null)
+                {
+                    break;
+                }
+
+                injectedLanguageFragmentSyntaxes.AddRange(explicitExpressionTagSyntaxes);
+
+                if (TryReadCodeBlock(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.FOR_KEYWORD,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
+                {
+                    injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
+                }
+
                 break;
+            }
             case CSharpRazorKeywords.FOREACH_KEYWORD:
+            {
+                // Necessary in the case where the foreach statement's predicate expression immediately follows the 'foreach' text
+                // Example: "@foreach(predicate) {"
+                stringWalker.BacktrackCharacter();
+
+                if (!TryReadExplicitInlineExpression(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.FOREACH_KEYWORD,
+                        out var explicitExpressionTagSyntaxes) ||
+                    explicitExpressionTagSyntaxes is null)
+                {
+                    break;
+                }
+
+                injectedLanguageFragmentSyntaxes.AddRange(explicitExpressionTagSyntaxes);
+
+                if (TryReadCodeBlock(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.FOREACH_KEYWORD,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
+                {
+                    injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
+                }
+
                 break;
+            }
             case CSharpRazorKeywords.IF_KEYWORD:
             {
                 // Necessary in the case where the if statement's predicate expression immediately follows the 'if' text
@@ -396,7 +456,7 @@ public class RazorSyntaxTree
                         stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
-                        CSharpRazorKeywords.IF_KEYWORD,
+                        CSharpRazorKeywords.SWITCH_KEYWORD,
                         out var explicitExpressionTagSyntaxes) ||
                     explicitExpressionTagSyntaxes is null)
                 {
@@ -409,7 +469,7 @@ public class RazorSyntaxTree
                         stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
-                        CSharpRazorKeywords.IF_KEYWORD,
+                        CSharpRazorKeywords.SWITCH_KEYWORD,
                         out var codeBlockTagSyntaxes) &&
                     codeBlockTagSyntaxes is not null)
                 {

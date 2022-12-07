@@ -4,12 +4,22 @@ public static partial class TestData
 {
 	public static class Razor
 	{
-		public const string EXAMPLE_TEXT_20_LINES = @"<div class=""card"" style=""width:22rem"">
+		public const string EXAMPLE_TEXT = @"<div class=""card"" style=""width:22rem"">
     <div class=""card-body"">
         <h3 class=""card-title"">@Title</h3>
         <p class=""card-text"">@ChildContent</p>
         <button @onclick=""OnYes"">Yes!</button>
     </div>
+
+	@for (int i = 0; i < 10; i++)
+	{
+		<div>for loop</div>
+	}
+
+	@foreach (var entry in MyList)
+	{
+		<div>foreach loop</div>
+	}
 
 	@switch (colorName)
 	{
