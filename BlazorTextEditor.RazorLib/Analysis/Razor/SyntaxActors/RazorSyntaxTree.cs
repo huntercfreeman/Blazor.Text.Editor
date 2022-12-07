@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.Facts;
@@ -75,7 +76,8 @@ public class RazorSyntaxTree
             return ReadCodeBlock(
                 stringWalker,
                 textEditorHtmlDiagnosticBag,
-                injectedLanguageDefinition);
+                injectedLanguageDefinition,
+                false);
         }
 
         // TODO: Check for invalid expressions
@@ -85,10 +87,20 @@ public class RazorSyntaxTree
             injectedLanguageDefinition);
     }
 
+    /// <param name="isClassLevelCodeBlock">
+    /// The @code{...} section must be wrapped in an adhoc class definition
+    /// so that Roslyn can syntax highlight methods.
+    /// <br/><br/>
+    /// The @{...} code blocks must be wrapped in an adhoc method.
+    /// <br/><br/>
+    /// TODO: Is this true?
+    /// </param>
+    /// <returns></returns>
     private static List<TagSyntax> ReadCodeBlock(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
-        InjectedLanguageDefinition injectedLanguageDefinition)
+        InjectedLanguageDefinition injectedLanguageDefinition,
+        bool isClassLevelCodeBlock)
     {
         // Razor Code Block
         //
@@ -122,13 +134,77 @@ public class RazorSyntaxTree
         
         // Enters the while loop on the '{'
         var unmatchedCodeBlockStarts = 1;
+
+        // While iterating through the text append any C# text to the cSharpBuilder
+        // afterwards pass it through Roslyn for the syntax highlighting and map
+        // the corresponding position indices.
+        var cSharpBuilder = new StringBuilder();
+
+        var positionIndexOffset = stringWalker.PositionIndex;
         
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
+            
+            if (stringWalker.CurrentCharacter == HtmlFacts.OPEN_TAG_BEGINNING)
+            {
+                var positionIndexPriorToHtmlTag = stringWalker.PositionIndex;
+                
+                var tagSyntax = HtmlSyntaxTree.HtmlSyntaxTreeStateMachine.ParseTag(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition);
 
+                injectedLanguageFragmentSyntaxes.Add(tagSyntax);
+                
+                var necessaryWhitespacePadding = stringWalker.PositionIndex - positionIndexPriorToHtmlTag;
+
+                for (int i = 0; i < necessaryWhitespacePadding; i++)
+                {
+                    cSharpBuilder.Append(WhitespaceFacts.SPACE);
+                }
+
+                continue;
+            }
+            
+            // '@:' is a single line version of '<text></text>' as of this comment | 2022-12-07
+            var singleLineTextOutputText =
+                $"{RazorFacts.TRANSITION_SUBSTRING}{RazorFacts.SINGLE_LINE_TEXT_OUTPUT_WITHOUT_ADDING_HTML_ELEMENT}";
+            
+            if (stringWalker.CheckForSubstring(singleLineTextOutputText))
+            {
+                var positionIndexPriorToHtmlTag = stringWalker.PositionIndex;
+                
+                _ = stringWalker.ReadRange(singleLineTextOutputText.Length - 1);
+                
+                while (!stringWalker.IsEof)
+                {
+                    _ = stringWalker.ReadCharacter();
+                    
+                    if (WhitespaceFacts.LINE_ENDING_CHARACTERS.Contains(stringWalker.CurrentCharacter))
+                    {
+                        break;
+                    }
+                }
+                
+                var necessaryWhitespacePadding = stringWalker.PositionIndex - positionIndexPriorToHtmlTag;
+
+                for (int i = 0; i < necessaryWhitespacePadding; i++)
+                {
+                    cSharpBuilder.Append(WhitespaceFacts.SPACE);
+                }
+                
+                continue;
+            }
+
+            // Track all the C# text
+            cSharpBuilder.Append(stringWalker.CurrentCharacter);
+            
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
+            {
                 unmatchedCodeBlockStarts++;
+                continue;
+            }
             
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_END)
             {
@@ -148,19 +224,14 @@ public class RazorSyntaxTree
                                     1,
                                     (byte)HtmlDecorationKind.InjectedLanguageFragment)));
                     }
+
+                    // A final '}' will be erroneously appended so remove that
+                    cSharpBuilder.Remove(cSharpBuilder.Length - 1, 1);
+
+                    var cSharpText = cSharpBuilder.ToString();
                     
                     break;
                 }
-            }
-
-            if (stringWalker.CurrentCharacter == HtmlFacts.OPEN_TAG_BEGINNING)
-            {
-                var tagSyntax = HtmlSyntaxTree.HtmlSyntaxTreeStateMachine.ParseTag(
-                    stringWalker,
-                    textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
-
-                injectedLanguageFragmentSyntaxes.Add(tagSyntax);
             }
         }
         
@@ -649,10 +720,15 @@ public class RazorSyntaxTree
 
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
             {
+                var isClassLevelCodeBlock =
+                    keywordText == RazorKeywords.CODE_KEYWORD ||
+                    keywordText == RazorKeywords.FUNCTIONS_KEYWORD;
+                
                 var codeBlockTagSyntaxes = ReadCodeBlock(
                     stringWalker,
                     textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
+                    injectedLanguageDefinition,
+                    isClassLevelCodeBlock);
 
                 tagSyntaxes = codeBlockTagSyntaxes;
                 return true;

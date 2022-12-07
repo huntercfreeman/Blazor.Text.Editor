@@ -43,8 +43,4 @@
       <AdditionalFiles Include="OutOfBoundsClick\OutOfBoundsClickDisplay.razor" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Analysis\Razor\SyntaxObjects" />
-    </ItemGroup>
-
 </Project>

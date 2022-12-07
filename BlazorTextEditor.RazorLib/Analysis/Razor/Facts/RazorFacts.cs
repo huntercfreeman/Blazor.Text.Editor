@@ -19,4 +19,6 @@ public static class RazorFacts
     
     public const char EXPLICIT_EXPRESSION_START = '(';
     public const char EXPLICIT_EXPRESSION_END = ')';
+    
+    public const char SINGLE_LINE_TEXT_OUTPUT_WITHOUT_ADDING_HTML_ELEMENT = ':';
 }
