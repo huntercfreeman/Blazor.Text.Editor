@@ -322,11 +322,20 @@ public class RazorSyntaxTree
                         out var codeBlockTagSyntaxes) &&
                     codeBlockTagSyntaxes is not null)
                 {
-                    return injectedLanguageFragmentSyntaxes
-                        .Union(codeBlockTagSyntaxes)
-                        .ToList();
+                    injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
                 }
                 
+                if (TryReadElse(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var elseTagSyntaxes) &&
+                    elseTagSyntaxes is not null)
+                {
+                    injectedLanguageFragmentSyntaxes.AddRange(elseTagSyntaxes);
+                }
+
                 break;
             case CSharpRazorKeywords.ELSE_KEYWORD:
                 break;
@@ -522,6 +531,48 @@ public class RazorSyntaxTree
                     stringWalker.PositionIndex,
                     stringWalker.PositionIndex + 1,
                     (byte)HtmlDecorationKind.None));
+
+            break;
+        }
+
+        tagSyntaxes = null;
+        return false;
+    }
+    
+    private static bool TryReadElse(
+        StringWalker stringWalker,
+        TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+        InjectedLanguageDefinition injectedLanguageDefinition,
+        string keywordText,
+        out List<TagSyntax>? tagSyntaxes)
+    {
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            if (stringWalker.CheckForSubstring(CSharpRazorKeywords.ELSE_KEYWORD))
+            {
+                // -1 is in the case that "else{" instead of a space between "else" and "{"
+                _ = stringWalker
+                    .ReadRange(CSharpRazorKeywords.ELSE_KEYWORD.Length - 1);
+                
+                if (TryReadCodeBlock(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.ELSE_KEYWORD,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
+                {
+                    tagSyntaxes = codeBlockTagSyntaxes;
+                    return true;
+                }
+
+                break;
+            }
+
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                continue;
 
             break;
         }
