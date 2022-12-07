@@ -11,6 +11,13 @@ public static partial class TestData
         <button @onclick=""OnYes"">Yes!</button>
     </div>
 
+	@while (false)
+	{
+		<div>
+			While
+		</div>
+	}
+
 	@if (true)
 	{
 		<div>

@@ -282,7 +282,37 @@ public class RazorSyntaxTree
             case CSharpRazorKeywords.CASE_KEYWORD:
                 break;
             case CSharpRazorKeywords.DO_KEYWORD:
+            {
+                // Necessary in the case where the do-while statement's code block immediately follows the 'do' text
+                // Example: "@do{"
+                stringWalker.BacktrackCharacter();
+
+                if (!TryReadCodeBlock(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var codeBlockTagSyntaxes) ||
+                    codeBlockTagSyntaxes is null)
+                {
+                    break;
+                }
+
+                injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
+                
+                if (TryReadWhileOfDoWhile(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var whileOfDoWhileTagSyntaxes) &&
+                    whileOfDoWhileTagSyntaxes is not null)
+                {
+                    injectedLanguageFragmentSyntaxes.AddRange(whileOfDoWhileTagSyntaxes);
+                }
+
                 break;
+            }
             case CSharpRazorKeywords.DEFAULT_KEYWORD:
                 break;
             case CSharpRazorKeywords.FOR_KEYWORD:
@@ -290,32 +320,26 @@ public class RazorSyntaxTree
             case CSharpRazorKeywords.FOREACH_KEYWORD:
                 break;
             case CSharpRazorKeywords.IF_KEYWORD:
+            {
                 // Necessary in the case where the if statement's predicate expression immediately follows the 'if' text
                 // Example: "@if(predicate) {"
                 stringWalker.BacktrackCharacter();
 
-                // TODO: "positionIndexCheckpoint" logic might be useful?
-                // var positionIndexCheckpoint = stringWalker.PositionIndex;
-                
                 if (!TryReadExplicitInlineExpression(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         CSharpRazorKeywords.IF_KEYWORD,
                         out var explicitExpressionTagSyntaxes) ||
                     explicitExpressionTagSyntaxes is null)
                 {
-                    // TODO: "positionIndexCheckpoint" logic might be useful?
-                    // stringWalker.BacktrackRange(
-                    //     stringWalker.PositionIndex - positionIndexCheckpoint);
-                    
                     break;
                 }
-                
+
                 injectedLanguageFragmentSyntaxes.AddRange(explicitExpressionTagSyntaxes);
-                
+
                 if (TryReadCodeBlock(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         CSharpRazorKeywords.IF_KEYWORD,
@@ -328,7 +352,7 @@ public class RazorSyntaxTree
                 var restorePositionIndexPriorToTryReadElseIf = stringWalker.PositionIndex;
 
                 while (TryReadElseIf(
-                           stringWalker, 
+                           stringWalker,
                            textEditorHtmlDiagnosticBag,
                            injectedLanguageDefinition,
                            CSharpRazorKeywords.IF_KEYWORD,
@@ -344,9 +368,9 @@ public class RazorSyntaxTree
                     stringWalker.BacktrackRange(
                         stringWalker.PositionIndex - restorePositionIndexPriorToTryReadElseIf);
                 }
-                
+
                 if (TryReadElse(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         CSharpRazorKeywords.IF_KEYWORD,
@@ -357,6 +381,7 @@ public class RazorSyntaxTree
                 }
 
                 break;
+            }
             case CSharpRazorKeywords.ELSE_KEYWORD:
                 break;
             case CSharpRazorKeywords.LOCK_KEYWORD:
@@ -372,7 +397,37 @@ public class RazorSyntaxTree
             case CSharpRazorKeywords.USING_KEYWORD:
                 break;
             case CSharpRazorKeywords.WHILE_KEYWORD:
+            {
+                // Necessary in the case where the while statement's predicate expression immediately follows the 'while' text
+                // Example: "@while(predicate) {"
+                stringWalker.BacktrackCharacter();
+
+                if (!TryReadExplicitInlineExpression(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var explicitExpressionTagSyntaxes) ||
+                    explicitExpressionTagSyntaxes is null)
+                {
+                    break;
+                }
+
+                injectedLanguageFragmentSyntaxes.AddRange(explicitExpressionTagSyntaxes);
+
+                if (TryReadCodeBlock(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
+                {
+                    injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
+                }
+
                 break;
+            }
         }
 
         return injectedLanguageFragmentSyntaxes;
@@ -676,6 +731,63 @@ public class RazorSyntaxTree
                     codeBlockTagSyntaxes is not null)
                 {
                     tagSyntaxes.AddRange(codeBlockTagSyntaxes);
+                    return true;
+                }
+
+                break;
+            }
+
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                continue;
+
+            break;
+        }
+
+        tagSyntaxes = null;
+        return false;
+    }
+    
+    private static bool TryReadWhileOfDoWhile(
+        StringWalker stringWalker,
+        TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+        InjectedLanguageDefinition injectedLanguageDefinition,
+        string keywordText,
+        out List<TagSyntax>? tagSyntaxes)
+    {
+        tagSyntaxes = new List<TagSyntax>();
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            if (stringWalker.CheckForSubstring(CSharpRazorKeywords.WHILE_KEYWORD))
+            {
+                // Syntax highlight the keyword as a razor keyword specifically
+                {
+                    tagSyntaxes.Add(
+                        new InjectedLanguageFragmentSyntax(
+                            ImmutableArray<IHtmlSyntax>.Empty,
+                            string.Empty,
+                            new TextEditorTextSpan(
+                                stringWalker.PositionIndex,
+                                stringWalker.PositionIndex +
+                                CSharpRazorKeywords.WHILE_KEYWORD.Length,
+                                (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+
+                    // -1 is in the case that "while()" instead of a space between "while" and "("
+                    _ = stringWalker
+                        .ReadRange(CSharpRazorKeywords.WHILE_KEYWORD.Length - 1);
+                }
+                
+                if (TryReadExplicitInlineExpression(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.ELSE_KEYWORD,
+                        out var explicitExpressionTagSyntaxes) &&
+                    explicitExpressionTagSyntaxes is not null)
+                {
+                    tagSyntaxes.AddRange(explicitExpressionTagSyntaxes);
                     return true;
                 }
 
