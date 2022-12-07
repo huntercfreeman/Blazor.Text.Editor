@@ -184,29 +184,59 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
+        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
+        
         var startingPositionIndex = stringWalker.PositionIndex;
         
+        // Syntax highlight the EXPLICIT_EXPRESSION_START as a razor keyword specifically
+        {
+            injectedLanguageFragmentSyntaxes.Add(
+                new InjectedLanguageFragmentSyntax(
+                    ImmutableArray<IHtmlSyntax>.Empty,
+                    string.Empty,
+                    new TextEditorTextSpan(
+                        stringWalker.PositionIndex,
+                        stringWalker.PositionIndex +
+                        1,
+                        (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+        }
+        
         // Enters the while loop on the '('
-        var seenExplicitExpressionStarts = 1;
+        var unmatchedExplicitExpressionStarts = 1;
         
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
 
-            if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
-                seenExplicitExpressionStarts++;
+            if (stringWalker.CurrentCharacter == RazorFacts.EXPLICIT_EXPRESSION_START)
+                unmatchedExplicitExpressionStarts++;
             
-            if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_END)
+            if (stringWalker.CurrentCharacter == RazorFacts.EXPLICIT_EXPRESSION_END)
             {
-                seenExplicitExpressionStarts--;
+                unmatchedExplicitExpressionStarts--;
 
-                if (seenExplicitExpressionStarts == 0)
+                if (unmatchedExplicitExpressionStarts == 0)
+                {
+                    // Syntax highlight the EXPLICIT_EXPRESSION_END as a razor keyword specifically
+                    {
+                        injectedLanguageFragmentSyntaxes.Add(
+                            new InjectedLanguageFragmentSyntax(
+                                ImmutableArray<IHtmlSyntax>.Empty,
+                                string.Empty,
+                                new TextEditorTextSpan(
+                                    stringWalker.PositionIndex,
+                                    stringWalker.PositionIndex +
+                                    1,
+                                    (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+                    }
+                    
                     break;
+                }
             }
         }
         
         // TODO: Syntax highlighting
-        return new List<TagSyntax>();
+        return injectedLanguageFragmentSyntaxes;
     }
 
     /// <summary>
