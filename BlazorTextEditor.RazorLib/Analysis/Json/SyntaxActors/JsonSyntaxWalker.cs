@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxItems;
+﻿using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxEnums;
+using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxObjects;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 

@@ -1,5 +1,4 @@
 using BlazorTextEditor.Demo.RazorLib;
-using BlazorTextEditor.RazorLib;
 
 var builder = WebApplication.CreateBuilder(args);
 

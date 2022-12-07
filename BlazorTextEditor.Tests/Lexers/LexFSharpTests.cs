@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.FSharp;
+using BlazorTextEditor.RazorLib.Analysis.FSharp.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
 
@@ -15,15 +16,18 @@ public class LexFSharpTests
 
         var expectedKeywordTextEditorTextSpans = new[]
         {
-            new TextEditorTextSpan(0, 3, 1),
-            new TextEditorTextSpan(26, 30, 1),
-            new TextEditorTextSpan(65, 68, 1),
-            new TextEditorTextSpan(94, 97, 1),
-            new TextEditorTextSpan(123, 126, 1),
-            new TextEditorTextSpan(129, 131, 1),
-            new TextEditorTextSpan(145, 147, 1),
-            new TextEditorTextSpan(160, 163, 1),
-            new TextEditorTextSpan(247, 250, 1),
+            new TextEditorTextSpan(0, 3, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(18, 23, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(26, 30, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(65, 68, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(69, 76, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(94, 97, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(98, 105, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(123, 126, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(129, 131, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(145, 147, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(160, 163, (byte)FSharpDecorationKind.Keyword),
+            new TextEditorTextSpan(381, 384, (byte)FSharpDecorationKind.Keyword),
         };
         
         var fSharpLexer = new TextEditorFSharpLexer();
@@ -33,6 +37,58 @@ public class LexFSharpTests
 
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)FSharpDecorationKind.Keyword)
+            .OrderBy(x => x.StartingIndexInclusive)
+            .ToImmutableArray();
+
+        Assert.Equal(expectedKeywordTextEditorTextSpans, textEditorTextSpans);
+    }
+    
+    [Fact]
+    public async Task LexComments()
+    {
+        var text = TestData.FSharp.EXAMPLE_TEXT_21_LINES
+            .ReplaceLineEndings("\n");
+
+        var expectedKeywordTextEditorTextSpans = new[]
+        {
+            new TextEditorTextSpan(247, 278, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(280, 345, (byte)FSharpDecorationKind.Comment),
+            new TextEditorTextSpan(347, 379, (byte)FSharpDecorationKind.Comment),
+        };
+        
+        var fSharpLexer = new TextEditorFSharpLexer();
+
+        var textEditorTextSpans = 
+            await fSharpLexer.Lex(text);
+
+        textEditorTextSpans = textEditorTextSpans
+            .Where(x => x.DecorationByte == (byte)FSharpDecorationKind.Comment)
+            .OrderBy(x => x.StartingIndexInclusive)
+            .ToImmutableArray();
+
+        Assert.Equal(expectedKeywordTextEditorTextSpans, textEditorTextSpans);
+    }
+    
+    [Fact]
+    public async Task LexStrings()
+    {
+        var text = TestData.FSharp.EXAMPLE_TEXT_21_LINES
+            .ReplaceLineEndings("\n");
+
+        var expectedKeywordTextEditorTextSpans = new[]
+        {
+            new TextEditorTextSpan(247, 278, 2),
+            new TextEditorTextSpan(280, 345, 2),
+            new TextEditorTextSpan(347, 379, 2),
+        };
+        
+        var fSharpLexer = new TextEditorFSharpLexer();
+
+        var textEditorTextSpans = 
+            await fSharpLexer.Lex(text);
+
+        textEditorTextSpans = textEditorTextSpans
+            .Where(x => x.DecorationByte == (byte)FSharpDecorationKind.Comment)
             .OrderBy(x => x.StartingIndexInclusive)
             .ToImmutableArray();
 

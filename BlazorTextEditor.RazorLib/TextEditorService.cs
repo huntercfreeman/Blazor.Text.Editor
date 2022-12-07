@@ -1,11 +1,18 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.CSharp;
-using BlazorTextEditor.RazorLib.Analysis.Css;
-using BlazorTextEditor.RazorLib.Analysis.FSharp;
-using BlazorTextEditor.RazorLib.Analysis.Html;
+﻿using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.FSharp.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
-using BlazorTextEditor.RazorLib.Analysis.JavaScript;
-using BlazorTextEditor.RazorLib.Analysis.Json;
-using BlazorTextEditor.RazorLib.Analysis.Razor;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Row;
@@ -224,8 +231,8 @@ public class TextEditorService : ITextEditorService
     {
         var textEditorBase = new TextEditorBase(
             initialContent,
-            new TextEditorJavaScriptLexer(),
-            new TextEditorJavaScriptDecorationMapper(),
+            new TextEditorTypeScriptLexer(),
+            new TextEditorTypeScriptDecorationMapper(),
             null,
             textEditorKey);
         

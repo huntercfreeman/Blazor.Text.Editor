@@ -4,7 +4,7 @@ public static partial class TestData
 {
     public static class FSharp
     {
-        public const string EXAMPLE_TEXT = @"let fib3 n = 
+        public const string EXAMPLE_TEXT_21_LINES = @"let fib3 n = 
     match n with 
     | 0 -> 0
     | n -> 
@@ -15,6 +15,16 @@ public static partial class TestData
             last <- next
             next <- temp
         next
+
+//this is a single line comment
+
+(* 
+        This is a multi line
+        comment
+        in F#
+*)
+
+// let commentContainingKeywords
 
 let run =
     fib3 2 |> printfn ""%i"" |> ignore

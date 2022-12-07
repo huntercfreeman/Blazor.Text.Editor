@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.Html.InjectLanguage;
+﻿using BlazorTextEditor.RazorLib.Analysis.Html.InjectedLanguage;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.ExtensionMethods;
 
@@ -8,7 +8,9 @@ public static class StringWalkerExtensions
         this StringWalker stringWalker,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        return stringWalker.CheckForSubstring(injectedLanguageDefinition.InjectedLanguageCodeBlockTag) &&
-               !stringWalker.CheckForSubstring(injectedLanguageDefinition.InjectedLanguageCodeBlockTagEscaped);
+        var isMatch = stringWalker.CheckForSubstring(injectedLanguageDefinition.TransitionSubstring);
+        var isEscaped = stringWalker.CheckForSubstring(injectedLanguageDefinition.TransitionSubstringEscaped);
+        
+        return isMatch && !isEscaped;
     }
 }

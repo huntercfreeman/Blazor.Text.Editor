@@ -11,8 +11,9 @@ public record ThemeStates(ImmutableArray<Theme> Themes)
         Themes = Themes.AddRange(new[]
         {
             ThemeFacts.Unset,
-            ThemeFacts.VisualStudioDarkClone,
             ThemeFacts.VisualStudioLightClone,
+            ThemeFacts.BlazorTextEditorLightTheme,
+            ThemeFacts.BlazorTextEditorDarkTheme,
         });
     }
 }

@@ -16,6 +16,16 @@ public static partial class TestData
             next <- temp
         next
 
+//this is a single line comment
+
+(* 
+        This is a multi line
+        comment
+        in F#
+*)
+
+// let commentContainingKeywords
+
 let run =
     fib3 2 |> printfn ""%i"" |> ignore
     fib3 3 |> printfn ""%i"" |> ignore

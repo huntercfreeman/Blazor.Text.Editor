@@ -38,7 +38,6 @@
 
 .bte_injected-language-fragment {
     color: var(--bte_injected-language-fragment-color);
-    background-color: var(--bte_injected-language-fragment-background-color);
 }
 
 .bte_css-property-name {

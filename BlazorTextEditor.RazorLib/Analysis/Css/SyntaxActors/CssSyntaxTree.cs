@@ -1,5 +1,8 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxItems;
+using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Css.Facts;
+using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxEnums;
+using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
@@ -28,7 +31,7 @@ public class CssSyntaxTree
             if (stringWalker.CurrentCharacter == CssFacts.STYLE_BLOCK_START)
                 ConsumeStyleBlock(stringWalker, cssDocumentChildren, textEditorCssDiagnosticBag);
 
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
         }
 
         var cssDocumentSyntax = new CssDocumentSyntax(
@@ -47,7 +50,7 @@ public class CssSyntaxTree
 
     /// <summary>
     /// <see cref="ConsumeComment"/> will immediately invoke
-    /// <see cref="StringWalker.Consume"/> once
+    /// <see cref="StringWalker.ReadCharacter"/> once
     ///  invoked.
     /// </summary>
     private static void ConsumeComment(
@@ -59,7 +62,7 @@ public class CssSyntaxTree
 
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
             
             var closingOfCommentTextFound = stringWalker
                 .CheckForSubstring(CssFacts.COMMENT_END);
@@ -67,7 +70,7 @@ public class CssSyntaxTree
             if (closingOfCommentTextFound)
             {
                 // Skip the rest of the comment closing text
-                _ = stringWalker.ConsumeRange(CssFacts.COMMENT_END.Length - 1);
+                _ = stringWalker.ReadRange(CssFacts.COMMENT_END.Length - 1);
 
                 var commentTextSpan = new TextEditorTextSpan(
                     commentStartingPositionIndex,
@@ -87,7 +90,7 @@ public class CssSyntaxTree
     
     /// <summary>
     /// <see cref="ConsumeStyleBlock"/> will immediately invoke
-    /// <see cref="StringWalker.Consume"/> once
+    /// <see cref="StringWalker.ReadCharacter"/> once
     ///  invoked.
     /// </summary>
     private static void ConsumeStyleBlock(
@@ -105,7 +108,7 @@ public class CssSyntaxTree
         
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (pendingChildStartingPositionIndex == -1)
             {
@@ -226,7 +229,7 @@ public class CssSyntaxTree
     /// <summary>
     /// <see cref="ConsumeIdentifier"/> firstly grabs the
     /// starting position index for the identifier.
-    /// Afterwards it invokes <see cref="StringWalker.Consume"/>.
+    /// Afterwards it invokes <see cref="StringWalker.ReadCharacter"/>.
     /// </summary>
     private static void ConsumeIdentifier(
         StringWalker stringWalker, 
@@ -237,7 +240,7 @@ public class CssSyntaxTree
         
         while (!stringWalker.IsEof)
         {
-            _ = stringWalker.Consume();
+            _ = stringWalker.ReadCharacter();
 
             if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) || 
                 CssFacts.STYLE_BLOCK_START == stringWalker.CurrentCharacter)
