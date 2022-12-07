@@ -546,15 +546,30 @@ public class RazorSyntaxTree
         string keywordText,
         out List<TagSyntax>? tagSyntaxes)
     {
+        tagSyntaxes = new List<TagSyntax>();
+        
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CheckForSubstring(CSharpRazorKeywords.ELSE_KEYWORD))
             {
-                // -1 is in the case that "else{" instead of a space between "else" and "{"
-                _ = stringWalker
-                    .ReadRange(CSharpRazorKeywords.ELSE_KEYWORD.Length - 1);
+                // Syntax highlight the keyword as a razor keyword specifically
+                {
+                    tagSyntaxes.Add(
+                        new InjectedLanguageFragmentSyntax(
+                            ImmutableArray<IHtmlSyntax>.Empty,
+                            string.Empty,
+                            new TextEditorTextSpan(
+                                stringWalker.PositionIndex,
+                                stringWalker.PositionIndex +
+                                CSharpRazorKeywords.ELSE_KEYWORD.Length,
+                                (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+
+                    // -1 is in the case that "else{" instead of a space between "else" and "{"
+                    _ = stringWalker
+                        .ReadRange(CSharpRazorKeywords.ELSE_KEYWORD.Length - 1);
+                }
                 
                 if (TryReadCodeBlock(
                         stringWalker, 
@@ -564,7 +579,7 @@ public class RazorSyntaxTree
                         out var codeBlockTagSyntaxes) &&
                     codeBlockTagSyntaxes is not null)
                 {
-                    tagSyntaxes = codeBlockTagSyntaxes;
+                    tagSyntaxes.AddRange(codeBlockTagSyntaxes);
                     return true;
                 }
 

@@ -10,9 +10,45 @@ public static partial class TestData
         <p class=""card-text"">@ChildContent</p>
         <button @onclick=""OnYes"">Yes!</button>
     </div>
+
+	@if (true)
+	{
+		<div>
+			My Text Content!
+		</div>
+	}
+	else if (false)
+	{
+		<div>
+			My Text Content!
+		</div>
+	}
+	else
+	{
+		<div>
+			My Text Content!
+		</div>
+	}
+
+	@if (true)
+	{
+		<div>
+			My Text Content!
+		</div>
+	}
+	else
+	{
+		<div>
+			My Text Content!
+		</div>
+	}
+
+
+
 </div>
 
-@code{
+@code
+{
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
