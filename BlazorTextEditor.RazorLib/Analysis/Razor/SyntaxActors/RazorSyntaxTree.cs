@@ -324,6 +324,17 @@ public class RazorSyntaxTree
                 {
                     injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
                 }
+
+                while (TryReadElseIf(
+                           stringWalker, 
+                           textEditorHtmlDiagnosticBag,
+                           injectedLanguageDefinition,
+                           CSharpRazorKeywords.IF_KEYWORD,
+                           out var elseIfTagSyntaxes) &&
+                       elseIfTagSyntaxes is not null)
+                {
+                    injectedLanguageFragmentSyntaxes.AddRange(elseIfTagSyntaxes);
+                }
                 
                 if (TryReadElse(
                         stringWalker, 
@@ -536,6 +547,82 @@ public class RazorSyntaxTree
         }
 
         tagSyntaxes = null;
+        return false;
+    }
+    
+    private static bool TryReadElseIf(
+        StringWalker stringWalker,
+        TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+        InjectedLanguageDefinition injectedLanguageDefinition,
+        string keywordText,
+        out List<TagSyntax>? tagSyntaxes)
+    {
+        tagSyntaxes = new List<TagSyntax>();
+        
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            var elseIfKeywordCombo = 
+                $"{CSharpRazorKeywords.ELSE_KEYWORD} {CSharpRazorKeywords.IF_KEYWORD}"; 
+            
+            if (stringWalker.CheckForSubstring(elseIfKeywordCombo))
+            {
+                // Syntax highlight the keyword as a razor keyword specifically
+                {
+                    tagSyntaxes.Add(
+                        new InjectedLanguageFragmentSyntax(
+                            ImmutableArray<IHtmlSyntax>.Empty,
+                            string.Empty,
+                            new TextEditorTextSpan(
+                                stringWalker.PositionIndex,
+                                stringWalker.PositionIndex +
+                                elseIfKeywordCombo.Length,
+                                (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+
+                    // -1 is in the case that "else{" instead of a space between "else" and "{"
+                    _ = stringWalker
+                        .ReadRange(elseIfKeywordCombo.Length - 1);
+                }
+                
+                if (!TryReadExplicitInlineExpression(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var explicitExpressionTagSyntaxes) ||
+                    explicitExpressionTagSyntaxes is null)
+                {
+                    break;
+                }
+                
+                tagSyntaxes.AddRange(explicitExpressionTagSyntaxes);
+                
+                if (TryReadCodeBlock(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.ELSE_KEYWORD,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
+                {
+                    tagSyntaxes.AddRange(codeBlockTagSyntaxes);
+                    return true;
+                }
+
+                break;
+            }
+
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                continue;
+
+            break;
+        }
+
+        tagSyntaxes = tagSyntaxes.Any()
+            ? tagSyntaxes
+            : null;
+        
         return false;
     }
     
