@@ -225,6 +225,13 @@ public class RazorSyntaxTree
                                 cSharpText,
                                 positionIndexOffset));
                     }
+                    else
+                    {
+                        injectedLanguageFragmentSyntaxes.AddRange(
+                            ParseCSharpWithAdhocMethodWrapping(
+                                cSharpText,
+                                positionIndexOffset));
+                    }
                     
                     break;
                 }
@@ -982,32 +989,63 @@ public class RazorSyntaxTree
         string cSharpText,
         int offsetPositionIndex)
     {
-        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
-        
-        var lexer = new TextEditorCSharpLexer();
-
         var classTemplateOpening = "public class Aaa{";
 
         var injectedLanguageString = classTemplateOpening +
                                      cSharpText;
 
+        return ParseCSharp(
+            injectedLanguageString,
+            classTemplateOpening.Length,
+            offsetPositionIndex);
+    }
+    
+    private static List<TagSyntax> ParseCSharpWithAdhocMethodWrapping(
+        string cSharpText,
+        int offsetPositionIndex)
+    {
+        var classTemplateOpening = "public class Aaa{";
+
+        var injectedLanguageString = classTemplateOpening +
+                                     cSharpText;
+
+        return ParseCSharp(
+            injectedLanguageString,
+            classTemplateOpening.Length,
+            offsetPositionIndex);
+    }
+    
+    /// <summary>
+    /// If Lexing C# from a razor code block
+    /// one must either use <see cref="ParseCSharpWithAdhocClassWrapping"/> for an @code{} section
+    /// or <see cref="ParseCSharpWithAdhocMethodWrapping"/> for a basic @{} block
+    /// </summary>
+    private static List<TagSyntax> ParseCSharp(
+        string cSharpText,
+        int adhocTemplateOpeningLength,
+        int offsetPositionIndex)
+    {
+        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
+        
+        var lexer = new TextEditorCSharpLexer();
+
         var lexedInjectedLanguage = lexer.Lex(
-                injectedLanguageString)
+                cSharpText)
             .Result;
 
         foreach (var lexedTokenTextSpan in lexedInjectedLanguage)
         {
             var startingIndexInclusive = lexedTokenTextSpan.StartingIndexInclusive +
                                          offsetPositionIndex -
-                                         classTemplateOpening.Length;
+                                         adhocTemplateOpeningLength;
 
             var endingIndexExclusive = lexedTokenTextSpan.EndingIndexExclusive +
                                        offsetPositionIndex -
-                                       classTemplateOpening.Length;
+                                       adhocTemplateOpeningLength;
 
             // startingIndexInclusive < 0 means it was part of the class
             // template that was prepended so roslyn would recognize methods
-            if (lexedTokenTextSpan.StartingIndexInclusive - classTemplateOpening.Length
+            if (lexedTokenTextSpan.StartingIndexInclusive - adhocTemplateOpeningLength
                 < 0)
                 continue;
 
