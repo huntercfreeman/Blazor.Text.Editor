@@ -783,16 +783,37 @@ public partial class TextEditorDisplay : TextEditorView
             .Select((row, index) =>
             {
                 index += verticalStartingIndex;
-
+                
+                var localHorizontalStartingIndex = horizontalStartingIndex;
                 var localHorizontalTake = horizontalTake;
 
-                if (horizontalStartingIndex + localHorizontalTake > row.Count)
-                    localHorizontalTake = row.Count - horizontalStartingIndex;
+                // Adjust for tab key width
+                {
+                    var maxValidColumnIndex = row.Count - 1;
+                    
+                    var parameterForGetTabsCountOnSameRowBeforeCursor =
+                        localHorizontalStartingIndex > maxValidColumnIndex
+                            ? maxValidColumnIndex
+                            : localHorizontalStartingIndex;
+
+                    var tabsOnSameRowBeforeCursor = safeTextEditorReference
+                        .GetTabsCountOnSameRowBeforeCursor(
+                            index,
+                            parameterForGetTabsCountOnSameRowBeforeCursor);
+
+                    // 1 of the character width is already accounted for
+                    var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+
+                    localHorizontalStartingIndex -= extraWidthPerTabKey * tabsOnSameRowBeforeCursor;
+                }
+
+                if (localHorizontalStartingIndex + localHorizontalTake > row.Count)
+                    localHorizontalTake = row.Count - localHorizontalStartingIndex;
 
                 localHorizontalTake = Math.Max(0, localHorizontalTake);
 
                 var horizontallyVirtualizedRow = row
-                    .Skip(horizontalStartingIndex)
+                    .Skip(localHorizontalStartingIndex)
                     .Take(localHorizontalTake)
                     .ToList();
 
@@ -801,6 +822,7 @@ public partial class TextEditorDisplay : TextEditorView
                     CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                 var leftInPixels =
+                    // do not change this to localHorizontalStartingIndex
                     horizontalStartingIndex *
                     CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
