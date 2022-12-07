@@ -145,7 +145,10 @@ public class RazorSyntaxTree
 
                 injectedLanguageFragmentSyntaxes.Add(tagSyntax);
                 
-                var necessaryWhitespacePadding = stringWalker.PositionIndex - positionIndexPriorToHtmlTag;
+                var necessaryWhitespacePadding = 
+                    stringWalker.PositionIndex - 
+                    positionIndexPriorToHtmlTag +
+                    1;
 
                 for (int i = 0; i < necessaryWhitespacePadding; i++)
                 {
@@ -175,7 +178,10 @@ public class RazorSyntaxTree
                     }
                 }
                 
-                var necessaryWhitespacePadding = stringWalker.PositionIndex - positionIndexPriorToHtmlTag;
+                var necessaryWhitespacePadding = 
+                    stringWalker.PositionIndex - 
+                    positionIndexPriorToHtmlTag +
+                    1;
 
                 for (int i = 0; i < necessaryWhitespacePadding; i++)
                 {
@@ -1004,7 +1010,7 @@ public class RazorSyntaxTree
         string cSharpText,
         int offsetPositionIndex)
     {
-        var classTemplateOpening = "public class Aaa{";
+        var classTemplateOpening = "public class Aaa{public void Bbb(){";
 
         var injectedLanguageString = classTemplateOpening +
                                      cSharpText;
