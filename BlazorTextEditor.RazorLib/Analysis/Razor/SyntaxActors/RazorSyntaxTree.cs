@@ -247,9 +247,6 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        var startingPositionIndex = stringWalker.PositionIndex;
-        
-        // TODO: This method needs to break the a while loop on whitespace EXCEPT in the cases where the ending is obvious such as a method invocation
         return new List<TagSyntax>();
     }
 
@@ -280,45 +277,69 @@ public class RazorSyntaxTree
                 .ReadRange(matchedOn.Length);
         }
 
-        // TODO: See the "I expect to use a switch here" comment. For now just return and revisit this.
-        return injectedLanguageFragmentSyntaxes;
+        switch (matchedOn)
+        {
+            case CSharpRazorKeywords.CASE_KEYWORD:
+                break;
+            case CSharpRazorKeywords.DO_KEYWORD:
+                break;
+            case CSharpRazorKeywords.DEFAULT_KEYWORD:
+                break;
+            case CSharpRazorKeywords.FOR_KEYWORD:
+                break;
+            case CSharpRazorKeywords.FOREACH_KEYWORD:
+                break;
+            case CSharpRazorKeywords.IF_KEYWORD:
+                // Necessary in the case where the if statement's predicate expression immediately follows the 'if' text
+                // Example: "@if(predicate) {"
+                stringWalker.BacktrackCharacter();
 
-        // I expect to use a switch here
-        //
-        // an if statement for example would require
-        // a check for an (else if)/(else) block
-        //
-        // switch (matchedOn)
-        // {
-        //     case CSharpRazorKeywords.CASE_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.DO_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.DEFAULT_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.FOR_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.FOREACH_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.IF_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.ELSE_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.LOCK_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.SWITCH_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.TRY_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.CATCH_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.FINALLY_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.USING_KEYWORD:
-        //         break;
-        //     case CSharpRazorKeywords.WHILE_KEYWORD:
-        //         break;
-        // }
+                if (!TryReadExplicitInlineExpression(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var explicitExpressionTagSyntaxes) ||
+                    explicitExpressionTagSyntaxes is null)
+                {
+                    break;
+                }
+                
+                injectedLanguageFragmentSyntaxes.AddRange(explicitExpressionTagSyntaxes);
+                
+                if (TryReadCodeBlock(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        CSharpRazorKeywords.IF_KEYWORD,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
+                {
+                    return injectedLanguageFragmentSyntaxes
+                        .Union(codeBlockTagSyntaxes)
+                        .ToList();
+                }
+                
+                break;
+            case CSharpRazorKeywords.ELSE_KEYWORD:
+                break;
+            case CSharpRazorKeywords.LOCK_KEYWORD:
+                break;
+            case CSharpRazorKeywords.SWITCH_KEYWORD:
+                break;
+            case CSharpRazorKeywords.TRY_KEYWORD:
+                break;
+            case CSharpRazorKeywords.CATCH_KEYWORD:
+                break;
+            case CSharpRazorKeywords.FINALLY_KEYWORD:
+                break;
+            case CSharpRazorKeywords.USING_KEYWORD:
+                break;
+            case CSharpRazorKeywords.WHILE_KEYWORD:
+                break;
+        }
+
+        return injectedLanguageFragmentSyntaxes;
     }
 
     /// <summary>
@@ -362,47 +383,27 @@ public class RazorSyntaxTree
             case RazorKeywords.CODE_KEYWORD:
             case RazorKeywords.FUNCTIONS_KEYWORD:
             {
-                // In the case of "@code{" where the brace deliminating
-                // the code block immediately follows the keyword text
-                //
-                // backtracking to the 'e' of 'code' is necessary
-                // as the while loop immediately will read the next character
-                // and otherwise miss the '{'
+                // Necessary in the case where the code block immediately follows any keyword's text
+                // Example: "@code{" 
                 stringWalker.BacktrackCharacter();
+
+                var keywordText = matchedOn == RazorKeywords.CODE_KEYWORD
+                    ? RazorKeywords.CODE_KEYWORD
+                    : RazorKeywords.FUNCTIONS_KEYWORD;
                 
-                while (!stringWalker.IsEof)
+                if (TryReadCodeBlock(
+                        stringWalker, 
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition,
+                        keywordText,
+                        out var codeBlockTagSyntaxes) &&
+                    codeBlockTagSyntaxes is not null)
                 {
-                    _ = stringWalker.ReadCharacter();
-
-                    if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
-                    {
-                        var codeBlockTagSyntaxes = ReadCodeBlock(
-                            stringWalker,
-                            textEditorHtmlDiagnosticBag,
-                            injectedLanguageDefinition);
-
-                        return injectedLanguageFragmentSyntaxes
-                            .Union(codeBlockTagSyntaxes)
-                            .ToList();
-                    }
-
-                    if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
-                        continue;
-                    
-                    var keywordText = matchedOn == RazorKeywords.CODE_KEYWORD
-                        ? RazorKeywords.CODE_KEYWORD
-                        : RazorKeywords.FUNCTIONS_KEYWORD;
-
-                    textEditorHtmlDiagnosticBag.Report(
-                        DiagnosticLevel.Error,
-                        $"A code block was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
-                        new TextEditorTextSpan(
-                            stringWalker.PositionIndex,
-                            stringWalker.PositionIndex + 1,
-                            (byte)HtmlDecorationKind.None));
-
-                    break;
+                    return injectedLanguageFragmentSyntaxes
+                        .Union(codeBlockTagSyntaxes)
+                        .ToList();
                 }
+                
                 break;
             }
             case RazorKeywords.INHERITS_KEYWORD:
@@ -440,5 +441,85 @@ public class RazorSyntaxTree
         
         // TODO: Syntax highlighting
         return new List<TagSyntax>();
+    }
+    
+    private static bool TryReadCodeBlock(
+        StringWalker stringWalker,
+        TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+        InjectedLanguageDefinition injectedLanguageDefinition,
+        string keywordText,
+        out List<TagSyntax>? tagSyntaxes)
+    {
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
+            {
+                var codeBlockTagSyntaxes = ReadCodeBlock(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition);
+
+                tagSyntaxes = codeBlockTagSyntaxes;
+                return true;
+            }
+
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                continue;
+                    
+            textEditorHtmlDiagnosticBag.Report(
+                DiagnosticLevel.Error,
+                $"A code block was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
+                new TextEditorTextSpan(
+                    stringWalker.PositionIndex,
+                    stringWalker.PositionIndex + 1,
+                    (byte)HtmlDecorationKind.None));
+
+            break;
+        }
+
+        tagSyntaxes = null;
+        return false;
+    }
+    
+    private static bool TryReadExplicitInlineExpression(
+        StringWalker stringWalker,
+        TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+        InjectedLanguageDefinition injectedLanguageDefinition,
+        string keywordText,
+        out List<TagSyntax>? tagSyntaxes)
+    {
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            if (stringWalker.CurrentCharacter == RazorFacts.EXPLICIT_EXPRESSION_START)
+            {
+                var explicitExpressionTagSyntaxes = ReadExplicitInlineExpression(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition);
+
+                tagSyntaxes = explicitExpressionTagSyntaxes;
+                return true;
+            }
+
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                continue;
+                    
+            textEditorHtmlDiagnosticBag.Report(
+                DiagnosticLevel.Error,
+                $"An explicit expression predicate was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
+                new TextEditorTextSpan(
+                    stringWalker.PositionIndex,
+                    stringWalker.PositionIndex + 1,
+                    (byte)HtmlDecorationKind.None));
+
+            break;
+        }
+
+        tagSyntaxes = null;
+        return false;
     }
 }
