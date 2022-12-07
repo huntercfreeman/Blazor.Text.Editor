@@ -142,7 +142,7 @@ public class RazorSyntaxTree
         // the corresponding position indices.
         var cSharpBuilder = new StringBuilder();
 
-        var positionIndexOffset = stringWalker.PositionIndex;
+        var positionIndexOffset = stringWalker.PositionIndex + 1;
         
         while (!stringWalker.IsEof)
         {
