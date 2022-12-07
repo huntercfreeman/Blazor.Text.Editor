@@ -23,6 +23,18 @@ public static partial class TestData
 			My Text Content!
 		</div>
 	}
+	else if (false)
+	{
+		<div>
+			My Text Content!
+		</div>
+	}
+	else if (false)
+	{
+		<div>
+			My Text Content!
+		</div>
+	}
 	else
 	{
 		<div>

@@ -325,6 +325,8 @@ public class RazorSyntaxTree
                     injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
                 }
 
+                var restorePositionIndexPriorToTryReadElseIf = stringWalker.PositionIndex;
+
                 while (TryReadElseIf(
                            stringWalker, 
                            textEditorHtmlDiagnosticBag,
@@ -334,6 +336,13 @@ public class RazorSyntaxTree
                        elseIfTagSyntaxes is not null)
                 {
                     injectedLanguageFragmentSyntaxes.AddRange(elseIfTagSyntaxes);
+                    restorePositionIndexPriorToTryReadElseIf = stringWalker.PositionIndex;
+                }
+
+                if (restorePositionIndexPriorToTryReadElseIf != stringWalker.PositionIndex)
+                {
+                    stringWalker.BacktrackRange(
+                        stringWalker.PositionIndex - restorePositionIndexPriorToTryReadElseIf);
                 }
                 
                 if (TryReadElse(
