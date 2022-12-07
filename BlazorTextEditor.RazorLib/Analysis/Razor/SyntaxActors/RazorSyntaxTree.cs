@@ -97,26 +97,12 @@ public class RazorSyntaxTree
     /// <br/><br/>
     /// TODO: Is this true?
     /// </param>
-    /// <returns></returns>
     private static List<TagSyntax> ReadCodeBlock(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition,
         bool isClassLevelCodeBlock)
     {
-        // Razor Code Block
-        //
-        // NOTE: There might be a mixture
-        // of C# and HTML in the Razor Code Blocks.
-        //
-        // NOTE:
-        // -<text></text>
-        //     Render multiple lines of text without rendering an HTML Element
-        // -@:
-        //     Render a single line of text without rendering an HTML Element
-        // -ANY tag can be used within the razor code blocks
-        //     Example: <div></div> or <MyBlazorComponent/>
-
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
         
         var startingPositionIndex = stringWalker.PositionIndex;
@@ -232,10 +218,13 @@ public class RazorSyntaxTree
 
                     var cSharpText = cSharpBuilder.ToString();
 
-                    injectedLanguageFragmentSyntaxes.AddRange(
-                        ParseCSharpWithAdhocClass(
-                            cSharpText,
-                            positionIndexOffset));
+                    if (isClassLevelCodeBlock)
+                    {
+                        injectedLanguageFragmentSyntaxes.AddRange(
+                            ParseCSharpWithAdhocClassWrapping(
+                                cSharpText,
+                                positionIndexOffset));
+                    }
                     
                     break;
                 }
@@ -989,7 +978,7 @@ public class RazorSyntaxTree
         return false;
     }
 
-    private static List<TagSyntax> ParseCSharpWithAdhocClass(
+    private static List<TagSyntax> ParseCSharpWithAdhocClassWrapping(
         string cSharpText,
         int offsetPositionIndex)
     {
