@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using System.Text;
+using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.Facts;
@@ -229,6 +231,11 @@ public class RazorSyntaxTree
                     cSharpBuilder.Remove(cSharpBuilder.Length - 1, 1);
 
                     var cSharpText = cSharpBuilder.ToString();
+
+                    injectedLanguageFragmentSyntaxes.AddRange(
+                        ParseCSharpWithAdhocClass(
+                            cSharpText,
+                            positionIndexOffset));
                     
                     break;
                 }
@@ -980,5 +987,134 @@ public class RazorSyntaxTree
 
         tagSyntaxes = null;
         return false;
+    }
+
+    private static List<TagSyntax> ParseCSharpWithAdhocClass(
+        string cSharpText,
+        int offsetPositionIndex)
+    {
+        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
+        
+        var lexer = new TextEditorCSharpLexer();
+
+        var classTemplateOpening = "public class Aaa{";
+
+        var injectedLanguageString = classTemplateOpening +
+                                     cSharpText;
+
+        var lexedInjectedLanguage = lexer.Lex(
+                injectedLanguageString)
+            .Result;
+
+        foreach (var lexedTokenTextSpan in lexedInjectedLanguage)
+        {
+            var startingIndexInclusive = lexedTokenTextSpan.StartingIndexInclusive +
+                                         offsetPositionIndex -
+                                         classTemplateOpening.Length;
+
+            var endingIndexExclusive = lexedTokenTextSpan.EndingIndexExclusive +
+                                       offsetPositionIndex -
+                                       classTemplateOpening.Length;
+
+            // startingIndexInclusive < 0 means it was part of the class
+            // template that was prepended so roslyn would recognize methods
+            if (lexedTokenTextSpan.StartingIndexInclusive - classTemplateOpening.Length
+                < 0)
+                continue;
+
+            var cSharpDecorationKind = (CSharpDecorationKind)lexedTokenTextSpan.DecorationByte;
+
+            switch (cSharpDecorationKind)
+            {
+                case CSharpDecorationKind.None:
+                    break;
+                case CSharpDecorationKind.Method:
+                    var razorMethodTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageMethod,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorMethodTextSpan));
+
+                    break;
+                case CSharpDecorationKind.Type:
+                    var razorTypeTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageType,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorTypeTextSpan));
+
+                    break;
+                case CSharpDecorationKind.Parameter:
+                    var razorVariableTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageVariable,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorVariableTextSpan));
+
+                    break;
+                case CSharpDecorationKind.StringLiteral:
+                    var razorStringLiteralTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageStringLiteral,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorStringLiteralTextSpan));
+
+                    break;
+                case CSharpDecorationKind.Keyword:
+                    var razorKeywordTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageKeyword,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorKeywordTextSpan));
+
+                    break;
+                case CSharpDecorationKind.Comment:
+                    var razorCommentTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.Comment,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorCommentTextSpan));
+
+                    break;
+            }
+        }
+
+        return injectedLanguageFragmentSyntaxes;
     }
 }
