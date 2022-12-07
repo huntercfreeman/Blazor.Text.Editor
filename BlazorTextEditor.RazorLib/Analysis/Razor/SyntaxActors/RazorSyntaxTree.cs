@@ -1,7 +1,9 @@
 using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.Html.Facts;
 using BlazorTextEditor.RazorLib.Analysis.Html.InjectedLanguage;
+using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Analysis.Razor.Facts;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -149,6 +151,13 @@ public class RazorSyntaxTree
                     
                     break;
                 }
+            }
+
+            if (stringWalker.CurrentCharacter == HtmlFacts.OPEN_TAG_BEGINNING)
+            {
+                var htmlSyntaxUnit = HtmlSyntaxTree.ParseText(
+                    text,
+                    RazorInjectedLanguageFacts.RazorInjectedLanguageDefinition);
             }
         }
         

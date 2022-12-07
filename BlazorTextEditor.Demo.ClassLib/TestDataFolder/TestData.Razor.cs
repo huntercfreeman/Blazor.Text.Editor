@@ -10,10 +10,25 @@ public static partial class TestData
         <p class=""card-text"">@ChildContent</p>
         <button @onclick=""OnYes"">Yes!</button>
     </div>
-
+	
 	@for (int i = 0; i < 10; i++)
 	{
-		<div>for loop</div>
+	  @: The value @i&nbsp;
+
+	  if (i % 2 == 0)
+	  {
+	      <text>
+	          is even
+	      </text>
+	  }
+	  else
+	  {
+	      <text>
+	          is odd
+	      </text>
+	  }
+
+	  <br/>
 	}
 
 	@foreach (var entry in MyList)

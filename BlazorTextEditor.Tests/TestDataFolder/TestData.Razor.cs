@@ -2,18 +2,33 @@
 
 public static partial class TestData
 {
-    public static class Razor
-    {
-        public const string EXAMPLE_TEXT = @"<div class=""card"" style=""width:22rem"">
+	public static class Razor
+	{
+		public const string EXAMPLE_TEXT = @"<div class=""card"" style=""width:22rem"">
     <div class=""card-body"">
         <h3 class=""card-title"">@Title</h3>
         <p class=""card-text"">@ChildContent</p>
         <button @onclick=""OnYes"">Yes!</button>
     </div>
-
+	
 	@for (int i = 0; i < 10; i++)
 	{
-		<div>for loop</div>
+	  @: The value @i&nbsp;
+
+	  if (i % 2 == 0)
+	  {
+	      <text>
+	          is even
+	      </text>
+	  }
+	  else
+	  {
+	      <text>
+	          is odd
+	      </text>
+	  }
+
+	  <br/>
 	}
 
 	@foreach (var entry in MyList)
@@ -109,5 +124,5 @@ public static partial class TestData
         Console.WriteLine(""Write to the console in C#! 'Yes' button selected."");
     }
 }";
-    }
+	}
 }

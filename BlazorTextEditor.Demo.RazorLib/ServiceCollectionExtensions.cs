@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBlazorTextEditorDemoRazorLibServices(this IServiceCollection services)
     {
         return services
-            .AddBlazorTextEditor(options => options.InitialTheme = ThemeFacts.BlazorTextEditorLightTheme)
+            .AddBlazorTextEditor(options => options.InitialTheme = ThemeFacts.BlazorTextEditorDarkTheme)
             .AddBlazorTextEditorDemoClassLibServices();
     }
 }
