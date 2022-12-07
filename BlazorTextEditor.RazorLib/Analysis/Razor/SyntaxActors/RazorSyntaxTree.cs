@@ -101,30 +101,60 @@ public class RazorSyntaxTree
         // -ANY tag can be used within the razor code blocks
         //     Example: <div></div> or <MyBlazorComponent/>
 
+        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
+        
         var startingPositionIndex = stringWalker.PositionIndex;
         
+        // Syntax highlight the CODE_BLOCK_START as a razor keyword specifically
+        {
+            injectedLanguageFragmentSyntaxes.Add(
+                new InjectedLanguageFragmentSyntax(
+                    ImmutableArray<IHtmlSyntax>.Empty,
+                    string.Empty,
+                    new TextEditorTextSpan(
+                        stringWalker.PositionIndex,
+                        stringWalker.PositionIndex +
+                        1,
+                        (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+        }
+        
         // Enters the while loop on the '{'
-        var seenCodeBlockStarts = 1;
+        var unmatchedCodeBlockStarts = 1;
         
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
-                seenCodeBlockStarts++;
+                unmatchedCodeBlockStarts++;
             
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_END)
             {
-                seenCodeBlockStarts--;
+                unmatchedCodeBlockStarts--;
 
-                if (seenCodeBlockStarts == 0)
+                if (unmatchedCodeBlockStarts == 0)
+                {
+                    // Syntax highlight the CODE_BLOCK_END as a razor keyword specifically
+                    {
+                        injectedLanguageFragmentSyntaxes.Add(
+                            new InjectedLanguageFragmentSyntax(
+                                ImmutableArray<IHtmlSyntax>.Empty,
+                                string.Empty,
+                                new TextEditorTextSpan(
+                                    stringWalker.PositionIndex,
+                                    stringWalker.PositionIndex +
+                                    1,
+                                    (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+                    }
+                    
                     break;
+                }
             }
         }
         
         // TODO: In the while loop extract all the C# code and use roslyn to syntax highlight it
         // TODO: In the while loop extract all the HTML code and use TextEditorHtmlLexer.cs to syntax highlight it
-        return new List<TagSyntax>();
+        return injectedLanguageFragmentSyntaxes;
     }
 
     private static List<TagSyntax> ReadInlineExpression(
@@ -266,7 +296,8 @@ public class RazorSyntaxTree
     /// </summary>
     private static List<TagSyntax> ReadRazorKeyword(StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
-        InjectedLanguageDefinition injectedLanguageDefinition, string matchedOn)
+        InjectedLanguageDefinition injectedLanguageDefinition, 
+        string matchedOn)
     {
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
         
@@ -286,33 +317,72 @@ public class RazorSyntaxTree
                 .ReadRange(matchedOn.Length);
         }
 
-        // TODO: See the "Perhaps a switch is needed here" comment. For now just return and revisit this.
-        return injectedLanguageFragmentSyntaxes;
+        switch (matchedOn)
+        {
+            case RazorKeywords.PAGE_KEYWORD:
+            {
+                // @page "/csharp"
+                break;
+            }
+            case RazorKeywords.NAMESPACE_KEYWORD:
+            {
+                // @namespace BlazorTextEditor.Demo.ServerSide.Pages
+                break;
+            }
+            case RazorKeywords.CODE_KEYWORD:
+            case RazorKeywords.FUNCTIONS_KEYWORD:
+            {
+                // In the case of "@code{" where the brace deliminating
+                // the code block immediately follows the keyword text
+                //
+                // backtracking to the 'e' of 'code' is necessary
+                // as the while loop immediately will read the next character
+                // and otherwise miss the '{'
+                stringWalker.BacktrackCharacter();
+                
+                while (!stringWalker.IsEof)
+                {
+                    _ = stringWalker.ReadCharacter();
 
-        // Perhaps a switch is needed here due to
-        // the keywords having parameters which might vary in type?
-        //
-        // @page takes a string
-        // what do the others take?
-        // all others take a string or something else?
-        //
-        // switch (matchedOn)
-        // {
-        //     case RazorKeywords.PAGE_KEYWORD:
-        //         break;
-        //     case RazorKeywords.NAMESPACE_KEYWORD:
-        //         break;
-        //     case RazorKeywords.FUNCTIONS_KEYWORD:
-        //         break;
-        //     case RazorKeywords.INHERITS_KEYWORD:
-        //         break;
-        //     case RazorKeywords.MODEL_KEYWORD:
-        //         break;
-        //     case RazorKeywords.SECTION_KEYWORD:
-        //         break;
-        //     case RazorKeywords.HELPER_KEYWORD:
-        //         break;
-        // }
+                    if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
+                    {
+                        var codeBlockTagSyntaxes = ReadCodeBlock(
+                            stringWalker,
+                            textEditorHtmlDiagnosticBag,
+                            injectedLanguageDefinition);
+
+                        return injectedLanguageFragmentSyntaxes
+                            .Union(codeBlockTagSyntaxes)
+                            .ToList();
+                    }
+
+                    if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                        continue;
+                    
+                    var keywordText = matchedOn == RazorKeywords.CODE_KEYWORD
+                        ? RazorKeywords.CODE_KEYWORD
+                        : RazorKeywords.FUNCTIONS_KEYWORD;
+
+                    textEditorHtmlDiagnosticBag.Report(
+                        DiagnosticLevel.Error,
+                        $"A code block was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
+                        new TextEditorTextSpan(
+                            stringWalker.PositionIndex,
+                            stringWalker.PositionIndex + 1,
+                            (byte)HtmlDecorationKind.None));
+
+                    break;
+                }
+                break;
+            }
+            case RazorKeywords.INHERITS_KEYWORD:
+            {
+                // @inherits IconBase
+                break;
+            }
+        }
+
+        return injectedLanguageFragmentSyntaxes;
     }
 
     /// <summary>
