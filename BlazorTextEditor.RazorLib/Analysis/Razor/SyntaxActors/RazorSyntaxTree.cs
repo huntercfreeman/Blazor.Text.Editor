@@ -155,9 +155,12 @@ public class RazorSyntaxTree
 
             if (stringWalker.CurrentCharacter == HtmlFacts.OPEN_TAG_BEGINNING)
             {
-                var htmlSyntaxUnit = HtmlSyntaxTree.ParseText(
-                    text,
-                    RazorInjectedLanguageFacts.RazorInjectedLanguageDefinition);
+                var tagSyntax = HtmlSyntaxTree.HtmlSyntaxTreeStateMachine.ParseTag(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition);
+
+                injectedLanguageFragmentSyntaxes.Add(tagSyntax);
             }
         }
         

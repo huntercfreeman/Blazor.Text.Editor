@@ -11,29 +11,31 @@ public static partial class TestData
         <button @onclick=""OnYes"">Yes!</button>
     </div>
 	
-	@for (int i = 0; i < 10; i++)
-	{
-	  @: The value @i&nbsp;
-
-	  if (i % 2 == 0)
-	  {
-	      <text>
-	          is even
-	      </text>
-	  }
-	  else
-	  {
-	      <text>
-	          is odd
-	      </text>
-	  }
-
-	  <br/>
-	}
-
 	@foreach (var entry in MyList)
 	{
-		<div>foreach loop</div>
+		<div>
+			foreach loop
+
+			@for (int i = 0; i < 10; i++)
+			{
+				@: The value @i&nbsp;
+
+				if (i % 2 == 0)
+				{
+					<text>
+						is even
+					</text>
+				}
+				else
+				{
+					<text>
+						is odd
+					</text>
+				}
+
+				<br/>
+			}
+		</div>
 	}
 
 	@switch (colorName)

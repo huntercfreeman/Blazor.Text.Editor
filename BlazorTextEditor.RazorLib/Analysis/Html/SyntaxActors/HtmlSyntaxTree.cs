@@ -43,7 +43,7 @@ public static class HtmlSyntaxTree
         return htmlSyntaxUnitBuilder.Build();
     }
 
-    private static class HtmlSyntaxTreeStateMachine
+    public static class HtmlSyntaxTreeStateMachine
     {
         /// <summary>
         ///     Invocation of this method requires the
