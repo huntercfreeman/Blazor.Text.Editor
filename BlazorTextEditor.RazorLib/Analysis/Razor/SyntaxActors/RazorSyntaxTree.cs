@@ -24,7 +24,16 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
+        // <td>@forecast...</td>
+        // <td>@forecast...</td>
+        // <td>@forecast...</td>
+        // <td>@forecast...</td>
+
+        // current character is '@'
         _ = stringWalker.ReadCharacter();
+
+
+        // current character is 'f'
 
         string? matchedOn = null;
 
@@ -41,6 +50,8 @@ public class RazorSyntaxTree
             return new List<TagSyntax>();
         }
 
+        
+        
         if (stringWalker.CheckForSubstringRange(
                 RazorKeywords.ALL,
                 out matchedOn) &&
@@ -52,17 +63,38 @@ public class RazorSyntaxTree
                 injectedLanguageDefinition,
                 matchedOn);
         }
+        
+        // foreach (var forecast in forecasts)....
+        
+        // <td>@forecast.Property</td>
+        // <td>@forecast.Property</td>
+        // <td>@forecast.Property</td>
+        // <td>@forecast.Property</td>
+        
+        // CurrentCharcter 'f'
 
-        if (stringWalker.CheckForSubstringRange(
-                CSharpRazorKeywords.ALL,
-                out matchedOn) &&
-            matchedOn is not null)
         {
-            return ReadCSharpRazorKeyword(
-                stringWalker,
-                textEditorHtmlDiagnosticBag,
-                injectedLanguageDefinition,
-                matchedOn);
+            var nextWord = stringWalker.PeekNextWord();
+
+            string? foundString = null;
+
+            foreach (var cSharpRazorKeyword in CSharpRazorKeywords.ALL)
+            {
+                if (cSharpRazorKeyword == nextWord)
+                {
+                    foundString = cSharpRazorKeyword;
+                    break;
+                }
+            }
+
+            if (foundString is not null)
+            {
+                return ReadCSharpRazorKeyword(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition,
+                    foundString);
+            }
         }
 
         if (stringWalker.CurrentCharacter == RazorFacts.COMMENT_START)

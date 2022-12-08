@@ -275,6 +275,15 @@ public static class HtmlSyntaxTree
                     (byte)HtmlDecorationKind.TagName));
         }
 
+        /*
+         * <div>
+         *     TEXT NODE: THIS IS THE CHILD CONTENT
+         *     HtmlElement to parse: <HtmlElement/>
+         *
+         *     @myVariable
+         * </div>
+         */
+            
         public static List<IHtmlSyntax> ParseTagChildContent(
             StringWalker stringWalker,
             TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
