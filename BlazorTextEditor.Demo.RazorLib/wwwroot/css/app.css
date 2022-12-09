@@ -70,3 +70,13 @@ a, .btn-link {
 .bte_text-editor-css-wrapper.bte_demo-text-editor {
     height: 500px;
 }
+
+.page {
+    color: var(--bte_primary-font-color);
+    background-color: var(--bte_secondary-background-color);
+}
+
+div.top-row:not(.navbar) {
+    color: var(--bte_primary-font-color) !important;
+    background-color: var(--bte_body-background-color) !important;
+}

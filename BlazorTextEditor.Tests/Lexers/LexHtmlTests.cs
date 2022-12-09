@@ -11,7 +11,7 @@ public class LexHtmlTests
     [Fact]
     public async Task LexTagNames()
     {
-        var text = TestData.Html.EXAMPLE_TEXT_19_LINES
+        var text = TestData.Html.EXAMPLE_TEXT
             .ReplaceLineEndings("\n");
 
         var expectedTextEditorTextSpans = new[]
@@ -59,7 +59,7 @@ public class LexHtmlTests
     [Fact]
     public async Task LexAttributeName()
     {
-        var text = TestData.Html.EXAMPLE_TEXT_19_LINES
+        var text = TestData.Html.EXAMPLE_TEXT
             .ReplaceLineEndings("\n");
 
         var expectedTextEditorTextSpans = new[]
@@ -110,7 +110,7 @@ public class LexHtmlTests
     [Fact]
     public async Task LexAttributeValue()
     {
-        var text = TestData.Html.EXAMPLE_TEXT_19_LINES
+        var text = TestData.Html.EXAMPLE_TEXT
             .ReplaceLineEndings("\n");
 
         var expectedTextEditorTextSpans = new[]
@@ -162,7 +162,7 @@ public class LexHtmlTests
     [Fact]
     public async Task LexComment()
     {
-        var text = TestData.Html.EXAMPLE_TEXT_COMMENTS
+        var text = TestData.Html.EXAMPLE_TEXT
             .ReplaceLineEndings("\n");
 
         var expectedTextEditorTextSpans = new[]
