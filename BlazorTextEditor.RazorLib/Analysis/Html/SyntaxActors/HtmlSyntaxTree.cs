@@ -537,32 +537,37 @@ public static class HtmlSyntaxTree
                 if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
                     break;
             }
-            
-            var beganWithAttributeValueStarting =
-                HtmlFacts.ATTRIBUTE_VALUE_STARTING == stringWalker.CurrentCharacter;
 
-            var foundOpenTagEnding = false;
-            
-            while (!stringWalker.IsEof)
+            var foundOpenTagEnding = stringWalker.CheckForSubstringRange(
+                HtmlFacts.OPEN_TAG_ENDING_OPTIONS,
+                out _);
+
+            if (!foundOpenTagEnding)
             {
-                _ = stringWalker.ReadCharacter();
+                var beganWithAttributeValueStarting =
+                    HtmlFacts.ATTRIBUTE_VALUE_STARTING == stringWalker.CurrentCharacter;
+            
+                while (!stringWalker.IsEof)
+                {
+                    _ = stringWalker.ReadCharacter();
 
-                if (!beganWithAttributeValueStarting && 
-                    WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
-                {
-                    break;
-                }
+                    if (!beganWithAttributeValueStarting && 
+                        WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                    {
+                        break;
+                    }
                 
-                if (stringWalker.CheckForSubstringRange(
-                        HtmlFacts.OPEN_TAG_ENDING_OPTIONS, 
-                        out var matchedOn))
-                {
-                    foundOpenTagEnding = true;
-                    break; 
-                }
+                    if (stringWalker.CheckForSubstringRange(
+                            HtmlFacts.OPEN_TAG_ENDING_OPTIONS, 
+                            out _))
+                    {
+                        foundOpenTagEnding = true;
+                        break; 
+                    }
                 
-                if (HtmlFacts.ATTRIBUTE_VALUE_ENDING == stringWalker.CurrentCharacter)
-                    break;
+                    if (HtmlFacts.ATTRIBUTE_VALUE_ENDING == stringWalker.CurrentCharacter)
+                        break;
+                }
             }
 
             var endingIndexExclusive = stringWalker.PositionIndex;
