@@ -223,6 +223,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Helper Components
+    - TextEditorInputHeight.razor provides an input of type number to allow setting of text editor height to a pixel value.
+        - Local storage integration is set up for TextEditorInputHeight.razor
 - ILexer changes
     - C#
         - Method parameters are syntax highlighted
