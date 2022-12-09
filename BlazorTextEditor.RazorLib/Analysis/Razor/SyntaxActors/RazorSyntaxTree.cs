@@ -272,8 +272,6 @@ public class RazorSyntaxTree
             }
         }
         
-        // TODO: In the while loop extract all the C# code and use roslyn to syntax highlight it
-        // TODO: In the while loop extract all the HTML code and use TextEditorHtmlLexer.cs to syntax highlight it
         return injectedLanguageFragmentSyntaxes;
     }
 
@@ -718,16 +716,34 @@ public class RazorSyntaxTree
     }
 
     /// <summary>
-    /// Example: @* This is a comment*@
+    /// Example: @* This is a razor comment *@
     /// </summary>
     private static List<TagSyntax> ReadComment(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        var startingPositionIndex = stringWalker.PositionIndex;
+        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
         
         // Enters the while loop on the '*'
+        
+        // Syntax highlight the '*' the same color as a razor keyword
+        {
+            var commentStartTextSpan = new TextEditorTextSpan(
+                stringWalker.PositionIndex,
+                stringWalker.PositionIndex + 1,
+                (byte)HtmlDecorationKind.InjectedLanguageFragment);
+
+            var commentStartSyntax = new InjectedLanguageFragmentSyntax(
+                ImmutableArray<IHtmlSyntax>.Empty,
+                string.Empty,
+                commentStartTextSpan);
+            
+            injectedLanguageFragmentSyntaxes.Add(commentStartSyntax);
+        }
+        
+        // Do not syntax highlight the '*' as part of the comment
+        var commentTextStartingPositionIndex = stringWalker.PositionIndex + 1;
         
         while (!stringWalker.IsEof)
         {
@@ -740,8 +756,34 @@ public class RazorSyntaxTree
             }
         }
         
-        // TODO: Syntax highlighting
-        return new List<TagSyntax>();
+        var commentValueTextSpan = new TextEditorTextSpan(
+            commentTextStartingPositionIndex,
+            stringWalker.PositionIndex,
+            (byte)HtmlDecorationKind.Comment);
+
+        var commentValueSyntax = new InjectedLanguageFragmentSyntax(
+            ImmutableArray<IHtmlSyntax>.Empty,
+            string.Empty,
+            commentValueTextSpan);
+        
+        injectedLanguageFragmentSyntaxes.Add(commentValueSyntax);
+
+        // Syntax highlight the '*' the same color as a razor keyword
+        {
+            var commentEndTextSpan = new TextEditorTextSpan(
+                stringWalker.PositionIndex,
+                stringWalker.PositionIndex + 1,
+                (byte)HtmlDecorationKind.InjectedLanguageFragment);
+
+            var commentEndSyntax = new InjectedLanguageFragmentSyntax(
+                ImmutableArray<IHtmlSyntax>.Empty,
+                string.Empty,
+                commentEndTextSpan);
+            
+            injectedLanguageFragmentSyntaxes.Add(commentEndSyntax);
+        }
+
+        return injectedLanguageFragmentSyntaxes;
     }
     
     private static bool TryReadCodeBlock(
