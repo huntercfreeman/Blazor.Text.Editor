@@ -14,7 +14,7 @@ public static class HtmlFacts
     public const string CLOSE_TAG_WITH_CHILD_CONTENT_BEGINNING = "</";
     public const string CLOSE_TAG_WITH_CHILD_CONTENT_ENDING = ">";
     
-    public const char ATTRIBUTE_NAME_ENDING = '=';
+    public const char SEPARATOR_FOR_ATTRIBUTE_NAME_AND_ATTRIBUTE_VALUE = '=';
     
     public const char ATTRIBUTE_VALUE_STARTING = '"';
     public const char ATTRIBUTE_VALUE_ENDING = '"';

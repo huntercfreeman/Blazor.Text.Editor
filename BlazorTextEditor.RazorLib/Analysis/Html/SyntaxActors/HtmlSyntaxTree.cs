@@ -420,27 +420,11 @@ public static class HtmlSyntaxTree
                 textEditorHtmlDiagnosticBag,
                 injectedLanguageDefinition);
             
-            /*
-             * /// -<see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
-        /// -<see cref="HtmlFacts.ATTRIBUTE_NAME_ENDING"/><br/>
-        /// -<see cref="HtmlFacts.OPEN_TAG_ENDING_OPTIONS"/><br/>
-             */
-            
-            var attributeValueSyntax = ParseAttributeValue(
-                stringWalker,
-                textEditorHtmlDiagnosticBag,
-                injectedLanguageDefinition);
-            
-            // Move to the first whitespace or end of opening tag
-            while (!stringWalker.IsEof)
-            {
-                _ = stringWalker.ReadCharacter();
-
-                if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
-                    HtmlFacts.OPEN_TAG_ENDING_OPTIONS
-                        .Contains(stringWalker.CurrentCharacter.ToString()))
-                    break;
-            }
+            _ = TryReadAttributeValue(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition,
+                    out var attributeValueSyntax);
 
             return new AttributeSyntax(
                 attributeNameSyntax,
@@ -452,7 +436,7 @@ public static class HtmlSyntaxTree
         /// -Any character that can start an attribute name<br/>
         /// currentCharacterOut:<br/>
         /// -<see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
-        /// -<see cref="HtmlFacts.ATTRIBUTE_NAME_ENDING"/><br/>
+        /// -<see cref="HtmlFacts.SEPARATOR_FOR_ATTRIBUTE_NAME_AND_ATTRIBUTE_VALUE"/><br/>
         /// -<see cref="HtmlFacts.OPEN_TAG_ENDING_OPTIONS"/><br/>
         /// </summary>
         public static AttributeNameSyntax ParseAttributeName(
@@ -472,7 +456,7 @@ public static class HtmlSyntaxTree
                 _ = stringWalker.ReadCharacter();
 
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
-                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter ||
+                    HtmlFacts.SEPARATOR_FOR_ATTRIBUTE_NAME_AND_ATTRIBUTE_VALUE == stringWalker.CurrentCharacter ||
                     stringWalker.CheckForSubstringRange(HtmlFacts.OPEN_TAG_ENDING_OPTIONS, out var matchedOn))
                 {
                     break;
@@ -488,8 +472,60 @@ public static class HtmlSyntaxTree
         }
         
         /// <summary>
+        /// Returns placeholder match attribute value if
+        /// fails to read an attribute value<br/>
+        /// <br/>
         /// currentCharacterIn:<br/>
-        /// -<see cref="HtmlFacts.ATTRIBUTE_VALUE_STARTING"/><br/>
+        /// -<see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
+        /// -<see cref="HtmlFacts.SEPARATOR_FOR_ATTRIBUTE_NAME_AND_ATTRIBUTE_VALUE"/><br/>
+        /// -<see cref="HtmlFacts.OPEN_TAG_ENDING_OPTIONS"/><br/>
+        /// currentCharacterOut:<br/>
+        /// -<see cref="HtmlFacts.ATTRIBUTE_VALUE_ENDING"/><br/>
+        /// -<see cref="HtmlFacts.OPEN_TAG_ENDING_OPTIONS"/><br/>
+        /// </summary>
+        private static bool TryReadAttributeValue(
+            StringWalker stringWalker,
+            TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+            InjectedLanguageDefinition? injectedLanguageDefinition,
+            out AttributeValueSyntax attributeValueSyntax)
+        {
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+            {
+                // Move to the first non-whitespace
+                while (!stringWalker.IsEof)
+                {
+                    _ = stringWalker.ReadCharacter();
+
+                    if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                        break;
+                }
+            }
+            
+            if (HtmlFacts.SEPARATOR_FOR_ATTRIBUTE_NAME_AND_ATTRIBUTE_VALUE == stringWalker.CurrentCharacter)
+            {
+                attributeValueSyntax = ParseAttributeValue(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition);
+                
+                return true;
+            }
+
+            // Set out variable as a 'matched attribute value' so there aren't
+            // any cascading error diagnostics due to having expected an attribute value.
+            var attributeValueTextSpan = new TextEditorTextSpan(
+                0,
+                0,
+                (byte)HtmlDecorationKind.AttributeValue);
+
+            attributeValueSyntax = new AttributeValueSyntax(attributeValueTextSpan);
+            
+            return false;
+        }
+        
+        /// <summary>
+        /// currentCharacterIn:<br/>
+        /// -<see cref="HtmlFacts.SEPARATOR_FOR_ATTRIBUTE_NAME_AND_ATTRIBUTE_VALUE"/><br/>
         /// currentCharacterOut:<br/>
         /// -<see cref="HtmlFacts.ATTRIBUTE_VALUE_ENDING"/><br/>
         /// </summary>
@@ -498,32 +534,53 @@ public static class HtmlSyntaxTree
             TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
             InjectedLanguageDefinition? injectedLanguageDefinition)
         {
+            var startingPositionIndex = stringWalker.PositionIndex;
+            
+            // Move to the first non-whitespace which follows the
+            // HtmlFacts.SEPARATOR_FOR_ATTRIBUTE_NAME_AND_ATTRIBUTE_VALUE
             while (!stringWalker.IsEof)
             {
                 _ = stringWalker.ReadCharacter();
 
-                // Skip whitespace / attribute name ending '=' character
-                if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) &&
-                    HtmlFacts.ATTRIBUTE_NAME_ENDING != stringWalker.CurrentCharacter &&
-                    HtmlFacts.ATTRIBUTE_VALUE_STARTING != stringWalker.CurrentCharacter)
+                if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
                     break;
             }
+            
+            var beganWithAttributeValueStarting =
+                HtmlFacts.ATTRIBUTE_VALUE_STARTING == stringWalker.CurrentCharacter;
 
-            var startingPositionIndex = stringWalker.PositionIndex;
+            var foundOpenTagEnding = false;
             
             while (!stringWalker.IsEof)
             {
                 _ = stringWalker.ReadCharacter();
 
-                if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
-                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter ||
-                    HtmlFacts.ATTRIBUTE_VALUE_ENDING == stringWalker.CurrentCharacter)
+                if (!beganWithAttributeValueStarting && 
+                    WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                {
+                    break;
+                }
+                
+                if (stringWalker.CheckForSubstringRange(
+                        HtmlFacts.OPEN_TAG_ENDING_OPTIONS, 
+                        out var matchedOn))
+                {
+                    foundOpenTagEnding = true;
+                    break; 
+                }
+                
+                if (HtmlFacts.ATTRIBUTE_VALUE_ENDING == stringWalker.CurrentCharacter)
                     break;
             }
 
+            var endingIndexExclusive = stringWalker.PositionIndex;
+
+            if (!foundOpenTagEnding)
+                endingIndexExclusive++;
+
             var attributeValueTextSpan = new TextEditorTextSpan(
                 startingPositionIndex,
-                stringWalker.PositionIndex,
+                endingIndexExclusive,
                 (byte)HtmlDecorationKind.AttributeValue);
             
             return new AttributeValueSyntax(attributeValueTextSpan);
