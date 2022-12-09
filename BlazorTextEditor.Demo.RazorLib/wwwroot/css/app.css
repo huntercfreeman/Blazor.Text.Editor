@@ -91,7 +91,15 @@ div.top-row:not(.navbar) {
     padding-right: 10px;
 }
 
-.bte_collapsed-top-row {
+.bte_top-row {
+    display: flex;
+    height: 3.5rem;
+    padding: .5rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bte_top-row-group {
     display: flex;
     height: fit-content;
     padding: .5rem;
@@ -99,6 +107,6 @@ div.top-row:not(.navbar) {
     align-items: center;
 }
 
-.bte_collapsed-top-row .bte_top-row-link {
+.bte_top-row .bte_top-row-link {
     height: fit-content;
 }
