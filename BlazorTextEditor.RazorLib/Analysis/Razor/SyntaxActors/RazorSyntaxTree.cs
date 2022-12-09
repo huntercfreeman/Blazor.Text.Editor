@@ -24,15 +24,8 @@ public class RazorSyntaxTree
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
-        // <td>@forecast...</td>
-        // <td>@forecast...</td>
-        // <td>@forecast...</td>
-        // <td>@forecast...</td>
-
         // current character is '@'
         _ = stringWalker.ReadCharacter();
-
-        // current character is 'f'
 
         string? matchedOn = null;
 
@@ -95,6 +88,14 @@ public class RazorSyntaxTree
         if (stringWalker.CurrentCharacter == RazorFacts.COMMENT_START)
         {
             return ReadComment(
+                stringWalker,
+                textEditorHtmlDiagnosticBag,
+                injectedLanguageDefinition);
+        }
+        
+        if (stringWalker.CurrentCharacter == RazorFacts.SINGLE_LINE_TEXT_OUTPUT_WITHOUT_ADDING_HTML_ELEMENT)
+        {
+            return ReadSingleLineTextOutputWithoutAddingHtmlElement(
                 stringWalker,
                 textEditorHtmlDiagnosticBag,
                 injectedLanguageDefinition);
@@ -193,23 +194,32 @@ public class RazorSyntaxTree
 
                 if (stringWalker.CheckForSubstring(singleLineTextOutputText))
                 {
-                    var positionIndexPriorToHtmlTag = stringWalker.PositionIndex;
+                    var positionIndexPriorReadingLine = stringWalker.PositionIndex;
+                    
+                    var injectedLanguageFragmentSyntaxStartingPositionIndex = 
+                        stringWalker.PositionIndex;
 
-                    _ = stringWalker.ReadRange(singleLineTextOutputText.Length - 1);
-
-                    while (!stringWalker.IsEof)
-                    {
-                        _ = stringWalker.ReadCharacter();
-
-                        if (WhitespaceFacts.LINE_ENDING_CHARACTERS.Contains(stringWalker.CurrentCharacter))
-                        {
-                            break;
-                        }
-                    }
+                    // Track text span of the "@" sign
+                    injectedLanguageFragmentSyntaxes.Add(
+                        new InjectedLanguageFragmentSyntax(
+                            ImmutableArray<IHtmlSyntax>.Empty,
+                            string.Empty,
+                            new TextEditorTextSpan(
+                                injectedLanguageFragmentSyntaxStartingPositionIndex,
+                                stringWalker.PositionIndex + 1,
+                                (byte)HtmlDecorationKind.InjectedLanguageFragment)));
+                    
+                    // Move beyond the "@" sign
+                    _ = stringWalker.ReadCharacter();
+                    
+                    injectedLanguageFragmentSyntaxes.AddRange(ReadSingleLineTextOutputWithoutAddingHtmlElement(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition));
 
                     var necessaryWhitespacePadding =
                         stringWalker.PositionIndex -
-                        positionIndexPriorToHtmlTag +
+                        positionIndexPriorReadingLine +
                         1;
 
                     for (int i = 0; i < necessaryWhitespacePadding; i++)
@@ -783,6 +793,46 @@ public class RazorSyntaxTree
                 commentEndTextSpan);
 
             injectedLanguageFragmentSyntaxes.Add(commentEndSyntax);
+        }
+
+        return injectedLanguageFragmentSyntaxes;
+    }
+    
+    /// <summary>
+    /// Example: @* This is a razor comment *@
+    /// </summary>
+    private static List<TagSyntax> ReadSingleLineTextOutputWithoutAddingHtmlElement(
+        StringWalker stringWalker,
+        TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
+        InjectedLanguageDefinition injectedLanguageDefinition)
+    {
+        var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
+
+        // Enters the while loop on the ':'
+
+        // Syntax highlight the ':' the same color as a razor keyword
+        {
+            var commentStartTextSpan = new TextEditorTextSpan(
+                stringWalker.PositionIndex,
+                stringWalker.PositionIndex + 1,
+                (byte)HtmlDecorationKind.InjectedLanguageFragment);
+
+            var commentStartSyntax = new InjectedLanguageFragmentSyntax(
+                ImmutableArray<IHtmlSyntax>.Empty,
+                string.Empty,
+                commentStartTextSpan);
+
+            injectedLanguageFragmentSyntaxes.Add(commentStartSyntax);
+        }
+
+        while (!stringWalker.IsEof)
+        {
+            _ = stringWalker.ReadCharacter();
+
+            if (WhitespaceFacts.LINE_ENDING_CHARACTERS.Contains(stringWalker.CurrentCharacter))
+            {
+                break;
+            }
         }
 
         return injectedLanguageFragmentSyntaxes;
