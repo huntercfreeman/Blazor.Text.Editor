@@ -308,6 +308,14 @@ public class TextEditorService : ITextEditorService
         
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
+    
+    public void SetHeight(int heightInPixels)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetHeightAction(heightInPixels));
+        
+        WriteGlobalTextEditorOptionsToLocalStorage();
+    }
 
     public void SetTheme(Theme theme)
     {
@@ -389,6 +397,9 @@ public class TextEditorService : ITextEditorService
         
         if (options.FontSizeInPixels is not null)
             SetFontSize(options.FontSizeInPixels.Value);
+        
+        if (options.HeightInPixels is not null)
+            SetFontSize(options.HeightInPixels.Value);
         
         if (options.ShowNewlines is not null)
             SetShowNewlines(options.ShowNewlines.Value);

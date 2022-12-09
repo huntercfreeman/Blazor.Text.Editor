@@ -10,7 +10,8 @@ public record TextEditorOptions(
     int? FontSizeInPixels,
     Theme? Theme,
     bool? ShowWhitespace,
-    bool? ShowNewlines)
+    bool? ShowNewlines,
+    int? HeightInPixels)
 {
     public static TextEditorOptions UnsetTextEditorOptions()
     {
@@ -18,6 +19,7 @@ public record TextEditorOptions(
             null,
             null,
             false,
-            false);
+            false,
+            null);
     }
 }
