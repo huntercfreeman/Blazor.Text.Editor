@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using BlazorTextEditor.Demo.RazorLib.Links
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">BlazorApp1</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -9,15 +11,6 @@
 
 <div class="bte_nav-menu @NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="bte_collapsed-top-row top-row px-4">
-            <a class="bte_top-row-link" href="https://docs.microsoft.com/aspnet/" target="_blank">
-                <IconGithub/> nuget.org
-            </a>
-            
-            <a class="bte_top-row-link" href="https://docs.microsoft.com/aspnet/" target="_blank">
-                <IconGithub/> Source Code
-            </a>
-        </div>
         <button class="btn btn-success"
                 style="margin: 1rem;"
                 @onclick="OpenTextEditorSettingsDialogOnClick">

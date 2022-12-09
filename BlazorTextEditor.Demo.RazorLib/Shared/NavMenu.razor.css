@@ -59,8 +59,4 @@
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
-
-    .bte_collapsed-top-row {
-        display: none !important;
-    }
 }

@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
+@using BlazorTextEditor.Demo.RazorLib.Links
+
 <PageTitle>BlazorTextEditor.Demo.ServerSide</PageTitle>
 
 <div class="page @TextEditorService.GlobalThemeCssClassString">
@@ -8,15 +10,7 @@
     </div>
     
     <main>
-        <div class="top-row px-4">
-            <a class="bte_top-row-link" href="https://docs.microsoft.com/aspnet/" target="_blank">
-                <IconGithub/> nuget.org
-            </a>
-            
-            <a class="bte_top-row-link" href="https://docs.microsoft.com/aspnet/" target="_blank">
-                <IconGithub/> Source Code
-            </a>
-        </div>
+        <LinksDisplay CssClassString="bte_collapsed-top-row"/>
 
         <article class="content px-4">
             @Body
