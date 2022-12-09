@@ -32,7 +32,6 @@ public class RazorSyntaxTree
         // current character is '@'
         _ = stringWalker.ReadCharacter();
 
-
         // current character is 'f'
 
         string? matchedOn = null;
@@ -49,7 +48,7 @@ public class RazorSyntaxTree
 
             return new List<TagSyntax>();
         }
-        
+
         // Check for both RazorKeywords and CSharpRazorKeywords
         {
             var nextWord = stringWalker.PeekNextWord();
@@ -73,7 +72,7 @@ public class RazorSyntaxTree
                     injectedLanguageDefinition,
                     foundString);
             }
-            
+
             foreach (var cSharpRazorKeyword in CSharpRazorKeywords.ALL)
             {
                 if (cSharpRazorKeyword == nextWord)
@@ -132,9 +131,9 @@ public class RazorSyntaxTree
         bool isClassLevelCodeBlock)
     {
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
-        
+
         var startingPositionIndex = stringWalker.PositionIndex;
-        
+
         // Syntax highlight the CODE_BLOCK_START as a razor keyword specifically
         {
             injectedLanguageFragmentSyntaxes.Add(
@@ -147,7 +146,7 @@ public class RazorSyntaxTree
                         1,
                         (byte)HtmlDecorationKind.InjectedLanguageFragment)));
         }
-        
+
         // Enters the while loop on the '{'
         var unmatchedCodeBlockStarts = 1;
 
@@ -157,77 +156,80 @@ public class RazorSyntaxTree
         var cSharpBuilder = new StringBuilder();
 
         var positionIndexOffset = stringWalker.PositionIndex + 1;
-        
+
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
-            
-            if (stringWalker.CurrentCharacter == HtmlFacts.OPEN_TAG_BEGINNING)
+
+            if (!isClassLevelCodeBlock)
             {
-                var positionIndexPriorToHtmlTag = stringWalker.PositionIndex;
-                
-                var tagSyntax = HtmlSyntaxTree.HtmlSyntaxTreeStateMachine.ParseTag(
-                    stringWalker,
-                    textEditorHtmlDiagnosticBag,
-                    injectedLanguageDefinition);
-
-                injectedLanguageFragmentSyntaxes.Add(tagSyntax);
-                
-                var necessaryWhitespacePadding = 
-                    stringWalker.PositionIndex - 
-                    positionIndexPriorToHtmlTag +
-                    1;
-
-                for (int i = 0; i < necessaryWhitespacePadding; i++)
+                if (stringWalker.CurrentCharacter == HtmlFacts.OPEN_TAG_BEGINNING)
                 {
-                    cSharpBuilder.Append(WhitespaceFacts.SPACE);
-                }
+                    var positionIndexPriorToHtmlTag = stringWalker.PositionIndex;
 
-                continue;
-            }
-            
-            // '@:' is a single line version of '<text></text>' as of this comment | 2022-12-07
-            var singleLineTextOutputText =
-                $"{RazorFacts.TRANSITION_SUBSTRING}{RazorFacts.SINGLE_LINE_TEXT_OUTPUT_WITHOUT_ADDING_HTML_ELEMENT}";
-            
-            if (stringWalker.CheckForSubstring(singleLineTextOutputText))
-            {
-                var positionIndexPriorToHtmlTag = stringWalker.PositionIndex;
-                
-                _ = stringWalker.ReadRange(singleLineTextOutputText.Length - 1);
-                
-                while (!stringWalker.IsEof)
-                {
-                    _ = stringWalker.ReadCharacter();
-                    
-                    if (WhitespaceFacts.LINE_ENDING_CHARACTERS.Contains(stringWalker.CurrentCharacter))
+                    var tagSyntax = HtmlSyntaxTree.HtmlSyntaxTreeStateMachine.ParseTag(
+                        stringWalker,
+                        textEditorHtmlDiagnosticBag,
+                        injectedLanguageDefinition);
+
+                    injectedLanguageFragmentSyntaxes.Add(tagSyntax);
+
+                    var necessaryWhitespacePadding =
+                        stringWalker.PositionIndex -
+                        positionIndexPriorToHtmlTag +
+                        1;
+
+                    for (int i = 0; i < necessaryWhitespacePadding; i++)
                     {
-                        break;
+                        cSharpBuilder.Append(WhitespaceFacts.SPACE);
                     }
-                }
-                
-                var necessaryWhitespacePadding = 
-                    stringWalker.PositionIndex - 
-                    positionIndexPriorToHtmlTag +
-                    1;
 
-                for (int i = 0; i < necessaryWhitespacePadding; i++)
-                {
-                    cSharpBuilder.Append(WhitespaceFacts.SPACE);
+                    continue;
                 }
-                
-                continue;
+
+                // '@:' is a single line version of '<text></text>' as of this comment | 2022-12-07
+                var singleLineTextOutputText =
+                    $"{RazorFacts.TRANSITION_SUBSTRING}{RazorFacts.SINGLE_LINE_TEXT_OUTPUT_WITHOUT_ADDING_HTML_ELEMENT}";
+
+                if (stringWalker.CheckForSubstring(singleLineTextOutputText))
+                {
+                    var positionIndexPriorToHtmlTag = stringWalker.PositionIndex;
+
+                    _ = stringWalker.ReadRange(singleLineTextOutputText.Length - 1);
+
+                    while (!stringWalker.IsEof)
+                    {
+                        _ = stringWalker.ReadCharacter();
+
+                        if (WhitespaceFacts.LINE_ENDING_CHARACTERS.Contains(stringWalker.CurrentCharacter))
+                        {
+                            break;
+                        }
+                    }
+
+                    var necessaryWhitespacePadding =
+                        stringWalker.PositionIndex -
+                        positionIndexPriorToHtmlTag +
+                        1;
+
+                    for (int i = 0; i < necessaryWhitespacePadding; i++)
+                    {
+                        cSharpBuilder.Append(WhitespaceFacts.SPACE);
+                    }
+
+                    continue;
+                }
             }
 
             // Track all the C# text
             cSharpBuilder.Append(stringWalker.CurrentCharacter);
-            
+
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_START)
             {
                 unmatchedCodeBlockStarts++;
                 continue;
             }
-            
+
             if (stringWalker.CurrentCharacter == RazorFacts.CODE_BLOCK_END)
             {
                 unmatchedCodeBlockStarts--;
@@ -266,12 +268,12 @@ public class RazorSyntaxTree
                                 cSharpText,
                                 positionIndexOffset));
                     }
-                    
+
                     break;
                 }
             }
         }
-        
+
         return injectedLanguageFragmentSyntaxes;
     }
 
@@ -303,9 +305,9 @@ public class RazorSyntaxTree
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
-        
+
         var startingPositionIndex = stringWalker.PositionIndex;
-        
+
         // Syntax highlight the EXPLICIT_EXPRESSION_START as a razor keyword specifically
         {
             injectedLanguageFragmentSyntaxes.Add(
@@ -318,17 +320,17 @@ public class RazorSyntaxTree
                         1,
                         (byte)HtmlDecorationKind.InjectedLanguageFragment)));
         }
-        
+
         // Enters the while loop on the '('
         var unmatchedExplicitExpressionStarts = 1;
-        
+
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CurrentCharacter == RazorFacts.EXPLICIT_EXPRESSION_START)
                 unmatchedExplicitExpressionStarts++;
-            
+
             if (stringWalker.CurrentCharacter == RazorFacts.EXPLICIT_EXPRESSION_END)
             {
                 unmatchedExplicitExpressionStarts--;
@@ -347,12 +349,12 @@ public class RazorSyntaxTree
                                     1,
                                     (byte)HtmlDecorationKind.InjectedLanguageFragment)));
                     }
-                    
+
                     break;
                 }
             }
         }
-        
+
         // TODO: Syntax highlighting
         return injectedLanguageFragmentSyntaxes;
     }
@@ -378,7 +380,7 @@ public class RazorSyntaxTree
         string matchedOn)
     {
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
-        
+
         // Syntax highlight the keyword as a razor keyword specifically
         {
             injectedLanguageFragmentSyntaxes.Add(
@@ -417,7 +419,7 @@ public class RazorSyntaxTree
                 }
 
                 injectedLanguageFragmentSyntaxes.AddRange(codeBlockTagSyntaxes);
-                
+
                 if (TryReadWhileOfDoWhile(
                         stringWalker,
                         textEditorHtmlDiagnosticBag,
@@ -646,11 +648,11 @@ public class RazorSyntaxTree
     /// </summary>
     private static List<TagSyntax> ReadRazorKeyword(StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
-        InjectedLanguageDefinition injectedLanguageDefinition, 
+        InjectedLanguageDefinition injectedLanguageDefinition,
         string matchedOn)
     {
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
-        
+
         // Syntax highlight the keyword as a razor keyword specifically
         {
             injectedLanguageFragmentSyntaxes.Add(
@@ -689,9 +691,9 @@ public class RazorSyntaxTree
                 var keywordText = matchedOn == RazorKeywords.CODE_KEYWORD
                     ? RazorKeywords.CODE_KEYWORD
                     : RazorKeywords.FUNCTIONS_KEYWORD;
-                
+
                 if (TryReadCodeBlock(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         keywordText,
@@ -702,7 +704,7 @@ public class RazorSyntaxTree
                         .Union(codeBlockTagSyntaxes)
                         .ToList();
                 }
-                
+
                 break;
             }
             case RazorKeywords.INHERITS_KEYWORD:
@@ -724,9 +726,9 @@ public class RazorSyntaxTree
         InjectedLanguageDefinition injectedLanguageDefinition)
     {
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
-        
+
         // Enters the while loop on the '*'
-        
+
         // Syntax highlight the '*' the same color as a razor keyword
         {
             var commentStartTextSpan = new TextEditorTextSpan(
@@ -738,24 +740,24 @@ public class RazorSyntaxTree
                 ImmutableArray<IHtmlSyntax>.Empty,
                 string.Empty,
                 commentStartTextSpan);
-            
+
             injectedLanguageFragmentSyntaxes.Add(commentStartSyntax);
         }
-        
+
         // Do not syntax highlight the '*' as part of the comment
         var commentTextStartingPositionIndex = stringWalker.PositionIndex + 1;
-        
+
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
 
             if (stringWalker.CurrentCharacter == RazorFacts.COMMENT_END &&
-               stringWalker.NextCharacter.ToString() == RazorFacts.TRANSITION_SUBSTRING)
+                stringWalker.NextCharacter.ToString() == RazorFacts.TRANSITION_SUBSTRING)
             {
                 break;
             }
         }
-        
+
         var commentValueTextSpan = new TextEditorTextSpan(
             commentTextStartingPositionIndex,
             stringWalker.PositionIndex,
@@ -765,7 +767,7 @@ public class RazorSyntaxTree
             ImmutableArray<IHtmlSyntax>.Empty,
             string.Empty,
             commentValueTextSpan);
-        
+
         injectedLanguageFragmentSyntaxes.Add(commentValueSyntax);
 
         // Syntax highlight the '*' the same color as a razor keyword
@@ -779,13 +781,13 @@ public class RazorSyntaxTree
                 ImmutableArray<IHtmlSyntax>.Empty,
                 string.Empty,
                 commentEndTextSpan);
-            
+
             injectedLanguageFragmentSyntaxes.Add(commentEndSyntax);
         }
 
         return injectedLanguageFragmentSyntaxes;
     }
-    
+
     private static bool TryReadCodeBlock(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
@@ -802,7 +804,7 @@ public class RazorSyntaxTree
                 var isClassLevelCodeBlock =
                     keywordText == RazorKeywords.CODE_KEYWORD ||
                     keywordText == RazorKeywords.FUNCTIONS_KEYWORD;
-                
+
                 var codeBlockTagSyntaxes = ReadCodeBlock(
                     stringWalker,
                     textEditorHtmlDiagnosticBag,
@@ -815,7 +817,7 @@ public class RazorSyntaxTree
 
             if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
                 continue;
-                    
+
             textEditorHtmlDiagnosticBag.Report(
                 DiagnosticLevel.Error,
                 $"A code block was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
@@ -830,7 +832,7 @@ public class RazorSyntaxTree
         tagSyntaxes = null;
         return false;
     }
-    
+
     private static bool TryReadExplicitInlineExpression(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
@@ -855,7 +857,7 @@ public class RazorSyntaxTree
 
             if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
                 continue;
-                    
+
             textEditorHtmlDiagnosticBag.Report(
                 DiagnosticLevel.Error,
                 $"An explicit expression predicate was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
@@ -870,7 +872,7 @@ public class RazorSyntaxTree
         tagSyntaxes = null;
         return false;
     }
-    
+
     private static bool TryReadElseIf(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
@@ -879,14 +881,14 @@ public class RazorSyntaxTree
         out List<TagSyntax>? tagSyntaxes)
     {
         tagSyntaxes = new List<TagSyntax>();
-        
+
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
 
-            var elseIfKeywordCombo = 
-                $"{CSharpRazorKeywords.ELSE_KEYWORD} {CSharpRazorKeywords.IF_KEYWORD}"; 
-            
+            var elseIfKeywordCombo =
+                $"{CSharpRazorKeywords.ELSE_KEYWORD} {CSharpRazorKeywords.IF_KEYWORD}";
+
             if (stringWalker.CheckForSubstring(elseIfKeywordCombo))
             {
                 // Syntax highlight the keyword as a razor keyword specifically
@@ -905,9 +907,9 @@ public class RazorSyntaxTree
                     _ = stringWalker
                         .ReadRange(elseIfKeywordCombo.Length - 1);
                 }
-                
+
                 if (!TryReadExplicitInlineExpression(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         CSharpRazorKeywords.IF_KEYWORD,
@@ -916,11 +918,11 @@ public class RazorSyntaxTree
                 {
                     break;
                 }
-                
+
                 tagSyntaxes.AddRange(explicitExpressionTagSyntaxes);
-                
+
                 if (TryReadCodeBlock(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         CSharpRazorKeywords.ELSE_KEYWORD,
@@ -943,10 +945,10 @@ public class RazorSyntaxTree
         tagSyntaxes = tagSyntaxes.Any()
             ? tagSyntaxes
             : null;
-        
+
         return false;
     }
-    
+
     private static bool TryReadElse(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
@@ -955,7 +957,7 @@ public class RazorSyntaxTree
         out List<TagSyntax>? tagSyntaxes)
     {
         tagSyntaxes = new List<TagSyntax>();
-        
+
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
@@ -978,9 +980,9 @@ public class RazorSyntaxTree
                     _ = stringWalker
                         .ReadRange(CSharpRazorKeywords.ELSE_KEYWORD.Length - 1);
                 }
-                
+
                 if (TryReadCodeBlock(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         CSharpRazorKeywords.ELSE_KEYWORD,
@@ -1003,7 +1005,7 @@ public class RazorSyntaxTree
         tagSyntaxes = null;
         return false;
     }
-    
+
     private static bool TryReadWhileOfDoWhile(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
@@ -1012,7 +1014,7 @@ public class RazorSyntaxTree
         out List<TagSyntax>? tagSyntaxes)
     {
         tagSyntaxes = new List<TagSyntax>();
-        
+
         while (!stringWalker.IsEof)
         {
             _ = stringWalker.ReadCharacter();
@@ -1035,9 +1037,9 @@ public class RazorSyntaxTree
                     _ = stringWalker
                         .ReadRange(CSharpRazorKeywords.WHILE_KEYWORD.Length - 1);
                 }
-                
+
                 if (TryReadExplicitInlineExpression(
-                        stringWalker, 
+                        stringWalker,
                         textEditorHtmlDiagnosticBag,
                         injectedLanguageDefinition,
                         CSharpRazorKeywords.ELSE_KEYWORD,
@@ -1075,7 +1077,7 @@ public class RazorSyntaxTree
             classTemplateOpening.Length,
             offsetPositionIndex);
     }
-    
+
     private static List<TagSyntax> ParseCSharpWithAdhocMethodWrapping(
         string cSharpText,
         int offsetPositionIndex)
@@ -1090,7 +1092,7 @@ public class RazorSyntaxTree
             classTemplateOpening.Length,
             offsetPositionIndex);
     }
-    
+
     /// <summary>
     /// If Lexing C# from a razor code block
     /// one must either use <see cref="ParseCSharpWithAdhocClassWrapping"/> for an @code{} section
@@ -1102,7 +1104,7 @@ public class RazorSyntaxTree
         int offsetPositionIndex)
     {
         var injectedLanguageFragmentSyntaxes = new List<TagSyntax>();
-        
+
         var lexer = new TextEditorCSharpLexer();
 
         var lexedInjectedLanguage = lexer.Lex(
