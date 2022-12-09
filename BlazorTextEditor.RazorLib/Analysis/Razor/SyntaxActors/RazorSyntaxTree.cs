@@ -49,35 +49,31 @@ public class RazorSyntaxTree
 
             return new List<TagSyntax>();
         }
-
         
-        
-        if (stringWalker.CheckForSubstringRange(
-                RazorKeywords.ALL,
-                out matchedOn) &&
-            matchedOn is not null)
-        {
-            return ReadRazorKeyword(
-                stringWalker,
-                textEditorHtmlDiagnosticBag,
-                injectedLanguageDefinition,
-                matchedOn);
-        }
-        
-        // foreach (var forecast in forecasts)....
-        
-        // <td>@forecast.Property</td>
-        // <td>@forecast.Property</td>
-        // <td>@forecast.Property</td>
-        // <td>@forecast.Property</td>
-        
-        // CurrentCharcter 'f'
-
+        // Check for both RazorKeywords and CSharpRazorKeywords
         {
             var nextWord = stringWalker.PeekNextWord();
 
             string? foundString = null;
 
+            foreach (var razorKeyword in RazorKeywords.ALL)
+            {
+                if (razorKeyword == nextWord)
+                {
+                    foundString = razorKeyword;
+                    break;
+                }
+            }
+
+            if (foundString is not null)
+            {
+                return ReadRazorKeyword(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition,
+                    foundString);
+            }
+            
             foreach (var cSharpRazorKeyword in CSharpRazorKeywords.ALL)
             {
                 if (cSharpRazorKeyword == nextWord)

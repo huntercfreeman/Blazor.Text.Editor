@@ -4,29 +4,19 @@ public static partial class TestData
 {
 	public static class Razor
 	{
-		public const string EXAMPLE_TEXT = @"<!-- TEST: Razor comment -->
-@* A comment using razor syntax *@
-
-<!-- TEST: Recognize razor keyword -->
+		public const string EXAMPLE_TEXT = @"<!-- TEST: Recognize razor keyword -->
 @page ""/testRazorPage""
 
-<!-- TEST: Cover the use of ${reserved words} as variable names -->
+<!-- TEST: Razor comment -->
+@* A comment using razor syntax *@
+
+<!-- TEST: Cover the use of local variables -->
 @{
 	<!-- TEST: Arbitrary placement of codeblocks -->
-	<!-- TEST: Cover the use of {Razor Keywords} as variable names -->
 	{
-		// TEST: Razor keyword as a local variable name.
-		var page = 2;
-		
 		// TEST: Razor keyword as a substring within a local variable name.
 		var pageIsSubstring = 2;
-	}
-	
-	<!-- TEST: Cover the use of {C# Razor keywords} as variable names -->
-	{
-		// TEST: C# Razor keyword as a local variable name.
-		var for = 2;
-		
+
 		// TEST: C# Razor keyword as a substring within a local variable name.
 		var forIsSubstring = 2;
 	}
@@ -55,9 +45,9 @@ public static partial class TestData
 	<div>
 		@{
 			// TEST: Implicit inline expression used with the single-line text output without rendering an HTML element syntax
-			@: @page @(page)
+			@: @pageIsSubstring
 			// TEST: Explicit inline expression used with the single-line text output without rendering an HTML element syntax
-			@: @for @(for)
+			@: @(pageIsSubstring)
 		
 			<div>
 				This div serves to separate the single-line and 
@@ -66,12 +56,8 @@ public static partial class TestData
 		
 			// TEST: Implicit inline expression used with the multi-line text output without rendering an HTML element syntax
 			<text>
-				@page&nbsp;
-				@(page)
-			</text>
-			<text>
-				@for&nbsp;
-				@(for)
+				@pageIsSubstring&nbsp;
+				@(pageIsSubstring)
 			</text>
 		}
 	</div>
@@ -81,10 +67,10 @@ public static partial class TestData
 <div>
 	@{
 		// TEST: Two implicit inline expressions separated by an HTML entity
-		@: @page&nbsp;@page
+		@: @pageIsSubstring&nbsp;@pageIsSubstring
 		
 		// TEST: Two explicit inline expressions separated by an HTML entity
-		@: @(page)&nbsp;@(page)
+		@: @(pageIsSubstring)&nbsp;@(pageIsSubstring)
 	}
 </div>
 
