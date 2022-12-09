@@ -22,6 +22,29 @@ public static partial class TestData
 	}
 }
 
+@{
+	Fruit[] fruits = new Fruit[]
+	{
+		new Fruit(""Apple""),
+		new Fruit(""Banana""),
+		new Fruit(""Cucumber""),
+	};
+}
+
+@for (int i = 0; i < 10; i++)
+{
+	<div class=""bte_fruit"">
+		@fruits[i]
+	</div>
+}
+
+@foreach (var fruit in fruits)
+{
+	<div class=""bte_fruit"">
+		@fruit
+	</div>
+}
+
 <!-- TEST: Cover text output without rendering an HTML element -->
 <div>
 	<!-- TEST: Use a string literal to have text output without rendering an HTML element -->
