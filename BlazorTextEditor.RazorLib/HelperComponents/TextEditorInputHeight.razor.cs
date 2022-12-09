@@ -19,7 +19,7 @@ public partial class TextEditorInputHeight : FluxorComponent
     [Parameter]
     public string LabelElementCssClassString { get; set; } = string.Empty;
 
-    private const int MINIMUM_HEIGHT_IN_PIXELS = 400;
+    private const int MINIMUM_HEIGHT_IN_PIXELS = 200;
     
     private int TextEditorHeight
     {

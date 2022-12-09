@@ -1127,6 +1127,19 @@ public partial class TextEditorDisplay : TextEditorView
                 wheelEventArgs.DeltaY);
         }
     }
+    
+    private string GetGlobalHeightInPixelsStyling()
+    {
+        var heightInPixels = TextEditorService
+            .TextEditorStates
+            .GlobalTextEditorOptions
+            .HeightInPixels;
+
+        if (heightInPixels is null)
+            return string.Empty;
+
+        return $"height: {heightInPixels.Value}px;";
+    }
 
     protected override void Dispose(bool disposing)
     {
