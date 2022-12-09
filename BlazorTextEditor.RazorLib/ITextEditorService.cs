@@ -48,6 +48,7 @@ public interface ITextEditorService : IDisposable
     public Theme? GlobalThemeValue { get; }
     public string GlobalFontSizeInPixelsStyling { get; }
     public int GlobalFontSizeInPixelsValue { get; }
+    public int? GlobalHeightInPixelsValue { get; }
     public bool GlobalShowNewlines { get; }
     public bool GlobalShowWhitespace { get; }
 
@@ -207,6 +208,7 @@ public interface ITextEditorService : IDisposable
     public void UndoEdit(TextEditorKey textEditorKey);
     public void DisposeTextEditor(TextEditorKey textEditorKey);
     public void SetFontSize(int fontSizeInPixels);
+    public void SetHeight(int? heightInPixels);
     public void SetTheme(Theme theme);
     public void SetShowWhitespace(bool showWhitespace);
     public void SetShowNewlines(bool showNewlines);

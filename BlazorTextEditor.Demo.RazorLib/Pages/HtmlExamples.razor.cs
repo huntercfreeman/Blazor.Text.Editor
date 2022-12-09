@@ -13,12 +13,8 @@ public partial class HtmlExamples : ComponentBase
     protected override void OnInitialized()
     {
         TextEditorService.RegisterHtmlTextEditor(
-            TextEditorFacts.Html.HtmlNineteenLinesTextEditorKey,
-            TestData.Html.EXAMPLE_TEXT_19_LINES);
-        
-        TextEditorService.RegisterHtmlTextEditor(
-            TextEditorFacts.Html.HtmlCommentsTextEditorKey,
-            TestData.Html.EXAMPLE_TEXT_COMMENTS);
+            TextEditorFacts.Html.HtmlTextEditorKey,
+            TestData.Html.EXAMPLE_TEXT);
         
         base.OnInitialized();
     }

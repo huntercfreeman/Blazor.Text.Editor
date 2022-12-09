@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.TextEditor;
 
@@ -231,6 +232,30 @@ public class StringWalker
         return backtrackBuilder.ToString();
     }
 
+    public string PeekNextWord()
+    {
+         var nextWordBuilder = new StringBuilder();
+    
+         var i = 0;
+    
+         char peekedChar;
+    
+         do
+         {
+             peekedChar = PeekCharacter(i++);
+    
+             if (WhitespaceFacts.ALL.Contains(peekedChar) ||
+                 KeyboardKeyFacts.IsPunctuationCharacter(peekedChar))
+             {
+                 break;
+             }
+    
+             nextWordBuilder.Append(peekedChar);
+         } while (peekedChar != ParserFacts.END_OF_FILE);
+
+         return nextWordBuilder.ToString();
+    }
+    
     /// <summary>
     ///     Form a substring of the <see cref="_content" /> that starts
     ///     inclusively at the index <see cref="PositionIndex" /> and has a maximum

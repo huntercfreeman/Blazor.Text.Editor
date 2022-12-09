@@ -605,3 +605,20 @@
 .btv-tree-view-title-content {
     cursor: default;
 }
+
+.bte_add-margin-top {
+    margin: 10px 0;
+}
+
+.bte_text-editor-input-height .bte_child-input {
+    border-left: 2px solid var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
+}
+
+.bte_text-editor-input-height .bte_disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bte_text-editor-input-height .bte_disabled input {
+    cursor: not-allowed;
+}

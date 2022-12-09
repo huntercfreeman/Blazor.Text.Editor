@@ -15,7 +15,8 @@ public record TextEditorStates(
             20,
             ThemeFacts.Unset,
             false,
-            false))
+            false,
+            null))
     {
     }
 }

@@ -207,7 +207,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TextEditorLexerDefault rename
 - TextEditorDecorationMapperDefault rename
 
-### Bugs found but not yet fixed
+### Bugs
 
 - This bug exists in previous versions as well: When doing horizontal virtualization it seems tab key width is not accounted for?
     - Seeing nothing when using tab key to put text horizontally out of view then horizontally scrolling that text into view.
@@ -218,3 +218,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Something weird regarding carriage return line feed is happening here. 
     - I saw the length of the document go up by 1 for the CR. 
     - But then the LF which has a length of 1 added 2 length.
+
+## [5.2.0] - 2022-12-07 (ILexer and Syntax Highlighting Changes)
+
+### Added
+
+- Helper Components
+    - TextEditorInputHeight.razor provides an input of type number to allow setting of text editor height to a pixel value.
+        - Local storage integration is set up for TextEditorInputHeight.razor
+- ILexer changes
+    - C#
+        - Method parameters are syntax highlighted
+            first. Prior to this change any invocation
+            of a method would color all text between the 
+            parenthesis the same color (the light blue color
+            in visual studio dark theme for variables). Now
+            this wide sweep of all text between the parenthesis
+            is looked at. Following that the text between the parenthesis goes through looking for keywords
+            and other syntax after the fact instead of first
+            then being override by the more general parameter
+            syntax highlighting.
+    - CSS Syntax Highlighting
+        - Tag selectors (identifiers)
+        - Comments
+        - PropertyName
+        - PropertyValue
+    - F# Syntax Highlighting
+        - Keywords
+        - Strings
+        - Comments
+    - HTML Syntax Highlighting
+        - Tag Names
+        - Injected Language Fragments (The .razor '@' transition character)
+        - Attribute Names
+        - Attribute Values
+        - Comments
+    - JavaScript Syntax Highlighting
+        - Keywords
+        - Strings
+        - Comments
+    - JSON Syntax Highlighting
+        - Property Key
+        - Boolean
+        - Integer (No decimals place)
+        - Number (Has decimals place)
+        - Null
+        - String
+    - Razor Syntax Highlighting
+        - Razor Keywords (Example: @page "/counter")
+        - C# Razor Keywords (Example: @if () { })
+        - Inline Expressions
+        - Razor Code Blocks
+        - All things listed in "HTML Syntax Highlighting" as
+            the Razor Lexer internally swaps between various inner
+            lexers. One of which is the HTML Lexer.
+    - TypeScript Syntax Highlighting
+        - Keywords
+        - Strings
+        - Comments
+
+### FixedBugs
+
+- FIXED: Previous applied syntax highlighting which becomes marked as default text (DecorationKind of None) will correctly re-render with the previous syntax highlighting removed.
+    - Explanation: Add a multi line comment at the start of the file but do not close the comment. All the file will be commented out. Now remove the multi line comment. Previously some text would stay syntax highlighted as a comment erroneously. This has been fixed.
+- FIXED: When doing horizontal virtualization it seems tab key width is not accounted for?
+    - Seeing nothing when using tab key to put text horizontally out of view then horizontally scrolling that text into view.
+    - Proceeding to put an enter key to split the line and all the text appears again.

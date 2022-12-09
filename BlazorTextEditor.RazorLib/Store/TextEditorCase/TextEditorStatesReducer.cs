@@ -189,6 +189,23 @@ public class TextEditorStatesReducer
             GlobalTextEditorOptions = nextTextEditorOptions,
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetHeightAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetHeightAction textEditorSetHeightAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                HeightInPixels = textEditorSetHeightAction.HeightInPixels,
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions,
+        };
+    }
 
     [ReducerMethod]
     public static TextEditorStates ReduceTextEditorSetThemeAction(
