@@ -1,3 +1,3 @@
 ﻿namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
-public record TextEditorSetHeightAction(int HeightInPixels);
+public record TextEditorSetHeightAction(int? HeightInPixels);

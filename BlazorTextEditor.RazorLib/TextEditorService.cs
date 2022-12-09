@@ -63,6 +63,10 @@ public class TextEditorService : ITextEditorService
     public int GlobalFontSizeInPixelsValue => TextEditorStates
         .GlobalTextEditorOptions
         .FontSizeInPixels!.Value;
+    
+    public int? GlobalHeightInPixelsValue => TextEditorStates
+        .GlobalTextEditorOptions
+        .HeightInPixels;
 
     public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
 
@@ -309,7 +313,7 @@ public class TextEditorService : ITextEditorService
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
     
-    public void SetHeight(int heightInPixels)
+    public void SetHeight(int? heightInPixels)
     {
         _dispatcher.Dispatch(
             new TextEditorSetHeightAction(heightInPixels));

@@ -33,4 +33,19 @@ public partial class TextEditorInputHeight : FluxorComponent
             TextEditorService.SetHeight(value);
         }
     }
+
+    public string GetIsDisabledCssClassString(bool globalHeightInPixelsValueIsNull)
+    {
+        return globalHeightInPixelsValueIsNull
+            ? "bte_disabled"
+            : "";
+    }
+
+    private void ToggleUseGlobalHeightInPixels(bool globalHeightInPixelsValueIsNull)
+    {
+        if (globalHeightInPixelsValueIsNull)
+            TextEditorService.SetHeight(MINIMUM_HEIGHT_IN_PIXELS);
+        else
+            TextEditorService.SetHeight(null);
+    }
 }
