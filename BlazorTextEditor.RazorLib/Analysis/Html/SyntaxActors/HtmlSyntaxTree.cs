@@ -496,7 +496,7 @@ public static class HtmlSyntaxTree
                 {
                     _ = stringWalker.ReadCharacter();
 
-                    if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                    if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
                         break;
                 }
             }
