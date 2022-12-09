@@ -605,3 +605,7 @@
 .btv-tree-view-title-content {
     cursor: default;
 }
+
+.bte_add-margin-top {
+    margin: 10px 0;
+}
