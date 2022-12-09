@@ -72,6 +72,7 @@ a, .btn-link {
 }
 
 .page {
+    min-height: 100vh;
     color: var(--bte_primary-font-color);
     background-color: var(--bte_secondary-background-color);
 }
@@ -79,4 +80,25 @@ a, .btn-link {
 div.top-row:not(.navbar) {
     color: var(--bte_primary-font-color) !important;
     background-color: var(--bte_body-background-color) !important;
+}
+
+.bte_top-row-link {
+    margin-left: 10px !important;
+}
+
+.bte_top-row-link:not(:last-child) {
+    border-right: 2px solid var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
+    padding-right: 10px;
+}
+
+.bte_collapsed-top-row {
+    display: flex;
+    height: fit-content;
+    padding: .5rem;
+    justify-content: end;
+    align-items: center;
+}
+
+.bte_collapsed-top-row .bte_top-row-link {
+    height: fit-content;
 }
