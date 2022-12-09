@@ -56,6 +56,15 @@ public static class HtmlSyntaxTree
             TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
             InjectedLanguageDefinition? injectedLanguageDefinition)
         {
+            if (stringWalker.CheckForSubstring(
+                    HtmlFacts.COMMENT_TAG_BEGINNING))
+            {
+                return ParseComment(
+                    stringWalker,
+                    textEditorHtmlDiagnosticBag,
+                    injectedLanguageDefinition);
+            }
+            
             var startingPositionIndex = stringWalker.PositionIndex;
 
             var tagBuilder = new TagSyntax.TagSyntaxBuilder();
@@ -63,6 +72,8 @@ public static class HtmlSyntaxTree
             // HtmlFacts.TAG_OPENING_CHARACTER
             _ = stringWalker.ReadCharacter();
 
+            
+            
             // Example: <!DOCTYPE html>
             if (stringWalker.PeekCharacter(0) == HtmlFacts.SPECIAL_HTML_TAG)
             {
