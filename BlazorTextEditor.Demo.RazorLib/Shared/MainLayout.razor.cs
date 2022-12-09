@@ -15,6 +15,16 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         base.OnInitialized();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await TextEditorService.SetTextEditorOptionsFromLocalStorageAsync();
+        }
+        
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private void TextEditorServiceOnOnTextEditorStatesChanged()
     {
         InvokeAsync(StateHasChanged);

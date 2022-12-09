@@ -403,7 +403,7 @@ public class TextEditorService : ITextEditorService
             SetFontSize(options.FontSizeInPixels.Value);
         
         if (options.HeightInPixels is not null)
-            SetFontSize(options.HeightInPixels.Value);
+            SetHeight(options.HeightInPixels.Value);
         
         if (options.ShowNewlines is not null)
             SetShowNewlines(options.ShowNewlines.Value);
