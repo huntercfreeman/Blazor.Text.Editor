@@ -83,16 +83,13 @@ public static class HtmlSyntaxTree
             while (true)
             {
                 // Skip Whitespace
-                stringWalker.WhileNotEndOfFile(() =>
+                while (!stringWalker.IsEof)
                 {
-                    var consumedCharacter = stringWalker.ReadCharacter();
-
-                    if (WhitespaceFacts.ALL.Contains(
-                            consumedCharacter))
-                        return false;
-
-                    return true;
-                });
+                    if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                        _ = stringWalker.ReadCharacter();
+                    else
+                        break;
+                }
 
                 // End Of File is unexpected at this point so report a diagnostic.
                 if (stringWalker.CurrentCharacter == ParserFacts.END_OF_FILE)
@@ -105,11 +102,6 @@ public static class HtmlSyntaxTree
 
                     return tagBuilder.Build();
                 }
-
-                // Eager Skipping of Whitespace
-                // results in the StringWalker going
-                // 1 PositionIndex further than is wanted
-                _ = stringWalker.BacktrackCharacter();
 
                 if (stringWalker.CheckForSubstring(HtmlFacts.OPEN_TAG_WITH_CHILD_CONTENT_ENDING))
                 {
