@@ -420,6 +420,12 @@ public static class HtmlSyntaxTree
                 textEditorHtmlDiagnosticBag,
                 injectedLanguageDefinition);
             
+            /*
+             * /// -<see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
+        /// -<see cref="HtmlFacts.ATTRIBUTE_NAME_ENDING"/><br/>
+        /// -<see cref="HtmlFacts.OPEN_TAG_ENDING_OPTIONS"/><br/>
+             */
+            
             var attributeValueSyntax = ParseAttributeValue(
                 stringWalker,
                 textEditorHtmlDiagnosticBag,
@@ -441,6 +447,14 @@ public static class HtmlSyntaxTree
                 attributeValueSyntax);
         }
 
+        /// <summary>
+        /// currentCharacterIn:<br/>
+        /// -Any character that can start an attribute name<br/>
+        /// currentCharacterOut:<br/>
+        /// -<see cref="WhitespaceFacts.ALL"/> (whitespace)<br/>
+        /// -<see cref="HtmlFacts.ATTRIBUTE_NAME_ENDING"/><br/>
+        /// -<see cref="HtmlFacts.OPEN_TAG_ENDING_OPTIONS"/><br/>
+        /// </summary>
         public static AttributeNameSyntax ParseAttributeName(
             StringWalker stringWalker,
             TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
@@ -458,8 +472,11 @@ public static class HtmlSyntaxTree
                 _ = stringWalker.ReadCharacter();
 
                 if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
-                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter)
+                    HtmlFacts.ATTRIBUTE_NAME_ENDING == stringWalker.CurrentCharacter ||
+                    stringWalker.CheckForSubstringRange(HtmlFacts.OPEN_TAG_ENDING_OPTIONS, out var matchedOn))
+                {
                     break;
+                }
             }
 
             var attributeNameTextSpan = new TextEditorTextSpan(
@@ -470,17 +487,17 @@ public static class HtmlSyntaxTree
             return new AttributeNameSyntax(attributeNameTextSpan);
         }
         
+        /// <summary>
+        /// currentCharacterIn:<br/>
+        /// -<see cref="HtmlFacts.ATTRIBUTE_VALUE_STARTING"/><br/>
+        /// currentCharacterOut:<br/>
+        /// -<see cref="HtmlFacts.ATTRIBUTE_VALUE_ENDING"/><br/>
+        /// </summary>
         public static AttributeValueSyntax ParseAttributeValue(
             StringWalker stringWalker,
             TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,
             InjectedLanguageDefinition? injectedLanguageDefinition)
         {
-            // When ParseAttributeValue is invoked
-            // There might be:
-            //     -preceding whitespace
-            //     -an '=' character | more specifically the attribute name ending
-            //     -an '"' character | more specifically the attribute value starting
-            
             while (!stringWalker.IsEof)
             {
                 _ = stringWalker.ReadCharacter();
