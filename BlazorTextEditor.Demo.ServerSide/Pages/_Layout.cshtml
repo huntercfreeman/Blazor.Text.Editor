@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @namespace BlazorTextEditor.Demo.ServerSide.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
@@ -14,6 +15,7 @@
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered"/>
     
     <!-- Blazor.Text.Editor | Required CSS -->
+    <script src="_content/BlazorALaCarte.Shared/blazorShared.css"></script>
     <link href="_content/Blazor.Text.Editor/blazorTextEditor.css" rel="stylesheet"/>
     <!-- Blazor.Text.Editor | Required CSS -->
     <link href="_content/Blazor.Text.Editor/blazorTextEditorSizes.css" rel="stylesheet"/>
@@ -48,6 +50,7 @@
     <script src="_framework/blazor.server.js"></script>
 
     <!-- Blazor.Text.Editor | Required JavaScript -->
+    <script src="_content/BlazorALaCarte.Shared/blazorShared.js"></script>
     <script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>
 
 </body>

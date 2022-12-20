@@ -1,5 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.JavaScriptObjects;
+﻿using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 

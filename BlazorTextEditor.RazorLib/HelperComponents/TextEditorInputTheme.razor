@@ -1,4 +1,4 @@
-﻿@using BlazorTextEditor.RazorLib.Store.ThemeCase
+﻿@using BlazorALaCarte.Shared.Theme
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <div class="bte_text-editor-input-theme @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
@@ -9,7 +9,7 @@
     <select @onchange="SelectedThemeChanged"
             class="@InputElementCssClassString">
         @{
-            var themes = ThemeStatesWrap.Value.Themes;
+            var themes = ThemeStatesWrap.Value.ThemeRecordsList;
             var chosenTheme = TextEditorService.GlobalThemeValue;
             
             foreach (var theme in themes)

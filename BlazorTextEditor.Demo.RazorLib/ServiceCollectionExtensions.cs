@@ -1,6 +1,5 @@
 ﻿using BlazorTextEditor.Demo.ClassLib;
 using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorTextEditor.Demo.RazorLib;

@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
+﻿using BlazorALaCarte.Shared.Theme;
+using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
@@ -19,7 +20,6 @@ using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib;
@@ -45,7 +45,7 @@ public interface ITextEditorService : IDisposable
     public TextEditorStates TextEditorStates { get; }
 
     public string GlobalThemeCssClassString { get; }
-    public Theme? GlobalThemeValue { get; }
+    public ThemeRecord? GlobalThemeValue { get; }
     public string GlobalFontSizeInPixelsStyling { get; }
     public int GlobalFontSizeInPixelsValue { get; }
     public int? GlobalHeightInPixelsValue { get; }
@@ -209,7 +209,7 @@ public interface ITextEditorService : IDisposable
     public void DisposeTextEditor(TextEditorKey textEditorKey);
     public void SetFontSize(int fontSizeInPixels);
     public void SetHeight(int? heightInPixels);
-    public void SetTheme(Theme theme);
+    public void SetTheme(ThemeRecord theme);
     public void SetShowWhitespace(bool showWhitespace);
     public void SetShowNewlines(bool showNewlines);
     public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind);

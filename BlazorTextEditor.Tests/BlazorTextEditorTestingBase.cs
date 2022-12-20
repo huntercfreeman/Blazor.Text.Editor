@@ -1,5 +1,5 @@
-﻿using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.Clipboard;
+﻿using BlazorALaCarte.Shared.Clipboard;
+using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;

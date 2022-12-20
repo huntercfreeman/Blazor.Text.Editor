@@ -1,5 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.JavaScriptObjects;
-using BlazorTextEditor.RazorLib.Keyboard;
+﻿using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TreeViewCase;
 using BlazorTextEditor.RazorLib.TreeView.Commands;
 using BlazorTextEditor.RazorLib.TreeView.Keymap;

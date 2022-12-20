@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="BlazorALaCarte.Shared" Version="1.0.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.6.0" />
         <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" />
     </ItemGroup>
@@ -37,10 +38,46 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Dropdown\DropdownDisplay.razor" />
-      <AdditionalFiles Include="Menu\MenuDisplay.razor" />
-      <AdditionalFiles Include="Menu\MenuOptionDisplay.razor" />
-      <AdditionalFiles Include="OutOfBoundsClick\OutOfBoundsClickDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Drag\DragDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Dropdown\DropdownDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconArrowDown.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconArrowLeft.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconArrowRight.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconArrowUp.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconBlank.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconChevronDown.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconChevronRight.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconClippy.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconClose.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconCopy.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconCSharpClass.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconCSharpProject.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconCshtml.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconCss.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconDotNetSolution.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconFile.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconFolder.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconJs.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconJson.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconListSelection.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconMaximize.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconMinimize.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconNote.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconProperties.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconRazor.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconRefresh.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconSave.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconSearch.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconSettingsGear.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconSymbolKey.razor" />
+      <_ContentIncludedByDefault Remove="Icons\Codicon\IconSymbolRuler.razor" />
+      <_ContentIncludedByDefault Remove="Icons\IconSettingsDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Menu\MenuDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Menu\MenuOptionDisplay.razor" />
+      <_ContentIncludedByDefault Remove="OutOfBoundsClick\OutOfBoundsClickDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Resize\ResizableColumn.razor" />
+      <_ContentIncludedByDefault Remove="Resize\ResizableDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Resize\ResizableRow.razor" />
     </ItemGroup>
 
 </Project>

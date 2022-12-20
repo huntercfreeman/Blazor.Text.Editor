@@ -1,4 +1,6 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
+﻿using BlazorALaCarte.Shared.Storage;
+using BlazorALaCarte.Shared.Theme;
+using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
@@ -20,7 +22,6 @@ using BlazorTextEditor.RazorLib.Store.DialogCase;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
@@ -52,7 +53,7 @@ public class TextEditorService : ITextEditorService
                                                    .CssClassString
                                                ?? string.Empty;
 
-    public Theme? GlobalThemeValue => TextEditorStates
+    public ThemeRecord? GlobalThemeValue => TextEditorStates
         .GlobalTextEditorOptions
         .Theme;
 
@@ -321,7 +322,7 @@ public class TextEditorService : ITextEditorService
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
 
-    public void SetTheme(Theme theme)
+    public void SetTheme(ThemeRecord theme)
     {
         _dispatcher.Dispatch(
             new TextEditorSetThemeAction(theme));

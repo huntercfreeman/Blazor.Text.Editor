@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using BlazorTextEditor.RazorLib.Keyboard;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.TextEditor;
 

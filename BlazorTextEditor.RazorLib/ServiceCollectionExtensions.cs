@@ -1,6 +1,8 @@
+using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Installation;
+using BlazorALaCarte.Shared.Services;
+using BlazorALaCarte.Shared.Storage;
 using BlazorTextEditor.RazorLib.Autocomplete;
-using BlazorTextEditor.RazorLib.Clipboard;
-using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.TreeView;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,7 @@ public static class ServiceCollectionExtensions
         Action<TextEditorServiceOptions>? configure = null)
     {
         return services
+            .AddSharedServices()
             .AddTextEditorClassLibServices(
                 serviceProvider =>
                     new JavaScriptInteropClipboardProvider(
@@ -67,7 +70,9 @@ public static class ServiceCollectionExtensions
         {
             services
                 .AddFluxor(options => options
-                    .ScanAssemblies(typeof(ServiceCollectionExtensions).Assembly));
+                    .ScanAssemblies(
+                        typeof(ServiceCollectionExtensions).Assembly,
+                        typeof(BlazorALaCarte.Shared.Installation.ServiceCollectionExtensions).Assembly));
         }
 
         return services;

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Immutable;
+using BlazorALaCarte.Shared.Keyboard;
+using BlazorALaCarte.Shared.Menu;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Keyboard;
-using BlazorTextEditor.RazorLib.Menu;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;

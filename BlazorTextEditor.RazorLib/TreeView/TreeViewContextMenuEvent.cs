@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.JavaScriptObjects;
+﻿using BlazorALaCarte.Shared.JavaScriptObjects;
 
 namespace BlazorTextEditor.RazorLib.TreeView;
 

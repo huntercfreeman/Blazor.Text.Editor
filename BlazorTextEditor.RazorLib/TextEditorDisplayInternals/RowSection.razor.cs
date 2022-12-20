@@ -1,6 +1,6 @@
 ﻿using System.Text;
+using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;

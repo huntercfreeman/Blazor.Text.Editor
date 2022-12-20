@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Row;

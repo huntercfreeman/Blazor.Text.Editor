@@ -1,4 +1,6 @@
-﻿namespace BlazorTextEditor.RazorLib.Store.StorageCase;
+﻿using BlazorALaCarte.Shared.Storage;
+
+namespace BlazorTextEditor.RazorLib.Store.StorageCase;
 
 public class DoNothingStorageProvider : IStorageProvider
 {

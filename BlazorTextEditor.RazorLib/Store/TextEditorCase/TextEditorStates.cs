@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
+using BlazorALaCarte.Shared.Facts;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
@@ -13,7 +13,7 @@ public record TextEditorStates(
     public TextEditorStates()
         : this(ImmutableList<TextEditorBase>.Empty, new TextEditorOptions(
             20,
-            ThemeFacts.Unset,
+            ThemeFacts.VisualStudioDarkThemeClone,
             false,
             false,
             null))

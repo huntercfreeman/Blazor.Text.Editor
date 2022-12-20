@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Store.ThemeCase;
+﻿using BlazorALaCarte.Shared.Facts;
+using BlazorALaCarte.Shared.Theme;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -20,5 +21,5 @@ public interface ITextEditorServiceOptions
     /// The default theme is <see cref="ThemeFacts.Unset"/>.
     /// The <see cref="ThemeFacts.Unset"/> theme is equivalent to <see cref="ThemeFacts.VisualStudioDarkClone"/>
     /// </summary>
-    public Theme InitialTheme { get; set; }
+    public ThemeRecord InitialTheme { get; set; }
 }

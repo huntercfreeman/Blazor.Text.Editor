@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Store.ThemeCase;
+﻿using BlazorALaCarte.Shared.Theme;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
@@ -8,7 +8,7 @@ namespace BlazorTextEditor.RazorLib.TextEditor;
 /// </summary>
 public record TextEditorOptions(
     int? FontSizeInPixels,
-    Theme? Theme,
+    ThemeRecord? Theme,
     bool? ShowWhitespace,
     bool? ShowNewlines,
     int? HeightInPixels)

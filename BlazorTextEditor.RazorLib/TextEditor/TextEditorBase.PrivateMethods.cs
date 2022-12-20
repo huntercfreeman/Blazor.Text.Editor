@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
-using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 

@@ -1,4 +1,4 @@
-using BlazorTextEditor.RazorLib.Resize;
+using BlazorALaCarte.Shared.Resize;
 using BlazorTextEditor.RazorLib.Store.DialogCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.TextEditor;

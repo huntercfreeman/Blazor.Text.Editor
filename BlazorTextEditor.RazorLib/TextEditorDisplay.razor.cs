@@ -1,13 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
-using BlazorTextEditor.RazorLib.JavaScriptObjects;
-using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.TextEditor;

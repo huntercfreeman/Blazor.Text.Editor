@@ -1,9 +1,9 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Keyboard;
+using BlazorALaCarte.Shared.Menu;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Keyboard;
-using BlazorTextEditor.RazorLib.Menu;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;

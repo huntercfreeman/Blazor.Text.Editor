@@ -1,4 +1,4 @@
-using BlazorTextEditor.RazorLib.Dimensions;
+using BlazorALaCarte.Shared.Dimensions;
 
 namespace BlazorTextEditor.RazorLib.Store.DialogCase;
 
