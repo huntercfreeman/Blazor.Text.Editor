@@ -3,8 +3,8 @@ using BlazorALaCarte.Shared.Clipboard;
 using BlazorALaCarte.Shared.Installation;
 using BlazorALaCarte.Shared.Services;
 using BlazorALaCarte.Shared.Storage;
+using BlazorALaCarte.TreeView.Installation;
 using BlazorTextEditor.RazorLib.Autocomplete;
-using BlazorTextEditor.RazorLib.TreeView;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         return services
             .AddSharedServices()
             .AddDialogServices()
+            .AddTreeViewServices()
             .AddTextEditorClassLibServices(
                 serviceProvider =>
                     new JavaScriptInteropClipboardProvider(
@@ -65,8 +66,7 @@ public static class ServiceCollectionExtensions
             .AddScoped(serviceProvider => autocompleteServiceFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => autocompleteIndexerFactory.Invoke(serviceProvider))
             .AddScoped<IThemeService, ThemeService>()
-            .AddScoped<ITextEditorService, TextEditorService>()
-            .AddBlazorTreeView(options => options.InitializeFluxor = false);
+            .AddScoped<ITextEditorService, TextEditorService>();
 
         if (textEditorOptions.InitializeFluxor)
         {
@@ -75,29 +75,8 @@ public static class ServiceCollectionExtensions
                     .ScanAssemblies(
                         typeof(ServiceCollectionExtensions).Assembly,
                         typeof(BlazorALaCarte.Shared.Installation.ServiceCollectionExtensions).Assembly,
-                        typeof(BlazorALaCarte.DialogNotification.Installation.ServiceCollectionExtensions).Assembly));
-        }
-
-        return services;
-    }
-    
-    private static IServiceCollection AddBlazorTreeView(
-        this IServiceCollection services,
-        Action<BlazorTreeViewOptions>? configure = null)
-    {
-        var blazorTreeViewOptions = new BlazorTreeViewOptions();
-        configure?.Invoke(blazorTreeViewOptions);
-
-        services
-            .AddSingleton<IBlazorTreeViewOptions, ImmutableBlazorTreeViewOptions>(
-                _ => new ImmutableBlazorTreeViewOptions(blazorTreeViewOptions))
-            .AddScoped<ITreeViewService, TreeViewService>();
-
-        if (blazorTreeViewOptions.InitializeFluxor)
-        {
-            services
-                .AddFluxor(options => options
-                    .ScanAssemblies(typeof(ServiceCollectionExtensions).Assembly));
+                        typeof(BlazorALaCarte.DialogNotification.Installation.ServiceCollectionExtensions).Assembly,
+                        typeof(BlazorALaCarte.TreeView.Installation.ServiceCollectionExtensions).Assembly));
         }
 
         return services;

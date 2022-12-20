@@ -1,4 +1,6 @@
-﻿using BlazorALaCarte.Shared.Storage;
+﻿using BlazorALaCarte.DialogNotification;
+using BlazorALaCarte.DialogNotification.Store;
+using BlazorALaCarte.Shared.Storage;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
@@ -18,7 +20,6 @@ using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.DialogCase;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
@@ -362,7 +363,7 @@ public class TextEditorService : ITextEditorService
         };
         
         _dispatcher.Dispatch(
-            new RegisterDialogRecordAction(
+            new DialogsState.RegisterDialogRecordAction(
                 settingsDialog));
     }
     
