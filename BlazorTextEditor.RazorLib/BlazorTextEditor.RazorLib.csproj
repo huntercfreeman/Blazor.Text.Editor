@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="BlazorALaCarte.DialogNotification" Version="1.0.0" />
         <PackageReference Include="BlazorALaCarte.Shared" Version="1.0.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.6.0" />
         <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" />
@@ -78,6 +79,13 @@
       <_ContentIncludedByDefault Remove="Resize\ResizableColumn.razor" />
       <_ContentIncludedByDefault Remove="Resize\ResizableDisplay.razor" />
       <_ContentIncludedByDefault Remove="Resize\ResizableRow.razor" />
+      <_ContentIncludedByDefault Remove="Dialog\DialogDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Dialog\DialogInitializer.razor" />
+      <_ContentIncludedByDefault Remove="Dialog\ExampleDialog.razor" />
+      <_ContentIncludedByDefault Remove="Notifications\CommonErrorNotificationDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Notifications\CommonInformativeNotificationDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Notifications\NotificationDisplay.razor" />
+      <_ContentIncludedByDefault Remove="Notifications\NotificationInitializer.razor" />
     </ItemGroup>
 
 </Project>

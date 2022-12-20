@@ -1,3 +1,4 @@
+using BlazorALaCarte.DialogNotification.Installation;
 using BlazorALaCarte.Shared.Clipboard;
 using BlazorALaCarte.Shared.Installation;
 using BlazorALaCarte.Shared.Services;
@@ -18,6 +19,7 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddSharedServices()
+            .AddDialogServices()
             .AddTextEditorClassLibServices(
                 serviceProvider =>
                     new JavaScriptInteropClipboardProvider(
@@ -72,7 +74,8 @@ public static class ServiceCollectionExtensions
                 .AddFluxor(options => options
                     .ScanAssemblies(
                         typeof(ServiceCollectionExtensions).Assembly,
-                        typeof(BlazorALaCarte.Shared.Installation.ServiceCollectionExtensions).Assembly));
+                        typeof(BlazorALaCarte.Shared.Installation.ServiceCollectionExtensions).Assembly,
+                        typeof(BlazorALaCarte.DialogNotification.Installation.ServiceCollectionExtensions).Assembly));
         }
 
         return services;
