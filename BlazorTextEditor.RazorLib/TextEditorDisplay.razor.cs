@@ -40,8 +40,6 @@ public partial class TextEditorDisplay : TextEditorView
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
     public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
-    [Parameter]
-    public Action<TextEditorBase>? OnSaveRequested { get; set; }
     /// <summary>
     /// If left null, the default <see cref="AfterOnKeyDownAsync"/> will
     /// be used.
@@ -157,9 +155,7 @@ public partial class TextEditorDisplay : TextEditorView
     private TextEditorViewModelKey? _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private ElementReference _textEditorDisplayElementReference;
-
-    private Guid _textEditorGuid = Guid.NewGuid();
-
+    
     /// <summary>
     ///     Do not select text just because the user has the Left Mouse Button down.
     ///     They might hold down Left Mouse Button from outside the TextEditorDisplay's content div
@@ -174,19 +170,11 @@ public partial class TextEditorDisplay : TextEditorView
     private TextEditorHeader? _textEditorHeader;
     private TextEditorFooter? _textEditorFooter;
     private MeasureCharacterWidthAndRowHeight? _measureCharacterWidthAndRowHeightComponent;
-    
-    // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
-    private VirtualizationResult<List<RichCharacter>>? _mostRecentlyRenderedVirtualizationResult;
 
-    public bool ShouldMeasureDimensions { get; set; } = true;
-    public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
-    public WidthAndHeightOfTextEditor? WidthAndHeightOfTextEditor { get; private set; }
-
-    private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
 
     private string MeasureCharacterWidthAndRowHeightElementId =>
-        $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
+        $"bte_measure-character-width-and-row-height_{ReplaceableTextEditorViewModel?.TextEditorViewModelKey.Guid ?? Guid.Empty}";
 
     private MarkupString GetAllTextEscaped => (MarkupString)(MutableReferenceToTextEditor?
                                                                  .GetAllText()
@@ -216,11 +204,12 @@ public partial class TextEditorDisplay : TextEditorView
     private bool GlobalShowWhitespace => TextEditorService
         .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
 
-    public TextEditorCursor PrimaryCursor { get; } = new(true);
-
     protected override async Task OnParametersSetAsync()
     {
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+        
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(
+            safeTextEditorViewModel?.PrimaryCursor ?? new TextEditorCursor(true));
 
         var currentGlobalFontSizeInPixels = TextEditorService
             .TextEditorStates
@@ -235,12 +224,13 @@ public partial class TextEditorDisplay : TextEditorView
         var dirtyShouldRemeasureFlag = _previousShouldRemeasureFlag is null ||
                                        _previousShouldRemeasureFlag != ShouldRemeasureFlag;
 
-        if (dirtyGlobalFontSizeInPixels || dirtyShouldRemeasureFlag)
+        if (safeTextEditorViewModel is not null &&
+            (dirtyGlobalFontSizeInPixels || dirtyShouldRemeasureFlag))
         {
             _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
             _previousShouldRemeasureFlag = ShouldRemeasureFlag;
 
-            ShouldMeasureDimensions = true;
+            safeTextEditorViewModel.ShouldMeasureDimensions = true;
             await InvokeAsync(StateHasChanged);
 
             await ForceVirtualizationInvocation();
@@ -280,30 +270,34 @@ public partial class TextEditorDisplay : TextEditorView
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
+        if (firstRender && 
+            textEditorViewModel is not null)
         {
             await ForceVirtualizationInvocation();
 
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.preventDefaultOnWheelEvents",
-                TextEditorContentId);
+                textEditorViewModel.TextEditorContentId);
         }
 
-        if (ShouldMeasureDimensions)
+        if (textEditorViewModel is not null && 
+            textEditorViewModel.ShouldMeasureDimensions)
         {
-            CharacterWidthAndRowHeight = await JsRuntime
+            textEditorViewModel.CharacterWidthAndRowHeight = await JsRuntime
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
                     MeasureCharacterWidthAndRowHeightElementId,
                     _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
-            WidthAndHeightOfTextEditor = await JsRuntime
+            textEditorViewModel.WidthAndHeightOfTextEditor = await JsRuntime
                 .InvokeAsync<WidthAndHeightOfTextEditor>(
                     "blazorTextEditor.measureWidthAndHeightOfTextEditor",
-                    TextEditorContentId);
+                    textEditorViewModel.TextEditorContentId);
 
             {
-                ShouldMeasureDimensions = false;
+                textEditorViewModel.ShouldMeasureDimensions = false;
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -313,8 +307,13 @@ public partial class TextEditorDisplay : TextEditorView
     
     private async Task ForceVirtualizationInvocation()
     {
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+
+        if (textEditorViewModel is null)
+            return;
+        
         _virtualizationDisplay?.InvokeEntriesProviderFunc();
-        _virtualizationDisplay?.ForceReadScrollPosition(TextEditorContentId);
+        _virtualizationDisplay?.ForceReadScrollPosition(textEditorViewModel.TextEditorContentId);
     }
     
     private async void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
@@ -339,7 +338,7 @@ public partial class TextEditorDisplay : TextEditorView
             return;
         }
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
 
         var cursorSnapshots = new TextEditorCursorSnapshot[]
         {
@@ -384,7 +383,7 @@ public partial class TextEditorDisplay : TextEditorView
                         cursorSnapshots,
                         ClipboardProvider,
                         TextEditorService,
-                        this));
+                        safeTextEditorViewModel));
             }
             else
             {
@@ -445,11 +444,13 @@ public partial class TextEditorDisplay : TextEditorView
     private async Task HandleContentOnDoubleClickAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
-        if (safeTextEditorReference is null)
+        if (safeTextEditorReference is null ||
+            safeTextEditorViewModel is null)
             return;
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
             TextEditorSelectionHelper.HasSelectedText(
@@ -525,11 +526,13 @@ public partial class TextEditorDisplay : TextEditorView
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
-        if (safeTextEditorReference is null)
+        if (safeTextEditorReference is null ||
+            safeTextEditorViewModel is null)
             return;
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
             TextEditorSelectionHelper.HasSelectedText(
@@ -603,11 +606,13 @@ public partial class TextEditorDisplay : TextEditorView
         try
         {
             var safeTextEditorReference = MutableReferenceToTextEditor;
+            var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
-            if (safeTextEditorReference is null)
+            if (safeTextEditorReference is null ||
+                safeTextEditorViewModel is null)
                 return;
 
-            var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+            var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
 
             // Buttons is a bit flag
             // '& 1' gets if left mouse button is held
@@ -644,18 +649,20 @@ public partial class TextEditorDisplay : TextEditorView
         MouseEventArgs mouseEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
-        if (safeTextEditorReference is null)
+        if (safeTextEditorReference is null ||
+            safeTextEditorViewModel is null)
             return (0, 0);
 
         RelativeCoordinatesOnClick = await JsRuntime
             .InvokeAsync<RelativeCoordinates>(
                 "blazorTextEditor.getRelativePosition",
-                TextEditorContentId,
+                safeTextEditorViewModel.TextEditorContentId,
                 mouseEventArgs.ClientX,
                 mouseEventArgs.ClientY);
 
-        if (CharacterWidthAndRowHeight is null)
+        if (safeTextEditorViewModel.CharacterWidthAndRowHeight is null)
             return (0, 0);
 
         var positionX = RelativeCoordinatesOnClick.RelativeX;
@@ -673,13 +680,15 @@ public partial class TextEditorDisplay : TextEditorView
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
         }
 
-        var columnIndexDouble = positionX / CharacterWidthAndRowHeight.CharacterWidthInPixels;
+        var columnIndexDouble = positionX / 
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var columnIndexInt = (int)Math.Round(
             columnIndexDouble,
             MidpointRounding.AwayFromZero);
 
-        var rowIndex = (int)(positionY / CharacterWidthAndRowHeight.RowHeightInPixels);
+        var rowIndex = (int)(positionY / 
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels);
 
         rowIndex = rowIndex > safeTextEditorReference.RowCount - 1
             ? safeTextEditorReference.RowCount - 1
@@ -727,8 +736,11 @@ public partial class TextEditorDisplay : TextEditorView
     private VirtualizationResult<List<RichCharacter>>? EntriesProvider(
         VirtualizationRequest request)
     {
-        if (CharacterWidthAndRowHeight is null ||
-            WidthAndHeightOfTextEditor is null ||
+        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+        
+        if (safeTextEditorViewModel is null ||
+            safeTextEditorViewModel.CharacterWidthAndRowHeight is null ||
+            safeTextEditorViewModel.WidthAndHeightOfTextEditor is null ||
             request.CancellationToken.IsCancellationRequested)
             return null;
 
@@ -747,11 +759,11 @@ public partial class TextEditorDisplay : TextEditorView
 
         var verticalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollTopInPixels /
-            CharacterWidthAndRowHeight.RowHeightInPixels);
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels);
 
         var verticalTake = (int)Math.Ceiling(
-            WidthAndHeightOfTextEditor.HeightInPixels /
-            CharacterWidthAndRowHeight.RowHeightInPixels);
+            safeTextEditorViewModel.WidthAndHeightOfTextEditor.HeightInPixels /
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels);
         
         // Vertical Padding (render some offscreen data)
         {
@@ -775,11 +787,11 @@ public partial class TextEditorDisplay : TextEditorView
 
         var horizontalStartingIndex = (int)Math.Floor(
             request.ScrollPosition.ScrollLeftInPixels /
-            CharacterWidthAndRowHeight.CharacterWidthInPixels);
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var horizontalTake = (int)Math.Ceiling(
-            WidthAndHeightOfTextEditor.WidthInPixels /
-            CharacterWidthAndRowHeight.CharacterWidthInPixels);
+            safeTextEditorViewModel.WidthAndHeightOfTextEditor.WidthInPixels /
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var virtualizedEntries = safeTextEditorReference
             .GetRows(verticalStartingIndex, verticalTake)
@@ -822,37 +834,37 @@ public partial class TextEditorDisplay : TextEditorView
 
                 var widthInPixels =
                     horizontallyVirtualizedRow.Count *
-                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                    safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                 var leftInPixels =
                     // do not change this to localHorizontalStartingIndex
                     horizontalStartingIndex *
-                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                    safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                 var topInPixels =
                     index *
-                    CharacterWidthAndRowHeight.RowHeightInPixels;
+                    safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels;
 
                 return new VirtualizationEntry<List<RichCharacter>>(
                     index,
                     horizontallyVirtualizedRow,
                     widthInPixels,
-                    CharacterWidthAndRowHeight.RowHeightInPixels,
+                    safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels,
                     leftInPixels,
                     topInPixels);
             }).ToImmutableArray();
 
         var totalWidth =
             safeTextEditorReference.MostCharactersOnASingleRow *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var totalHeight =
             safeTextEditorReference.RowEndingPositions.Length *
-            CharacterWidthAndRowHeight.RowHeightInPixels;
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels;
 
         var leftBoundaryWidthInPixels =
             horizontalStartingIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var leftBoundary = new VirtualizationBoundary(
             leftBoundaryWidthInPixels,
@@ -862,7 +874,7 @@ public partial class TextEditorDisplay : TextEditorView
 
         var rightBoundaryLeftInPixels =
             leftBoundary.WidthInPixels +
-            CharacterWidthAndRowHeight.CharacterWidthInPixels *
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels *
             horizontalTake;
 
         var rightBoundaryWidthInPixels =
@@ -877,7 +889,7 @@ public partial class TextEditorDisplay : TextEditorView
 
         var topBoundaryHeightInPixels =
             verticalStartingIndex *
-            CharacterWidthAndRowHeight.RowHeightInPixels;
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels;
 
         var topBoundary = new VirtualizationBoundary(
             null,
@@ -887,7 +899,7 @@ public partial class TextEditorDisplay : TextEditorView
 
         var bottomBoundaryTopInPixels =
             topBoundary.HeightInPixels +
-            CharacterWidthAndRowHeight.RowHeightInPixels *
+            safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels *
             verticalTake;
 
         var bottomBoundaryHeightInPixels =
@@ -1027,54 +1039,19 @@ public partial class TextEditorDisplay : TextEditorView
                !keyboardEventArgs.CtrlKey;
     }
     
-    public async Task MutateScrollHorizontalPositionByPixelsAsync(double pixels)
-    {
-        await JsRuntime.InvokeVoidAsync(
-            "blazorTextEditor.mutateScrollHorizontalPositionByPixels",
-            TextEditorContentId,
-            pixels);
-        
-        // Blazor WebAssembly as of this comment is single threaded and
-        // the UI freezes without this await Task.Yield
-        await Task.Yield();
-
-        await ForceVirtualizationInvocation();
-    }
-    
-    public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
-    {
-        await JsRuntime.InvokeVoidAsync(
-            "blazorTextEditor.mutateScrollVerticalPositionByPixels",
-            TextEditorContentId,
-            pixels);
-        
-        // Blazor WebAssembly as of this comment is single threaded and
-        // the UI freezes without this await Task.Yield
-        await Task.Yield();
-        
-        await ForceVirtualizationInvocation();
-    }
-
-    public async Task MutateScrollVerticalPositionByLinesAsync(double lines)
-    {
-        await MutateScrollVerticalPositionByPixelsAsync(
-            lines * (CharacterWidthAndRowHeight?.RowHeightInPixels ?? 0));
-    }
-    
-    public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
-    {
-        await MutateScrollVerticalPositionByPixelsAsync(
-            pages * (WidthAndHeightOfTextEditor?.HeightInPixels ?? 0));
-    }
-    
     /// <summary>
     /// If a parameter is null the JavaScript will not modify that value
     /// </summary>
     public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
     {
+        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+
+        if (safeTextEditorViewModel is null)
+            return;
+        
         await JsRuntime.InvokeVoidAsync(
             "blazorTextEditor.setScrollPosition",
-            TextEditorContentId,
+            safeTextEditorViewModel.TextEditorContentId,
             scrollLeft,
             scrollTop);
 
@@ -1087,46 +1064,21 @@ public partial class TextEditorDisplay : TextEditorView
         await ForceVirtualizationInvocation();
     }
     
-    public async Task CursorMovePageBottomAsync()
-    {
-        var localMostRecentlyRenderedVirtualizationResult = _mostRecentlyRenderedVirtualizationResult;
-        var textEditor = TextEditorStatesSelection.Value;
-
-        if ((localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false) &&
-            textEditor is not null)
-        {
-            var lastEntry = localMostRecentlyRenderedVirtualizationResult.Entries.Last();
-
-            var lastEntriesRowLength = textEditor.GetLengthOfRow(lastEntry.Index);
-            
-            PrimaryCursor.IndexCoordinates = (lastEntry.Index, lastEntriesRowLength);
-        }
-    }
-    
-    public async Task CursorMovePageTopAsync()
-    {
-        var localMostRecentlyRenderedVirtualizationResult = _mostRecentlyRenderedVirtualizationResult;
-        var textEditor = TextEditorStatesSelection.Value;
-
-        if ((localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false) &&
-            textEditor is not null)
-        {
-            var firstEntry = localMostRecentlyRenderedVirtualizationResult.Entries.First();
-
-            PrimaryCursor.IndexCoordinates = (firstEntry.Index, 0);
-        }
-    }
-    
     private async Task HandleOnWheelAsync(WheelEventArgs wheelEventArgs)
     {
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+
+        if (textEditorViewModel is null)
+            return;
+        
         if (wheelEventArgs.ShiftKey)
         {
-            await MutateScrollHorizontalPositionByPixelsAsync(
+            await textEditorViewModel.MutateScrollHorizontalPositionByPixelsAsync(
                 wheelEventArgs.DeltaY);
         }
         else
         {
-            await MutateScrollVerticalPositionByPixelsAsync(
+            await textEditorViewModel.MutateScrollVerticalPositionByPixelsAsync(
                 wheelEventArgs.DeltaY);
         }
     }

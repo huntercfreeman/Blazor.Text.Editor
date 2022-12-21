@@ -26,9 +26,6 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
     [CascadingParameter(Name="TextEditorMenuShouldTakeFocusFunc")]
     public Func<bool> TextEditorMenuShouldTakeFocusFunc { get; set; } = null!;
 
-    [Parameter, EditorRequired]
-    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
-
     private ElementReference? _textEditorAutocompleteMenuElementReference;
     private MenuDisplay? _autocompleteMenuDisplay;
 
@@ -64,7 +61,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
         var cursorSnapshots =
             TextEditorCursorSnapshot.TakeSnapshots(
-                TextEditorDisplay.PrimaryCursor);
+                localTextEditorViewModel?.PrimaryCursor ?? new TextEditorCursor(true));
 
         var primaryCursorSnapshot = cursorSnapshots
             .First(x => x.UserCursor.IsPrimaryCursor);
@@ -134,7 +131,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
     {
         var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
             textEditorViewModel.TextEditorKey,
-            TextEditorCursorSnapshot.TakeSnapshots(TextEditorDisplay.PrimaryCursor),
+            TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             option.Substring(word.Length),
             CancellationToken.None);
 

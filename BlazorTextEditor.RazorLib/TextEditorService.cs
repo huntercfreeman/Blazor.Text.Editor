@@ -28,21 +28,25 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
+using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
     private readonly IState<TextEditorStates> _textEditorStates;
+    private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollection;
     private readonly IDispatcher _dispatcher;
     private readonly IStorageProvider _storageProvider;
     
     public TextEditorService(
         IState<TextEditorStates> textEditorStates,
+        IState<TextEditorViewModelsCollection> textEditorViewModelsCollection,
         IDispatcher dispatcher,
         IStorageProvider storageProvider)
     {
         _textEditorStates = textEditorStates;
+        _textEditorViewModelsCollection = textEditorViewModelsCollection;
         _dispatcher = dispatcher;
         _storageProvider = storageProvider;
 
@@ -433,12 +437,33 @@ public class TextEditorService : ITextEditorService
     }
 
     public void RegisterViewModel(
-        TextEditorKey textEditorKey, 
-        TextEditorViewModelKey textEditorViewModelKey)
+        TextEditorKey textEditorKey,
+        TextEditorViewModelKey textEditorViewModelKey,
+        Func<TextEditorBase> getTextEditorBaseFunc,
+        IJSRuntime jsRuntime)
     {
         _dispatcher.Dispatch(new RegisterTextEditorViewModelAction(
             textEditorKey, 
-            textEditorViewModelKey));
+            textEditorViewModelKey,
+            getTextEditorBaseFunc,
+            jsRuntime));
+    }
+
+    public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey)
+    {
+        var textEditorViewModelsCollection = _textEditorViewModelsCollection.Value;
+        
+        var viewModel = textEditorViewModelsCollection.ViewModelsList
+            .FirstOrDefault(x => 
+                x.TextEditorViewModelKey == textEditorViewModelKey);
+        
+        if (viewModel is null)
+            return null;
+        
+        var localTextEditorStates = TextEditorStates;
+
+        return localTextEditorStates.TextEditorList
+            .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
     }
     
     public async Task SetTextEditorOptionsFromLocalStorageAsync()

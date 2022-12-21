@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.Demo.RazorLib.Pages;
 
@@ -11,6 +12,8 @@ public partial class JsonExamples : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
 
     private static readonly TextEditorGroupKey JsonTextEditorGroupKey = TextEditorGroupKey.NewTextEditorGroupKey();
     
@@ -33,11 +36,15 @@ public partial class JsonExamples : ComponentBase
         
         TextEditorService.RegisterViewModel(
             TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey,
-            JsonTextEditorViewModelKeyOne);
+            JsonTextEditorViewModelKeyOne,
+            () => TextEditorService.GetTextEditorBaseFromViewModelKey(JsonTextEditorViewModelKeyOne),
+            JsRuntime);
         
         TextEditorService.RegisterViewModel(
             TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey,
-            JsonTextEditorViewModelKeyTwo);
+            JsonTextEditorViewModelKeyTwo,
+            () => TextEditorService.GetTextEditorBaseFromViewModelKey(JsonTextEditorViewModelKeyOne),
+            JsRuntime);
         
         TextEditorService.AddViewModelToGroup(
             JsonTextEditorGroupKey,

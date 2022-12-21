@@ -3,6 +3,7 @@ using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Row;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -16,21 +17,19 @@ public partial class TextEditorHeader : TextEditorView
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
-    [Parameter, EditorRequired]
-    public TextEditorDisplay? TextEditorDisplay { get; set; }
     [Parameter]
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
 
     private TextEditorCommandParameter ConstructTextEditorCommandParameter(
         TextEditorBase textEditorBase,
-        TextEditorDisplay textEditorDisplay)
+        TextEditorViewModel textEditorViewModel)
     {
         return new TextEditorCommandParameter(
             textEditorBase,
-            TextEditorCursorSnapshot.TakeSnapshots(textEditorDisplay.PrimaryCursor),
+            TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             ClipboardProvider,
             TextEditorService,
-            textEditorDisplay);
+            textEditorViewModel);
     }
 
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
@@ -55,16 +54,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoCopyOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Copy;
         
@@ -75,16 +75,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoCutOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Cut;
         
@@ -95,16 +96,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoPasteOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-        
+                var textEditorViewModel = ReplaceableTextEditorViewModel;
+                
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Paste;
         
@@ -115,16 +117,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoRedoOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-        
+                var textEditorViewModel = ReplaceableTextEditorViewModel;
+                
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Redo;
         
@@ -135,16 +138,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoSaveOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-        
+                var textEditorViewModel = ReplaceableTextEditorViewModel;
+                
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Save;
         
@@ -155,16 +159,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoUndoOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Undo;
         
@@ -175,16 +180,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoSelectAllOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.SelectAll;
         
@@ -195,16 +201,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoRemeasureOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Remeasure;
         
@@ -215,16 +222,17 @@ public partial class TextEditorHeader : TextEditorView
     private async Task DoRefreshOnClick(MouseEventArgs arg)
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return;
         }
 
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
             textEditor,
-            TextEditorDisplay);
+            textEditorViewModel);
 
         var command = TextEditorCommandFacts.Remeasure;
         
@@ -242,9 +250,10 @@ public partial class TextEditorHeader : TextEditorView
     private bool GetUndoDisabledAttribute()
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return true;
         }
@@ -262,9 +271,10 @@ public partial class TextEditorHeader : TextEditorView
     private bool GetRedoDisabledAttribute()
     {
         var textEditor = TextEditorStatesSelection.Value;
-
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        
         if (textEditor is null || 
-            TextEditorDisplay is null)
+            textEditorViewModel is null)
         {
             return true;
         }

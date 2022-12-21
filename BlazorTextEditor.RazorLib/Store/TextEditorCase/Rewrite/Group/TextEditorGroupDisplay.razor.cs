@@ -15,6 +15,8 @@ public partial class TextEditorGroupDisplay : IDisposable
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
 
     /// <summary>
     /// If the provided <see cref="TextEditorGroupKey"/> is registered using the

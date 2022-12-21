@@ -12,8 +12,6 @@ public partial class TextEditorFooter : TextEditorView
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     
-    [Parameter, EditorRequired]
-    public TextEditorDisplay? TextEditorDisplay { get; set; }
     [Parameter]
     public string? FileExtension { get; set; }
 

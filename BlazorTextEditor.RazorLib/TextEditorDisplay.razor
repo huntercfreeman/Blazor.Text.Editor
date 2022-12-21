@@ -14,7 +14,6 @@
      class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
 
     <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
-                      TextEditorDisplay="this"
                       HeaderButtonKinds="HeaderButtonKinds"/>
 
     <div @ref="_textEditorDisplayElementReference"
@@ -27,7 +26,7 @@
          tabindex="-1">
 
         <div class="bte_text-editor-content bte_unselectable"
-             id="@TextEditorContentId"
+             id="@(ReplaceableTextEditorViewModel?.TextEditorContentId ?? string.Empty)"
              @onmousedown="HandleContentOnMouseDownAsync"
              @onmousemove="HandleContentOnMouseMoveAsync"
              @ondblclick="HandleContentOnDoubleClickAsync"
@@ -38,17 +37,19 @@
 
             @{
                 var textEditor = TextEditorStatesSelection.Value;
+                var textEditorViewModel = ReplaceableTextEditorViewModel;
 
-                if (textEditor is not null)
+                if (textEditor is not null &&
+                    textEditorViewModel is not null)
                 {
-                    var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
+                    var primaryCursorSnapshot = new TextEditorCursorSnapshot(textEditorViewModel.PrimaryCursor);
 
-                    if (CharacterWidthAndRowHeight is not null &&
-                        WidthAndHeightOfTextEditor is not null)
+                    if (textEditorViewModel.CharacterWidthAndRowHeight is not null &&
+                        textEditorViewModel.WidthAndHeightOfTextEditor is not null)
                     {
                         <TextSelectionGroup TextEditor="textEditor"
                                             PrimaryCursorSnapshot="primaryCursorSnapshot"
-                                            CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"/>
+                                            CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"/>
 
                         var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
                         var spaceKeyOutput = "&nbsp;";
@@ -65,11 +66,11 @@
 
                             @{
                                 // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
-                                _mostRecentlyRenderedVirtualizationResult = virtualizationResult;
+                                textEditorViewModel.MostRecentlyRenderedVirtualizationResult = virtualizationResult;
                             }
                             
                             <CascadingValue Value="textEditor">
-                                <CascadingValue Value="CharacterWidthAndRowHeight">
+                                <CascadingValue Value="textEditorViewModel.CharacterWidthAndRowHeight">
                                     <CascadingValue Value="virtualizationResult">
                                         
                                         <GutterSection/>
@@ -78,7 +79,7 @@
                                                     SpaceKeyOutput="@spaceKeyOutput"
                                                     TabKeyOutput="@tabKeyOutput"/>
 
-                                        <ScrollbarSection WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
+                                        <ScrollbarSection WidthAndHeightOfTextEditor="textEditorViewModel.WidthAndHeightOfTextEditor"
                                                           TextEditorDisplay="this"/>
                                         
                                     </CascadingValue>
@@ -87,14 +88,14 @@
                         </VirtualizationDisplay>
 
                         <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
-                                                 TextEditorCursor="PrimaryCursor"
-                                                 CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
-                                                 WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
+                                                 TextEditorCursor="textEditorViewModel.PrimaryCursor"
+                                                 CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"
+                                                 WidthAndHeightOfTextEditor="textEditorViewModel.WidthAndHeightOfTextEditor"
                                                  TextEditorViewModelKey="TextEditorViewModelKey"
-                                                 ScrollableContainerId="@TextEditorContentId"
+                                                 ScrollableContainerId="@textEditorViewModel.TextEditorContentId"
                                                  IsFocusTarget="true"
                                                  TabIndex="TabIndex"
-                                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => _mostRecentlyRenderedVirtualizationResult"
+                                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => textEditorViewModel.MostRecentlyRenderedVirtualizationResult"
                                                  TextEditorDisplay="this">
 
                             <OnContextMenuRenderFragment>
@@ -104,8 +105,7 @@
                                 else
                                 {
                                     @* This is the default context menu *@
-                                    <TextEditorContextMenu TextEditor="textEditor"
-                                                           TextEditorDisplay="this"/>
+                                    <TextEditorContextMenu TextEditor="textEditor"/>
                                 }
                             </OnContextMenuRenderFragment>
                             <AutoCompleteMenuRenderFragment>
@@ -115,8 +115,7 @@
                                 else
                                 {
                                     @* This is the default autocomplete menu *@
-                                    <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"
-                                                                TextEditorDisplay="this"/>
+                                    <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"/>
                                 }
                             </AutoCompleteMenuRenderFragment>
                         </TextEditorCursorDisplay>
@@ -127,6 +126,5 @@
     </div>
 
     <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"
-                      TextEditorDisplay="this"
                       FileExtension="@FileExtension"/>
 </div>

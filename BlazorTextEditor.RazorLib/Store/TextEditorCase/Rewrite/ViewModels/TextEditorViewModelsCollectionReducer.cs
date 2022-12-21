@@ -17,7 +17,9 @@ public class TextEditorViewModelsCollectionReducer
 
         var viewModel = new TextEditorViewModel(
             registerTextEditorViewModelAction.TextEditorViewModelKey,
-            registerTextEditorViewModelAction.TextEditorKey);
+            registerTextEditorViewModelAction.TextEditorKey,
+            registerTextEditorViewModelAction.GetTextEditorBaseFunc,
+            registerTextEditorViewModelAction.JsRuntime);
         
         var nextViewModelsList = previousTextEditorViewModelsCollection.ViewModelsList
             .Add(viewModel);

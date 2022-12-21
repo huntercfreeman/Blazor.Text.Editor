@@ -33,7 +33,7 @@ public static class TextEditorCommandFacts
                     .SetClipboard(
                         selectedText);
                 
-                await textEditorCommandParameter.TextEditorDisplay.FocusTextEditorAsync();
+                await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
             }
         },
         false,
@@ -58,7 +58,7 @@ public static class TextEditorCommandFacts
                     .SetClipboard(
                         selectedText);
 
-                await textEditorCommandParameter.TextEditorDisplay.FocusTextEditorAsync();
+                await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
             }
             
             textEditorCommandParameter.TextEditorService
@@ -101,7 +101,7 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Save = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter
-                .TextEditorDisplay
+                .TextEditorViewModel
                 .OnSaveRequested?
                 .Invoke(
                     textEditorCommandParameter.TextEditor);
@@ -159,7 +159,7 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand Remeasure = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter.TextEditorDisplay.ShouldMeasureDimensions = true;
+            textEditorCommandParameter.TextEditorViewModel.ShouldMeasureDimensions = true;
             
             textEditorCommandParameter.TextEditorService
                 .ForceRerender(textEditorCommandParameter.TextEditor.Key);
@@ -172,7 +172,7 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand ScrollLineDown = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorDisplay
+            await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByLinesAsync(1);
         },
         false,
@@ -181,7 +181,7 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand ScrollLineUp = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorDisplay
+            await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByLinesAsync(-1);
         },
         false,
@@ -190,7 +190,7 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand ScrollPageDown = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorDisplay
+            await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByPagesAsync(1);
         },
         false,
@@ -199,7 +199,7 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand ScrollPageUp = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorDisplay
+            await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByPagesAsync(-1);
         },
         false,
@@ -208,7 +208,7 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand CursorMovePageBottom = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorDisplay
+            await textEditorCommandParameter.TextEditorViewModel
                 .CursorMovePageBottomAsync();
         },
         false,
@@ -217,7 +217,7 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand CursorMovePageTop = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorDisplay
+            await textEditorCommandParameter.TextEditorViewModel
                 .CursorMovePageTopAsync();
         },
         false,

@@ -30,10 +30,8 @@
                 }
                 else
                 {
-                    var textEditorStatesWrap = TextEditorStatesWrap.Value;
-
-                    var textEditorBase = textEditorStatesWrap.TextEditorList
-                        .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+                    var textEditorBase = TextEditorService
+                        .GetTextEditorBaseFromViewModelKey(viewModel.TextEditorViewModelKey);
 
                     if (textEditorBase is null)
                     {

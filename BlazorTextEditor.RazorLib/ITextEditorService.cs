@@ -23,6 +23,7 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
+using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -244,7 +245,9 @@ public interface ITextEditorService : IDisposable
     public void AddViewModelToGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     public void SetActiveViewModelOfGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     
-    public void RegisterViewModel(TextEditorKey textEditorKey, TextEditorViewModelKey textEditorViewModelKey);
+    public void RegisterViewModel(TextEditorKey textEditorKey, TextEditorViewModelKey textEditorViewModelKey, Func<TextEditorBase> getTextEditorBaseFunc, IJSRuntime jsRuntime);
+    
+    public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey);
     
     public Task SetTextEditorOptionsFromLocalStorageAsync();
     public void WriteGlobalTextEditorOptionsToLocalStorage();

@@ -5,8 +5,10 @@
 <div class="bte_text-editor-footer @TextEditorService.GlobalThemeCssClassString">
     @{
         var textEditor = TextEditorStatesSelection.Value;
+        var textEditorViewModel = ReplaceableTextEditorViewModel;
         
-        if (textEditor is not null)
+        if (textEditor is not null &&
+            textEditorViewModel is not null)
         {
             if (FileExtension is not null)
             {
@@ -21,14 +23,11 @@
                 lines:@($"{textEditor.RowCount}")
             </div>
 
-            if (TextEditorDisplay is not null)
-            {
-                <div class="bte_text-editor-footer-entry">
-                    Ln:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.rowIndex + 1}")
-                    &nbsp;
-                    Col:@($"{TextEditorDisplay.PrimaryCursor.IndexCoordinates.columnIndex + 1}")
-                </div>
-            }
+            <div class="bte_text-editor-footer-entry">
+                Ln:@($"{textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1}")
+                &nbsp;
+                Col:@($"{textEditorViewModel.PrimaryCursor.IndexCoordinates.columnIndex + 1}")
+            </div>
 
             <div class="bte_text-editor-footer-entry">
                 @if (textEditor.OnlyRowEndingKind is null)
