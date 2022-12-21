@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Misc;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -8,6 +9,10 @@ public partial class TextEditorGroupDisplay : IDisposable
 {
     [Inject]
     private IState<TextEditorGroupsCollection> TextEditorGroupWrap { get; set; } = null!;
+    [Inject]
+    private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
+    [Inject]
+    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
 

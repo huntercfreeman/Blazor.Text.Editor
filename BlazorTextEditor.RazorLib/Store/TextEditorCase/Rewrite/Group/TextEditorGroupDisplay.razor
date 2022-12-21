@@ -16,6 +16,38 @@
                                            TextEditorViewModelKey="viewModelKey"/>
             }
         </div>
+        <div>
+            @{
+                var textEditorViewModelsCollection = TextEditorViewModelsCollectionWrap.Value;
+
+                var viewModel = textEditorViewModelsCollection.ViewModelsList
+                    .FirstOrDefault(x => 
+                        x.TextEditorViewModelKey == textEditorGroup.ActiveTextEditorViewModelKey);
+        
+                if (viewModel is null)
+                {
+                    <text>viewModel was null</text>
+                }
+                else
+                {
+                    var textEditorStatesWrap = TextEditorStatesWrap.Value;
+
+                    var textEditorBase = textEditorStatesWrap.TextEditorList
+                        .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+
+                    if (textEditorBase is null)
+                    {
+                        <div>textEditorBase was null</div>
+                    }
+                    else
+                    {
+                        <TextEditorDisplay TextEditorKey="textEditorBase.Key"
+                                           FileExtension="TODO"
+                                           ClassCssString="bte_demo-text-editor"/>
+                    }
+                }
+            }
+        </div>
     }
     else
     {
