@@ -9,10 +9,11 @@
     @if (textEditorGroup is not null)
     {
         <div>Active:&nbsp;@textEditorGroup.ActiveTextEditorViewModelKey.Guid</div>
-        <div>
+        <div class="bte_text-editor-group-tabs-list">
             @foreach (var viewModelKey in textEditorGroup.ViewModelKeys)
             {
-                <div>@viewModelKey.Guid</div>
+                <TextEditorGroupTabDisplay TextEditorGroup="textEditorGroup"
+                                           TextEditorViewModelKey="viewModelKey"/>
             }
         </div>
     }

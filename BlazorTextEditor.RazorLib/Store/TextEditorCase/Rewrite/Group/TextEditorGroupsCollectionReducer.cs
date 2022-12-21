@@ -64,4 +64,32 @@ public class TextEditorGroupsCollectionReducer
             GroupsList = nextGroupList
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorGroupsCollection ReduceSetActiveViewModelOfGroupAction(
+        TextEditorGroupsCollection previousTextEditorGroupsCollection,
+        SetActiveViewModelOfGroupAction setActiveViewModelOfGroupAction)
+    {
+        var existingTextEditorGroup = previousTextEditorGroupsCollection.GroupsList
+            .FirstOrDefault(x =>
+                x.TextEditorGroupKey == 
+                setActiveViewModelOfGroupAction.TextEditorGroupKey);
+
+        if (existingTextEditorGroup is null)
+            return previousTextEditorGroupsCollection;
+
+        var nextGroup = existingTextEditorGroup with
+        {
+            ActiveTextEditorViewModelKey = setActiveViewModelOfGroupAction.TextEditorViewModelKey
+        };
+
+        var nextGroupList = previousTextEditorGroupsCollection.GroupsList.Replace(
+            existingTextEditorGroup,
+            nextGroup);
+
+        return new TextEditorGroupsCollection
+        {
+            GroupsList = nextGroupList
+        };
+    }
 }

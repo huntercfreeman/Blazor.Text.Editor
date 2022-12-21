@@ -1,0 +1,31 @@
+﻿<button class="balc_button bte_text-editor-group-tab"
+        @onclick="OnClickSetActiveTextEditorViewModel">
+    
+    @{
+        var textEditorViewModelsCollection = TextEditorViewModelsCollectionWrap.Value;
+
+        var viewModel = textEditorViewModelsCollection.ViewModelsList
+            .FirstOrDefault(x => x.TextEditorViewModelKey == TextEditorViewModelKey);
+        
+        if (viewModel is null)
+        {
+            <text>viewModel was null</text>
+        }
+        else
+        {
+            var textEditorStatesWrap = TextEditorStatesWrap.Value;
+
+            var textEditorBase = textEditorStatesWrap.TextEditorList
+                .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+
+            if (textEditorBase is null)
+            {
+                <div>textEditorBase was null</div>
+            }
+            else
+            {
+                <text>@textEditorBase.ResourceUri</text>
+            }
+        }
+    }
+</button>

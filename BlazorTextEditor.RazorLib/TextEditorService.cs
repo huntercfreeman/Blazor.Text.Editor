@@ -422,6 +422,15 @@ public class TextEditorService : ITextEditorService
             textEditorGroupKey,
             textEditorViewModelKey));
     }
+    
+    public void SetActiveViewModelOfGroup(
+        TextEditorGroupKey textEditorGroupKey,
+        TextEditorViewModelKey textEditorViewModelKey)
+    {
+        _dispatcher.Dispatch(new SetActiveViewModelOfGroupAction(
+            textEditorGroupKey,
+            textEditorViewModelKey));
+    }
 
     public void RegisterViewModel(
         TextEditorKey textEditorKey, 

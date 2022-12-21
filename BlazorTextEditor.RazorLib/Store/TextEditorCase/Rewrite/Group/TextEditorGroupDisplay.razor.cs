@@ -35,7 +35,7 @@ public partial class TextEditorGroupDisplay : IDisposable
 
     private void TextEditorGroupWrapOnStateChanged(object? sender, EventArgs e)
     {
-        
+        InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
