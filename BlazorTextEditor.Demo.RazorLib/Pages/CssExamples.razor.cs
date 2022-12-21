@@ -14,6 +14,7 @@ public partial class CssExamples : ComponentBase
     {
         TextEditorService.RegisterCssTextEditor(
             TextEditorFacts.Css.CssTextEditorKey,
+            nameof(CssExamples),
             TestData.Css.EXAMPLE_TEXT_21_LINES);
         
         base.OnInitialized();

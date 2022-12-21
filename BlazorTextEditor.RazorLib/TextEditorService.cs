@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.DialogNotification;
+﻿using System.Collections.Immutable;
+using BlazorALaCarte.DialogNotification;
 using BlazorALaCarte.DialogNotification.Store;
 using BlazorALaCarte.Shared.Storage;
 using BlazorALaCarte.Shared.Theme;
@@ -23,6 +24,8 @@ using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
@@ -75,7 +78,7 @@ public class TextEditorService : ITextEditorService
     public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
 
     public event Action? OnTextEditorStatesChanged;
-
+    
     public void RegisterCustomTextEditor(
         TextEditorBase textEditorBase)
     {
@@ -84,11 +87,13 @@ public class TextEditorService : ITextEditorService
     }
 
     public void RegisterCSharpTextEditor(
-        TextEditorKey textEditorKey, 
+        TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorCSharpLexer(),
             new TextEditorCSharpDecorationMapper(),
@@ -106,10 +111,12 @@ public class TextEditorService : ITextEditorService
     
     public void RegisterHtmlTextEditor(
         TextEditorKey textEditorKey, 
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorHtmlLexer(),
             new TextEditorHtmlDecorationMapper(),
@@ -127,10 +134,12 @@ public class TextEditorService : ITextEditorService
 
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey, 
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorCssLexer(),
             new TextEditorCssDecorationMapper(),
@@ -148,10 +157,12 @@ public class TextEditorService : ITextEditorService
     
     public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorJsonLexer(),
             new TextEditorJsonDecorationMapper(),
@@ -168,11 +179,13 @@ public class TextEditorService : ITextEditorService
     }
 
     public void RegisterFSharpTextEditor(
-        TextEditorKey textEditorKey, 
+        TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorFSharpLexer(),
             new TextEditorFSharpDecorationMapper(),
@@ -189,11 +202,13 @@ public class TextEditorService : ITextEditorService
     }
 
     public void RegisterRazorTextEditor(
-        TextEditorKey textEditorKey, 
+        TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorRazorLexer(),
             new TextEditorHtmlDecorationMapper(),
@@ -211,10 +226,12 @@ public class TextEditorService : ITextEditorService
 
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorJavaScriptLexer(),
             new TextEditorJavaScriptDecorationMapper(),
@@ -232,10 +249,12 @@ public class TextEditorService : ITextEditorService
     
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             new TextEditorTypeScriptLexer(),
             new TextEditorTypeScriptDecorationMapper(),
@@ -252,11 +271,13 @@ public class TextEditorService : ITextEditorService
     }
     
     public void RegisterPlainTextEditor(
-        TextEditorKey textEditorKey, 
+        TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
+            resourceUri,
             initialContent,
             null,
             null,
@@ -381,6 +402,34 @@ public class TextEditorService : ITextEditorService
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
     {
         OnTextEditorStatesChanged?.Invoke();
+    }
+
+    public void RegisterGroup(TextEditorGroupKey textEditorGroupKey)
+    {
+        var textEditorGroup = new TextEditorGroup(
+            textEditorGroupKey,
+            TextEditorViewModelKey.Empty,
+            ImmutableList<TextEditorViewModelKey>.Empty);
+        
+        _dispatcher.Dispatch(new RegisterTextEditorGroupAction(textEditorGroup));
+    }
+
+    public void AddViewModelToGroup(
+        TextEditorGroupKey textEditorGroupKey,
+        TextEditorViewModelKey textEditorViewModelKey)
+    {
+        _dispatcher.Dispatch(new AddViewModelToGroupAction(
+            textEditorGroupKey,
+            textEditorViewModelKey));
+    }
+
+    public void RegisterViewModel(
+        TextEditorKey textEditorKey, 
+        TextEditorViewModelKey textEditorViewModelKey)
+    {
+        _dispatcher.Dispatch(new RegisterTextEditorViewModelAction(
+            textEditorKey, 
+            textEditorViewModelKey));
     }
     
     public async Task SetTextEditorOptionsFromLocalStorageAsync()

@@ -7,7 +7,7 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
 public partial class TextEditorGroupDisplay : IDisposable
 {
     [Inject]
-    private IState<TextEditorGroupsCollection?> TextEditorGroupWrap { get; set; } = null!;
+    private IState<TextEditorGroupsCollection> TextEditorGroupWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
 
@@ -35,23 +35,7 @@ public partial class TextEditorGroupDisplay : IDisposable
 
     private void TextEditorGroupWrapOnStateChanged(object? sender, EventArgs e)
     {
-        var textEditorGroupsCollection = TextEditorGroupWrap.Value;
         
-        if (textEditorGroupsCollection is null)
-            return;
-    
-        if (!textEditorGroupsCollection.GroupsMap.TryGetValue(
-                TextEditorGroupKey,
-                out var textEditorGroup))
-        {
-            return;
-        }
-    
-        if (textEditorGroup.TextEditorRenderStateKey != _previousTextEditorRenderStateKey)
-        {
-            _previousTextEditorRenderStateKey = textEditorGroup.TextEditorRenderStateKey;
-            InvokeAsync(StateHasChanged);
-        }
     }
 
     public void Dispose()

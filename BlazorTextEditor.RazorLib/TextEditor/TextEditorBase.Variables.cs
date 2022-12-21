@@ -50,6 +50,7 @@ public partial class TextEditorBase
     public RowEndingKind? OnlyRowEndingKind { get; private set; }
     public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
+    public string ResourceUri { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
     public ITextEditorKeymap TextEditorKeymap { get; }
     public int EditBlockIndex { get; private set; }

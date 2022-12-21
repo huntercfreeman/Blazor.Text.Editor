@@ -14,6 +14,7 @@ public partial class RazorExamples : ComponentBase
     {
         TextEditorService.RegisterRazorTextEditor(
             TextEditorFacts.Razor.RazorTextEditorKey,
+            nameof(RazorExamples),
             TestData.Razor.EXAMPLE_TEXT);
         
         base.OnInitialized();

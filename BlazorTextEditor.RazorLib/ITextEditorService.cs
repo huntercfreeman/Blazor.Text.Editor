@@ -20,6 +20,8 @@ using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib;
@@ -78,6 +80,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterCSharpTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -93,6 +96,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterHtmlTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -108,6 +112,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -123,6 +128,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -138,6 +144,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -153,6 +160,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterRazorTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -168,6 +176,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -183,6 +192,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -198,6 +208,7 @@ public interface ITextEditorService : IDisposable
     /// </summary>
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,
+        string resourceUri,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     public void InsertText(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction);
@@ -228,6 +239,11 @@ public interface ITextEditorService : IDisposable
     /// the TextEditorBase that they should re-render.
     /// </summary>
     public void ForceRerender(TextEditorKey textEditorKey);
+
+    public void RegisterGroup(TextEditorGroupKey textEditorGroupKey);
+    public void AddViewModelToGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
+    
+    public void RegisterViewModel(TextEditorKey textEditorKey, TextEditorViewModelKey textEditorViewModelKey);
     
     public Task SetTextEditorOptionsFromLocalStorageAsync();
     public void WriteGlobalTextEditorOptionsToLocalStorage();

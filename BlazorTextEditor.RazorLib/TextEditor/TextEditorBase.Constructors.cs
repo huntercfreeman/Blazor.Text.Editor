@@ -7,11 +7,13 @@ namespace BlazorTextEditor.RazorLib.TextEditor;
 public partial class TextEditorBase
 {
     public TextEditorBase(
+        string resourceUri,
         string content,
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
         ITextEditorKeymap? textEditorKeymap)
     {
+        ResourceUri = resourceUri;
         Lexer = lexer ?? new TextEditorLexerDefault();
         DecorationMapper = decorationMapper ?? new TextEditorDecorationMapperDefault();
         TextEditorKeymap = textEditorKeymap ?? new TextEditorKeymapDefault();
@@ -20,12 +22,14 @@ public partial class TextEditorBase
     }
 
     public TextEditorBase(
+        string resourceUri,
         string content,
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
         ITextEditorKeymap? textEditorKeymap,
         TextEditorKey key)
         : this(
+            resourceUri,
             content,
             lexer,
             decorationMapper,
@@ -44,6 +48,7 @@ public partial class TextEditorBase
     /// </summary>
     public TextEditorBase(TextEditorBase original)
     {
+        ResourceUri = original.ResourceUri;
         _content = original._content;
         _editBlocksPersisted = original._editBlocksPersisted;
         _rowEndingKindCounts = original._rowEndingKindCounts;

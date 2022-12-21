@@ -8,8 +8,8 @@ public class TextEditorGroupsCollection
 {
     public TextEditorGroupsCollection()
     {
-        GroupsMap = ImmutableDictionary<TextEditorGroupKey, TextEditorGroup>.Empty;
     }
 
-    public ImmutableDictionary<TextEditorGroupKey, TextEditorGroup> GroupsMap { get; init; }
+    public ImmutableList<TextEditorGroup> GroupsList { get; init; } =
+        ImmutableList<TextEditorGroup>.Empty;
 }

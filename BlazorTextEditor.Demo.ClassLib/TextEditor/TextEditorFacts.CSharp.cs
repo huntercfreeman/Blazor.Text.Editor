@@ -7,5 +7,6 @@ public static partial class TextEditorFacts
     public static class CSharp
     {
         public static readonly TextEditorKey CSharpTextEditorKey = TextEditorKey.NewTextEditorKey();
+        public static readonly TextEditorKey MyClassTextEditorKey = TextEditorKey.NewTextEditorKey();
     }
 }

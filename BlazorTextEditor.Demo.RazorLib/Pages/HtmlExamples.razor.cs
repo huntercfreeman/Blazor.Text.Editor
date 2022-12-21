@@ -14,6 +14,7 @@ public partial class HtmlExamples : ComponentBase
     {
         TextEditorService.RegisterHtmlTextEditor(
             TextEditorFacts.Html.HtmlTextEditorKey,
+            nameof(HtmlExamples),
             TestData.Html.EXAMPLE_TEXT);
         
         base.OnInitialized();

@@ -14,6 +14,7 @@ public partial class FSharpExamples : ComponentBase
     {
         TextEditorService.RegisterFSharpTextEditor(
             TextEditorFacts.FSharp.FSharpTextEditorKey,
+            nameof(FSharpExamples),
             TestData.FSharp.EXAMPLE_TEXT_21_LINES);
         
         base.OnInitialized();

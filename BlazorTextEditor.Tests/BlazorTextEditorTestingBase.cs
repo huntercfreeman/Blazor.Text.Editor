@@ -50,7 +50,8 @@ public class BlazorTextEditorTestingBase
             .GetRequiredService<ITextEditorService>();
 
         var textEditor = new TextEditorBase(
-            string.Empty, 
+            nameof(BlazorTextEditorTestingBase),
+            string.Empty,
             null,
             null,
             null,
