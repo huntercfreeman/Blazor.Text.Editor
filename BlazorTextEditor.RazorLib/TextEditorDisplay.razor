@@ -1,5 +1,6 @@
 ﻿@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels
 @using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
 @using BlazorTextEditor.RazorLib.Virtualization
 
@@ -12,7 +13,7 @@
 <div style="@GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
      class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
 
-    <TextEditorHeader TextEditorKey="TextEditorKey"
+    <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
                       TextEditorDisplay="this"
                       HeaderButtonKinds="HeaderButtonKinds"/>
 
@@ -89,7 +90,7 @@
                                                  TextEditorCursor="PrimaryCursor"
                                                  CharacterWidthAndRowHeight="CharacterWidthAndRowHeight"
                                                  WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
-                                                 TextEditorKey="TextEditorKey"
+                                                 TextEditorViewModelKey="TextEditorViewModelKey"
                                                  ScrollableContainerId="@TextEditorContentId"
                                                  IsFocusTarget="true"
                                                  TabIndex="TabIndex"
@@ -114,7 +115,7 @@
                                 else
                                 {
                                     @* This is the default autocomplete menu *@
-                                    <TextEditorAutocompleteMenu TextEditorKey="TextEditorKey"
+                                    <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"
                                                                 TextEditorDisplay="this"/>
                                 }
                             </AutoCompleteMenuRenderFragment>
@@ -125,7 +126,7 @@
         </div>
     </div>
 
-    <TextEditorFooter TextEditorKey="TextEditorKey"
+    <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"
                       TextEditorDisplay="this"
                       FileExtension="@FileExtension"/>
 </div>

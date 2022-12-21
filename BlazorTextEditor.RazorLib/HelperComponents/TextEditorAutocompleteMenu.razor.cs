@@ -6,6 +6,7 @@ using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -59,7 +60,8 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
     private MenuRecord GetMenuRecord()
     {
         var textEditor = TextEditorStatesSelection.Value;
-        
+        var localTextEditorViewModel = ReplaceableTextEditorViewModel;
+
         var cursorSnapshots =
             TextEditorCursorSnapshot.TakeSnapshots(
                 TextEditorDisplay.PrimaryCursor);
@@ -68,6 +70,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
             .First(x => x.UserCursor.IsPrimaryCursor);
 
         if (textEditor is not null &&
+            localTextEditorViewModel is not null &&
             primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
         {
             var word = textEditor.ReadPreviousWordOrDefault(
@@ -87,7 +90,10 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
                         MenuOptionKind.Other,
                         () =>
                             SelectMenuOption(() =>
-                                InsertAutocompleteMenuOption(word, option))))
+                                InsertAutocompleteMenuOption(
+                                    word, 
+                                    option,
+                                    localTextEditorViewModel))))
                     .ToList();
             }
             
@@ -121,10 +127,13 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
         });
     }
 
-    private async Task InsertAutocompleteMenuOption(string word, string option)
+    private async Task InsertAutocompleteMenuOption(
+        string word,
+        string option,
+        TextEditorViewModel textEditorViewModel)
     {
         var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
-            TextEditorKey,
+            textEditorViewModel.TextEditorKey,
             TextEditorCursorSnapshot.TakeSnapshots(TextEditorDisplay.PrimaryCursor),
             option.Substring(word.Length),
             CancellationToken.None);

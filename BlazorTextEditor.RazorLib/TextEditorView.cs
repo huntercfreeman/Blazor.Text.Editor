@@ -16,17 +16,26 @@ public class TextEditorView : FluxorComponent
 {
     [Inject]
     protected IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
+    [Inject]
+    protected IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
     
-    [Parameter, EditorRequired]
-    public TextEditorKey TextEditorKey { get; set; } = null!;
     [Parameter, EditorRequired]
     public TextEditorViewModelKey TextEditorViewModelKey { get; set; } = null!;
     
+    public TextEditorBase? MutableReferenceToTextEditor => TextEditorStatesSelection.Value;
+    public TextEditorViewModel? ReplaceableTextEditorViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
+        .FirstOrDefault(x => 
+            x.TextEditorViewModelKey == TextEditorViewModelKey);
+    
     protected override void OnInitialized()
     {
+        var textEditorViewModelsCollection = TextEditorViewModelsCollectionWrap.Value;
+
+        var viewModel = ReplaceableTextEditorViewModel;
+        
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
-                .SingleOrDefault(x => x.Key == TextEditorKey));
+                .SingleOrDefault(x => x.Key == (viewModel?.TextEditorKey ?? TextEditorKey.Empty)));
         
         base.OnInitialized();
     }

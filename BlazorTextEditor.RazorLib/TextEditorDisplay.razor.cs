@@ -10,6 +10,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 using BlazorTextEditor.RazorLib.Virtualization;
@@ -153,6 +154,7 @@ public partial class TextEditorDisplay : TextEditorView
     private TextEditorOptions? _previousGlobalTextEditorOptions;
 
     private TextEditorKey? _previousTextEditorKey;
+    private TextEditorViewModelKey? _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private ElementReference _textEditorDisplayElementReference;
 
@@ -180,8 +182,6 @@ public partial class TextEditorDisplay : TextEditorView
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; private set; }
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
     public WidthAndHeightOfTextEditor? WidthAndHeightOfTextEditor { get; private set; }
-
-    public TextEditorBase? MutableReferenceToTextEditor => TextEditorStatesSelection.Value;
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
 
@@ -246,8 +246,7 @@ public partial class TextEditorDisplay : TextEditorView
             await ForceVirtualizationInvocation();
         }
 
-        if (_previousTextEditorKey is null ||
-            _previousTextEditorKey != TextEditorKey)
+        if (_previousTextEditorViewModelKey != TextEditorViewModelKey)
         {
             // Setting IndexCoordinates to (0, 0) twice in this block
             // due to a general feeling of unease
@@ -257,7 +256,7 @@ public partial class TextEditorDisplay : TextEditorView
                 primaryCursorSnapshot
                     .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
 
-                _previousTextEditorKey = TextEditorKey;
+                _previousTextEditorViewModelKey = TextEditorViewModelKey;
 
                 primaryCursorSnapshot.UserCursor.IndexCoordinates = (0, 0);
                 primaryCursorSnapshot
@@ -268,12 +267,6 @@ public partial class TextEditorDisplay : TextEditorView
         }
 
         await base.OnParametersSetAsync();
-    }
-
-    private async Task ForceVirtualizationInvocation()
-    {
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
-        _virtualizationDisplay?.ForceReadScrollPosition(TextEditorContentId);
     }
 
     protected override void OnInitialized()
@@ -318,6 +311,12 @@ public partial class TextEditorDisplay : TextEditorView
         await base.OnAfterRenderAsync(firstRender);
     }
     
+    private async Task ForceVirtualizationInvocation()
+    {
+        _virtualizationDisplay?.InvokeEntriesProviderFunc();
+        _virtualizationDisplay?.ForceReadScrollPosition(TextEditorContentId);
+    }
+    
     private async void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
     {
         await ForceVirtualizationInvocation();
@@ -332,9 +331,13 @@ public partial class TextEditorDisplay : TextEditorView
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
         var safeTextEditorReference = MutableReferenceToTextEditor;
+        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
-        if (safeTextEditorReference is null)
+        if (safeTextEditorReference is null ||
+            safeTextEditorViewModel is null)
+        {
             return;
+        }
 
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(PrimaryCursor);
 
@@ -398,7 +401,7 @@ public partial class TextEditorDisplay : TextEditorView
 
                 Dispatcher.Dispatch(
                     new KeyboardEventTextEditorBaseAction(
-                        TextEditorKey,
+                        safeTextEditorViewModel.TextEditorKey,
                         cursorSnapshots,
                         keyboardEventArgs,
                         CancellationToken.None));
