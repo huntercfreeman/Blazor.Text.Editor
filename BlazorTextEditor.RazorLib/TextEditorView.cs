@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -18,6 +19,8 @@ public class TextEditorView : FluxorComponent
     
     [Parameter, EditorRequired]
     public TextEditorKey TextEditorKey { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public TextEditorViewModelKey TextEditorViewModelKey { get; set; } = null!;
     
     protected override void OnInitialized()
     {
