@@ -18,6 +18,10 @@ public partial class TextEditorGroupTabDisplay : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorGroup TextEditorGroup { get; set; } = null!;
 
+    private string IsActiveCssClass => TextEditorGroup.ActiveTextEditorViewModelKey == TextEditorViewModelKey
+        ? "balc_active"
+        : string.Empty;
+
     private void OnClickSetActiveTextEditorViewModel()
     {
         TextEditorService.SetActiveViewModelOfGroup(

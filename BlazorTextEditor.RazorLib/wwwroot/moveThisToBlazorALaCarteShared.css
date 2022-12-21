@@ -1,0 +1,16 @@
+﻿:root {
+    /* Colors (dark-theme) */
+
+    --balc_toggled-on-background-color: white;
+}
+
+.balc_visual-studio-light-theme-clone {
+    /* Colors (light-theme) */
+
+    --balc_toggled-on-background-color: white;
+}
+
+.balc_button.balc_active {
+    background-color: var(--balc_toggled-on-background-color);
+}
+
