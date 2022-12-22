@@ -33,6 +33,8 @@ public partial class TextEditorGroupTabDisplay : ComponentBase
 
     private void CloseTabOnClick()
     {
-        
+        TextEditorService.RemoveViewModelFromGroup(
+            TextEditorGroup.TextEditorGroupKey,
+            TextEditorViewModelKey);
     }
 }
