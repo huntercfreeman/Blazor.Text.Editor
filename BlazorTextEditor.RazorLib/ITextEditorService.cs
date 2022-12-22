@@ -253,6 +253,8 @@ public interface ITextEditorService : IDisposable
     public Task MutateScrollHorizontalPositionByPixelsAsync(string textEditorContentId, double pixels);
     public Task MutateScrollVerticalPositionByPixelsAsync(string textEditorContentId, double pixels);
     
+    public Task FocusPrimaryCursorAsync(string primaryCursorContentId);
+    
     public Task SetTextEditorOptionsFromLocalStorageAsync();
     public void WriteGlobalTextEditorOptionsToLocalStorage();
 }

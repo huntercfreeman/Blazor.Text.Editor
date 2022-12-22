@@ -506,6 +506,13 @@ public class TextEditorService : ITextEditorService
         
         // TODO: await ForceVirtualizationInvocation();
     }
+
+    public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.focusHtmlElementById",
+            primaryCursorContentId);
+    }
     
     public async Task SetTextEditorOptionsFromLocalStorageAsync()
     {

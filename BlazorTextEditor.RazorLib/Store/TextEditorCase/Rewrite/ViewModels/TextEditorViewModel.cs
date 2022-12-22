@@ -19,6 +19,7 @@ public record TextEditorViewModel(
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
 
     public string TextEditorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
+    public string PrimaryCursorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}_primary-cursor";
 
     public bool ShouldMeasureDimensions { get; set; } = true;
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
@@ -83,6 +84,7 @@ public record TextEditorViewModel(
 
     public async Task FocusTextEditorAsync()
     {
-        // TODO: FocusTextEditorAsync
+        await TextEditorService.FocusPrimaryCursorAsync(
+            PrimaryCursorContentId);
     }
 }

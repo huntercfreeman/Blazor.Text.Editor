@@ -74,7 +74,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
     /// </summary>
     private const int SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW = 1;
 
-    public string TextEditorCursorDisplayId => $"bte_text-editor-cursor-display_{_intersectionObserverMapKey}";
+    public string TextEditorCursorDisplayId => TextEditorCursor.IsPrimaryCursor
+        ? ReplaceableTextEditorViewModel?.PrimaryCursorContentId ?? string.Empty
+        : string.Empty;
 
     public string CursorStyleCss => GetCursorStyleCss();
     public string CaretRowStyleCss => GetCaretRowStyleCss();

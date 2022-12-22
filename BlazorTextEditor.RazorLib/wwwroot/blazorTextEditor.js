@@ -1,4 +1,9 @@
 window.blazorTextEditor = {
+    focusHtmlElementById: function (textEditorContentId) {
+        document
+            .getElementById(textEditorContentId)
+            .focus();
+    },
     scrollElementIntoView: function (intersectionObserverMapKey,
                                      elementId) {
 
