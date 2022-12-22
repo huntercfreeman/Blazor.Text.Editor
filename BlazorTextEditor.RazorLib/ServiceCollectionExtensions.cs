@@ -1,5 +1,6 @@
 using BlazorALaCarte.DialogNotification.Installation;
 using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Installation;
 using BlazorALaCarte.Shared.Services;
 using BlazorALaCarte.Shared.Storage;
@@ -18,7 +19,11 @@ public static class ServiceCollectionExtensions
         Action<TextEditorServiceOptions>? configure = null)
     {
         return services
-            .AddSharedServices()
+            .AddSharedServices(
+                x => 
+                    {},
+                x => 
+                    x.InitialThemeKey = ThemeFacts.VisualStudioDarkThemeClone.ThemeKey)
             .AddDialogServices()
             .AddTreeViewServices()
             .AddTextEditorClassLibServices(

@@ -1,29 +1,29 @@
-.bte_light-theme-visual-studio {
+.balc_visual-studio-light-theme-clone {
     --bte_primary-font-color: #000000;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
-    --bte_body-background-color: #FFFFFF;
+    --bte_body-background-color: #fdfdfd;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;
     --bte_newline-foreground-color: #007F00;
     --bte_newline-background-color: #faeee2;
-    --bte_method-foreground-color: #74531F;
+    --bte_method-foreground-color: #966400;
     --bte_type-foreground-color: #2B91AF;
-    --bte_parameter-foreground-color: #1F377F;
+    --bte_parameter-foreground-color: #751FA3;
     --bte_string-literal-foreground-color: #A31515;
     --bte_keyword-foreground-color: #0000FF;
     --bte_comment-foreground-color: #007F00;
-    --bte_tag-name-foreground-color: #ad01d0;
-    --bte_injected-language-fragment-color: #eb9300;
+    --bte_tag-name-foreground-color: #0000FF;
+    --bte_injected-language-fragment-color: #C800BE;
     --bte_css-property-name-color: #0000FF;
     --bte_css-property-value-color: #A31515;
     --bte_css-identifier-color: #ad01d0;
-    --bte_attribute-name-color: #0000FF;
+    --bte_attribute-name-color: #008ac8;
     --bte_attribute-value-color : #A31515;
-    --bte_json-property-key-color : #AA0BAA;
+    --bte_json-property-key-color : #ad01d0;
     --bte_json-property-value-color : #A31515;
     --bte_text-editor-gutter-border-color: #28ae0c;
-    --bte_text-editor-gutter-background-color: #e7c9a9;
+    --bte_text-editor-gutter-background-color: #F8F8EE;
     --bte_secondary-font-color: var(--bte_primary-font-color);
     --bte_secondary-background-color: #e6e6e6;
     --bte_primary-overlay-box-shadow-color: #000000;
