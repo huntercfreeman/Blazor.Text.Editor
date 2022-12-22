@@ -861,6 +861,17 @@ public partial class TextEditorDisplay : TextEditorView
         var totalHeight =
             safeTextEditorReference.RowEndingPositions.Length *
             safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels;
+        
+        // Add vertical margin so the user can scroll beyond the final row of content
+        {
+            var percentOfMarginScrollHeightByPageUnit = 0.4;
+            
+            var marginScrollHeight =
+                (safeTextEditorViewModel.WidthAndHeightOfTextEditor?.HeightInPixels ?? 0) *
+                percentOfMarginScrollHeightByPageUnit;
+
+            totalHeight += marginScrollHeight;
+        }
 
         var leftBoundaryWidthInPixels =
             horizontalStartingIndex *
@@ -911,7 +922,7 @@ public partial class TextEditorDisplay : TextEditorView
             bottomBoundaryHeightInPixels,
             0,
             bottomBoundaryTopInPixels);
-
+        
         return new VirtualizationResult<List<RichCharacter>>(
             virtualizedEntries,
             leftBoundary,
