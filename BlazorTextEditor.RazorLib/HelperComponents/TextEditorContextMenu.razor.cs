@@ -22,9 +22,6 @@ public partial class TextEditorContextMenu : TextEditorView
     [CascadingParameter(Name = "SetShouldDisplayMenuAsync")]
     public Func<TextEditorMenuKind, bool, Task> SetShouldDisplayMenuAsync { get; set; } = null!;
 
-    [Parameter, EditorRequired]
-    public TextEditorBase TextEditor { get; set; } = null!;
-
     private ElementReference? _textEditorContextMenuElementReference;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -126,12 +123,14 @@ public partial class TextEditorContextMenu : TextEditorView
     private async Task CutMenuOption()
     {
         var textEditorViewModel = ReplaceableTextEditorViewModel;
+        var textEditor = TextEditorStatesSelection.Value;
 
-        if (textEditorViewModel is null)
+        if (textEditorViewModel is null ||
+            textEditor is null)
             return;
         
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            TextEditor,
+            textEditor,
             textEditorViewModel);
 
         var command = TextEditorCommandFacts.Cut;
@@ -143,12 +142,14 @@ public partial class TextEditorContextMenu : TextEditorView
     private async Task CopyMenuOption()
     {
         var textEditorViewModel = ReplaceableTextEditorViewModel;
-        
-        if (textEditorViewModel is null)
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if (textEditorViewModel is null ||
+            textEditor is null)
             return;
         
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            TextEditor,
+            textEditor,
             textEditorViewModel);
 
         var command = TextEditorCommandFacts.Copy;
@@ -160,12 +161,14 @@ public partial class TextEditorContextMenu : TextEditorView
     private async Task PasteMenuOption()
     {
         var textEditorViewModel = ReplaceableTextEditorViewModel;
-        
-        if (textEditorViewModel is null)
+        var textEditor = TextEditorStatesSelection.Value;
+
+        if (textEditorViewModel is null ||
+            textEditor is null)
             return;
         
         var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            TextEditor,
+            textEditor,
             textEditorViewModel);
 
         var command = TextEditorCommandFacts.Paste;
