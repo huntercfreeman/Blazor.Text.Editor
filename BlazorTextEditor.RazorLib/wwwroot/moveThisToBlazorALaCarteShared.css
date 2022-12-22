@@ -7,11 +7,16 @@
 .balc_visual-studio-light-theme-clone {
     /* Colors (light-theme) */
 
-    --balc_toggled-on-background-color: white;
+    --balc_toggled-on-background-color: #c4eaff;
+}
+
+.balc_button:not(.balc_active) {
+    background-color: #fff7b9;
 }
 
 .balc_button.balc_active {
     background-color: var(--balc_toggled-on-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
 }
 
 .bte_text-editor-context-menu {
