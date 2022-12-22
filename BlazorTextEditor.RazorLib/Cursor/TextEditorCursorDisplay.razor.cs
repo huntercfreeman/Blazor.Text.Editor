@@ -1,6 +1,7 @@
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
@@ -16,7 +17,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
     [Parameter, EditorRequired]
-    public TextEditorViewModelDisplay TextEditorViewModelDisplay { get; set; } = null!;
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [Parameter, EditorRequired]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     [Parameter, EditorRequired]
@@ -294,10 +295,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
             do
             {
                 var textEditor = TextEditorStatesSelection.Value;
-                var textEditorViewModel = ReplaceableTextEditorViewModel;
+                var textEditorViewModel = TextEditorViewModel;
 
-                if (textEditor is null ||
-                    textEditorViewModel is null)
+                if (textEditor is null)
                 {
                     return;
                 }
