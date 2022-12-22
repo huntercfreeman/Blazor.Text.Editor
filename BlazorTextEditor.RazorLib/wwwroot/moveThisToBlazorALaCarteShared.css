@@ -8,6 +8,8 @@
     /* Colors (light-theme) */
 
     --balc_toggled-on-background-color: #c4eaff;
+    --balc_danger-general-use-color: #ff8484;
+    --balc_danger-hover-background-color: #f01111;
 }
 
 .balc_button:not(.balc_active) {
@@ -16,6 +18,21 @@
 
 .balc_button.balc_active {
     background-color: var(--balc_toggled-on-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_button-close {
+    background-color: var(--balc_danger-general-use-color);
+    margin-left: 10px;
+}
+
+.balc_button.balc_button-close:hover {
+    background-color: var(--balc_danger-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_button-close:focus {
+    background-color: var(--balc_danger-hover-background-color);
     box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
 }
 
