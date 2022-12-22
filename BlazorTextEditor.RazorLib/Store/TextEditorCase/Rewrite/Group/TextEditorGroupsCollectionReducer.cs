@@ -39,6 +39,12 @@ public class TextEditorGroupsCollectionReducer
         if (existingTextEditorGroup is null)
             return previousTextEditorGroupsCollection;
 
+        if (existingTextEditorGroup.ViewModelKeys.Contains(
+                addViewModelToGroupAction.TextEditorViewModelKey))
+        {
+            return previousTextEditorGroupsCollection;
+        }
+
         var nextViewModelKeysList = existingTextEditorGroup.ViewModelKeys.Add(
             addViewModelToGroupAction.TextEditorViewModelKey);
 
