@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Misc;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 
 public record TextEditorGroup(
     TextEditorGroupKey TextEditorGroupKey,

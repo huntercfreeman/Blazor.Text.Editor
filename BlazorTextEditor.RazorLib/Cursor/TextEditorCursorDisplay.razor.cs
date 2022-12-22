@@ -16,7 +16,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
     [Parameter, EditorRequired]
-    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
+    public TextEditorViewModelDisplay TextEditorViewModelDisplay { get; set; } = null!;
     [Parameter, EditorRequired]
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     [Parameter, EditorRequired]
@@ -294,9 +294,13 @@ public partial class TextEditorCursorDisplay : TextEditorView
             do
             {
                 var textEditor = TextEditorStatesSelection.Value;
+                var textEditorViewModel = ReplaceableTextEditorViewModel;
 
-                if (textEditor is null)
+                if (textEditor is null ||
+                    textEditorViewModel is null)
+                {
                     return;
+                }
                 
                 var mostRecentlyRenderedVirtualizationResult = GetMostRecentlyRenderedVirtualizationResultFunc
                     .Invoke();
@@ -384,7 +388,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     if (setScrollLeftTo is not null || 
                         setScrollTopTo is not null)
                     {
-                        await TextEditorDisplay.SetScrollPositionAsync(
+                        await textEditorViewModel.SetScrollPositionAsync(
                             setScrollLeftTo,
                             setScrollTopTo);
 

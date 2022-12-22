@@ -1,6 +1,6 @@
 ﻿using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 
 public class TextEditorViewModelsCollectionReducer
 {

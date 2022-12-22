@@ -1,3 +1,3 @@
-﻿namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+﻿namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 
 public record RegisterTextEditorGroupAction(TextEditorGroup TextEditorGroup);

@@ -1,9 +1,11 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Misc;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+namespace BlazorTextEditor.RazorLib;
 
 public partial class TextEditorGroupDisplay : IDisposable
 {

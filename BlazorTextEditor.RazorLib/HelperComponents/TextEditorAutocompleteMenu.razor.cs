@@ -6,7 +6,7 @@ using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;

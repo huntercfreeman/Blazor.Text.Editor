@@ -24,8 +24,8 @@ using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 using Microsoft.JSInterop;
@@ -499,6 +499,27 @@ public class TextEditorService : ITextEditorService
             "blazorTextEditor.mutateScrollVerticalPositionByPixels",
             textEditorContentId,
             pixels);
+        
+        // Blazor WebAssembly as of this comment is single threaded and
+        // the UI freezes without this await Task.Yield
+        await Task.Yield();
+        
+        // TODO: await ForceVirtualizationInvocation();
+    }
+
+    /// <summary>
+    /// If a parameter is null the JavaScript will not modify that value
+    /// </summary>
+    public async Task SetScrollPositionAsync(
+        string textEditorContentId,
+        double? scrollLeft,
+        double? scrollTop)
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.setScrollPosition",
+            textEditorContentId,
+            scrollLeft,
+            scrollTop);
         
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield

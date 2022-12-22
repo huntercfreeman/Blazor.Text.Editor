@@ -3,34 +3,10 @@
 <div class="bte_scrollbar-section">
 
     <ScrollbarHorizontal WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
-                         TextEditorDisplay="TextEditorDisplay"/>
+                         TextEditorViewModel="TextEditorViewModel"/>
 
     <ScrollbarVertical WidthAndHeightOfTextEditor="WidthAndHeightOfTextEditor"
-                       TextEditorDisplay="TextEditorDisplay"/>
+                       TextEditorViewModel="TextEditorViewModel"/>
 
     <ScrollbarConnector/>
-
-    @* $1$ hackily rendering out UI for debugging | TODO: delete this #1# *@
-    @* <div style="position: fixed; left: 270px; top: 40px; background-color:  #ccd4dd; color:  black; z-index: 30; min-width: 600px; min-height: 200px;" *@
-    @*      @onmousedown:stopPropagation="true" *@
-    @*      @onmousemove:stopPropagation="true" *@
-    @*      @ondblclick:stopPropagation="true" *@
-    @*      @onclick:stopPropagation="true" *@
-    @*      @oncontextmenu:stopPropagation="true"> *@
-    @* *@
-    @*     <div> *@
-    @*         scrollLeft, scrollTop: *@
-    @*         (@VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels,&nbsp;@VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels) *@
-    @*     </div> *@
-    @* *@
-    @*     <div> *@
-    @*         scrollWidth, scrollHeight: *@
-    @*         (@VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels,&nbsp;@VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels) *@
-    @*     </div> *@
-    @* *@
-    @*     <div> *@
-    @*         editorWidth, editorHeight: *@
-    @*         (@WidthAndHeightOfTextEditor.WidthInPixels,&nbsp;@WidthAndHeightOfTextEditor.HeightInPixels) *@
-    @*     </div> *@
-    @* </div> *@
 </div>

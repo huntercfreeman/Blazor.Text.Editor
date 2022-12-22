@@ -1,11 +1,11 @@
 ﻿using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Misc;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 
 public record TextEditorViewModel(
     TextEditorViewModelKey TextEditorViewModelKey,
@@ -80,6 +80,17 @@ public record TextEditorViewModel(
     {
         await MutateScrollVerticalPositionByPixelsAsync(
             lines * (CharacterWidthAndRowHeight?.RowHeightInPixels ?? 0));
+    }
+    
+    /// <summary>
+    /// If a parameter is null the JavaScript will not modify that value
+    /// </summary>
+    public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
+    {
+        await TextEditorService.SetScrollPositionAsync(
+            TextEditorContentId,
+            scrollLeft,
+            scrollTop);
     }
 
     public async Task FocusTextEditorAsync()

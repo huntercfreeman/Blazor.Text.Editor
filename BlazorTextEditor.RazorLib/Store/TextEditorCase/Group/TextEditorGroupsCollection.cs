@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 
 [FeatureState]
 public class TextEditorGroupsCollection

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 
 [FeatureState]
 public class TextEditorViewModelsCollection

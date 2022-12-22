@@ -21,8 +21,8 @@ using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib;
@@ -252,6 +252,7 @@ public interface ITextEditorService : IDisposable
 
     public Task MutateScrollHorizontalPositionByPixelsAsync(string textEditorContentId, double pixels);
     public Task MutateScrollVerticalPositionByPixelsAsync(string textEditorContentId, double pixels);
+    public Task SetScrollPositionAsync(string textEditorContentId, double? scrollLeft, double? scrollTop);
     
     public Task FocusPrimaryCursorAsync(string primaryCursorContentId);
     

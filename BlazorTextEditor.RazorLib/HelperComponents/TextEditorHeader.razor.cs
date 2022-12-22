@@ -3,7 +3,7 @@ using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;

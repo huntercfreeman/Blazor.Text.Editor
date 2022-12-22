@@ -1,6 +1,5 @@
 ﻿@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.HelperComponents
-@using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels
 @using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
 @using BlazorTextEditor.RazorLib.Virtualization
 
@@ -80,7 +79,7 @@
                                                     TabKeyOutput="@tabKeyOutput"/>
 
                                         <ScrollbarSection WidthAndHeightOfTextEditor="textEditorViewModel.WidthAndHeightOfTextEditor"
-                                                          TextEditorDisplay="this"/>
+                                                          TextEditorViewModel="textEditorViewModel"/>
                                         
                                     </CascadingValue>
                                 </CascadingValue>

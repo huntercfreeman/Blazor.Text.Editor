@@ -1,4 +1,4 @@
-﻿namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+﻿namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 
 /// <summary>
 /// <see cref="TextEditorGroupKey"/> is used to uniquely 

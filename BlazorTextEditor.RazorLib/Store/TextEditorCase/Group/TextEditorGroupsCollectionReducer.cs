@@ -1,6 +1,6 @@
 ﻿using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
+namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 
 public class TextEditorGroupsCollectionReducer
 {

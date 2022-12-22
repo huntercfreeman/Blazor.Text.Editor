@@ -10,7 +10,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 using BlazorTextEditor.RazorLib.Virtualization;
@@ -21,7 +21,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 
-public partial class TextEditorDisplay : TextEditorView
+public partial class TextEditorViewModelDisplay : TextEditorView
 {
     [Inject]
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
@@ -1034,31 +1034,6 @@ public partial class TextEditorDisplay : TextEditorView
         return (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
                 KeyboardKeyFacts.IsPunctuationCharacter(keyboardEventArgs.Key.First())) &&
                !keyboardEventArgs.CtrlKey;
-    }
-    
-    /// <summary>
-    /// If a parameter is null the JavaScript will not modify that value
-    /// </summary>
-    public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
-    {
-        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
-
-        if (safeTextEditorViewModel is null)
-            return;
-        
-        await JsRuntime.InvokeVoidAsync(
-            "blazorTextEditor.setScrollPosition",
-            safeTextEditorViewModel.TextEditorContentId,
-            scrollLeft,
-            scrollTop);
-
-        await InvokeAsync(StateHasChanged);
-        
-        // Blazor WebAssembly as of this comment is single threaded and
-        // the UI freezes without this await Task.Yield
-        await Task.Yield();
-        
-        await ForceVirtualizationInvocation();
     }
     
     private async Task HandleOnWheelAsync(WheelEventArgs wheelEventArgs)

@@ -1,8 +1,8 @@
 ﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 

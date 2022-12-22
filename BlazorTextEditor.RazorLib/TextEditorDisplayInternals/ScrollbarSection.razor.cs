@@ -1,5 +1,6 @@
 ﻿using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
@@ -18,5 +19,5 @@ public partial class ScrollbarSection : ComponentBase
     [Parameter, EditorRequired]
     public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
     [Parameter, EditorRequired]
-    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Rewrite.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib.Commands;

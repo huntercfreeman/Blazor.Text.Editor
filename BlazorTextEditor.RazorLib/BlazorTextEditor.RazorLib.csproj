@@ -92,4 +92,9 @@
       <_ContentIncludedByDefault Remove="TreeView\TreeViewStateDisplay.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Store\TextEditorCase\Group\TextEditorGroupDisplay.razor" />
+      <AdditionalFiles Include="Store\TextEditorCase\Group\TextEditorGroupTabDisplay.razor" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,7 @@
 ﻿using BlazorALaCarte.Shared.DragCase;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
@@ -29,7 +30,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     [Parameter, EditorRequired]
     public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
     [Parameter, EditorRequired]
-    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
@@ -173,7 +174,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                                  VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels /
                                  scrollbarWidthInPixels;
 
-                await TextEditorDisplay.SetScrollPositionAsync(scrollLeft, null);
+                await TextEditorViewModel.SetScrollPositionAsync(scrollLeft, null);
             }
             else
             {
