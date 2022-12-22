@@ -8,16 +8,30 @@
     /* Colors (light-theme) */
 
     --balc_toggled-on-background-color: #c4eaff;
+    --balc_toggled-on-hover-background-color: #67e4ff;
     --balc_danger-general-use-color: #ff8484;
     --balc_danger-hover-background-color: #f01111;
+    --balc_button-background-color: #fff7b9;
+    --balc_button-hover-background-color: #ffeb64;
 }
 
-.balc_button:not(.balc_active) {
-    background-color: #fff7b9;
+.balc_button:focus {
+    background-color: var(--balc_button-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
 }
 
 .balc_button.balc_active {
     background-color: var(--balc_toggled-on-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_active:hover {
+    background-color: var(--balc_toggled-on-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_active:focus {
+    background-color: var(--balc_toggled-on-hover-background-color);
     box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
 }
 
