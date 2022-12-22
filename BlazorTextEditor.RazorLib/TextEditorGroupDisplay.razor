@@ -1,6 +1,4 @@
 ﻿<div class="bte_text-editor-group">
-    TextEditorGroupDisplay.razor
-    
     @{
         var textEditorGroup = TextEditorGroupWrap.Value.GroupsList
             .FirstOrDefault();
@@ -8,7 +6,6 @@
     
     @if (textEditorGroup is not null)
     {
-        <div>Active:&nbsp;@textEditorGroup.ActiveTextEditorViewModelKey.Guid</div>
         <div class="bte_text-editor-group-tabs-list">
             @foreach (var viewModelKey in textEditorGroup.ViewModelKeys)
             {
@@ -18,31 +15,18 @@
         </div>
         <div>
             @{
-                var textEditorViewModelsCollection = TextEditorViewModelsCollectionWrap.Value;
-
-                var viewModel = textEditorViewModelsCollection.ViewModelsList
-                    .FirstOrDefault(x => 
-                        x.TextEditorViewModelKey == textEditorGroup.ActiveTextEditorViewModelKey);
+                var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(
+                    textEditorGroup.ActiveTextEditorViewModelKey);
         
-                if (viewModel is null)
+                if (textEditorBase is null)
                 {
-                    <text>viewModel was null</text>
+                    <text>textEditorBase was null</text>
                 }
                 else
                 {
-                    var textEditorBase = TextEditorService
-                        .GetTextEditorBaseFromViewModelKey(viewModel.TextEditorViewModelKey);
-
-                    if (textEditorBase is null)
-                    {
-                        <div>textEditorBase was null</div>
-                    }
-                    else
-                    {
-                        <TextEditorViewModelDisplay TextEditorViewModelKey="viewModel.TextEditorViewModelKey"
-                                           FileExtension="TODO"
-                                           ClassCssString="bte_demo-text-editor"/>
-                    }
+                    <TextEditorViewModelDisplay TextEditorViewModelKey="textEditorGroup.ActiveTextEditorViewModelKey"
+                                                FileExtension="TODO"
+                                                ClassCssString="bte_demo-text-editor"/>
                 }
             }
         </div>
