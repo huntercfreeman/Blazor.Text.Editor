@@ -238,21 +238,7 @@ public partial class TextEditorDisplay : TextEditorView
 
         if (_previousTextEditorViewModelKey != TextEditorViewModelKey)
         {
-            // Setting IndexCoordinates to (0, 0) twice in this block
-            // due to a general feeling of unease
-            // that something bad will happen otherwise.
-            {
-                primaryCursorSnapshot.UserCursor.IndexCoordinates = (0, 0);
-                primaryCursorSnapshot
-                    .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
-
-                _previousTextEditorViewModelKey = TextEditorViewModelKey;
-
-                primaryCursorSnapshot.UserCursor.IndexCoordinates = (0, 0);
-                primaryCursorSnapshot
-                    .UserCursor.TextEditorSelection.AnchorPositionIndex = null;
-            }
-
+            _previousTextEditorViewModelKey = TextEditorViewModelKey;
             await ForceVirtualizationInvocation();
         }
 
