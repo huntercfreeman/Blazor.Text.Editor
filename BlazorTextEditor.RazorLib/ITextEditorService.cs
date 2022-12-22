@@ -252,6 +252,7 @@ public interface ITextEditorService : IDisposable
 
     public void RegisterGroup(TextEditorGroupKey textEditorGroupKey);
     public void AddViewModelToGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
+    public void RemoveViewModelFromGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     public void SetActiveViewModelOfGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     
     public void RegisterViewModel(TextEditorViewModelKey textEditorViewModelKey, TextEditorKey textEditorKey);

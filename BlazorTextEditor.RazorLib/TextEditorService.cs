@@ -450,6 +450,15 @@ public class TextEditorService : ITextEditorService
             textEditorViewModelKey));
     }
     
+    public void RemoveViewModelFromGroup(
+        TextEditorGroupKey textEditorGroupKey,
+        TextEditorViewModelKey textEditorViewModelKey)
+    {
+        _dispatcher.Dispatch(new RemoveViewModelFromGroupAction(
+            textEditorGroupKey,
+            textEditorViewModelKey));
+    }
+    
     public void SetActiveViewModelOfGroup(
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)

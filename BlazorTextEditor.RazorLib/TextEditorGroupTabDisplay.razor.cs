@@ -30,4 +30,9 @@ public partial class TextEditorGroupTabDisplay : ComponentBase
             TextEditorGroup.TextEditorGroupKey,
             TextEditorViewModelKey);
     }
+
+    private void CloseTabOnClick()
+    {
+        
+    }
 }
