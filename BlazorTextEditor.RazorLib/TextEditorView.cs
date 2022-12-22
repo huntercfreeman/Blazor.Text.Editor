@@ -29,13 +29,10 @@ public class TextEditorView : FluxorComponent
     
     protected override void OnInitialized()
     {
-        var textEditorViewModelsCollection = TextEditorViewModelsCollectionWrap.Value;
-
-        var viewModel = ReplaceableTextEditorViewModel;
-        
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
-                .SingleOrDefault(x => x.Key == (viewModel?.TextEditorKey ?? TextEditorKey.Empty)));
+                .SingleOrDefault(x => 
+                    x.Key == (ReplaceableTextEditorViewModel?.TextEditorKey ?? TextEditorKey.Empty)));
         
         base.OnInitialized();
     }
