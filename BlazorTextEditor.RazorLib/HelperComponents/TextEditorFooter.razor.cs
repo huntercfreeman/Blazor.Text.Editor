@@ -11,9 +11,6 @@ public partial class TextEditorFooter : TextEditorView
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
-    
-    [Parameter]
-    public string? FileExtension { get; set; }
 
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {

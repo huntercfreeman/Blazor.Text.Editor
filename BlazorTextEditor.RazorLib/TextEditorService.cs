@@ -98,11 +98,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterCSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorCSharpLexer(),
             new TextEditorCSharpDecorationMapper(),
@@ -121,11 +123,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterHtmlTextEditor(
         TextEditorKey textEditorKey, 
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorHtmlLexer(),
             new TextEditorHtmlDecorationMapper(),
@@ -144,11 +148,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey, 
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorCssLexer(),
             new TextEditorCssDecorationMapper(),
@@ -167,11 +173,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorJsonLexer(),
             new TextEditorJsonDecorationMapper(),
@@ -190,11 +198,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorFSharpLexer(),
             new TextEditorFSharpDecorationMapper(),
@@ -213,11 +223,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterRazorTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorRazorLexer(),
             new TextEditorHtmlDecorationMapper(),
@@ -236,11 +248,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorJavaScriptLexer(),
             new TextEditorJavaScriptDecorationMapper(),
@@ -259,11 +273,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             new TextEditorTypeScriptLexer(),
             new TextEditorTypeScriptDecorationMapper(),
@@ -282,11 +298,13 @@ public class TextEditorService : ITextEditorService
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            fileExtension,
             initialContent,
             null,
             null,

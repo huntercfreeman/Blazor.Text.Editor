@@ -10,10 +10,10 @@
         if (textEditor is not null &&
             textEditorViewModel is not null)
         {
-            if (FileExtension is not null)
+            if (!string.IsNullOrWhiteSpace(textEditor.FileExtension))
             {
                 <div class="bte_text-editor-footer-entry">
-                    @FileExtension
+                    @textEditor.FileExtension
                 </div>
             }
 

@@ -18,6 +18,7 @@ public partial class FSharpExamples : ComponentBase
         TextEditorService.RegisterFSharpTextEditor(
             TextEditorFacts.FSharp.FSharpTextEditorKey,
             nameof(FSharpExamples),
+            "F#",
             TestData.FSharp.EXAMPLE_TEXT_21_LINES);
         
         TextEditorService.RegisterViewModel(

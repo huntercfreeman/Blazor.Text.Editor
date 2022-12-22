@@ -8,12 +8,14 @@ public partial class TextEditorBase
 {
     public TextEditorBase(
         string resourceUri,
+        string fileExtension,
         string content,
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
         ITextEditorKeymap? textEditorKeymap)
     {
         ResourceUri = resourceUri;
+        FileExtension = fileExtension;
         Lexer = lexer ?? new TextEditorLexerDefault();
         DecorationMapper = decorationMapper ?? new TextEditorDecorationMapperDefault();
         TextEditorKeymap = textEditorKeymap ?? new TextEditorKeymapDefault();
@@ -23,6 +25,7 @@ public partial class TextEditorBase
 
     public TextEditorBase(
         string resourceUri,
+        string fileExtension,
         string content,
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
@@ -30,6 +33,7 @@ public partial class TextEditorBase
         TextEditorKey key)
         : this(
             resourceUri,
+            fileExtension,
             content,
             lexer,
             decorationMapper,
@@ -49,6 +53,7 @@ public partial class TextEditorBase
     public TextEditorBase(TextEditorBase original)
     {
         ResourceUri = original.ResourceUri;
+        FileExtension = original.FileExtension;
         _content = original._content;
         _editBlocksPersisted = original._editBlocksPersisted;
         _rowEndingKindCounts = original._rowEndingKindCounts;

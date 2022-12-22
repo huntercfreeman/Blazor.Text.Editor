@@ -106,15 +106,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     [Parameter]
     public bool IncludeFooterHelperComponent { get; set; } = true;
     /// <summary>
-    /// <see cref="FileExtension"/> is displayed as is within the
-    /// <see cref="TextEditorFooter"/>.
-    /// <br/><br/>
-    /// The <see cref="TextEditorFooter"/> is only displayed if
-    /// <see cref="IncludeFooterHelperComponent"/> is set to true.
-    /// </summary>
-    [Parameter]
-    public string FileExtension { get; set; } = string.Empty;
-    /// <summary>
     /// <see cref="IncludeDefaultContextMenu"/> results in
     /// <see cref="TextEditorContextMenu"/> being rendered
     /// On a context menu event which includes

@@ -18,6 +18,7 @@ public partial class JavaScriptExamples : ComponentBase
         TextEditorService.RegisterJavaScriptTextEditor(
             TextEditorFacts.JavaScript.JavaScriptTextEditorKey,
             nameof(JavaScriptExamples),
+            "JavaScript",
             TestData.JavaScript.EXAMPLE_TEXT);
         
         TextEditorService.RegisterViewModel(

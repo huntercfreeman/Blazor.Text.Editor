@@ -2,6 +2,7 @@
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Editing;
+using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
@@ -51,6 +52,14 @@ public partial class TextEditorBase
     public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
     public string ResourceUri { get; private set; }
+    /// <summary>
+    /// <see cref="FileExtension"/> is displayed as is within the
+    /// <see cref="TextEditorFooter"/>.
+    /// <br/><br/>
+    /// The <see cref="TextEditorFooter"/> is only displayed if
+    /// <see cref="TextEditorViewModelDisplay.IncludeFooterHelperComponent"/> is set to true.
+    /// </summary>
+    public string FileExtension { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
     public ITextEditorKeymap TextEditorKeymap { get; }
     public int EditBlockIndex { get; private set; }

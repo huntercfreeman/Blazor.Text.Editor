@@ -27,11 +27,13 @@ public partial class JsonExamples : ComponentBase
         TextEditorService.RegisterJsonTextEditor(
             TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey,
             nameof(JsonExamples) + "_1",
+            "JSON",
             TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
         
         TextEditorService.RegisterJsonTextEditor(
             TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey,
             nameof(JsonExamples) + "_2",
+            "JSON",
             TestData.Json.EXAMPLE_TEXT_ARRAY_AS_TOP_LEVEL);
         
         TextEditorService.RegisterViewModel(

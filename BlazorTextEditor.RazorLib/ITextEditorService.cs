@@ -82,6 +82,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterCSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -98,6 +99,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterHtmlTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -114,6 +116,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -130,6 +133,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -146,6 +150,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -162,6 +167,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterRazorTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -178,6 +184,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -194,6 +201,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     /// <summary>
@@ -210,6 +218,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
     public void InsertText(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction);
