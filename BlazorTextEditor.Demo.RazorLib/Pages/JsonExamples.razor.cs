@@ -35,16 +35,12 @@ public partial class JsonExamples : ComponentBase
             TestData.Json.EXAMPLE_TEXT_ARRAY_AS_TOP_LEVEL);
         
         TextEditorService.RegisterViewModel(
-            TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey,
             JsonTextEditorViewModelKeyOne,
-            () => TextEditorService.GetTextEditorBaseFromViewModelKey(JsonTextEditorViewModelKeyOne),
-            JsRuntime);
+            TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey);
         
         TextEditorService.RegisterViewModel(
-            TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey,
             JsonTextEditorViewModelKeyTwo,
-            () => TextEditorService.GetTextEditorBaseFromViewModelKey(JsonTextEditorViewModelKeyOne),
-            JsRuntime);
+            TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey);
         
         TextEditorService.AddViewModelToGroup(
             JsonTextEditorGroupKey,

@@ -39,16 +39,21 @@ public class TextEditorService : ITextEditorService
     private readonly IDispatcher _dispatcher;
     private readonly IStorageProvider _storageProvider;
     
+    // TODO: Perhaps do not reference IJSRuntime but instead wrap it in a 'IUiProvider' or something like that. The 'IUiProvider' would then expose methods that allow the TextEditorViewModel to adjust the scrollbars. 
+    private readonly IJSRuntime _jsRuntime;
+
     public TextEditorService(
         IState<TextEditorStates> textEditorStates,
         IState<TextEditorViewModelsCollection> textEditorViewModelsCollection,
         IDispatcher dispatcher,
-        IStorageProvider storageProvider)
+        IStorageProvider storageProvider,
+        IJSRuntime jsRuntime)
     {
         _textEditorStates = textEditorStates;
         _textEditorViewModelsCollection = textEditorViewModelsCollection;
         _dispatcher = dispatcher;
         _storageProvider = storageProvider;
+        _jsRuntime = jsRuntime;
 
         _textEditorStates.StateChanged += TextEditorStatesOnStateChanged;
     }
@@ -437,16 +442,20 @@ public class TextEditorService : ITextEditorService
     }
 
     public void RegisterViewModel(
-        TextEditorKey textEditorKey,
         TextEditorViewModelKey textEditorViewModelKey,
-        Func<TextEditorBase> getTextEditorBaseFunc,
-        IJSRuntime jsRuntime)
+        TextEditorKey textEditorKey)
     {
         _dispatcher.Dispatch(new RegisterTextEditorViewModelAction(
-            textEditorKey, 
             textEditorViewModelKey,
-            getTextEditorBaseFunc,
-            jsRuntime));
+            textEditorKey, 
+            this));
+    }
+
+    public ImmutableArray<TextEditorViewModel> GetViewModelsForTextEditorBase(TextEditorKey textEditorKey)
+    {
+        return _textEditorViewModelsCollection.Value.ViewModelsList
+            .Where(x => x.TextEditorKey == textEditorKey)
+            .ToImmutableArray();
     }
 
     public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey)
@@ -464,6 +473,38 @@ public class TextEditorService : ITextEditorService
 
         return localTextEditorStates.TextEditorList
             .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+    }
+
+    public async Task MutateScrollHorizontalPositionByPixelsAsync(
+        string textEditorContentId,
+        double pixels)
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.mutateScrollHorizontalPositionByPixels",
+            textEditorContentId,
+            pixels);
+        
+        // Blazor WebAssembly as of this comment is single threaded and
+        // the UI freezes without this await Task.Yield
+        await Task.Yield();
+        
+        // TODO: await ForceVirtualizationInvocation();
+    }
+    
+    public async Task MutateScrollVerticalPositionByPixelsAsync(
+        string textEditorContentId,
+        double pixels)
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.mutateScrollVerticalPositionByPixels",
+            textEditorContentId,
+            pixels);
+        
+        // Blazor WebAssembly as of this comment is single threaded and
+        // the UI freezes without this await Task.Yield
+        await Task.Yield();
+        
+        // TODO: await ForceVirtualizationInvocation();
     }
     
     public async Task SetTextEditorOptionsFromLocalStorageAsync()

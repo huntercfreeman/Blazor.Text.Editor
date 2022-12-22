@@ -11,8 +11,12 @@ public class TextEditorStatesReducer
         RegisterTextEditorBaseAction registerTextEditorBaseAction)
     {
         if (previousTextEditorStates.TextEditorList
-            .Any(x => x.Key == registerTextEditorBaseAction.TextEditorBase.Key))
+            .Any(x => 
+                x.Key == registerTextEditorBaseAction.TextEditorBase.Key ||
+                x.ResourceUri == registerTextEditorBaseAction.TextEditorBase.ResourceUri))
+        {
             return previousTextEditorStates;
+        }
 
         var nextList = previousTextEditorStates.TextEditorList
             .Add(registerTextEditorBaseAction.TextEditorBase);
