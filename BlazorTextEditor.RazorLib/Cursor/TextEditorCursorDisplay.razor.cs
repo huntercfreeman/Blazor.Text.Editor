@@ -310,29 +310,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     
                     var lowerRowBoundInclusive = firstEntry.Index;
                     var upperRowBoundExclusive = lastEntry.Index + 1;
-                    
-                    {
-                        var possibleViewRowsCount = WidthAndHeightOfTextEditor.HeightInPixels /
-                                                    CharacterWidthAndRowHeight.RowHeightInPixels;
-
-                        if (possibleViewRowsCount > 1)
-                        {
-                            // The 'possibleViewRowsCount'
-                            // is a hacky solution to
-                            // BUG: empty text file then hit enter 3 times the 3rd enter
-                            // erroneously results in a scroll even though the view can fit 10 rows.
-                            //
-                            // This -1 is due to a feeling of anxiety that one might
-                            // experience a rounding error when calculating how many rows can be possible.
-                            possibleViewRowsCount -= 1;
-                        }
-
-                        if (upperRowBoundExclusive - lowerRowBoundInclusive < possibleViewRowsCount)
-                        {
-                            // Do not scroll if only 3 rows in file and view can fit 10 rows
-                            return;
-                        }
-                    }
 
                     // Set scroll margin for determining if a row is out of view
                     {
