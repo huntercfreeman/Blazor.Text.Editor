@@ -1,11 +1,8 @@
-﻿@using BlazorALaCarte.DialogNotification.Installation
-@using BlazorALaCarte.Shared.Drag
+﻿@using BlazorALaCarte.Shared.Drag
 
 @if (TextEditorServiceOptions.InitializeFluxor)
 {
     <Fluxor.Blazor.Web.StoreInitializer/>
 }
 
-<DialogInitializer/>
-<NotificationInitializer/>
 <DragDisplay/>

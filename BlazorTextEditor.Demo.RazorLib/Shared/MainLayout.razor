@@ -1,14 +1,19 @@
 ﻿@inherits LayoutComponentBase
 
+@using BlazorALaCarte.DialogNotification.Installation
 @using BlazorTextEditor.Demo.RazorLib.Links
 
 <PageTitle>BlazorTextEditor.Demo.ServerSide</PageTitle>
 
 <div class="page @TextEditorService.GlobalThemeCssClassString">
+
+    <DialogInitializer/>
+    <NotificationInitializer/>
+    
     <div class="sidebar">
         <NavMenu/>
     </div>
-    
+
     <main>
         <LinksDisplay CssClassString="bte_top-row"/>
 

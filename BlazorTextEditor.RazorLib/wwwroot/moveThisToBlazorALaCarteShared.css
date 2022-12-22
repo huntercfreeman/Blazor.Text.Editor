@@ -14,3 +14,10 @@
     background-color: var(--balc_toggled-on-background-color);
 }
 
+.bte_text-editor-context-menu {
+    position: absolute;
+    z-index: 30;
+    background-color: var(--bte_secondary-background-color);
+    color: var(--bte_secondary-font-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
