@@ -239,6 +239,9 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (_previousTextEditorViewModelKey != TextEditorViewModelKey)
         {
             _previousTextEditorViewModelKey = TextEditorViewModelKey;
+            
+            primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
+            
             await ForceVirtualizationInvocation();
         }
 
