@@ -43,4 +43,21 @@ public partial class GutterSection : ComponentBase
 
         return $"{left} {top} {height} {width} {paddingLeft} {paddingRight}";
     }
+    
+    private string GetGutterSectionStyleCss()
+    {
+        var mostDigitsInARowLineNumber = TextEditor.RowCount
+            .ToString()
+            .Length;
+
+        var widthInPixels = mostDigitsInARowLineNumber *
+                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+        widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
+                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+
+        var width = $"width: {widthInPixels}px;";
+
+        return width;
+    }
 }

@@ -64,7 +64,9 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
         var top = $"top: {sliderProportionalTopInPixels}px;";
         
         // Proportional Height
-        var sliderProportionalHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels *
+        var pageHeight = WidthAndHeightOfTextEditor.HeightInPixels;
+        
+        var sliderProportionalHeightInPixels = pageHeight *
                                                scrollbarHeightInPixels /
                                                VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
 

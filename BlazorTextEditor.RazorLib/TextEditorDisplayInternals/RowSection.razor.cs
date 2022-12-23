@@ -30,19 +30,7 @@ public partial class RowSection : ComponentBase
         var height =
             $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var leftInPixels = widthOfGutterInPixels +
-                           virtualizedRowLeftInPixels +
-                           TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                           TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var left = $"left: {leftInPixels}px;";
+        var left = $"left: {virtualizedRowLeftInPixels}px;";
 
         return $"{top} {height} {left}";
     }

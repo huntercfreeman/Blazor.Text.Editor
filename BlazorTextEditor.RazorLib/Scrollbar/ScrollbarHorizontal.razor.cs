@@ -54,12 +54,14 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     private string GetScrollbarHorizontalStyleCss()
     {
         var gutterWidthInPixels = GetGutterWidthInPixels();
+
+        var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
+                                  gutterWidthInPixels -
+                                  ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
-        var left = $"left: {gutterWidthInPixels}px;";
+        var width = $"width: {scrollbarWidthInPixels}px;";
 
-        var width = $"width: calc(100% - {gutterWidthInPixels}px - {ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS}px);";
-
-        return $"{left} {width}";
+        return width;
     }
     
     private double GetGutterWidthInPixels()
@@ -79,9 +81,11 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
 
     private string GetSliderHorizontalStyleCss()
     {
+        var gutterWidthInPixels = GetGutterWidthInPixels();
+
         var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
-                                     ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS - 
-                                     GetGutterWidthInPixels();
+                                           gutterWidthInPixels -
+                                           ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         // Proportional Left
         var sliderProportionalLeftInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels *
@@ -91,7 +95,10 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         var left = $"left: {sliderProportionalLeftInPixels}px;";
         
         // Proportional Width
-        var sliderProportionalWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels *
+        var pageWidth = WidthAndHeightOfTextEditor.WidthInPixels -
+                        gutterWidthInPixels;
+        
+        var sliderProportionalWidthInPixels = pageWidth *
                                               scrollbarWidthInPixels /
                                               VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels;
 
