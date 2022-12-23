@@ -113,6 +113,10 @@ public record TextEditorViewModel(
     
     public async Task CalculateVirtualizationResultAsync()
     {
+        // Blazor WebAssembly as of this comment is single threaded and
+        // the UI freezes without this await Task.Yield
+        await Task.Yield();
+
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
         _calculateVirtualizationResultCancellationTokenSource.Cancel();
