@@ -242,15 +242,15 @@ public record TextEditorViewModel(
             textEditorBase.RowEndingPositions.Length *
             localCharacterWidthAndRowHeight.RowHeightInPixels;
         
-        // Add vertical margin so the user can scroll beyond the final row of content
-        {
-            var percentOfMarginScrollHeightByPageUnit = 0.4;
-            
-            var marginScrollHeight = bodyMeasurementsInPixels.Height *
-                percentOfMarginScrollHeightByPageUnit;
-        
-            totalHeight += marginScrollHeight;
-        }
+        // // Add vertical margin so the user can scroll beyond the final row of content
+        // {
+        //     var percentOfMarginScrollHeightByPageUnit = 0.4;
+        //     
+        //     var marginScrollHeight = bodyMeasurementsInPixels.Height *
+        //         percentOfMarginScrollHeightByPageUnit;
+        //
+        //     totalHeight += marginScrollHeight;
+        // }
 
         var leftBoundaryWidthInPixels =
             horizontalStartingIndex *
