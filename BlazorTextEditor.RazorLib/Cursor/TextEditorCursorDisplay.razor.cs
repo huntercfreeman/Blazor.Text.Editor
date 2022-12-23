@@ -1,26 +1,24 @@
-using BlazorTextEditor.RazorLib.Character;
+using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.HelperComponents;
-using BlazorTextEditor.RazorLib.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
-using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.Cursor;
 
-public partial class TextEditorCursorDisplay : TextEditorView
+public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
+    
+    [CascadingParameter]
+    public TextEditorBase TextEditorBase { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
     [Parameter, EditorRequired]
     public string ScrollableContainerId { get; set; } = null!;
     [Parameter, EditorRequired]
@@ -28,23 +26,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
     [Parameter, EditorRequired]
     public int TabIndex { get; set; }
     [Parameter]
-    public RenderFragment? OnContextMenuRenderFragment { get; set; }
+    public RenderFragment OnContextMenuRenderFragment { get; set; } = null!;
     [Parameter]
-    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
-    /// <summary>
-    /// <see cref="GetMostRecentlyRenderedVirtualizationResultFunc"/> is a Func because
-    /// the way <see cref="TextEditorDisplay"/> sets the <see cref="TextEditorDisplay._mostRecentlyRenderedVirtualizationResult"/>
-    /// is through an interaction with the UserInterface that feels rather hacky.
-    /// <br/><br/>
-    /// Thereby a func will get the value once the value is updated by rendering the virtualization display
-    /// and without having to render the cursor.
-    /// </summary>
-    [Parameter]
-    public Func<VirtualizationResult<List<RichCharacter>>?> GetMostRecentlyRenderedVirtualizationResultFunc
-    {
-        get;
-        set;
-    } = null!;
+    public RenderFragment AutoCompleteMenuRenderFragment { get; set; } = null!;
     
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
@@ -59,6 +43,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
     private int _textEditorMenuShouldGetFocusRequestCount;
+    private bool _disposedValue;
 
     /// <summary>
     /// Scroll by 2 more rows than necessary to bring an out of view row into view.
@@ -74,7 +59,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
     /// </summary>
     private const int SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW = 1;
 
-    public string TextEditorCursorDisplayId => $"bte_text-editor-cursor-display_{_intersectionObserverMapKey}";
+    public string TextEditorCursorDisplayId => TextEditorCursor.IsPrimaryCursor
+        ? TextEditorViewModel.PrimaryCursorContentId
+        : string.Empty;
 
     public string CursorStyleCss => GetCursorStyleCss();
     public string CaretRowStyleCss => GetCaretRowStyleCss();
@@ -87,35 +74,28 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = TextEditorBase;
+        
+        var rowIndex = TextEditorCursor.IndexCoordinates.rowIndex;
 
-        if (textEditor is null)
+        if (rowIndex > textEditor.RowCount - 1)
         {
-            TextEditorCursor.IndexCoordinates = (0, 0);
+            rowIndex = textEditor.RowCount - 1;
         }
-        else
+        
+        var columnIndex = TextEditorCursor.IndexCoordinates.columnIndex;
+
+        var rowLength = textEditor.GetLengthOfRow(rowIndex);
+
+        if (columnIndex > rowLength)
         {
-            var rowIndex = TextEditorCursor.IndexCoordinates.rowIndex;
-
-            if (rowIndex > textEditor.RowCount - 1)
-            {
-                rowIndex = textEditor.RowCount - 1;
-            }
-            
-            var columnIndex = TextEditorCursor.IndexCoordinates.columnIndex;
-
-            var rowLength = textEditor.GetLengthOfRow(rowIndex);
-
-            if (columnIndex > rowLength)
-            {
-                columnIndex = rowLength - 1;
-            }
-
-            rowIndex = Math.Max(0, rowIndex);
-            columnIndex = Math.Max(0, columnIndex);
-            
-            TextEditorCursor.IndexCoordinates = (rowIndex, columnIndex);
+            columnIndex = rowLength - 1;
         }
+
+        rowIndex = Math.Max(0, rowIndex);
+        columnIndex = Math.Max(0, columnIndex);
+        
+        TextEditorCursor.IndexCoordinates = (rowIndex, columnIndex);
 
         if (TextEditorCursor.ShouldRevealCursor)
         {
@@ -133,18 +113,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
     private string GetCursorStyleCss()
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = TextEditorBase;
 
-        if (textEditor is null)
-            return string.Empty;
-        
         var leftInPixels = 0d;
-
-        // Gutter padding column offset
-        {
-            leftInPixels +=
-                TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS + TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-        }
 
         // Tab key column offset
         {
@@ -157,59 +128,44 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
             var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
 
-            leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            leftInPixels += extraWidthPerTabKey * 
+                            tabsOnSameRowBeforeCursor * 
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        // Line number column offset
-        {
-            var mostDigitsInARowLineNumber = textEditor.RowCount
-                .ToString()
-                .Length;
-
-            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        leftInPixels += CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
+                        TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
         var top =
-            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
+        var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         return $"{left} {top} {height}";
     }
 
     private string GetCaretRowStyleCss()
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = TextEditorBase;
 
-        if (textEditor is null)
-            return string.Empty;
-        
         var top =
-            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
+        var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var width = $"width: {textEditor.MostCharactersOnASingleRow * CharacterWidthAndRowHeight.CharacterWidthInPixels}px;";
+        var widthOfBody = textEditor.MostCharactersOnASingleRowTuple.rowLength *
+                          TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight
+                              .CharacterWidthInPixels;
+        
+        var width = $"width: {widthOfBody}px;";
 
         return $"{top} {width} {height}";
     }
 
     private string GetMenuStyleCss()
     {
-        var textEditor = TextEditorStatesSelection.Value;
-
-        if (textEditor is null)
-            return string.Empty;
+        var textEditor = TextEditorBase;
         
         var leftInPixels = 0d;
-
-        // Gutter padding column offset
-        {
-            leftInPixels +=
-                TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS + TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-        }
 
         // Tab key column offset
         {
@@ -223,28 +179,20 @@ public partial class TextEditorCursorDisplay : TextEditorView
             var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        // Line number column offset
-        {
-            var mostDigitsInARowLineNumber = textEditor.RowCount
-                .ToString()
-                .Length;
-
-            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        leftInPixels += CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
+                        TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
 
         // Top is 1 row further than the cursor so it does not cover text at cursor position.
         var top =
-            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * (TextEditorCursor.IndexCoordinates.rowIndex + 1)}px;";
+            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * (TextEditorCursor.IndexCoordinates.rowIndex + 1)}px;";
 
-        var minWidth = $"min-Width: {CharacterWidthAndRowHeight.CharacterWidthInPixels * 16}px;";
-        var minHeight = $"min-height: {CharacterWidthAndRowHeight.RowHeightInPixels * 4}px;";
+        var minWidth = $"min-Width: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * 16}px;";
+        var minHeight = $"min-height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * 4}px;";
 
         return $"{left} {top} {minWidth} {minHeight}";
     }
@@ -291,46 +239,18 @@ public partial class TextEditorCursorDisplay : TextEditorView
         {
             do
             {
-                var textEditor = TextEditorStatesSelection.Value;
+                var textEditor = TextEditorBase;
+                var textEditorViewModel = TextEditorViewModel;
 
-                if (textEditor is null)
-                    return;
-                
-                var mostRecentlyRenderedVirtualizationResult = GetMostRecentlyRenderedVirtualizationResultFunc
-                    .Invoke();
-                
                 var textEditorCursorSnapshot = new TextEditorCursorSnapshot(TextEditorCursor);
                 
-                if (mostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false)
+                if (textEditorViewModel.VirtualizationResult.Entries.Any())
                 {
-                    var firstEntry = mostRecentlyRenderedVirtualizationResult.Entries.First();
-                    var lastEntry = mostRecentlyRenderedVirtualizationResult.Entries.Last();
+                    var firstEntry = textEditorViewModel.VirtualizationResult.Entries.First();
+                    var lastEntry = textEditorViewModel.VirtualizationResult.Entries.Last();
                     
                     var lowerRowBoundInclusive = firstEntry.Index;
                     var upperRowBoundExclusive = lastEntry.Index + 1;
-                    
-                    {
-                        var possibleViewRowsCount = WidthAndHeightOfTextEditor.HeightInPixels /
-                                                    CharacterWidthAndRowHeight.RowHeightInPixels;
-
-                        if (possibleViewRowsCount > 1)
-                        {
-                            // The 'possibleViewRowsCount'
-                            // is a hacky solution to
-                            // BUG: empty text file then hit enter 3 times the 3rd enter
-                            // erroneously results in a scroll even though the view can fit 10 rows.
-                            //
-                            // This -1 is due to a feeling of anxiety that one might
-                            // experience a rounding error when calculating how many rows can be possible.
-                            possibleViewRowsCount -= 1;
-                        }
-
-                        if (upperRowBoundExclusive - lowerRowBoundInclusive < possibleViewRowsCount)
-                        {
-                            // Do not scroll if only 3 rows in file and view can fit 10 rows
-                            return;
-                        }
-                    }
 
                     // Set scroll margin for determining if a row is out of view
                     {
@@ -357,7 +277,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
                         if (scrollToRowIndex is not null)
                         {
-                            setScrollTopTo = scrollToRowIndex.Value * CharacterWidthAndRowHeight.RowHeightInPixels;
+                            setScrollTopTo = scrollToRowIndex.Value * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels;
                         }
                     }
                     
@@ -365,11 +285,11 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     
                     // Column is out of view
                     {
-                        var lowerColumnPixelInclusive = mostRecentlyRenderedVirtualizationResult
-                            .VirtualizationScrollPosition.ScrollLeftInPixels;
+                        var lowerColumnPixelInclusive = textEditorViewModel
+                            .VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft;
 
                         var upperColumnPixelExclusive =
-                            lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
+                            lowerColumnPixelInclusive + TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width + 
                             1;
 
                         var leftInPixels = 0d;
@@ -386,13 +306,13 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
                             leftInPixels += extraWidthPerTabKey * 
                                             tabsOnSameRowBeforeCursor *
-                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
                         
                         // Account for cursor column index
                         {
                             leftInPixels += textEditorCursorSnapshot.ImmutableCursor.ColumnIndex * 
-                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
                         
                         if (leftInPixels < lowerColumnPixelInclusive ||
@@ -405,9 +325,27 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     if (setScrollLeftTo is not null || 
                         setScrollTopTo is not null)
                     {
-                        await TextEditorDisplay.SetScrollPositionAsync(
+                        if (setScrollLeftTo is not null &&
+                            (setScrollLeftTo + textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width >
+                             textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth))
+                        {
+                            setScrollLeftTo = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth -
+                                              textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+                        }
+                        
+                        if (setScrollTopTo is not null &&
+                            (setScrollTopTo + textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height >
+                             textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight))
+                        {
+                            setScrollTopTo = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight -
+                                              textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
+                        }
+                        
+                        await textEditorViewModel.SetScrollPositionAsync(
                             setScrollLeftTo,
                             setScrollTopTo);
+
+                        await textEditorViewModel.CalculateVirtualizationResultAsync();
 
                         await Task.Delay(_checkCursorIsInViewDelay);
                     }
@@ -494,14 +432,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
         return TabIndex;
     }
     
-    protected override void Dispose(bool disposing)
+    public void Dispose()
     {
-        if (disposing)
-        {
-            _blinkingCursorCancellationTokenSource.Cancel();
-            _checkCursorIsInViewCancellationTokenSource.Cancel();
-        }
-        
-        base.Dispose(true);
+        _blinkingCursorCancellationTokenSource.Cancel();
+        _checkCursorIsInViewCancellationTokenSource.Cancel();
     }
 }

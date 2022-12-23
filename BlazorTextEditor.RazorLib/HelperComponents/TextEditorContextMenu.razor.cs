@@ -1,9 +1,10 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Keyboard;
+using BlazorALaCarte.Shared.Menu;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Keyboard;
-using BlazorTextEditor.RazorLib.Menu;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -11,20 +12,19 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorContextMenu : TextEditorView
+public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inheritance needed? It should cascade down from TextEditorViewModelDisplay.razor -> TextEditorView
 {
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
+    [CascadingParameter]
+    public TextEditorBase TextEditorBase { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter(Name = "SetShouldDisplayMenuAsync")]
     public Func<TextEditorMenuKind, bool, Task> SetShouldDisplayMenuAsync { get; set; } = null!;
-
-    [Parameter, EditorRequired]
-    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorBase TextEditor { get; set; } = null!;
 
     private ElementReference? _textEditorContextMenuElementReference;
 
@@ -51,16 +51,14 @@ public partial class TextEditorContextMenu : TextEditorView
         await base.OnAfterRenderAsync(firstRender);
     }
     
-    private TextEditorCommandParameter ConstructTextEditorCommandParameter(
-        TextEditorBase textEditorBase,
-        TextEditorDisplay textEditorDisplay)
+    private TextEditorCommandParameter ConstructTextEditorCommandParameter()
     {
         return new TextEditorCommandParameter(
-            textEditorBase,
-            TextEditorCursorSnapshot.TakeSnapshots(textEditorDisplay.PrimaryCursor),
+            TextEditorBase,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
             ClipboardProvider,
             TextEditorService,
-            textEditorDisplay);
+            TextEditorViewModel);
     }
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
@@ -126,9 +124,7 @@ public partial class TextEditorContextMenu : TextEditorView
 
     private async Task CutMenuOption()
     {
-        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            TextEditor,
-            TextEditorDisplay);
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
         var command = TextEditorCommandFacts.Cut;
     
@@ -138,9 +134,7 @@ public partial class TextEditorContextMenu : TextEditorView
     
     private async Task CopyMenuOption()
     {
-        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            TextEditor,
-            TextEditorDisplay);
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
         var command = TextEditorCommandFacts.Copy;
     
@@ -150,9 +144,7 @@ public partial class TextEditorContextMenu : TextEditorView
 
     private async Task PasteMenuOption()
     {
-        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            TextEditor,
-            TextEditorDisplay);
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
         var command = TextEditorCommandFacts.Paste;
     

@@ -1,5 +1,5 @@
-﻿using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.Clipboard;
+﻿using BlazorALaCarte.Shared.Clipboard;
+using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
@@ -50,7 +50,9 @@ public class BlazorTextEditorTestingBase
             .GetRequiredService<ITextEditorService>();
 
         var textEditor = new TextEditorBase(
-            string.Empty, 
+            nameof(BlazorTextEditorTestingBase),
+            "UnitTests",
+            string.Empty,
             null,
             null,
             null,

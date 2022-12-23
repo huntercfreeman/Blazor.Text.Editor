@@ -1,8 +1,15 @@
 ﻿@using BlazorTextEditor.RazorLib.Row
 @using System.Text
-<div class="bte_row-section">
+@using BlazorTextEditor.RazorLib.Virtualization
+@using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Cursor
 
-    @foreach (var virtualizedRow in VirtualizationResult.Entries)
+<div class="bte_row-section"
+     id="@TextEditorViewModel.BodyElementId">
+    
+    <TextSelectionGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"/>
+
+    @foreach (var virtualizedRow in TextEditorViewModel.VirtualizationResult.Entries)
     {
         <div class="bte_row"
              style="@GetRowStyleCss(virtualizedRow.Index, virtualizedRow.LeftInPixels)">
@@ -46,20 +53,20 @@
             }
 
             @if (GlobalShowNewlines &&
-                 virtualizedRow.Index < TextEditor.RowCount - 1)
+                 virtualizedRow.Index < TextEditorBase.RowCount - 1)
             {
                 var amountOfLeftInCharacterWidthUnits =
                     virtualizedRow.LeftInPixels /
-                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                    TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
-                var lengthOfRow = TextEditor
+                var lengthOfRow = TextEditorBase
                     .GetLengthOfRow(
                         virtualizedRow.Index,
                         true);
 
                 if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
                 {
-                    var rowEndingTuple = TextEditor
+                    var rowEndingTuple = TextEditorBase
                         .RowEndingPositions[virtualizedRow.Index];
 
                     <span class="bte_newline">
@@ -69,4 +76,37 @@
             }
         </div>
     }
+
+    <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
+                                       HtmlElementId="@HtmlElementId"/>
+
+    <VirtualizationDisplay VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"/>
+
+    <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
+                             TextEditorCursor="TextEditorViewModel.PrimaryCursor"
+                             ScrollableContainerId="@TextEditorViewModel.BodyElementId"
+                             IsFocusTarget="true"
+                             TabIndex="TabIndex">
+
+        <OnContextMenuRenderFragment>
+            @if (ContextMenuRenderFragmentOverride is not null)
+            {
+                @ContextMenuRenderFragmentOverride
+            }
+            else
+            {
+                <TextEditorContextMenu/>
+            }
+        </OnContextMenuRenderFragment>
+        <AutoCompleteMenuRenderFragment>
+            @if (AutoCompleteMenuRenderFragmentOverride is not null)
+            {
+                @AutoCompleteMenuRenderFragmentOverride
+            }
+            else
+            {
+                <TextEditorAutocompleteMenu/>
+            }
+        </AutoCompleteMenuRenderFragment>
+    </TextEditorCursorDisplay>
 </div>

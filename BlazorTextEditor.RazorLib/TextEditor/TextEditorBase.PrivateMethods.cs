@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
-using BlazorTextEditor.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
@@ -209,6 +209,27 @@ public partial class TextEditorBase
                         _tabKeyPositions[i] += characterCountInserted;
                 }
             }
+        }
+        
+        // TODO: Fix tracking the MostCharactersOnASingleRowTuple this way is possibly inefficient - should instead only check the rows that changed
+        {
+            (int rowIndex, int rowLength) localMostCharactersOnASingleRowTuple = (0, 0);
+                
+            for (var i = 0; i < _rowEndingPositions.Count; i++)
+            {
+                var lengthOfRow = GetLengthOfRow(i);
+
+                if (lengthOfRow > localMostCharactersOnASingleRowTuple.rowLength)
+                {
+                    localMostCharactersOnASingleRowTuple = (i, lengthOfRow);
+                }
+            }
+            
+            localMostCharactersOnASingleRowTuple = 
+                (localMostCharactersOnASingleRowTuple.rowIndex,
+                    localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+            
+            MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
         }
     }
 
@@ -465,6 +486,27 @@ public partial class TextEditorBase
                     _tabKeyPositions[i] -= charactersRemovedCount;
             }
         }
+        
+        // TODO: Fix tracking the MostCharactersOnASingleRowTuple this way is possibly inefficient - should instead only check the rows that changed
+        {
+            (int rowIndex, int rowLength) localMostCharactersOnASingleRowTuple = (0, 0);
+                
+            for (var i = 0; i < _rowEndingPositions.Count; i++)
+            {
+                var lengthOfRow = GetLengthOfRow(i);
+
+                if (lengthOfRow > localMostCharactersOnASingleRowTuple.rowLength)
+                {
+                    localMostCharactersOnASingleRowTuple = (i, lengthOfRow);
+                }
+            }
+            
+            localMostCharactersOnASingleRowTuple = 
+                (localMostCharactersOnASingleRowTuple.rowIndex,
+                    localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+            
+            MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
+        }
     }
 
     private void MutateRowEndingKindCount(RowEndingKind rowEndingKind, int changeBy)
@@ -541,11 +583,11 @@ public partial class TextEditorBase
 
             if (character == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
             {
+                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN) 
+                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+                
                 _rowEndingPositions.Add((index + 1, RowEndingKind.CarriageReturn));
                 rowIndex++;
-
-                if (charactersOnRow > MostCharactersOnASingleRow) 
-                    MostCharactersOnASingleRow = charactersOnRow;
 
                 charactersOnRow = 0;
 
@@ -553,6 +595,9 @@ public partial class TextEditorBase
             }
             else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
             {
+                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN) 
+                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+                
                 if (previousCharacter == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
                 {
                     var lineEnding = _rowEndingPositions[rowIndex - 1];
@@ -568,13 +613,10 @@ public partial class TextEditorBase
                     _rowEndingPositions.Add((index + 1, RowEndingKind.Linefeed));
                     rowIndex++;
 
-                    if (charactersOnRow > MostCharactersOnASingleRow) 
-                        MostCharactersOnASingleRow = charactersOnRow;
-
-                    charactersOnRow = 0;
-
                     linefeedCount++;
                 }
+                
+                charactersOnRow = 0;
             }
 
             if (character == KeyboardKeyFacts.WhitespaceCharacters.TAB)

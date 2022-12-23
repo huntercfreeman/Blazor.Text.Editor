@@ -1,14 +1,16 @@
-﻿using BlazorTextEditor.RazorLib.Autocomplete;
-using BlazorTextEditor.RazorLib.Clipboard;
+﻿using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Facts;
+using BlazorALaCarte.Shared.Storage;
+using BlazorALaCarte.Shared.Theme;
+using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
-using BlazorTextEditor.RazorLib.Store.ThemeCase;
 
 namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorServiceOptions : ITextEditorServiceOptions
 {
     public bool InitializeFluxor { get; set; } = true;
-    public Theme InitialTheme { get; set; } = ThemeFacts.Unset;
+    public ThemeRecord InitialTheme { get; set; } = ThemeFacts.VisualStudioDarkThemeClone;
     /// <summary>
     /// Default value if left null is: <see cref="JavaScriptInteropClipboardProvider"/>
     /// <br/><br/>

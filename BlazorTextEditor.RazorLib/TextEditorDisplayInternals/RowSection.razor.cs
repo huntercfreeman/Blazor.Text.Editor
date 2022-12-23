@@ -1,6 +1,8 @@
 ﻿using System.Text;
+using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
@@ -10,11 +12,9 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class RowSection : ComponentBase
 {
     [CascadingParameter]
-    public TextEditorBase TextEditor { get; set; } = null!;
+    public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     [Parameter, EditorRequired]
     public bool GlobalShowNewlines { get; set; }
@@ -22,34 +22,36 @@ public partial class RowSection : ComponentBase
     public string TabKeyOutput { get; set; } = null!;
     [Parameter, EditorRequired]
     public string SpaceKeyOutput { get; set; } = null!;
+    /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
+    [Parameter, EditorRequired]
+    public int TabIndex { get; set; } = -1;
+    [Parameter, EditorRequired]
+    public string HtmlElementId { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
+    [Parameter, EditorRequired]
+    public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
+    
+    public TextEditorCursorDisplay? TextEditorCursorDisplay { get; private set; }
+    public MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent { get; private set; }
 
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         var top =
-            $"top:{index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top:{index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
         var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var leftInPixels = widthOfGutterInPixels +
-                           virtualizedRowLeftInPixels +
-                           TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                           TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        var left = $"left: {leftInPixels}px;";
+        var left = $"left: {virtualizedRowLeftInPixels}px;";
 
         return $"{top} {height} {left}";
     }
     
     private string GetCssClass(byte decorationByte)
     {
-        return TextEditor.DecorationMapper.Map(decorationByte);
+        return TextEditorBase.DecorationMapper.Map(decorationByte);
     }
     
     private void AppendTextEscaped(

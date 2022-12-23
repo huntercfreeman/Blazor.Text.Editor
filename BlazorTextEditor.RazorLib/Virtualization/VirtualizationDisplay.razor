@@ -1,25 +1,17 @@
-@typeparam T
-
-<div @ref="_scrollableParentFinder">
-
-</div>
-
 @if (UseHorizontalVirtualization)
 {
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@LeftVirtualizationBoundaryDisplayId"
-                                   VirtualizationBoundary="_result.LeftVirtualizationBoundary"/>
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@LeftBoundaryElementId"
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.LeftVirtualizationBoundary"/>
 
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@RightVirtualizationBoundaryDisplayId"
-                                   VirtualizationBoundary="_result.RightVirtualizationBoundary"/>
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@RightBoundaryElementId"
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.RightVirtualizationBoundary"/>
 }
 
 @if (UseVerticalVirtualization)
 {
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@TopVirtualizationBoundaryDisplayId"
-                                   VirtualizationBoundary="_result.TopVirtualizationBoundary"/>
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@TopBoundaryElementId"
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.TopVirtualizationBoundary"/>
 
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@BottomVirtualizationBoundaryDisplayId"
-                                   VirtualizationBoundary="_result.BottomVirtualizationBoundary"/>
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@BottomBoundaryElementId"
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.BottomVirtualizationBoundary"/>
 }
-
-@ChildContent(_result)

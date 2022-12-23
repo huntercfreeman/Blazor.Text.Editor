@@ -9,12 +9,12 @@
                 PrimaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
 
         var firstRowToSelectData =
-            TextEditor
+            TextEditorBase
                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                     selectionBounds.lowerBound);
 
         var lastRowToSelectData =
-            TextEditor
+            TextEditorBase
                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                     selectionBounds.upperBound);
 

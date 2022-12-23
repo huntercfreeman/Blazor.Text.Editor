@@ -1,0 +1,110 @@
+﻿:root {
+    /* Colors (dark-theme) */
+
+    --balc_toggled-on-background-color: #7f0eb8;
+    --balc_toggled-on-hover-background-color: #bb56ac;
+    --balc_danger-general-use-color: #b35252;
+    --balc_danger-hover-background-color: #ef4949;
+    --balc_button-foreground-color: #DCDCDC;
+    --balc_button-background-color: #1e56a7;
+    --balc_button-hover-background-color: #0097a3;
+    --balc_button-disabled-foreground-color: #DCDCDC;
+    --balc_button-disabled-background-color: #4a5a71;
+    --balc_button-disabled-hover-background-color: #97a3b4;
+    --balc_primary-hover-background-color: #2d568b;
+}
+
+.balc_visual-studio-light-theme-clone {
+    /* Colors (light-theme) */
+
+    --balc_toggled-on-background-color: #c4eaff;
+    --balc_toggled-on-hover-background-color: #67e4ff;
+    --balc_danger-general-use-color: #ff8484;
+    --balc_danger-hover-background-color: #f01111;
+    --balc_button-foreground-color: var(--balc_primary-foreground-color);
+    --balc_button-background-color: #fff7b9;
+    --balc_button-hover-background-color: #ffeb64;
+    --balc_button-disabled-foreground-color: #000000;
+    --balc_button-disabled-background-color: #d7dde6;
+    --balc_button-disabled-hover-background-color: #eceff7;
+    --balc_primary-hover-background-color: #c7c7e9;
+}
+
+.bte_button:hover {
+    background-color: var(--balc_button-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.bte_button:focus {
+    background-color: var(--balc_button-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.bte_button:disabled {
+    color: var(--balc_button-disabled-foreground-color);
+    background-color: var(--balc_button-disabled-background-color);
+}
+
+.bte_button:disabled {
+    color: var(--balc_button-disabled-foreground-color);
+    background-color: var(--balc_button-disabled-background-color);
+}
+
+.bte_button:disabled:hover {
+    color: var(--balc_button-disabled-foreground-color);
+    background-color: var(--balc_button-disabled-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.bte_button:disabled:focus {
+    color: var(--balc_button-disabled-foreground-color);
+    background-color: var(--balc_button-disabled-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button {
+    color: var(--balc_button-foreground-color);
+}
+
+.balc_button:focus {
+    background-color: var(--balc_button-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_active {
+    background-color: var(--balc_toggled-on-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_active:hover {
+    background-color: var(--balc_toggled-on-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_active:focus {
+    background-color: var(--balc_toggled-on-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_button-close {
+    background-color: var(--balc_danger-general-use-color);
+    margin-left: 10px;
+}
+
+.balc_button.balc_button-close:hover {
+    background-color: var(--balc_danger-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.balc_button.balc_button-close:focus {
+    background-color: var(--balc_danger-hover-background-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}
+
+.bte_text-editor-context-menu {
+    position: absolute;
+    z-index: 30;
+    background-color: var(--bte_secondary-background-color);
+    color: var(--bte_secondary-font-color);
+    box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
+}

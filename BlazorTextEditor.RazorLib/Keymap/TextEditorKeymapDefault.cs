@@ -1,5 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Commands;
-using BlazorTextEditor.RazorLib.Keyboard;
+﻿using BlazorALaCarte.Shared.Keyboard;
+using BlazorTextEditor.RazorLib.Commands;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap;

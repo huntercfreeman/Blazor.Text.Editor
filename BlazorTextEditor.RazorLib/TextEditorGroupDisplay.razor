@@ -1,0 +1,39 @@
+﻿<div class="bte_text-editor-group">
+    @{
+        var textEditorGroup = TextEditorGroupWrap.Value.GroupsList
+            .FirstOrDefault();
+    }
+    
+    @if (textEditorGroup is not null)
+    {
+        <div class="bte_text-editor-group-tabs-list">
+            @foreach (var viewModelKey in textEditorGroup.ViewModelKeys)
+            {
+                <TextEditorGroupTabDisplay TextEditorGroup="textEditorGroup"
+                                           TextEditorViewModelKey="viewModelKey"/>
+            }
+        </div>
+        <div>
+            @{
+                var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(
+                    textEditorGroup.ActiveTextEditorViewModelKey);
+        
+                if (textEditorBase is null)
+                {
+                    <text>textEditorBase was null</text>
+                }
+                else
+                {
+                    <TextEditorViewModelDisplay TextEditorViewModelKey="textEditorGroup.ActiveTextEditorViewModelKey"
+                                                ClassCssString="bte_demo-text-editor"/>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div>
+            textEditorGroup was null
+        </div>
+    }
+</div>

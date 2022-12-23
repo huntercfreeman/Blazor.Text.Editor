@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Clipboard;
+using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib.Commands;
@@ -12,13 +13,13 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
         ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots,
         IClipboardProvider clipboardProvider,
         ITextEditorService textEditorService,
-        TextEditorDisplay textEditorDisplay)
+        TextEditorViewModel textEditorViewModel)
     {
         TextEditor = textEditor;
         CursorSnapshots = cursorSnapshots;
         ClipboardProvider = clipboardProvider;
         TextEditorService = textEditorService;
-        TextEditorDisplay = textEditorDisplay;
+        TextEditorViewModel = textEditorViewModel;
     }
 
     public TextEditorBase TextEditor { get; }
@@ -29,5 +30,5 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
     public ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots { get; }
     public IClipboardProvider ClipboardProvider { get; }
     public ITextEditorService TextEditorService { get; }
-    public TextEditorDisplay TextEditorDisplay { get; }
+    public TextEditorViewModel TextEditorViewModel { get; }
 }

@@ -7,7 +7,7 @@
         <Product>Blazor Text Editor</Product>
         <Description>A text editor written using Blazor. Contains API for syntax highlighting.</Description>
         <PackageId>Blazor.Text.Editor</PackageId>
-        <Version>5.2.0</Version>
+        <Version>6.0.0</Version>
         <Authors>Hunter Freeman</Authors>
         <Company />
         <PackageTags>DotNet CSharp Blazor RazorComponents</PackageTags>
@@ -20,6 +20,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="BlazorALaCarte.DialogNotification" Version="1.0.0" />
+        <PackageReference Include="BlazorALaCarte.Shared" Version="1.0.0" />
+        <PackageReference Include="BlazorALaCarte.TreeView" Version="1.0.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.6.0" />
         <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" />
     </ItemGroup>
@@ -34,13 +37,6 @@
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <AdditionalFiles Include="Dropdown\DropdownDisplay.razor" />
-      <AdditionalFiles Include="Menu\MenuDisplay.razor" />
-      <AdditionalFiles Include="Menu\MenuOptionDisplay.razor" />
-      <AdditionalFiles Include="OutOfBoundsClick\OutOfBoundsClickDisplay.razor" />
     </ItemGroup>
 
 </Project>

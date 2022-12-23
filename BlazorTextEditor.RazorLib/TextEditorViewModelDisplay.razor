@@ -1,0 +1,64 @@
+﻿@using BlazorTextEditor.RazorLib.Cursor
+@using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels
+@using BlazorTextEditor.RazorLib.TextEditor
+@using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
+
+@inherits TextEditorView
+
+@{
+    var textEditorBase = MutableReferenceToTextEditor;
+    var textEditorViewModel = ReplaceableTextEditorViewModel;
+}
+
+<div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
+     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @ClassCssString">
+    
+    @if (textEditorBase is not null &&
+         textEditorViewModel is not null)
+    {
+        <CascadingValue Value="textEditorBase">
+            <CascadingValue Value="textEditorViewModel">
+
+                <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
+                                  HeaderButtonKinds="HeaderButtonKinds"/>
+
+                <div @ref="_textEditorDisplayElementReference"
+                     @onclick="FocusTextEditorAsync"
+                     @onkeydown="HandleOnKeyDownAsync"
+                     @onkeydown:preventDefault="true"
+                     @oncontextmenu="HandleOnContextMenuAsync"
+                     @oncontextmenu:preventDefault="true"
+                     @onmousedown="HandleContentOnMouseDownAsync"
+                     @onmousemove="HandleContentOnMouseMoveAsync"
+                     @ondblclick="HandleContentOnDoubleClickAsync"
+                     @onwheel="HandleOnWheelAsync"
+                     id="@ContentElementId"
+                     class="bte_text-editor bte_unselectable"
+                     tabindex="-1">
+
+                    <GutterSection/>
+
+                    <BodySection @ref="_bodySection"
+                                 TabIndex="TabIndex"
+                                 HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
+                                 ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
+                                 AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
+                </div>
+
+                <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+            </CascadingValue>
+        </CascadingValue>
+    }
+    else
+    {
+        if (textEditorBase is null)
+        {
+            <div>The @nameof(TextEditorBase) was null</div>
+        }
+        else if (textEditorViewModel is not null)
+        {
+            <div>The @nameof(TextEditorViewModel) was null</div>
+        }
+    }
+</div>

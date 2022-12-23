@@ -1,9 +1,22 @@
 window.blazorTextEditor = {
+    focusHtmlElementById: function (elementId) {
+        let element = document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
+
+        element.focus();
+    },
     scrollElementIntoView: function (intersectionObserverMapKey,
                                      elementId) {
 
         let element = document.getElementById(elementId);
 
+        if (!element) {
+            return;
+        }
+        
         element.scrollIntoView({
             block: "nearest",
             inline: "nearest"
@@ -12,6 +25,10 @@ window.blazorTextEditor = {
     preventDefaultOnWheelEvents: function (elementId) {
 
         let element = document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
         
         element.addEventListener('wheel', (event) => {
             event.preventDefault();
@@ -39,6 +56,13 @@ window.blazorTextEditor = {
     measureWidthAndHeightOfTextEditor: function (elementId) {
         let element = document.getElementById(elementId);
 
+        if (!element) {
+            return {
+                WidthInPixels: 0,
+                HeightInPixels: 0
+            }
+        }
+        
         return {
             WidthInPixels: element.offsetWidth,
             HeightInPixels: element.offsetHeight
@@ -46,6 +70,15 @@ window.blazorTextEditor = {
     },
     getRelativePosition: function (elementId, clientX, clientY) {
         let element = document.getElementById(elementId);
+
+        if (!element) {
+            return {
+                RelativeX: 0,
+                RelativeY: 0,
+                RelativeScrollLeft: 0,
+                RelativeScrollTop: 0
+            }
+        }
 
         let bounds = element.getBoundingClientRect();
 
@@ -59,251 +92,104 @@ window.blazorTextEditor = {
             RelativeScrollTop: element.scrollTop
         }
     },
-    virtualizationIntersectionObserverMap: new Map(),
-    initializeVirtualizationIntersectionObserver: function (intersectionObserverMapKey,
-                                              virtualizationDisplayDotNetObjectReference,
-                                              scrollableParentFinder,
-                                              boundaryIds) {
-
-        let scrollableParent = scrollableParentFinder.parentElement;
-
-        scrollableParent.addEventListener("scroll", (event) => {
-            let hasIntersectingBoundary = false;
-
-            let intersectionObserverMapValue = this.virtualizationIntersectionObserverMap
-                .get(intersectionObserverMapKey);
-            
-            if (!intersectionObserverMapValue) {
-                // Received an error that intersectionObserverMapValue was
-                // undefined after closing a tab in the editor
-                return;
-            }
-
-            for (let i = 0; i < intersectionObserverMapValue.BoundaryIdIsIntersectingTuples.length; i++) {
-                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIsIntersectingTuples[i];
-
-                if (boundaryTuple.IsIntersecting) {
-                    hasIntersectingBoundary = true;
-                }
-            }
-
-            if (hasIntersectingBoundary) {
-                virtualizationDisplayDotNetObjectReference
-                    .invokeMethodAsync("OnScrollEventAsync", {
-                        ScrollLeftInPixels: scrollableParent.scrollLeft,
-                        ScrollTopInPixels: scrollableParent.scrollTop
-                    });
-            }
-        }, true);
-
-        let options = {
-            root: scrollableParent,
-            rootMargin: '0px',
-            threshold: 0
+    mutateScrollVerticalPositionByPixels: function (textEditorBodyId, gutterElementId, pixels) {
+        let textEditorBody = document.getElementById(textEditorBodyId);
+        let textEditorGutter = document.getElementById(gutterElementId);
+        
+        if (!textEditorBody) {
+            return;
+        }
+        
+        textEditorBody.scrollTop += pixels;
+        
+        if (textEditorBody.scrollTop + textEditorBody.offsetHeight > 
+            textEditorBody.scrollHeight)
+        {
+            textEditorBody.scrollTop = textEditorBody.scrollHeight -
+                textEditorBody.offsetHeight;
         }
 
-        let intersectionObserver = new IntersectionObserver((entries) => {
-            let hasIntersectingBoundary = false;
-
-            let intersectionObserverMapValue = this.virtualizationIntersectionObserverMap
-                .get(intersectionObserverMapKey);
-
-            for (let i = 0; i < entries.length; i++) {
-
-                let entry = entries[i];
-
-                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIsIntersectingTuples
-                    .find(x => x.BoundaryId === entry.target.id);
-
-                boundaryTuple.IsIntersecting = entry.isIntersecting;
-
-                if (boundaryTuple.IsIntersecting) {
-                    hasIntersectingBoundary = true;
-                }
-            }
-
-            if (hasIntersectingBoundary) {
-                virtualizationDisplayDotNetObjectReference
-                    .invokeMethodAsync("OnScrollEventAsync", {
-                        ScrollLeftInPixels: scrollableParent.scrollLeft,
-                        ScrollTopInPixels: scrollableParent.scrollTop
-                    });
-            }
-        }, options);
-
-        let boundaryIdIsIntersectingTuples = [];
-
-        for (let i = 0; i < boundaryIds.length; i++) {
-
-            let boundaryElement = document.getElementById(boundaryIds[i]);
-
-            intersectionObserver.observe(boundaryElement);
-
-            boundaryIdIsIntersectingTuples.push({
-                BoundaryId: boundaryIds[i],
-                IsIntersecting: false
-            });
+        if (textEditorGutter) {
+            textEditorGutter.scrollTop = textEditorBody.scrollTop;
         }
-
-        this.virtualizationIntersectionObserverMap.set(intersectionObserverMapKey, {
-            IntersectionObserver: intersectionObserver,
-            BoundaryIdIsIntersectingTuples: boundaryIdIsIntersectingTuples
-        });
-
-        virtualizationDisplayDotNetObjectReference
-            .invokeMethodAsync("OnScrollEventAsync", {
-                ScrollLeftInPixels: scrollableParent.scrollLeft,
-                ScrollTopInPixels: scrollableParent.scrollTop,
-                ScrollWidthInPixels: scrollableParent.scrollWidth,
-                ScrollHeightInPixels: scrollableParent.scrollHeight
-            });
     },
-    disposeVirtualizationIntersectionObserver: function (intersectionObserverMapKey) {
+    mutateScrollHorizontalPositionByPixels: function (textEditorBodyId, gutterElementId, pixels) {
+        let textEditorBody = document.getElementById(textEditorBodyId);
+        let textEditorGutter = document.getElementById(gutterElementId);
+
+        if (!textEditorBody) {
+            return;
+        }
         
-        let intersectionObserverMapValue = this.virtualizationIntersectionObserverMap
-            .get(intersectionObserverMapKey);
-
-        let intersectionObserver = intersectionObserverMapValue.IntersectionObserver;
-
-        this.virtualizationIntersectionObserverMap.delete(intersectionObserverMapKey);
-
-        intersectionObserver.disconnect();
+        textEditorBody.scrollLeft += pixels;
     },
-    mutateScrollVerticalPositionByPixels: function (textEditorContentId, pixels) {
-        let textEditorContent = document.getElementById(textEditorContentId);
-        
-        textEditorContent.scrollTop += pixels;
-    },
-    mutateScrollHorizontalPositionByPixels: function (textEditorContentId, pixels) {
-        let textEditorContent = document.getElementById(textEditorContentId);
-        
-        textEditorContent.scrollLeft += pixels;
-    },
-    setScrollPosition: function (textEditorContentId, scrollLeft, scrollTop) {
-        let textEditorContent = document.getElementById(textEditorContentId);
+    setScrollPosition: function (textEditorBodyId, gutterElementId, scrollLeft, scrollTop) {
+        let textEditorBody = document.getElementById(textEditorBodyId);
+        let textEditorGutter = document.getElementById(gutterElementId);
+
+        if (!textEditorBody) {
+            return;
+        }
         
         if (scrollLeft || scrollLeft === 0) {
-            textEditorContent.scrollLeft = scrollLeft;
+            textEditorBody.scrollLeft = scrollLeft;
         }
         
         if (scrollTop || scrollTop === 0) {
-            textEditorContent.scrollTop = scrollTop;
+            textEditorBody.scrollTop = scrollTop;
+        }
+
+        if (textEditorBody.scrollTop + textEditorBody.offsetHeight > 
+            textEditorBody.scrollHeight)
+        {
+            textEditorBody.scrollTop = textEditorBody.scrollHeight -
+                textEditorBody.offsetHeight;
+        }
+        
+        if (textEditorBody.scrollLeft + textEditorBody.offsetWidth > 
+            textEditorBody.scrollWidth)
+        {
+            textEditorBody.scrollLeft = textEditorBody.scrollWidth -
+                textEditorBody.offsetWidth;
+        }
+
+        if (textEditorGutter) {
+            textEditorGutter.scrollTop = textEditorBody.scrollTop;
         }
     },
-    getScrollPosition: function (textEditorContentId) {
-        let textEditorContent = document.getElementById(textEditorContentId);
+    setGutterScrollTop: function (gutterElementId, scrollTop) {
+        let textEditorGutter = document.getElementById(gutterElementId);
 
-        return {
-            ScrollLeftInPixels: textEditorContent.scrollLeft,
-            ScrollTopInPixels: textEditorContent.scrollTop
-        };
-    },
-    readClipboard: async function () {
-        // First, ask the Permissions API if we have some kind of access to
-        // the "clipboard-read" feature.
-
-        try {
-            return await navigator.permissions.query({name: "clipboard-read"}).then(async (result) => {
-                // If permission to read the clipboard is granted or if the user will
-                // be prompted to allow it, we proceed.
-
-                if (result.state === "granted" || result.state === "prompt") {
-                    return await navigator.clipboard.readText().then((data) => {
-                        return data;
-                    });
-                } else {
-                    return "";
-                }
-            });
-        } catch (e) {
-            return "";
+        if (!textEditorGutter) {
+            return;
         }
-    },
-    setClipboard: function (value) {
-        // Copies a string to the clipboard. Must be called from within an
-        // event handler such as click. May return false if it failed, but
-        // this is not always possible. Browser support for Chrome 43+,
-        // Firefox 42+, Safari 10+, Edge and Internet Explorer 10+.
-        // Internet Explorer: The clipboard feature may be disabled by
-        // an administrator. By default a prompt is shown the first
-        // time the clipboard is used (per session).
-        if (window.clipboardData && window.clipboardData.setData) {
-            // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
-            return window.clipboardData.setData("Text", text);
 
-        } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
-            var textarea = document.createElement("textarea");
-            textarea.textContent = value;
-            textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                return document.execCommand("copy");  // Security exception may be thrown by some browsers.
-            } catch (ex) {
-                console.warn("Copy to clipboard failed.", ex);
-                return false;
-            } finally {
-                document.body.removeChild(textarea);
-            }
-        }
+        textEditorGutter.scrollTop = scrollTop;
     },
-    getTreeViewContextMenuFixedPosition: function (
-        treeViewStateKey,
-        treeViewNodeId) {
-        
-        let treeViewNode = document.getElementById(treeViewNodeId);
-        let treeViewNodeBounds = treeViewNode.getBoundingClientRect();
-        
-        return {
-            OccurredDueToMouseEvent: false,
-            LeftPositionInPixels: treeViewNodeBounds.left,
-            TopPositionInPixels: treeViewNodeBounds.top + treeViewNodeBounds.height 
-        }
-    },
-    localStorageSetItem: function (key, value) {
-        localStorage.setItem(key, value);
-    },
-    localStorageGetItem: function (key, value) {
-        return localStorage.getItem(key);
-    },
-}
+    getElementMeasurementsInPixelsById: function (elementId) {
+        let elementReference = document.getElementById(elementId);
 
-Blazor.registerCustomEventType('keydownwithpreventscroll', {
-    browserEventName: 'keydown',
-    createEventArgs: e => {
-        
-        let preventDefaultOnTheseKeys = [
-            "ContextMenu",
-            "ArrowLeft",
-            "ArrowDown",
-            "ArrowUp",
-            "ArrowRight",
-            "Home",
-            "End",
-            "Space",
-            "Enter",
-        ];
-        
-        let preventDefaultOnTheseCodes = [
-            "Space",
-            "Enter",
-        ];
-        
-        if (preventDefaultOnTheseKeys.indexOf(e.key) !== -1 ||
-            preventDefaultOnTheseCodes.indexOf(e.code) !== -1) {
-            e.preventDefault();
+        return this.getElementMeasurementsInPixelsByElementReference(elementReference);
+    },
+    getElementMeasurementsInPixelsByElementReference: function (elementReference) {
+        if (!elementReference) {
+            return {
+                ScrollLeft: 0,
+                ScrollTop: 0,
+                ScrollWidth: 0,
+                ScrollHeight: 0,
+                Width: 0,
+                Height: 0,
+            };
         }
 
         return {
-            Type: e.type,
-            MetaKey: e.metaKey,
-            AltKey: e.altKey,
-            ShiftKey: e.shiftKey,
-            CtrlKey: e.ctrlKey,
-            Repeat: e.repeat,
-            Location: e.location,
-            Code: e.code,
-            Key: e.key
+            ScrollLeft: elementReference.scrollLeft,
+            ScrollTop: elementReference.scrollTop,
+            ScrollWidth: elementReference.scrollWidth,
+            ScrollHeight: elementReference.scrollHeight,
+            Width: elementReference.offsetWidth,
+            Height: elementReference.offsetHeight,
         };
     }
-});
+}

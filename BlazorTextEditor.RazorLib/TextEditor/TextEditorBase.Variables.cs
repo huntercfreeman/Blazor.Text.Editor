@@ -2,6 +2,7 @@
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Editing;
+using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
@@ -14,6 +15,7 @@ public partial class TextEditorBase
     public const int GUTTER_PADDING_LEFT_IN_PIXELS = 5;
     public const int GUTTER_PADDING_RIGHT_IN_PIXELS = 15;
     public const int MAXIMUM_EDIT_BLOCKS = 10;
+    public const int MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN = 5;
 
     private readonly List<RichCharacter> _content = new();
     private readonly List<EditBlock> _editBlocksPersisted = new();
@@ -50,11 +52,20 @@ public partial class TextEditorBase
     public RowEndingKind? OnlyRowEndingKind { get; private set; }
     public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
+    public string ResourceUri { get; private set; }
+    /// <summary>
+    /// <see cref="FileExtension"/> is displayed as is within the
+    /// <see cref="TextEditorFooter"/>.
+    /// <br/><br/>
+    /// The <see cref="TextEditorFooter"/> is only displayed if
+    /// <see cref="TextEditorViewModelDisplay.IncludeFooterHelperComponent"/> is set to true.
+    /// </summary>
+    public string FileExtension { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
     public ITextEditorKeymap TextEditorKeymap { get; }
     public int EditBlockIndex { get; private set; }
 
-    public int MostCharactersOnASingleRow { get; private set; }
+    public (int rowIndex, int rowLength) MostCharactersOnASingleRowTuple { get; private set; }
 
     public TextEditorOptions TextEditorOptions { get; } = TextEditorOptions.UnsetTextEditorOptions();
 

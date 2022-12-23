@@ -1,29 +1,29 @@
-﻿using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.JavaScriptObjects;
+﻿using BlazorALaCarte.Shared.DragCase;
+using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
+using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.Scrollbar;
 
-public partial class ScrollbarHorizontal : ComponentBase
+public partial class ScrollbarHorizontal : ComponentBase, IDisposable
 {
+    [Inject]
+    private IState<DragState> DragStateWrap { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditor { get; set; } = null!;
+    public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
-    
-    [Parameter, EditorRequired]
-    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorDisplay TextEditorDisplay { get; set; } = null!;
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
@@ -32,105 +32,150 @@ public partial class ScrollbarHorizontal : ComponentBase
 
     private readonly Guid _scrollbarGuid = Guid.NewGuid();
     
+    private Func<(MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs), Task>? _dragEventHandler;
+    private MouseEventArgs? _previousDragMouseEventArgs;
+    
     private string ScrollbarElementId => $"bte_{_scrollbarGuid}";
+    
+    protected override void OnInitialized()
+    {
+        DragStateWrap.StateChanged += DragStateWrapOnStateChanged;
+
+        base.OnInitialized();
+    }
     
     private string GetScrollbarHorizontalStyleCss()
     {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
+        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width -
+                                  ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
-        var left = $"left: {gutterWidthInPixels}px;";
+        var width = $"width: {scrollbarWidthInPixels}px;";
 
-        var width = $"width: calc(100% - {gutterWidthInPixels}px - {ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS}px);";
-
-        return $"{left} {width}";
+        return width;
     }
     
-    private double GetGutterWidthInPixels()
-    {
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
-            .ToString()
-            .Length;
-
-        var gutterWidthInPixels = mostDigitsInARowLineNumber *
-                                  CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                               TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        return gutterWidthInPixels;
-    }
-
     private string GetSliderHorizontalStyleCss()
     {
-        var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
-                                     ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS - 
-                                     GetGutterWidthInPixels();
+        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width -
+                                           ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         // Proportional Left
-        var sliderProportionalLeftInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels *
+        var sliderProportionalLeftInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft *
                                              scrollbarWidthInPixels /
-                                            VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels;
+                                             TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
 
         var left = $"left: {sliderProportionalLeftInPixels}px;";
         
         // Proportional Width
-        var sliderProportionalWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels *
-                                               scrollbarWidthInPixels /
-                                               VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels;
+        var pageWidth = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+        
+        var sliderProportionalWidthInPixels = pageWidth *
+                                              scrollbarWidthInPixels /
+                                              TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
 
         var width = $"width: {sliderProportionalWidthInPixels}px;";
         
         return $"{left} {width}";
     }
-    
+
     private Task HandleOnMouseDownAsync(MouseEventArgs arg)
     {
         _thinksLeftMouseButtonIsDown = true;
+        SubscribeToDragEventForScrolling();
 
         return Task.CompletedTask;
     }
+
+    private async void DragStateWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        if (!DragStateWrap.Value.ShouldDisplay)
+        {
+            _dragEventHandler = null;
+            _previousDragMouseEventArgs = null;
+        }
+        else
+        {
+            var mouseEventArgs = DragStateWrap.Value.MouseEventArgs;
+
+            if (_dragEventHandler is not null)
+            {
+                if (_previousDragMouseEventArgs is not null &&
+                    mouseEventArgs is not null)
+                {
+                    await _dragEventHandler.Invoke((_previousDragMouseEventArgs, mouseEventArgs));
+                }
+
+                _previousDragMouseEventArgs = mouseEventArgs;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    public void SubscribeToDragEventForScrolling()
+    {
+        _dragEventHandler = DragEventHandlerScrollAsync;
+        Dispatcher.Dispatch(new SetDragStateAction(true, null));
+    }
     
-    private async Task HandleOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
+    private async Task DragEventHandlerScrollAsync(
+        (MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs) mouseEventArgsTuple)
     {
         var success = await _onMouseMoveSemaphoreSlim
             .WaitAsync(TimeSpan.Zero);
-
+    
         if (!success)
             return;
-
+    
         try
         {
             // Buttons is a bit flag
             // '& 1' gets if left mouse button is held
             if (_thinksLeftMouseButtonIsDown &&
-                (mouseEventArgs.Buttons & 1) == 1)
+                (mouseEventArgsTuple.secondMouseEventArgs.Buttons & 1) == 1)
             {
-                var relativeCoordinatesOnClick = await JsRuntime
+                var relativeCoordinates = await JsRuntime
                     .InvokeAsync<RelativeCoordinates>(
                         "blazorTextEditor.getRelativePosition",
                         ScrollbarElementId,
-                        mouseEventArgs.ClientX,
-                        mouseEventArgs.ClientY);
+                        mouseEventArgsTuple.secondMouseEventArgs.ClientX,
+                        mouseEventArgsTuple.secondMouseEventArgs.ClientY);
                 
-                var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
-                                              ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
+                var xPosition = Math.Max(0, relativeCoordinates.RelativeX);
 
-                var scrollLeft = relativeCoordinatesOnClick.RelativeX *
-                                VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels /
-                                scrollbarWidthInPixels;
+                if (xPosition > TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
+                    xPosition = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
+                
+                var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width - 
+                                             ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
 
-                await TextEditorDisplay.SetScrollPositionAsync(scrollLeft, null);
+                var scrollLeft = xPosition *
+                                 TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth /
+                                 scrollbarWidthInPixels;
+        
+                if (scrollLeft + TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width > 
+                    TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
+                {
+                    scrollLeft = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth -
+                                 TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+                }
+                
+                await TextEditorViewModel.SetScrollPositionAsync(scrollLeft, null);
             }
             else
             {
                 _thinksLeftMouseButtonIsDown = false;
             }
-
+    
             await Task.Delay(_onMouseMoveDelay);
         }
         finally
         {
             _onMouseMoveSemaphoreSlim.Release();
         }
+    }
+
+    public void Dispose()
+    {
+        DragStateWrap.StateChanged -= DragStateWrapOnStateChanged;
     }
 }

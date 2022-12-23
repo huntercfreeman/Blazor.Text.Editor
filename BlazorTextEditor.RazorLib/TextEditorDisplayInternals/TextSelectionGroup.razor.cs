@@ -1,5 +1,6 @@
-﻿using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.JavaScriptObjects;
+﻿using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components;
 
@@ -7,20 +8,21 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 
 public partial class TextSelectionGroup : ComponentBase
 {
+    [CascadingParameter]
+    public TextEditorBase TextEditorBase { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
+    
     [Parameter, EditorRequired]
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorBase TextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
     
     private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
     {
-        if (rowIndex >= TextEditor.RowEndingPositions.Length)
+        if (rowIndex >= TextEditorBase.RowEndingPositions.Length)
             return string.Empty;
 
-        var startOfRowTuple = TextEditor.GetStartOfRowTuple(rowIndex);
-        var endOfRowTuple = TextEditor.RowEndingPositions[rowIndex];
+        var startOfRowTuple = TextEditorBase.GetStartOfRowTuple(rowIndex);
+        var endOfRowTuple = TextEditorBase.RowEndingPositions[rowIndex];
 
         var selectionStartingColumnIndex = 0;
         var selectionEndingColumnIndex =
@@ -45,29 +47,17 @@ public partial class TextSelectionGroup : ComponentBase
         }
 
         var top =
-            $"top: {rowIndex * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top: {rowIndex * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
         var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var gutterSizeInPixels =
-            widthOfGutterInPixels +
-            TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-            TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+            $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         var selectionStartInPixels =
             selectionStartingColumnIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         // selectionStartInPixels offset from Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditor
+            var tabsOnSameRowBeforeCursor = TextEditorBase
                 .GetTabsCountOnSameRowBeforeCursor(
                     rowIndex,
                     selectionStartingColumnIndex);
@@ -78,19 +68,19 @@ public partial class TextSelectionGroup : ComponentBase
 
             selectionStartInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                      TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
+        var left = $"left: {selectionStartInPixels}px;";
 
         var selectionWidthInPixels =
             selectionEndingColumnIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels -
+            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels -
             selectionStartInPixels;
 
         // Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditor
+            var tabsOnSameRowBeforeCursor = TextEditorBase
                 .GetTabsCountOnSameRowBeforeCursor(
                     rowIndex,
                     selectionEndingColumnIndex);
@@ -101,7 +91,7 @@ public partial class TextSelectionGroup : ComponentBase
 
             selectionWidthInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                      TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         var widthCssStyleString = "width: ";

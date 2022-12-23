@@ -4,146 +4,40 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.Virtualization;
 
-public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
+/// <summary>
+/// Goal of this component is not to do the rendering of the items but
+/// instead ONLY the rendering of the boundaries.
+/// <br/><br/>
+/// As of this comment (2022-12-22) the JavaScript Intersection Observer logic was removed
+/// as well. It appears to all be done through using C# to calculate whether a calculation
+/// of the <see cref="VirtualizationResult{T}"/> is necessary. Adding proportional fonts
+/// (variable-width fonts) will break this however and the JavaScript Intersection Observer
+/// will need to be added back in just copy and paste from git history.
+/// </summary>
+public partial class VirtualizationDisplay : ComponentBase
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public Func<VirtualizationRequest, VirtualizationResult<T>?> EntriesProviderFunc { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public RenderFragment<VirtualizationResult<T>> ChildContent { get; set; } = null!;
+    public IVirtualizationResultWithoutTypeMask VirtualizationResultWithoutTypeMask { get; set; } = null!;
 
     [Parameter]
     public bool UseHorizontalVirtualization { get; set; } = true;
     [Parameter]
     public bool UseVerticalVirtualization { get; set; } = true;
     
-    private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
-    private VirtualizationRequest _request = null!;
+    private readonly Guid _virtualizationDisplayGuid = Guid.NewGuid();
 
-    private VirtualizationResult<T> _result = new(
-        ImmutableArray<VirtualizationEntry<T>>.Empty,
-        new VirtualizationBoundary(0, 0, 0, 0),
-        new VirtualizationBoundary(0, 0, 0, 0),
-        new VirtualizationBoundary(0, 0, 0, 0),
-        new VirtualizationBoundary(0, 0, 0, 0),
-        new(0, 0, 0, 0));
+    private string LeftBoundaryElementId =>
+        $"bte_left-virtualization-boundary-display-{_virtualizationDisplayGuid}";
 
-    private ElementReference _scrollableParentFinder;
+    private string RightBoundaryElementId =>
+        $"bte_right-virtualization-boundary-display-{_virtualizationDisplayGuid}";
 
-    private CancellationTokenSource _scrollEventCancellationTokenSource = new();
+    private string TopBoundaryElementId =>
+        $"bte_top-virtualization-boundary-display-{_virtualizationDisplayGuid}";
 
-    private string LeftVirtualizationBoundaryDisplayId =>
-        $"bte_left-virtualization-boundary-display-{_intersectionObserverMapKey}";
-
-    private string RightVirtualizationBoundaryDisplayId =>
-        $"bte_right-virtualization-boundary-display-{_intersectionObserverMapKey}";
-
-    private string TopVirtualizationBoundaryDisplayId =>
-        $"bte_top-virtualization-boundary-display-{_intersectionObserverMapKey}";
-
-    private string BottomVirtualizationBoundaryDisplayId =>
-        $"bte_bottom-virtualization-boundary-display-{_intersectionObserverMapKey}";
-
-    protected override void OnInitialized()
-    {
-        _scrollEventCancellationTokenSource.Cancel();
-        _scrollEventCancellationTokenSource = new CancellationTokenSource();
-        
-        _request = new(
-            new VirtualizationScrollPosition(0, 0, 0, 0),
-            _scrollEventCancellationTokenSource.Token);
-        
-        base.OnInitialized();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var boundaryIds = new List<object>();
-
-            if (UseHorizontalVirtualization)
-            {
-                boundaryIds.AddRange(new[]
-                {
-                    LeftVirtualizationBoundaryDisplayId,
-                    RightVirtualizationBoundaryDisplayId,
-                });
-            }
-
-            if (UseVerticalVirtualization)
-            {
-                boundaryIds.AddRange(new[]
-                {
-                    TopVirtualizationBoundaryDisplayId,
-                    BottomVirtualizationBoundaryDisplayId,
-                });
-            }
-
-            await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.initializeVirtualizationIntersectionObserver",
-                _intersectionObserverMapKey.ToString(),
-                DotNetObjectReference.Create(this),
-                _scrollableParentFinder,
-                boundaryIds);
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    [JSInvokable]
-    public Task OnScrollEventAsync(VirtualizationScrollPosition scrollPosition)
-    {
-        _scrollEventCancellationTokenSource.Cancel();
-        _scrollEventCancellationTokenSource = new CancellationTokenSource();
-
-        _request = new VirtualizationRequest(
-            scrollPosition,
-            _scrollEventCancellationTokenSource.Token);
-
-        InvokeEntriesProviderFunc();
-        return Task.CompletedTask;
-    }
-
-    public void InvokeEntriesProviderFunc()
-    {
-        var localResult = EntriesProviderFunc.Invoke(_request);
-
-        if (localResult is not null)
-        {
-            _result = localResult;
-
-            InvokeAsync(StateHasChanged);
-        }
-    }
-    
-    /// <summary>
-    /// BUG: Introduced after changing from overflow: auto to overflow: hidden
-    /// <br/><br/>
-    /// get new request force from virtualization request is not being updated
-    /// overflow-hidden results in width: 100% no longer filling the viewable AND scrollable area
-    /// instead only the initial location of the viewable area has the width of virtualization correct
-    /// as the scrollbar width/height is no longer being included.
-    /// Make a force reload virtualization method
-    /// </summary>
-    public async Task ForceReadScrollPosition(string elementId)
-    {
-        var scrollPosition = await JsRuntime.InvokeAsync<VirtualizationScrollPosition>(
-            "blazorTextEditor.getScrollPosition",
-            elementId);
-
-        await OnScrollEventAsync(scrollPosition);
-    }
-    
-    public void Dispose()
-    {
-        _scrollEventCancellationTokenSource.Cancel();
-
-        _ = Task.Run(async () =>
-            await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.disposeVirtualizationIntersectionObserver",
-                _intersectionObserverMapKey.ToString()));
-    }
+    private string BottomBoundaryElementId =>
+        $"bte_bottom-virtualization-boundary-display-{_virtualizationDisplayGuid}";
 }

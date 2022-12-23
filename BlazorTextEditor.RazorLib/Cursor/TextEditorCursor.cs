@@ -1,4 +1,4 @@
-using BlazorTextEditor.RazorLib.Keyboard;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 

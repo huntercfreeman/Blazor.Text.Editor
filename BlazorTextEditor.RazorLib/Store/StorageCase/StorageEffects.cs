@@ -1,3 +1,4 @@
+using BlazorALaCarte.Shared.Storage;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
@@ -29,7 +30,7 @@ public class StorageEffects
             .Serialize(writeGlobalTextEditorOptionsToLocalStorageAction.GlobalTextEditorOptions);
 
         await _storageProvider.SetValue(
-            ITextEditorService.LocalStorageGlobalTextEditorOptionsKey, 
+            ITextEditorService.LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY, 
             optionsJsonString);
     }
 }

@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Store.ThemeCase;
+﻿using BlazorALaCarte.Shared.Theme;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -12,5 +12,5 @@ public class ImmutableTextEditorServiceOptions : ITextEditorServiceOptions
     }
 
     public bool InitializeFluxor { get; }
-    public Theme InitialTheme { get; set; }
+    public ThemeRecord InitialTheme { get; set; }
 }
