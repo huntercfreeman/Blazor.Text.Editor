@@ -11,6 +11,7 @@
     --balc_button-disabled-foreground-color: #DCDCDC;
     --balc_button-disabled-background-color: #4a5a71;
     --balc_button-disabled-hover-background-color: #97a3b4;
+    --balc_primary-hover-background-color: #2d568b;
 }
 
 .balc_visual-studio-light-theme-clone {
@@ -26,6 +27,7 @@
     --balc_button-disabled-foreground-color: #000000;
     --balc_button-disabled-background-color: #d7dde6;
     --balc_button-disabled-hover-background-color: #eceff7;
+    --balc_primary-hover-background-color: #c7c7e9;
 }
 
 .bte_button:hover {
