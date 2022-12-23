@@ -224,15 +224,12 @@ public partial class TextEditorBase
                     localMostCharactersOnASingleRowTuple = (i, lengthOfRow);
                 }
             }
-
-            if (localMostCharactersOnASingleRowTuple.rowLength > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN)
-            {
-                localMostCharactersOnASingleRowTuple = 
-                    (localMostCharactersOnASingleRowTuple.rowIndex,
-                        localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
-                
-                MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
-            }
+            
+            localMostCharactersOnASingleRowTuple = 
+                (localMostCharactersOnASingleRowTuple.rowIndex,
+                    localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+            
+            MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
         }
     }
 
@@ -503,15 +500,12 @@ public partial class TextEditorBase
                     localMostCharactersOnASingleRowTuple = (i, lengthOfRow);
                 }
             }
-                
-            if (localMostCharactersOnASingleRowTuple.rowLength > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN)
-            {
-                localMostCharactersOnASingleRowTuple = 
-                    (localMostCharactersOnASingleRowTuple.rowIndex,
-                        localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
-                
-                MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
-            }
+            
+            localMostCharactersOnASingleRowTuple = 
+                (localMostCharactersOnASingleRowTuple.rowIndex,
+                    localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+            
+            MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
         }
     }
 
