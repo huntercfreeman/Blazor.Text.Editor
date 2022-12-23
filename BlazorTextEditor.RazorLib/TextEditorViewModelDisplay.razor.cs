@@ -713,8 +713,21 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         
         if (wheelEventArgs.ShiftKey)
         {
+            var toBeScrollLeft = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft +
+                                 wheelEventArgs.DeltaY;
+            
+            if (toBeScrollLeft + textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width > 
+                textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
+            {
+                toBeScrollLeft = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth -
+                                 textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+            }
+
+            var mutateScrollLeftBy = toBeScrollLeft -
+                                     textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft;
+            
             await textEditorViewModel.MutateScrollHorizontalPositionByPixelsAsync(
-                wheelEventArgs.DeltaY);
+                mutateScrollLeftBy);
         }
         else
         {
