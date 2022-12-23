@@ -46,10 +46,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     
     private string GetScrollbarHorizontalStyleCss()
     {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
-
-        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width - 
-                                  gutterWidthInPixels -
+        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width -
                                   ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         var width = $"width: {scrollbarWidthInPixels}px;";
@@ -57,27 +54,9 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         return width;
     }
     
-    private double GetGutterWidthInPixels()
-    {
-        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
-            .ToString()
-            .Length;
-
-        var gutterWidthInPixels = mostDigitsInARowLineNumber *
-                                  TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                               TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-        return gutterWidthInPixels;
-    }
-
     private string GetSliderHorizontalStyleCss()
     {
-        var gutterWidthInPixels = GetGutterWidthInPixels();
-
-        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width - 
-                                           gutterWidthInPixels -
+        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width -
                                            ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         // Proportional Left
@@ -88,8 +67,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         var left = $"left: {sliderProportionalLeftInPixels}px;";
         
         // Proportional Width
-        var pageWidth = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width -
-                        gutterWidthInPixels;
+        var pageWidth = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
         
         var sliderProportionalWidthInPixels = pageWidth *
                                               scrollbarWidthInPixels /
