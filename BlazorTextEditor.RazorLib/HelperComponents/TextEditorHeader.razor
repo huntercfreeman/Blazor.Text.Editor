@@ -1,5 +1,7 @@
 ﻿@using BlazorTextEditor.RazorLib.Row
 @using System.Collections.Immutable
+@using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels
+@using BlazorTextEditor.RazorLib.TextEditor
 
 @inherits TextEditorView
 
@@ -91,7 +93,7 @@
         else
         {
             <div class="bte_text-editor-header-entry bte_text-editor-header-file-sizing">
-                textEditor is null
+                <div>The @nameof(TextEditorBase) was null</div>
             </div>
         }
     }

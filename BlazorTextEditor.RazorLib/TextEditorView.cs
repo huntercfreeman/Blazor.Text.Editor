@@ -3,6 +3,7 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
+using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib;
@@ -12,7 +13,7 @@ namespace BlazorTextEditor.RazorLib;
 /// message broker abstraction between a
 /// Blazor component and a <see cref="TextEditorBase"/>
 /// </summary>
-public class TextEditorView : ComponentBase, IDisposable
+public class TextEditorView : FluxorComponent, IDisposable
 {
     [Inject]
     protected IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
@@ -32,7 +33,8 @@ public class TextEditorView : ComponentBase, IDisposable
 
     protected override void OnInitialized()
     {
-        TextEditorViewModelsCollectionWrap.StateChanged += TextEditorViewModelsCollectionWrapOnStateChanged;
+        // TextEditorStatesSelection.StateChanged += TextEditorStatesSelectionOnStateChanged;
+        // TextEditorViewModelsCollectionWrap.StateChanged += TextEditorViewModelsCollectionWrapOnStateChanged;
         
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
@@ -40,6 +42,11 @@ public class TextEditorView : ComponentBase, IDisposable
                     x.Key == (ReplaceableTextEditorViewModel?.TextEditorKey ?? TextEditorKey.Empty)));
         
         base.OnInitialized();
+    }
+
+    private void TextEditorStatesSelectionOnStateChanged(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
@@ -56,20 +63,23 @@ public class TextEditorView : ComponentBase, IDisposable
         }
     }
     
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            TextEditorViewModelsCollectionWrap.StateChanged -= TextEditorViewModelsCollectionWrapOnStateChanged;
-        }
-
-        _disposed = true;
-    }
+    // TODO: Commenting out the event logic going to try FluxorComponent
+    //
+    // protected virtual void Dispose(bool disposing)
+    // {
+    //     if (_disposed)
+    //     {
+    //         return;
+    //     }
+    //
+    //     if (disposing)
+    //     {
+    //         TextEditorViewModelsCollectionWrap.StateChanged -= TextEditorViewModelsCollectionWrapOnStateChanged;
+    //         TextEditorStatesSelection.StateChanged -= TextEditorStatesSelectionOnStateChanged;
+    //     }
+    //
+    //     _disposed = true;
+    // }
     
     public void Dispose()
     {
