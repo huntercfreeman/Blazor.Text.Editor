@@ -1,5 +1,6 @@
 ﻿using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
@@ -9,23 +10,25 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 
 public partial class BodySection : ComponentBase
 {
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    
     [CascadingParameter]
     public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
+    /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
     [Parameter, EditorRequired]
-    public bool GlobalShowNewlines { get; set; }
-    [Parameter, EditorRequired]
-    public string TabKeyOutput { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public string SpaceKeyOutput { get; set; } = null!;
+    public int TabIndex { get; set; } = -1;
     [Parameter, EditorRequired]
     public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
     [Parameter, EditorRequired]
     public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
     
     private VirtualizationDisplay? _virtualizationDisplay;
+    
+    public TextEditorCursorDisplay? TextEditorCursorDisplay { get; private set; }
 
     private string GetBodyStyleCss()
     {

@@ -1,84 +1,68 @@
 ﻿@using BlazorTextEditor.RazorLib.Virtualization
+@using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Cursor
 
 <div class="bte_body-section"
      style="@GetBodyStyleCss()">
-    
-    <VirtualizationDisplay @ref="_virtualizationDisplay"
-                           EntriesProviderFunc="EntriesProvider"
-                           Context="virtualizationResult">
-        
-    </VirtualizationDisplay>
 
-    <RowSection TextEditorViewModel="TextEditorViewModel"
-                GlobalShowNewlines="GlobalShowNewlines"
+    @{
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(TextEditorViewModel.PrimaryCursor);
+
+        <TextSelectionGroup PrimaryCursorSnapshot="primaryCursorSnapshot"/>
+
+        var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
+        var spaceKeyOutput = "&nbsp;";
+
+        if (TextEditorService.GlobalShowWhitespace)
+        {
+            tabKeyOutput = "--->";
+            spaceKeyOutput = "·";
+        }
+
+        <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
+                                 TextEditorCursor="TextEditorViewModel.PrimaryCursor"
+                                 ScrollableContainerId="@TextEditorViewModel.BodyElementId"
+                                 IsFocusTarget="true"
+                                 TabIndex="TabIndex"
+                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => TextEditorViewModel.MostRecentlyRenderedVirtualizationResult"
+                                 TextEditorViewModel="TextEditorViewModel">
+
+            <OnContextMenuRenderFragment>
+                @if (ContextMenuRenderFragmentOverride is not null)
+                {
+                    @ContextMenuRenderFragmentOverride
+                }
+                else
+                {
+                                                @* This is the default context menu *@
+                    <TextEditorContextMenu TextEditorViewModelKey="TextEditorViewModel.TextEditorViewModelKey"/>
+                }
+            </OnContextMenuRenderFragment>
+            <AutoCompleteMenuRenderFragment>
+                @if (AutoCompleteMenuRenderFragmentOverride is not null)
+                {
+                    @AutoCompleteMenuRenderFragmentOverride
+                }
+                else
+                {
+                                                @* This is the default autocomplete menu *@
+                    <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"/>
+                }
+            </AutoCompleteMenuRenderFragment>
+        </TextEditorCursorDisplay>
+    }
+
+    <VirtualizationDisplay @ref="_virtualizationDisplay"
+                           VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"/>
+
+    <RowSection GlobalShowNewlines="GlobalShowNewlines"
                 SpaceKeyOutput="@SpaceKeyOutput"
                 TabKeyOutput="@TabKeyOutput"/>
 
-    <ScrollbarSection WidthAndHeightOfTextEditor="TextEditorViewModel.WidthAndHeightOfBody"
-                      TextEditorViewModel="TextEditorViewModel"/>
+    <ScrollbarSection/>
 
-    @{
-        <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
-                                           HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
-
-        if (textEditor is not null &&
-            textEditorViewModel is not null)
-        {
-            var primaryCursorSnapshot = new TextEditorCursorSnapshot(textEditorViewModel.PrimaryCursor);
-
-            if (textEditorViewModel.CharacterWidthAndRowHeight is not null &&
-                textEditorViewModel.WidthAndHeightOfBody is not null)
-            {
-                <TextSelectionGroup TextEditor="textEditor"
-                                    PrimaryCursorSnapshot="primaryCursorSnapshot"
-                                    CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"/>
-
-                var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
-                var spaceKeyOutput = "&nbsp;";
-
-                if (GlobalShowWhitespace)
-                {
-                    tabKeyOutput = "--->";
-                    spaceKeyOutput = "·";
-                }
+    <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
+                                       HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
 
 
-
-                <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
-                                         TextEditorCursor="textEditorViewModel.PrimaryCursor"
-                                         CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"
-                                         WidthAndHeightOfTextEditor="textEditorViewModel.WidthAndHeightOfBody"
-                                         TextEditorViewModelKey="TextEditorViewModelKey"
-                                         ScrollableContainerId="@textEditorViewModel.BodyElementId"
-                                         IsFocusTarget="true"
-                                         TabIndex="TabIndex"
-                                         GetMostRecentlyRenderedVirtualizationResultFunc="() => textEditorViewModel.MostRecentlyRenderedVirtualizationResult"
-                                         TextEditorViewModel="textEditorViewModel">
-
-                    <OnContextMenuRenderFragment>
-                        @if (ContextMenuRenderFragmentOverride is not null)
-                        {
-                            @ContextMenuRenderFragmentOverride
-                        }
-                        else
-                        {
-                                            @* This is the default context menu *@
-                            <TextEditorContextMenu TextEditorViewModelKey="textEditorViewModel.TextEditorViewModelKey"/>
-                        }
-                    </OnContextMenuRenderFragment>
-                    <AutoCompleteMenuRenderFragment>
-                        @if (AutoCompleteMenuRenderFragmentOverride is not null)
-                        {
-                            @AutoCompleteMenuRenderFragmentOverride
-                        }
-                        else
-                        {
-                                            @* This is the default autocomplete menu *@
-                            <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"/>
-                        }
-                    </AutoCompleteMenuRenderFragment>
-                </TextEditorCursorDisplay>
-            }
-        }
-    }
 </div>

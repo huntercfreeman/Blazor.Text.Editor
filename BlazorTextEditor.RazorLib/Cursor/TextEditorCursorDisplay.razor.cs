@@ -11,15 +11,14 @@ public partial class TextEditorCursorDisplay : TextEditorView
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
+    
+    [CascadingParameter]
+    public TextEditorBase TextEditorBase { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
     [Parameter, EditorRequired]
     public string ScrollableContainerId { get; set; } = null!;
     [Parameter, EditorRequired]
@@ -27,9 +26,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
     [Parameter, EditorRequired]
     public int TabIndex { get; set; }
     [Parameter]
-    public RenderFragment? OnContextMenuRenderFragment { get; set; }
+    public RenderFragment OnContextMenuRenderFragment { get; set; } = null!;
     [Parameter]
-    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
+    public RenderFragment AutoCompleteMenuRenderFragment { get; set; } = null!;
     
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
@@ -145,8 +144,9 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
             var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
 
-            leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            leftInPixels += extraWidthPerTabKey * 
+                            tabsOnSameRowBeforeCursor * 
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         // Line number column offset
@@ -155,15 +155,16 @@ public partial class TextEditorCursorDisplay : TextEditorView
                 .ToString()
                 .Length;
 
-            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            leftInPixels += mostDigitsInARowLineNumber * 
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        leftInPixels += CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
         var top =
-            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
+        var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         return $"{left} {top} {height}";
     }
@@ -176,10 +177,10 @@ public partial class TextEditorCursorDisplay : TextEditorView
             return string.Empty;
         
         var top =
-            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
+        var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var width = $"width: {textEditor.MostCharactersOnASingleRow * CharacterWidthAndRowHeight.CharacterWidthInPixels}px;";
+        var width = $"width: {textEditor.MostCharactersOnASingleRow * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels}px;";
 
         return $"{top} {width} {height}";
     }
@@ -211,7 +212,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
             var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         // Line number column offset
@@ -220,19 +221,19 @@ public partial class TextEditorCursorDisplay : TextEditorView
                 .ToString()
                 .Length;
 
-            leftInPixels += mostDigitsInARowLineNumber * CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            leftInPixels += mostDigitsInARowLineNumber * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        leftInPixels += CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
 
         // Top is 1 row further than the cursor so it does not cover text at cursor position.
         var top =
-            $"top: {CharacterWidthAndRowHeight.RowHeightInPixels * (TextEditorCursor.IndexCoordinates.rowIndex + 1)}px;";
+            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * (TextEditorCursor.IndexCoordinates.rowIndex + 1)}px;";
 
-        var minWidth = $"min-Width: {CharacterWidthAndRowHeight.CharacterWidthInPixels * 16}px;";
-        var minHeight = $"min-height: {CharacterWidthAndRowHeight.RowHeightInPixels * 4}px;";
+        var minWidth = $"min-Width: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * 16}px;";
+        var minHeight = $"min-height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * 4}px;";
 
         return $"{left} {top} {minWidth} {minHeight}";
     }
@@ -322,7 +323,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
                         if (scrollToRowIndex is not null)
                         {
-                            setScrollTopTo = scrollToRowIndex.Value * CharacterWidthAndRowHeight.RowHeightInPixels;
+                            setScrollTopTo = scrollToRowIndex.Value * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels;
                         }
                     }
                     
@@ -334,7 +335,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
                             .VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft;
 
                         var upperColumnPixelExclusive =
-                            lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
+                            lowerColumnPixelInclusive + TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width + 
                             1;
 
                         var leftInPixels = 0d;
@@ -351,13 +352,13 @@ public partial class TextEditorCursorDisplay : TextEditorView
 
                             leftInPixels += extraWidthPerTabKey * 
                                             tabsOnSameRowBeforeCursor *
-                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
                         
                         // Account for cursor column index
                         {
                             leftInPixels += textEditorCursorSnapshot.ImmutableCursor.ColumnIndex * 
-                                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
                         }
                         
                         if (leftInPixels < lowerColumnPixelInclusive ||

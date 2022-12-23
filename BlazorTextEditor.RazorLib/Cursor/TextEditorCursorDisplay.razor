@@ -29,16 +29,10 @@
                 @switch (_textEditorMenuKind)
                 {
                     case TextEditorMenuKind.ContextMenu:
-                        if (OnContextMenuRenderFragment is not null)
-                        {
                             @OnContextMenuRenderFragment
-                        }
                         break;
                     case TextEditorMenuKind.AutoCompleteMenu:
-                        if (AutoCompleteMenuRenderFragment is not null)
-                        {
                             @AutoCompleteMenuRenderFragment
-                        }
                         break;
                 }
             </CascadingValue>
