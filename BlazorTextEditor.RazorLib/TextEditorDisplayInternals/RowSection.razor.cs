@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
@@ -22,6 +23,8 @@ public partial class RowSection : ComponentBase
     public string TabKeyOutput { get; set; } = null!;
     [Parameter, EditorRequired]
     public string SpaceKeyOutput { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {

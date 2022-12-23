@@ -164,8 +164,13 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
 
+    private Guid _componentHtmlElementId = Guid.NewGuid();
+    
     private string MeasureCharacterWidthAndRowHeightElementId =>
-        $"bte_measure-character-width-and-row-height_{ReplaceableTextEditorViewModel?.TextEditorViewModelKey.Guid ?? Guid.Empty}";
+        $"bte_measure-character-width-and-row-height_{_componentHtmlElementId}";
+    
+    private string ContentElementId =>
+        $"bte_text-editor-content_{_componentHtmlElementId}";
 
     private MarkupString GetAllTextEscaped => (MarkupString)(MutableReferenceToTextEditor?
                                                                  .GetAllText()
@@ -259,23 +264,46 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.preventDefaultOnWheelEvents",
-                textEditorViewModel.TextEditorContentId);
+                ContentElementId);
         }
 
         if (textEditorViewModel is not null && 
             textEditorViewModel.ShouldMeasureDimensions)
         {
+            // Capture 'var textEditorModel' early to get a snapshot at
+            // this instant of time what the state is as it might change.
+            var textEditorModel = TextEditorStatesSelection.Value;
+            
             textEditorViewModel.CharacterWidthAndRowHeight = await JsRuntime
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
                     MeasureCharacterWidthAndRowHeightElementId,
                     _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
-            textEditorViewModel.WidthAndHeightOfTextEditor = await JsRuntime
+            // TODO: Change the name of 'WidthAndHeightOfTextEditor' class as it is confusingly being used for the TextEditor in its entirety and the body (body meaning entirety - gutter)
+            var widthAndHeightOfTextEditor = await JsRuntime
                 .InvokeAsync<WidthAndHeightOfTextEditor>(
                     "blazorTextEditor.measureWidthAndHeightOfTextEditor",
                     textEditorViewModel.TextEditorContentId);
 
+            var mostDigitsInARowLineNumber = (textEditorModel?.RowCount ?? 0)
+                .ToString()
+                .Length;
+
+            var gutterWidthInPixels = mostDigitsInARowLineNumber *
+                                      textEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+            gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
+                                   TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+
+            var widthOfBody = widthAndHeightOfTextEditor.WidthInPixels - gutterWidthInPixels;
+            
+            textEditorViewModel.WidthAndHeightOfBody = new WidthAndHeightOfTextEditor
+            {
+                WidthInPixels = widthOfBody,
+                HeightInPixels = widthAndHeightOfTextEditor.HeightInPixels
+            };
+                
             {
                 textEditorViewModel.ShouldMeasureDimensions = false;
                 await InvokeAsync(StateHasChanged);
@@ -720,7 +748,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         
         if (safeTextEditorViewModel is null ||
             safeTextEditorViewModel.CharacterWidthAndRowHeight is null ||
-            safeTextEditorViewModel.WidthAndHeightOfTextEditor is null ||
+            safeTextEditorViewModel.WidthAndHeightOfBody is null ||
             request.CancellationToken.IsCancellationRequested)
             return null;
 
@@ -742,7 +770,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels);
 
         var verticalTake = (int)Math.Ceiling(
-            safeTextEditorViewModel.WidthAndHeightOfTextEditor.HeightInPixels /
+            safeTextEditorViewModel.WidthAndHeightOfBody.HeightInPixels /
             safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels);
         
         // Vertical Padding (render some offscreen data)
@@ -770,7 +798,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var horizontalTake = (int)Math.Ceiling(
-            safeTextEditorViewModel.WidthAndHeightOfTextEditor.WidthInPixels /
+            safeTextEditorViewModel.WidthAndHeightOfBody.WidthInPixels /
             safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var virtualizedEntries = safeTextEditorReference
@@ -847,7 +875,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             var percentOfMarginScrollHeightByPageUnit = 0.4;
             
             var marginScrollHeight =
-                (safeTextEditorViewModel.WidthAndHeightOfTextEditor?.HeightInPixels ?? 0) *
+                (safeTextEditorViewModel.WidthAndHeightOfBody?.HeightInPixels ?? 0) *
                 percentOfMarginScrollHeightByPageUnit;
 
             totalHeight += marginScrollHeight;

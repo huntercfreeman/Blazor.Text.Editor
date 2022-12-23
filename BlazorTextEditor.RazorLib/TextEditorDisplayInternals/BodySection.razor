@@ -1,10 +1,11 @@
 ﻿<div class="bte_body-section"
      style="@GetBodyStyleCss()">
     
-    <RowSection GlobalShowNewlines="GlobalShowNewlines"
+    <RowSection TextEditorViewModel="TextEditorViewModel"
+                GlobalShowNewlines="GlobalShowNewlines"
                 SpaceKeyOutput="@SpaceKeyOutput"
                 TabKeyOutput="@TabKeyOutput"/>
 
-    <ScrollbarSection WidthAndHeightOfTextEditor="TextEditorViewModel.WidthAndHeightOfTextEditor"
+    <ScrollbarSection WidthAndHeightOfTextEditor="TextEditorViewModel.WidthAndHeightOfBody"
                       TextEditorViewModel="TextEditorViewModel"/>
 </div>

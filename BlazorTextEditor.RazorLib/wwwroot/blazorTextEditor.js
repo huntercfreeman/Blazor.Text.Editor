@@ -1,14 +1,22 @@
 window.blazorTextEditor = {
     focusHtmlElementById: function (textEditorContentId) {
-        document
-            .getElementById(textEditorContentId)
-            .focus();
+        let element = document.getElementById(textEditorContentId);
+
+        if (!element) {
+            return;
+        }
+
+        element.focus();
     },
     scrollElementIntoView: function (intersectionObserverMapKey,
                                      elementId) {
 
         let element = document.getElementById(elementId);
 
+        if (!element) {
+            return;
+        }
+        
         element.scrollIntoView({
             block: "nearest",
             inline: "nearest"
@@ -17,6 +25,10 @@ window.blazorTextEditor = {
     preventDefaultOnWheelEvents: function (elementId) {
 
         let element = document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
         
         element.addEventListener('wheel', (event) => {
             event.preventDefault();
@@ -44,6 +56,13 @@ window.blazorTextEditor = {
     measureWidthAndHeightOfTextEditor: function (elementId) {
         let element = document.getElementById(elementId);
 
+        if (!element) {
+            return {
+                WidthInPixels: 0,
+                HeightInPixels: 0
+            }
+        }
+        
         return {
             WidthInPixels: element.offsetWidth,
             HeightInPixels: element.offsetHeight
@@ -51,6 +70,15 @@ window.blazorTextEditor = {
     },
     getRelativePosition: function (elementId, clientX, clientY) {
         let element = document.getElementById(elementId);
+
+        if (!element) {
+            return {
+                RelativeX: 0,
+                RelativeY: 0,
+                RelativeScrollLeft: 0,
+                RelativeScrollTop: 0
+            }
+        }
 
         let bounds = element.getBoundingClientRect();
 
@@ -177,15 +205,27 @@ window.blazorTextEditor = {
     mutateScrollVerticalPositionByPixels: function (textEditorContentId, pixels) {
         let textEditorContent = document.getElementById(textEditorContentId);
         
+        if (!textEditorContent) {
+            return;
+        }
+        
         textEditorContent.scrollTop += pixels;
     },
     mutateScrollHorizontalPositionByPixels: function (textEditorContentId, pixels) {
         let textEditorContent = document.getElementById(textEditorContentId);
+
+        if (!textEditorContent) {
+            return;
+        }
         
         textEditorContent.scrollLeft += pixels;
     },
     setScrollPosition: function (textEditorContentId, scrollLeft, scrollTop) {
         let textEditorContent = document.getElementById(textEditorContentId);
+
+        if (!textEditorContent) {
+            return;
+        }
         
         if (scrollLeft || scrollLeft === 0) {
             textEditorContent.scrollLeft = scrollLeft;
@@ -197,6 +237,13 @@ window.blazorTextEditor = {
     },
     getScrollPosition: function (textEditorContentId) {
         let textEditorContent = document.getElementById(textEditorContentId);
+
+        if (!textEditorContent) {
+            return {
+                ScrollLeftInPixels: 0,
+                ScrollTopInPixels: 0
+            };
+        }
 
         return {
             ScrollLeftInPixels: textEditorContent.scrollLeft,

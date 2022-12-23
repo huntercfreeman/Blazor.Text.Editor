@@ -25,7 +25,7 @@ public record TextEditorViewModel(
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
     
     public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; set; }
-    public WidthAndHeightOfTextEditor? WidthAndHeightOfTextEditor { get; set; }
+    public WidthAndHeightOfTextEditor? WidthAndHeightOfBody { get; set; }
 
     public async Task CursorMovePageTopAsync()
     {
@@ -73,7 +73,7 @@ public record TextEditorViewModel(
     public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
     {
         await MutateScrollVerticalPositionByPixelsAsync(
-            pages * (WidthAndHeightOfTextEditor?.HeightInPixels ?? 0));
+            pages * (WidthAndHeightOfBody?.HeightInPixels ?? 0));
     }
 
     public async Task MutateScrollVerticalPositionByLinesAsync(double lines)
