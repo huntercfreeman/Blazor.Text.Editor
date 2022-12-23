@@ -15,41 +15,6 @@
     _onAfterRenderCounter @_onAfterRenderCounter
 </div>
 
-<div>
-    @if (textEditorViewModel is not null)
-    {
-        <div>
-            <div>
-                textEditorViewModel.Height:&nbsp;@textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height
-            </div>
-            <div>
-                textEditorViewModel.Width:&nbsp;@textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width
-            </div>
-            <div>
-                textEditorViewModel.ScrollHeight:&nbsp;@textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight
-            </div>
-            <div>
-                textEditorViewModel.ScrollLeft:&nbsp;@textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft
-            </div>
-            <div>
-                textEditorViewModel.ScrollTop:&nbsp;@textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollTop
-            </div>
-            <div>
-                textEditorViewModel.ScrollWidth:&nbsp;@textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth
-            </div>
-        </div>
-        <div>
-            <div>
-                CharacterWidthInPixels:&nbsp;@textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels
-            </div>
-            <div>
-                RowHeightInPixels:&nbsp;@textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
-            </div>
-        </div>
-    }
-</div>
-
-
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @ClassCssString">
     
