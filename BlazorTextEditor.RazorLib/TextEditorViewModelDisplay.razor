@@ -7,7 +7,7 @@
 @inherits TextEditorView
 
 @{
-    var textEditor = TextEditorStatesSelection.Value;
+    var textEditorBase = MutableReferenceToTextEditor;
     var textEditorViewModel = ReplaceableTextEditorViewModel;
 }
 
@@ -19,10 +19,10 @@
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @ClassCssString">
     
-    @if (textEditor is not null &&
+    @if (textEditorBase is not null &&
          textEditorViewModel is not null)
     {
-        <CascadingValue Value="textEditor">
+        <CascadingValue Value="textEditorBase">
             <CascadingValue Value="textEditorViewModel">
 
                 <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
@@ -57,7 +57,7 @@
     }
     else
     {
-        if (textEditor is null)
+        if (textEditorBase is null)
         {
             <div>The @nameof(TextEditorBase) was null</div>
         }

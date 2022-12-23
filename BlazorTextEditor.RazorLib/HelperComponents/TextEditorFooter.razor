@@ -6,7 +6,7 @@
 
 <div class="bte_text-editor-footer @TextEditorService.GlobalThemeCssClassString">
     @{
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is not null &&

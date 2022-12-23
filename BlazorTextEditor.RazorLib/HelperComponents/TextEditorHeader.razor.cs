@@ -34,7 +34,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var localTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         if (textEditor is null ||
@@ -53,7 +53,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoCopyOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
@@ -74,7 +74,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoCutOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
@@ -95,7 +95,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoPasteOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
                 var textEditorViewModel = ReplaceableTextEditorViewModel;
                 
         if (textEditor is null || 
@@ -116,7 +116,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoRedoOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
                 var textEditorViewModel = ReplaceableTextEditorViewModel;
                 
         if (textEditor is null || 
@@ -137,7 +137,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoSaveOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
                 var textEditorViewModel = ReplaceableTextEditorViewModel;
                 
         if (textEditor is null || 
@@ -158,7 +158,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoUndoOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
@@ -179,7 +179,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoSelectAllOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
@@ -200,7 +200,7 @@ public partial class TextEditorHeader : TextEditorView
 
     private async Task DoRemeasureOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
@@ -221,7 +221,7 @@ public partial class TextEditorHeader : TextEditorView
     
     private async Task DoRefreshOnClick(MouseEventArgs arg)
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
@@ -249,7 +249,7 @@ public partial class TextEditorHeader : TextEditorView
     /// </summary>
     private bool GetUndoDisabledAttribute()
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
@@ -270,7 +270,7 @@ public partial class TextEditorHeader : TextEditorView
     /// </summary>
     private bool GetRedoDisabledAttribute()
     {
-        var textEditor = TextEditorStatesSelection.Value;
+        var textEditor = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (textEditor is null || 
