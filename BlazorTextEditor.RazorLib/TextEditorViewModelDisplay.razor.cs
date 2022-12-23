@@ -97,9 +97,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     protected override async Task OnParametersSetAsync()
     {
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
-        
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(
-            safeTextEditorViewModel?.PrimaryCursor ?? new TextEditorCursor(true));
 
         var currentGlobalFontSizeInPixels = TextEditorService
             .TextEditorStates
@@ -125,14 +122,24 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                         TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
                     });
             }
-            else if (_previousTextEditorViewModelKey != TextEditorViewModelKey)
-            {
-                _previousTextEditorViewModelKey = TextEditorViewModelKey;
-            
-                primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
-            
-                await safeTextEditorViewModel.CalculateVirtualizationResultAsync();
-            }
+        }
+        
+        if (safeTextEditorViewModel is not null &&
+            _previousTextEditorViewModelKey != TextEditorViewModelKey)
+        {
+            _previousTextEditorViewModelKey = TextEditorViewModelKey;
+
+            TextEditorService.SetViewModelWith(
+                TextEditorViewModelKey,
+                previousViewModel =>
+                {
+                    previousViewModel.PrimaryCursor.ShouldRevealCursor = true;
+                    
+                    return previousViewModel with
+                    {
+                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    };
+                });
         }
 
         await base.OnParametersSetAsync();
