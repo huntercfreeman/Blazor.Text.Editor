@@ -2,7 +2,7 @@
      style="@GetGutterSectionStyleCss()"
      id="@TextEditorViewModel.GutterElementId">
     
-    @foreach (var virtualizedRow in VirtualizationResult.Entries)
+    @foreach (var virtualizedRow in TextEditorViewModel.VirtualizationResult.Entries)
     {
         <div class="bte_gutter"
              style="@GetGutterStyleCss(virtualizedRow.Index, virtualizedRow.LeftInPixels)">

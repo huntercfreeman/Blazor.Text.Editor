@@ -14,22 +14,15 @@ namespace BlazorTextEditor.RazorLib.Scrollbar;
 public partial class ScrollbarHorizontal : ComponentBase, IDisposable
 {
     [Inject]
-    private IJSRuntime JsRuntime { get; set; } = null!;
-    [Inject]
     private IState<DragState> DragStateWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditor { get; set; } = null!;
+    public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
-    
-    [Parameter, EditorRequired]
-    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
@@ -55,7 +48,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     {
         var gutterWidthInPixels = GetGutterWidthInPixels();
 
-        var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
+        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width - 
                                   gutterWidthInPixels -
                                   ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
@@ -66,12 +59,12 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     
     private double GetGutterWidthInPixels()
     {
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
+        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
             .ToString()
             .Length;
 
         var gutterWidthInPixels = mostDigitsInARowLineNumber *
-                                  CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                  TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                                TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
@@ -83,24 +76,24 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     {
         var gutterWidthInPixels = GetGutterWidthInPixels();
 
-        var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
+        var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width - 
                                            gutterWidthInPixels -
                                            ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         // Proportional Left
-        var sliderProportionalLeftInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollLeftInPixels *
+        var sliderProportionalLeftInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft *
                                              scrollbarWidthInPixels /
-                                             VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels;
+                                             TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
 
         var left = $"left: {sliderProportionalLeftInPixels}px;";
         
         // Proportional Width
-        var pageWidth = WidthAndHeightOfTextEditor.WidthInPixels -
+        var pageWidth = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width -
                         gutterWidthInPixels;
         
         var sliderProportionalWidthInPixels = pageWidth *
                                               scrollbarWidthInPixels /
-                                              VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels;
+                                              TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
 
         var width = $"width: {sliderProportionalWidthInPixels}px;";
         
@@ -171,14 +164,14 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                 
                 var xPosition = Math.Max(0, relativeCoordinates.RelativeX);
 
-                if (xPosition > WidthAndHeightOfTextEditor.HeightInPixels)
-                    xPosition = WidthAndHeightOfTextEditor.HeightInPixels;
+                if (xPosition > TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
+                    xPosition = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
                 
-                var scrollbarWidthInPixels = WidthAndHeightOfTextEditor.WidthInPixels - 
+                var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width - 
                                              ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
 
                 var scrollLeft = xPosition *
-                                 VirtualizationResult.VirtualizationScrollPosition.ScrollWidthInPixels /
+                                 TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth /
                                  scrollbarWidthInPixels;
 
                 await TextEditorViewModel.SetScrollPositionAsync(scrollLeft, null);

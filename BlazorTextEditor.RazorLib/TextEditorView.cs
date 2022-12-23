@@ -29,7 +29,8 @@ public class TextEditorView : ComponentBase, IDisposable
             x.TextEditorViewModelKey == TextEditorViewModelKey);
 
     private TextEditorRenderStateKey _previousViewModelRenderStateKey = TextEditorRenderStateKey.Empty;
-    
+    private bool _disposed;
+
     protected override void OnInitialized()
     {
         TextEditorViewModelsCollectionWrap.StateChanged += TextEditorViewModelsCollectionWrapOnStateChanged;
@@ -56,8 +57,24 @@ public class TextEditorView : ComponentBase, IDisposable
         }
     }
     
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            TextEditorViewModelsCollectionWrap.StateChanged -= TextEditorViewModelsCollectionWrapOnStateChanged;
+        }
+
+        _disposed = true;
+    }
+    
     public void Dispose()
     {
-        TextEditorViewModelsCollectionWrap.StateChanged -= TextEditorViewModelsCollectionWrapOnStateChanged;
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

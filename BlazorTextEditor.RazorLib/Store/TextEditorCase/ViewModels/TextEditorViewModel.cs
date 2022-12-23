@@ -2,8 +2,10 @@
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 using BlazorTextEditor.RazorLib.Virtualization;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
@@ -11,23 +13,31 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 public record TextEditorViewModel(
     TextEditorViewModelKey TextEditorViewModelKey,
     TextEditorKey TextEditorKey,
-    ITextEditorService TextEditorService)
+    ITextEditorService TextEditorService,
+    VirtualizationResult<List<RichCharacter>> VirtualizationResult)
 {
-    public VirtualizationResult<List<RichCharacter>>? VirtualizationResult { get; set; }
+    private CancellationTokenSource _calculateVirtualizationResultCancellationTokenSource = new();
+    private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, CancellationToken.None);
     
+    // 'public' users should use the instance on the class 'VirtualizationResult<List<RichCharacter>>' as it is an immutable reference
+    private CharacterWidthAndRowHeight _characterWidthAndRowHeight = new(0, 0);
+
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
-
+    
     public string BodyElementId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
     public string PrimaryCursorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}_primary-cursor";
     public string GutterElementId => $"bte_text-editor-gutter_{TextEditorViewModelKey.Guid}";
-
-    public bool ShouldMeasureDimensions { get; set; } = true;
+    
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
-    public CharacterWidthAndRowHeight? CharacterWidthAndRowHeight { get; set; }
-    public WidthAndHeightOfTextEditor? WidthAndHeightOfBody { get; set; }
-
-    public async Task CursorMovePageTopAsync()
+    public bool ShouldMeasureDimensions { get; set; } = true;
+    
+    public void RememberCharacterWidthAndRowHeight(CharacterWidthAndRowHeight characterWidthAndRowHeight)
+    {
+        _characterWidthAndRowHeight = characterWidthAndRowHeight;
+    }
+    
+    public void CursorMovePageTop()
     {
         var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
 
@@ -39,7 +49,7 @@ public record TextEditorViewModel(
         }
     }
 
-    public async Task CursorMovePageBottomAsync()
+    public void CursorMovePageBottom()
     {
         var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
         var textEditor = TextEditorService.GetTextEditorBaseFromViewModelKey(
@@ -75,13 +85,13 @@ public record TextEditorViewModel(
     public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
     {
         await MutateScrollVerticalPositionByPixelsAsync(
-            pages * (WidthAndHeightOfBody?.HeightInPixels ?? 0));
+            pages * _mostRecentBodyMeasurementsInPixels.Height);
     }
 
     public async Task MutateScrollVerticalPositionByLinesAsync(double lines)
     {
         await MutateScrollVerticalPositionByPixelsAsync(
-            lines * (CharacterWidthAndRowHeight?.RowHeightInPixels ?? 0));
+            lines * _characterWidthAndRowHeight.RowHeightInPixels);
     }
     
     /// <summary>
@@ -102,25 +112,40 @@ public record TextEditorViewModel(
             PrimaryCursorContentId);
     }
     
-    public void CalculateVirtualizationResult(VirtualizationRequest request)
+    public async Task CalculateVirtualizationResultAsync()
     {
-        var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
+        var localCharacterWidthAndRowHeight = _characterWidthAndRowHeight;
         
-        if (CharacterWidthAndRowHeight is null ||
-            WidthAndHeightOfBody is null ||
+        _calculateVirtualizationResultCancellationTokenSource.Cancel();
+        _calculateVirtualizationResultCancellationTokenSource = new();
+        
+        var cancellationToken = _calculateVirtualizationResultCancellationTokenSource.Token;
+        
+        var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
+        var bodyMeasurementsInPixels = await TextEditorService
+                .GetElementMeasurementsInPixelsById(BodyElementId);
+
+        _mostRecentBodyMeasurementsInPixels = bodyMeasurementsInPixels; 
+
+        bodyMeasurementsInPixels = bodyMeasurementsInPixels with
+        {
+            MeasurementsExpiredCancellationToken = cancellationToken 
+        };
+        
+        if (localCharacterWidthAndRowHeight is null ||
             textEditorBase is null ||
-            request.CancellationToken.IsCancellationRequested)
+            bodyMeasurementsInPixels.MeasurementsExpiredCancellationToken.IsCancellationRequested)
         {
             return;
         }
 
         var verticalStartingIndex = (int)Math.Floor(
-            request.ScrollPosition.ScrollTopInPixels /
-            CharacterWidthAndRowHeight.RowHeightInPixels);
+            bodyMeasurementsInPixels.ScrollTop /
+            localCharacterWidthAndRowHeight.RowHeightInPixels);
 
         var verticalTake = (int)Math.Ceiling(
-            WidthAndHeightOfBody.HeightInPixels /
-            CharacterWidthAndRowHeight.RowHeightInPixels);
+            bodyMeasurementsInPixels.Height /
+            localCharacterWidthAndRowHeight.RowHeightInPixels);
         
         // Vertical Padding (render some offscreen data)
         {
@@ -143,12 +168,12 @@ public record TextEditorViewModel(
         }
 
         var horizontalStartingIndex = (int)Math.Floor(
-            request.ScrollPosition.ScrollLeftInPixels /
-            CharacterWidthAndRowHeight.CharacterWidthInPixels);
+            bodyMeasurementsInPixels.ScrollLeft /
+            localCharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var horizontalTake = (int)Math.Ceiling(
-            WidthAndHeightOfBody.WidthInPixels /
-            CharacterWidthAndRowHeight.CharacterWidthInPixels);
+            bodyMeasurementsInPixels.Width /
+            localCharacterWidthAndRowHeight.CharacterWidthInPixels);
 
         var virtualizedEntries = textEditorBase
             .GetRows(verticalStartingIndex, verticalTake)
@@ -191,40 +216,39 @@ public record TextEditorViewModel(
 
                 var widthInPixels =
                     horizontallyVirtualizedRow.Count *
-                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                    localCharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                 var leftInPixels =
                     // do not change this to localHorizontalStartingIndex
                     horizontalStartingIndex *
-                    CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                    localCharacterWidthAndRowHeight.CharacterWidthInPixels;
 
                 var topInPixels =
                     index *
-                    CharacterWidthAndRowHeight.RowHeightInPixels;
+                    localCharacterWidthAndRowHeight.RowHeightInPixels;
 
                 return new VirtualizationEntry<List<RichCharacter>>(
                     index,
                     horizontallyVirtualizedRow,
                     widthInPixels,
-                    CharacterWidthAndRowHeight.RowHeightInPixels,
+                    localCharacterWidthAndRowHeight.RowHeightInPixels,
                     leftInPixels,
                     topInPixels);
             }).ToImmutableArray();
 
         var totalWidth =
             textEditorBase.MostCharactersOnASingleRow *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            localCharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var totalHeight =
             textEditorBase.RowEndingPositions.Length *
-            CharacterWidthAndRowHeight.RowHeightInPixels;
+            localCharacterWidthAndRowHeight.RowHeightInPixels;
         
         // Add vertical margin so the user can scroll beyond the final row of content
         {
             var percentOfMarginScrollHeightByPageUnit = 0.4;
             
-            var marginScrollHeight =
-                (WidthAndHeightOfBody?.HeightInPixels ?? 0) *
+            var marginScrollHeight = bodyMeasurementsInPixels.Height *
                 percentOfMarginScrollHeightByPageUnit;
 
             totalHeight += marginScrollHeight;
@@ -232,7 +256,7 @@ public record TextEditorViewModel(
 
         var leftBoundaryWidthInPixels =
             horizontalStartingIndex *
-            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            localCharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var leftBoundary = new VirtualizationBoundary(
             leftBoundaryWidthInPixels,
@@ -242,7 +266,7 @@ public record TextEditorViewModel(
 
         var rightBoundaryLeftInPixels =
             leftBoundary.WidthInPixels +
-            CharacterWidthAndRowHeight.CharacterWidthInPixels *
+            localCharacterWidthAndRowHeight.CharacterWidthInPixels *
             horizontalTake;
 
         var rightBoundaryWidthInPixels =
@@ -257,7 +281,7 @@ public record TextEditorViewModel(
 
         var topBoundaryHeightInPixels =
             verticalStartingIndex *
-            CharacterWidthAndRowHeight.RowHeightInPixels;
+            localCharacterWidthAndRowHeight.RowHeightInPixels;
 
         var topBoundary = new VirtualizationBoundary(
             null,
@@ -267,7 +291,7 @@ public record TextEditorViewModel(
 
         var bottomBoundaryTopInPixels =
             topBoundary.HeightInPixels +
-            CharacterWidthAndRowHeight.RowHeightInPixels *
+            localCharacterWidthAndRowHeight.RowHeightInPixels *
             verticalTake;
 
         var bottomBoundaryHeightInPixels =
@@ -288,10 +312,11 @@ public record TextEditorViewModel(
                 rightBoundary,
                 topBoundary,
                 bottomBoundary,
-                request.ScrollPosition with
+                bodyMeasurementsInPixels with
                 {
-                    ScrollWidthInPixels = totalWidth,
-                    ScrollHeightInPixels = totalHeight
-                }));
+                    ScrollWidth = totalWidth,
+                    ScrollHeight = totalHeight
+                },
+                localCharacterWidthAndRowHeight));
     }
 }

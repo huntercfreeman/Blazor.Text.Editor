@@ -1,3 +1,7 @@
+using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
+
 namespace BlazorTextEditor.RazorLib.Virtualization;
 
 public interface IVirtualizationResultWithoutTypeMask
@@ -6,5 +10,6 @@ public interface IVirtualizationResultWithoutTypeMask
     public VirtualizationBoundary RightVirtualizationBoundary { get; init; }
     public VirtualizationBoundary TopVirtualizationBoundary { get; init; }
     public VirtualizationBoundary BottomVirtualizationBoundary { get; init; }
-    public VirtualizationScrollPosition VirtualizationScrollPosition { get; init; }
+    public ElementMeasurementsInPixels ElementMeasurementsInPixels { get; init; }
+    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; init; }
 }

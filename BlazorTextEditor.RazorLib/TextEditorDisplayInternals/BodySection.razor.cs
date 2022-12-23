@@ -10,11 +10,9 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class BodySection : ComponentBase
 {
     [CascadingParameter]
-    public TextEditorBase TextEditor { get; set; } = null!;
+    public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     [Parameter, EditorRequired]
     public bool GlobalShowNewlines { get; set; }
@@ -22,19 +20,17 @@ public partial class BodySection : ComponentBase
     public string TabKeyOutput { get; set; } = null!;
     [Parameter, EditorRequired]
     public string SpaceKeyOutput { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
-    private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
+    private VirtualizationDisplay? _virtualizationDisplay;
 
     private string GetBodyStyleCss()
     {
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
+        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
             .ToString()
             .Length;
 
         var gutterWidthInPixels = mostDigitsInARowLineNumber *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                  TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;

@@ -112,24 +112,28 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             _previousGlobalFontSizeInPixels is null ||
             _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
 
-        if (safeTextEditorViewModel is not null && dirtyGlobalFontSizeInPixels)
+        if (safeTextEditorViewModel is not null)
         {
-            _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
-            _previousShouldRemeasureFlag = ShouldRemeasureFlag;
+            if (dirtyGlobalFontSizeInPixels)
+            {
+                _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
 
-            safeTextEditorViewModel.ShouldMeasureDimensions = true;
-            await InvokeAsync(StateHasChanged);
+                safeTextEditorViewModel.RememberCharacterWidthAndRowHeight(await JsRuntime
+                    .InvokeAsync<CharacterWidthAndRowHeight>(
+                        "blazorTextEditor.measureCharacterWidthAndRowHeight",
+                        MeasureCharacterWidthAndRowHeightElementId,
+                        _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
 
-            await ForceVirtualizationInvocation();
-        }
-
-        if (_previousTextEditorViewModelKey != TextEditorViewModelKey)
-        {
-            _previousTextEditorViewModelKey = TextEditorViewModelKey;
+                await safeTextEditorViewModel.CalculateVirtualizationResultAsync();
+            }
+            else if (_previousTextEditorViewModelKey != TextEditorViewModelKey)
+            {
+                _previousTextEditorViewModelKey = TextEditorViewModelKey;
             
-            primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
+                primaryCursorSnapshot.UserCursor.ShouldRevealCursor = true;
             
-            await ForceVirtualizationInvocation();
+                await safeTextEditorViewModel.CalculateVirtualizationResultAsync();
+            }
         }
 
         await base.OnParametersSetAsync();
@@ -161,39 +165,11 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (textEditorViewModel is not null && 
             textEditorViewModel.ShouldMeasureDimensions)
         {
-            // Capture 'var textEditorModel' early to get a snapshot at
-            // this instant of time what the state is as it might change.
-            var textEditorModel = TextEditorStatesSelection.Value;
-            
-            textEditorViewModel.CharacterWidthAndRowHeight = await JsRuntime
+            textEditorViewModel.RememberCharacterWidthAndRowHeight(await JsRuntime
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
                     MeasureCharacterWidthAndRowHeightElementId,
-                    _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
-
-            // TODO: Change the name of 'WidthAndHeightOfTextEditor' class as it is confusingly being used for the TextEditor in its entirety and the body (body meaning entirety - gutter)
-            _widthAndHeightOfTextEditorEntirety = await JsRuntime
-                .InvokeAsync<WidthAndHeightOfTextEditor>(
-                    "blazorTextEditor.measureWidthAndHeightOfTextEditor",
-                    ContentElementId);
-
-            var mostDigitsInARowLineNumber = (textEditorModel?.RowCount ?? 0)
-                .ToString()
-                .Length;
-
-            var gutterWidthInPixels = mostDigitsInARowLineNumber *
-                                      textEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-            gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                                   TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
-            var widthOfBody = _widthAndHeightOfTextEditorEntirety.WidthInPixels - gutterWidthInPixels;
-            
-            textEditorViewModel.WidthAndHeightOfBody = new WidthAndHeightOfTextEditor
-            {
-                WidthInPixels = widthOfBody,
-                HeightInPixels = _widthAndHeightOfTextEditorEntirety.HeightInPixels
-            };
+                    _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
                 
             {
                 textEditorViewModel.ShouldMeasureDimensions = false;
@@ -211,7 +187,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (textEditorViewModel is null)
             return;
         
-        textEditorViewModel.CalculateVirtualizationResult();
+        await textEditorViewModel.CalculateVirtualizationResultAsync();
     }
     
     private async void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
@@ -560,9 +536,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 mouseEventArgs.ClientX,
                 mouseEventArgs.ClientY);
 
-        if (safeTextEditorViewModel.CharacterWidthAndRowHeight is null)
-            return (0, 0);
-
         var positionX = RelativeCoordinatesOnClick.RelativeX;
         var positionY = RelativeCoordinatesOnClick.RelativeY;
 
@@ -579,14 +552,14 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         }
 
         var columnIndexDouble = positionX / 
-            safeTextEditorViewModel.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            safeTextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var columnIndexInt = (int)Math.Round(
             columnIndexDouble,
             MidpointRounding.AwayFromZero);
 
         var rowIndex = (int)(positionY / 
-            safeTextEditorViewModel.CharacterWidthAndRowHeight.RowHeightInPixels);
+            safeTextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
 
         rowIndex = rowIndex > safeTextEditorReference.RowCount - 1
             ? safeTextEditorReference.RowCount - 1

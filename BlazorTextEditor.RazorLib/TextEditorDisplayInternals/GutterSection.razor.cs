@@ -10,28 +10,23 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class GutterSection : ComponentBase
 {
     [CascadingParameter]
-    public TextEditorBase TextEditor { get; set; } = null!;
+    public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
-
-    [Parameter, EditorRequired]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         var top =
-            $"top: {index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top: {index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
         var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
+        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
             .ToString()
             .Length;
 
         var widthInPixels = mostDigitsInARowLineNumber *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
@@ -50,12 +45,12 @@ public partial class GutterSection : ComponentBase
     
     private string GetGutterSectionStyleCss()
     {
-        var mostDigitsInARowLineNumber = TextEditor.RowCount
+        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
             .ToString()
             .Length;
 
         var widthInPixels = mostDigitsInARowLineNumber *
-                            CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;

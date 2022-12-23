@@ -11,8 +11,8 @@
     var textEditorViewModel = ReplaceableTextEditorViewModel;
 }
 
-<div style="@GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
-     class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
+<div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
+     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @ClassCssString">
     
     @if (textEditor is not null &&
          textEditorViewModel is not null)

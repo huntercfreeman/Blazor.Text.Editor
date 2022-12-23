@@ -21,15 +21,8 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
     private IDispatcher Dispatcher { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditor { get; set; } = null!;
+    public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
-    
-    [Parameter, EditorRequired]
-    public WidthAndHeightOfTextEditor WidthAndHeightOfTextEditor { get; set; } = null!;
-    [Parameter, EditorRequired]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
@@ -53,22 +46,22 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
     
     private string GetSliderVerticalStyleCss()
     {
-        var scrollbarHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels - 
+        var scrollbarHeightInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height - 
                                       ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         // Proportional Top
-        var sliderProportionalTopInPixels = VirtualizationResult.VirtualizationScrollPosition.ScrollTopInPixels *
+        var sliderProportionalTopInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollTop *
                                             scrollbarHeightInPixels /
-                                            VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
+                                            TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
               
         var top = $"top: {sliderProportionalTopInPixels}px;";
         
         // Proportional Height
-        var pageHeight = WidthAndHeightOfTextEditor.HeightInPixels;
+        var pageHeight = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
         
         var sliderProportionalHeightInPixels = pageHeight *
                                                scrollbarHeightInPixels /
-                                               VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels;
+                                               TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
 
         var height = $"height: {sliderProportionalHeightInPixels}px;";
         
@@ -139,14 +132,14 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
              
                 var yPosition = Math.Max(0, relativeCoordinates.RelativeY);
 
-                if (yPosition > WidthAndHeightOfTextEditor.HeightInPixels)
-                    yPosition = WidthAndHeightOfTextEditor.HeightInPixels;
+                if (yPosition > TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
+                    yPosition = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
                 
-                var scrollbarHeightInPixels = WidthAndHeightOfTextEditor.HeightInPixels - 
+                var scrollbarHeightInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height - 
                                               ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
     
                 var scrollTop = yPosition *
-                                VirtualizationResult.VirtualizationScrollPosition.ScrollHeightInPixels /
+                                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight /
                                 scrollbarHeightInPixels;
     
                 await TextEditorViewModel.SetScrollPositionAsync(null, scrollTop);

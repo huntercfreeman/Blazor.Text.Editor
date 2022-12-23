@@ -19,6 +19,7 @@ using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
+using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
@@ -208,10 +209,13 @@ public interface ITextEditorService : IDisposable
     public ImmutableArray<TextEditorViewModel> GetViewModelsForTextEditorBase(TextEditorKey textEditorKey);    
     public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey);
     public void SetViewModelVirtualizationResult(TextEditorViewModelKey textEditorViewModelKey, VirtualizationResult<List<RichCharacter>> virtualizationResult);
+    public void SetViewModelShouldMeasureDimensions(TextEditorViewModelKey textEditorViewModelKey, bool shouldMeasureDimensions);
 
     public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task MutateScrollVerticalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task SetScrollPositionAsync(string bodyElementId, string gutterElementId, double? scrollLeft, double? scrollTop);
+    
+    public Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId);
     
     public Task FocusPrimaryCursorAsync(string primaryCursorContentId);
     

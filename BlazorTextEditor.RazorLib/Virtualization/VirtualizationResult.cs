@@ -1,4 +1,6 @@
 ﻿using System.Collections.Immutable;
+using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Measurement;
 
 namespace BlazorTextEditor.RazorLib.Virtualization;
 
@@ -8,5 +10,6 @@ public record VirtualizationResult<T>(
         VirtualizationBoundary RightVirtualizationBoundary,
         VirtualizationBoundary TopVirtualizationBoundary,
         VirtualizationBoundary BottomVirtualizationBoundary,
-        VirtualizationScrollPosition VirtualizationScrollPosition)
+        ElementMeasurementsInPixels ElementMeasurementsInPixels,
+        CharacterWidthAndRowHeight CharacterWidthAndRowHeight)
     : IVirtualizationResultWithoutTypeMask;

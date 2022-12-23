@@ -21,6 +21,7 @@ using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
+using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
@@ -485,11 +486,22 @@ public class TextEditorService : ITextEditorService
             .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
     }
 
-    public void SetViewModelVirtualizationResult(TextEditorViewModelKey textEditorViewModelKey, VirtualizationResult<List<RichCharacter>> virtualizationResult)
+    public void SetViewModelVirtualizationResult(
+        TextEditorViewModelKey textEditorViewModelKey,
+        VirtualizationResult<List<RichCharacter>> virtualizationResult)
     {
         _dispatcher.Dispatch(new SetViewVirtualizationResultAction(
             textEditorViewModelKey,
             virtualizationResult));
+    }
+
+    public void SetViewModelShouldMeasureDimensions(
+        TextEditorViewModelKey textEditorViewModelKey,
+        bool shouldMeasureDimensions)
+    {
+        _dispatcher.Dispatch(new SetViewModelShouldMeasureDimensionsAction(
+            textEditorViewModelKey,
+            shouldMeasureDimensions));
     }
 
     public async Task MutateScrollHorizontalPositionByPixelsAsync(
@@ -551,6 +563,13 @@ public class TextEditorService : ITextEditorService
         // TODO: await ForceVirtualizationInvocation();
     }
 
+    public async Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId)
+    {
+        return await _jsRuntime.InvokeAsync<ElementMeasurementsInPixels>(
+            "getElementMeasurementsInPixelsById",
+            elementId);
+    }
+    
     public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)
     {
         await _jsRuntime.InvokeVoidAsync(

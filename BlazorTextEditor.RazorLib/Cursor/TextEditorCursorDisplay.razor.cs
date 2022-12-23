@@ -32,20 +32,6 @@ public partial class TextEditorCursorDisplay : TextEditorView
     public RenderFragment? OnContextMenuRenderFragment { get; set; }
     [Parameter]
     public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
-    /// <summary>
-    /// <see cref="GetMostRecentlyRenderedVirtualizationResultFunc"/> is a Func because
-    /// the way <see cref="TextEditorDisplay"/> sets the <see cref="TextEditorDisplay._mostRecentlyRenderedVirtualizationResult"/>
-    /// is through an interaction with the UserInterface that feels rather hacky.
-    /// <br/><br/>
-    /// Thereby a func will get the value once the value is updated by rendering the virtualization display
-    /// and without having to render the cursor.
-    /// </summary>
-    [Parameter]
-    public Func<VirtualizationResult<List<RichCharacter>>?> GetMostRecentlyRenderedVirtualizationResultFunc
-    {
-        get;
-        set;
-    } = null!;
     
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
@@ -60,6 +46,7 @@ public partial class TextEditorCursorDisplay : TextEditorView
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
     private int _textEditorMenuShouldGetFocusRequestCount;
+    private bool _disposedValue;
 
     /// <summary>
     /// Scroll by 2 more rows than necessary to bring an out of view row into view.
@@ -302,15 +289,12 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     return;
                 }
                 
-                var mostRecentlyRenderedVirtualizationResult = GetMostRecentlyRenderedVirtualizationResultFunc
-                    .Invoke();
-                
                 var textEditorCursorSnapshot = new TextEditorCursorSnapshot(TextEditorCursor);
                 
-                if (mostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false)
+                if (textEditorViewModel.VirtualizationResult.Entries.Any())
                 {
-                    var firstEntry = mostRecentlyRenderedVirtualizationResult.Entries.First();
-                    var lastEntry = mostRecentlyRenderedVirtualizationResult.Entries.Last();
+                    var firstEntry = textEditorViewModel.VirtualizationResult.Entries.First();
+                    var lastEntry = textEditorViewModel.VirtualizationResult.Entries.Last();
                     
                     var lowerRowBoundInclusive = firstEntry.Index;
                     var upperRowBoundExclusive = lastEntry.Index + 1;
@@ -348,8 +332,8 @@ public partial class TextEditorCursorDisplay : TextEditorView
                     
                     // Column is out of view
                     {
-                        var lowerColumnPixelInclusive = mostRecentlyRenderedVirtualizationResult
-                            .VirtualizationScrollPosition.ScrollLeftInPixels;
+                        var lowerColumnPixelInclusive = textEditorViewModel
+                            .VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft;
 
                         var upperColumnPixelExclusive =
                             lowerColumnPixelInclusive + WidthAndHeightOfTextEditor.WidthInPixels + 
@@ -479,12 +463,17 @@ public partial class TextEditorCursorDisplay : TextEditorView
     
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
+        if (!_disposedValue)
         {
-            _blinkingCursorCancellationTokenSource.Cancel();
-            _checkCursorIsInViewCancellationTokenSource.Cancel();
+            if (disposing)
+            {
+                _blinkingCursorCancellationTokenSource.Cancel();
+                _checkCursorIsInViewCancellationTokenSource.Cancel();
+            }
+
+            _disposedValue = true;
         }
-        
-        base.Dispose(true);
+
+        base.Dispose(disposing);
     }
 }

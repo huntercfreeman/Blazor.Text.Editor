@@ -11,11 +11,9 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class RowSection : ComponentBase
 {
     [CascadingParameter]
-    public TextEditorBase TextEditor { get; set; } = null!;
+    public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; } = null!;
-    [CascadingParameter]
-    public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; set; } = null!;
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
     [Parameter, EditorRequired]
     public bool GlobalShowNewlines { get; set; }
@@ -23,15 +21,13 @@ public partial class RowSection : ComponentBase
     public string TabKeyOutput { get; set; } = null!;
     [Parameter, EditorRequired]
     public string SpaceKeyOutput { get; set; } = null!;
-    [Parameter, EditorRequired]
-    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
         var top =
-            $"top:{index * CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top:{index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
         var height =
-            $"height: {CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
         var left = $"left: {virtualizedRowLeftInPixels}px;";
 
@@ -40,7 +36,7 @@ public partial class RowSection : ComponentBase
     
     private string GetCssClass(byte decorationByte)
     {
-        return TextEditor.DecorationMapper.Map(decorationByte);
+        return TextEditorBase.DecorationMapper.Map(decorationByte);
     }
     
     private void AppendTextEscaped(

@@ -208,8 +208,8 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand CursorMovePageBottom = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorViewModel
-                .CursorMovePageBottomAsync();
+            textEditorCommandParameter.TextEditorViewModel
+                .CursorMovePageBottom();
         },
         false,
         "Move Cursor to Bottom of the Page",
@@ -217,8 +217,8 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand CursorMovePageTop = new(async textEditorCommandParameter =>
         {
-            await textEditorCommandParameter.TextEditorViewModel
-                .CursorMovePageTopAsync();
+            textEditorCommandParameter.TextEditorViewModel
+                .CursorMovePageTop();
         },
         false,
         "Move Cursor to Top of the Page",
