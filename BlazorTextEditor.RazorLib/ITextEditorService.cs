@@ -15,6 +15,7 @@ using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -24,6 +25,7 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Virtualization;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -256,9 +258,9 @@ public interface ITextEditorService : IDisposable
     public void SetActiveViewModelOfGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     
     public void RegisterViewModel(TextEditorViewModelKey textEditorViewModelKey, TextEditorKey textEditorKey);
-    public ImmutableArray<TextEditorViewModel> GetViewModelsForTextEditorBase(TextEditorKey textEditorKey);
-    
+    public ImmutableArray<TextEditorViewModel> GetViewModelsForTextEditorBase(TextEditorKey textEditorKey);    
     public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey);
+    public void SetViewModelVirtualizationResult(TextEditorViewModelKey textEditorViewModelKey, VirtualizationResult<List<RichCharacter>> virtualizationResult);
 
     public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task MutateScrollVerticalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);

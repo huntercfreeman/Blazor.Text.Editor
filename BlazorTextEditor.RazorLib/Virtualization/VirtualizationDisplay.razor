@@ -1,17 +1,17 @@
 @if (UseHorizontalVirtualization)
 {
     <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@LeftBoundaryElementId"
-                                   VirtualizationBoundary="_result.LeftVirtualizationBoundary"/>
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.LeftVirtualizationBoundary"/>
 
     <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@RightBoundaryElementId"
-                                   VirtualizationBoundary="_result.RightVirtualizationBoundary"/>
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.RightVirtualizationBoundary"/>
 }
 
 @if (UseVerticalVirtualization)
 {
     <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@TopBoundaryElementId"
-                                   VirtualizationBoundary="_result.TopVirtualizationBoundary"/>
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.TopVirtualizationBoundary"/>
 
     <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@BottomBoundaryElementId"
-                                   VirtualizationBoundary="_result.BottomVirtualizationBoundary"/>
+                                   VirtualizationBoundary="VirtualizationResultWithoutTypeMask.BottomVirtualizationBoundary"/>
 }

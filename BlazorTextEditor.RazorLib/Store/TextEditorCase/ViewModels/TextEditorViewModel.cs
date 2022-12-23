@@ -13,8 +13,7 @@ public record TextEditorViewModel(
     TextEditorKey TextEditorKey,
     ITextEditorService TextEditorService)
 {
-    // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
-    public VirtualizationResult<List<RichCharacter>>? MostRecentlyRenderedVirtualizationResult { get; set; }
+    public VirtualizationResult<List<RichCharacter>>? VirtualizationResult { get; set; }
     
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
@@ -30,7 +29,7 @@ public record TextEditorViewModel(
 
     public async Task CursorMovePageTopAsync()
     {
-        var localMostRecentlyRenderedVirtualizationResult = MostRecentlyRenderedVirtualizationResult;
+        var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
 
         if (localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false)
         {
@@ -42,7 +41,7 @@ public record TextEditorViewModel(
 
     public async Task CursorMovePageBottomAsync()
     {
-        var localMostRecentlyRenderedVirtualizationResult = MostRecentlyRenderedVirtualizationResult;
+        var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
         var textEditor = TextEditorService.GetTextEditorBaseFromViewModelKey(
             TextEditorViewModelKey);
 
@@ -103,8 +102,7 @@ public record TextEditorViewModel(
             PrimaryCursorContentId);
     }
     
-    private VirtualizationResult<List<RichCharacter>>? EntriesProvider(
-        VirtualizationRequest request)
+    public void CalculateVirtualizationResult(VirtualizationRequest request)
     {
         var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
         
@@ -113,7 +111,7 @@ public record TextEditorViewModel(
             textEditorBase is null ||
             request.CancellationToken.IsCancellationRequested)
         {
-            return null;
+            return;
         }
 
         var verticalStartingIndex = (int)Math.Floor(
@@ -282,16 +280,18 @@ public record TextEditorViewModel(
             0,
             bottomBoundaryTopInPixels);
         
-        return new VirtualizationResult<List<RichCharacter>>(
-            virtualizedEntries,
-            leftBoundary,
-            rightBoundary,
-            topBoundary,
-            bottomBoundary,
-            request.ScrollPosition with
-            {
-                ScrollWidthInPixels = totalWidth,
-                ScrollHeightInPixels = totalHeight
-            });
+        TextEditorService.SetViewModelVirtualizationResult(
+            TextEditorViewModelKey,
+            new VirtualizationResult<List<RichCharacter>>(
+                virtualizedEntries,
+                leftBoundary,
+                rightBoundary,
+                topBoundary,
+                bottomBoundary,
+                request.ScrollPosition with
+                {
+                    ScrollWidthInPixels = totalWidth,
+                    ScrollHeightInPixels = totalHeight
+                }));
     }
 }

@@ -141,19 +141,30 @@ window.blazorTextEditor = {
             textEditorGutter.scrollTop = textEditorBody.scrollTop;
         }
     },
-    getScrollPosition: function (textEditorBodyId) {
-        let textEditorContent = document.getElementById(textEditorBodyId);
+    getElementMeasurementsInPixelsById: function (elementId) {
+        let elementReference = document.getElementById(elementId);
 
-        if (!textEditorContent) {
+        return this.getElementMeasurementsInPixelsByElementReference(elementReference);
+    },
+    getElementMeasurementsInPixelsByElementReference: function (elementReference) {
+        if (!elementReference) {
             return {
-                ScrollLeftInPixels: 0,
-                ScrollTopInPixels: 0
+                ScrollLeft: 0,
+                ScrollTop: 0,
+                ScrollWidth: 0,
+                ScrollHeight: 0,
+                Width: 0,
+                Height: 0,
             };
         }
 
         return {
-            ScrollLeftInPixels: textEditorContent.scrollLeft,
-            ScrollTopInPixels: textEditorContent.scrollTop
+            ScrollLeft: elementReference.scrollLeft,
+            ScrollTop: elementReference.scrollTop,
+            ScrollWidth: elementReference.scrollWidth,
+            ScrollHeight: elementReference.scrollHeight,
+            Width: elementReference.offsetWidth,
+            Height: elementReference.offsetHeight,
         };
     }
 }

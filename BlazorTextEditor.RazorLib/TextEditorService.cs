@@ -18,6 +18,7 @@ using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Row;
@@ -27,6 +28,7 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.JSInterop;
 
@@ -500,6 +502,13 @@ public class TextEditorService : ITextEditorService
 
         return localTextEditorStates.TextEditorList
             .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+    }
+
+    public void SetViewModelVirtualizationResult(TextEditorViewModelKey textEditorViewModelKey, VirtualizationResult<List<RichCharacter>> virtualizationResult)
+    {
+        _dispatcher.Dispatch(new SetViewVirtualizationResultAction(
+            textEditorViewModelKey,
+            virtualizationResult));
     }
 
     public async Task MutateScrollHorizontalPositionByPixelsAsync(

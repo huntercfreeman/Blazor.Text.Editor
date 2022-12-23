@@ -320,8 +320,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (textEditorViewModel is null)
             return;
         
-        _virtualizationDisplay?.InvokeEntriesProviderFunc();
-        _virtualizationDisplay?.ForceReadScrollPosition(textEditorViewModel.BodyElementId);
+        textEditorViewModel.CalculateVirtualizationResult();
     }
     
     private async void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
