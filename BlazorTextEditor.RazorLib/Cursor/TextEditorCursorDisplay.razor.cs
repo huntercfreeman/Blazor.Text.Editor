@@ -325,9 +325,27 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                     if (setScrollLeftTo is not null || 
                         setScrollTopTo is not null)
                     {
+                        if (setScrollLeftTo is not null &&
+                            (setScrollLeftTo + textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width >
+                             textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth))
+                        {
+                            setScrollLeftTo = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth -
+                                              textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+                        }
+                        
+                        if (setScrollTopTo is not null &&
+                            (setScrollTopTo + textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height >
+                             textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight))
+                        {
+                            setScrollTopTo = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight -
+                                              textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
+                        }
+                        
                         await textEditorViewModel.SetScrollPositionAsync(
                             setScrollLeftTo,
                             setScrollTopTo);
+
+                        await textEditorViewModel.CalculateVirtualizationResultAsync();
 
                         await Task.Delay(_checkCursorIsInViewDelay);
                     }
