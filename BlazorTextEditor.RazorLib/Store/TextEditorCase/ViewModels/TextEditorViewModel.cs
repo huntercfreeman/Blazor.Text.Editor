@@ -63,6 +63,8 @@ public record TextEditorViewModel(
             BodyElementId,
             GutterElementId,
             pixels);
+        
+        await CalculateVirtualizationResultAsync();
     }
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
@@ -71,6 +73,8 @@ public record TextEditorViewModel(
             BodyElementId,
             GutterElementId,
             pixels);
+        
+        await CalculateVirtualizationResultAsync();
     }
 
     public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
@@ -95,12 +99,16 @@ public record TextEditorViewModel(
             GutterElementId,
             scrollLeft,
             scrollTop);
+        
+        await CalculateVirtualizationResultAsync();
     }
 
     public async Task FocusTextEditorAsync()
     {
         await TextEditorService.FocusPrimaryCursorAsync(
             PrimaryCursorContentId);
+
+        await CalculateVirtualizationResultAsync();
     }
     
     public async Task CalculateVirtualizationResultAsync()
@@ -311,7 +319,8 @@ public record TextEditorViewModel(
                 TextEditorViewModelKey,
                 previousViewModel => previousViewModel with
                 {
-                    VirtualizationResult = virtualizationResult
+                    VirtualizationResult = virtualizationResult,
+                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
                 });
     }
 }

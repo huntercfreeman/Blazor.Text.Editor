@@ -31,66 +31,41 @@ public class TextEditorView : FluxorComponent, IDisposable
     
     public TextEditorBase? MutableReferenceToTextEditor => TextEditorService
         .GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
+    
     public TextEditorViewModel? ReplaceableTextEditorViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
         .FirstOrDefault(x => 
             x.TextEditorViewModelKey == TextEditorViewModelKey);
 
     private TextEditorRenderStateKey _previousViewModelRenderStateKey = TextEditorRenderStateKey.Empty;
-    //private bool _disposed;
+    private bool _disposed;
 
-    // protected override void OnInitialized()
-    // {
-    //     TextEditorStatesSelection.StateChanged += TextEditorStatesSelectionOnStateChanged;
-    //     TextEditorViewModelsCollectionWrap.StateChanged += TextEditorViewModelsCollectionWrapOnStateChanged;
-    //     
-    //     TextEditorStatesWrap
-    //         .Select(textEditorStates => textEditorStates.TextEditorList
-    //             .SingleOrDefault(x => 
-    //                 x.Key == (ReplaceableTextEditorViewModel?.TextEditorKey ?? TextEditorKey.Empty)));
-    //     
-    //     base.OnInitialized();
-    // }
+    protected override void OnInitialized()
+    {
+        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
+        
+        base.OnInitialized();
+    }
 
-    // private void TextEditorStatesSelectionOnStateChanged(object? sender, EventArgs e)
-    // {
-    //     InvokeAsync(StateHasChanged);
-    // }
-    //
-    // private void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
-    // {
-    //     var viewModel = ReplaceableTextEditorViewModel;
-    //
-    //     var currentViewModelRenderStateKey = viewModel?.TextEditorRenderStateKey ??
-    //                                          TextEditorRenderStateKey.Empty;
-    //     
-    //     if (_previousViewModelRenderStateKey != currentViewModelRenderStateKey)
-    //     {
-    //         _previousViewModelRenderStateKey = currentViewModelRenderStateKey;
-    //         InvokeAsync(StateHasChanged);
-    //     }
-    // }
+    private async void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        var viewModel = ReplaceableTextEditorViewModel;
+        
+        if (viewModel is not null)
+            await viewModel.CalculateVirtualizationResultAsync();
+    }
     
-    // TODO: Commenting out the event logic going to try FluxorComponent
-    //
-    // protected virtual void Dispose(bool disposing)
-    // {
-    //     if (_disposed)
-    //     {
-    //         return;
-    //     }
-    //
-    //     if (disposing)
-    //     {
-    //         TextEditorViewModelsCollectionWrap.StateChanged -= TextEditorViewModelsCollectionWrapOnStateChanged;
-    //         TextEditorStatesSelection.StateChanged -= TextEditorStatesSelectionOnStateChanged;
-    //     }
-    //
-    //     _disposed = true;
-    // }
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
     
-    // public void Dispose()
-    // {
-    //     Dispose(true);
-    //     GC.SuppressFinalize(this);
-    // }
+        if (disposing)
+        {
+            TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
+        }
+    
+        _disposed = true;
+    }
 }
