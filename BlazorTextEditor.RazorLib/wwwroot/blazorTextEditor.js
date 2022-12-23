@@ -101,6 +101,13 @@ window.blazorTextEditor = {
         }
         
         textEditorBody.scrollTop += pixels;
+        
+        if (textEditorBody.scrollTop + textEditorBody.offsetHeight > 
+            textEditorBody.scrollHeight)
+        {
+            textEditorBody.scrollTop = textEditorBody.scrollHeight -
+                textEditorBody.offsetHeight;
+        }
 
         if (textEditorGutter) {
             textEditorGutter.scrollTop = textEditorBody.scrollTop;
@@ -115,10 +122,6 @@ window.blazorTextEditor = {
         }
         
         textEditorBody.scrollLeft += pixels;
-
-        if (textEditorGutter) {
-            textEditorGutter.scrollLeft = textEditorBody.scrollLeft;
-        }
     },
     setScrollPosition: function (textEditorBodyId, gutterElementId, scrollLeft, scrollTop) {
         let textEditorBody = document.getElementById(textEditorBodyId);
@@ -136,8 +139,21 @@ window.blazorTextEditor = {
             textEditorBody.scrollTop = scrollTop;
         }
 
+        if (textEditorBody.scrollTop + textEditorBody.offsetHeight > 
+            textEditorBody.scrollHeight)
+        {
+            textEditorBody.scrollTop = textEditorBody.scrollHeight -
+                textEditorBody.offsetHeight;
+        }
+        
+        if (textEditorBody.scrollLeft + textEditorBody.offsetWidth > 
+            textEditorBody.scrollWidth)
+        {
+            textEditorBody.scrollLeft = textEditorBody.scrollWidth -
+                textEditorBody.offsetWidth;
+        }
+
         if (textEditorGutter) {
-            textEditorGutter.scrollLeft = textEditorBody.scrollLeft;
             textEditorGutter.scrollTop = textEditorBody.scrollTop;
         }
     },

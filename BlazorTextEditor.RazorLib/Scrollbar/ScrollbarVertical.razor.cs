@@ -141,6 +141,13 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
                 var scrollTop = yPosition *
                                 TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight /
                                 scrollbarHeightInPixels;
+                
+                if (scrollTop + TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height > 
+                    TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight)
+                {
+                    scrollTop = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight -
+                                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
+                }
     
                 await TextEditorViewModel.SetScrollPositionAsync(null, scrollTop);
             }

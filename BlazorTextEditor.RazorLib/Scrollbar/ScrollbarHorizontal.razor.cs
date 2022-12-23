@@ -151,7 +151,14 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                 var scrollLeft = xPosition *
                                  TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth /
                                  scrollbarWidthInPixels;
-
+        
+                if (scrollLeft + TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width > 
+                    TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
+                {
+                    scrollLeft = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth -
+                                 TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+                }
+                
                 await TextEditorViewModel.SetScrollPositionAsync(scrollLeft, null);
             }
             else
