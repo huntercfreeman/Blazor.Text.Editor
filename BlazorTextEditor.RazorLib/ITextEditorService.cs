@@ -208,8 +208,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterViewModel(TextEditorViewModelKey textEditorViewModelKey, TextEditorKey textEditorKey);
     public ImmutableArray<TextEditorViewModel> GetViewModelsForTextEditorBase(TextEditorKey textEditorKey);    
     public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey);
-    public void SetViewModelVirtualizationResult(TextEditorViewModelKey textEditorViewModelKey, VirtualizationResult<List<RichCharacter>> virtualizationResult);
-    public void SetViewModelShouldMeasureDimensions(TextEditorViewModelKey textEditorViewModelKey, bool shouldMeasureDimensions);
+    public void SetViewModelWith(TextEditorViewModelKey textEditorViewModelKey, Func<TextEditorViewModel, TextEditorViewModel> withFunc);
 
     public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task MutateScrollVerticalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);

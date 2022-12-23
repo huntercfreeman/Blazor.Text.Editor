@@ -10,6 +10,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
@@ -82,6 +83,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
+    private int _onAfterRenderCounter;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
     private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => 
@@ -97,6 +99,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     
     protected override async Task OnParametersSetAsync()
     {
+        Console.WriteLine("Enter OnParametersSetAsync");
+        
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
         
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(
@@ -118,13 +122,13 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             {
                 _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
 
-                safeTextEditorViewModel.RememberCharacterWidthAndRowHeight(await JsRuntime
-                    .InvokeAsync<CharacterWidthAndRowHeight>(
-                        "blazorTextEditor.measureCharacterWidthAndRowHeight",
-                        MeasureCharacterWidthAndRowHeightElementId,
-                        MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
-
-                await safeTextEditorViewModel.CalculateVirtualizationResultAsync();
+                TextEditorService.SetViewModelWith(
+                    TextEditorViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        ShouldMeasureDimensions = true,
+                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    });
             }
             else if (_previousTextEditorViewModelKey != TextEditorViewModelKey)
             {
@@ -139,23 +143,17 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         await base.OnParametersSetAsync();
     }
 
-    protected override void OnInitialized()
-    {
-        // base will select the
-        // TreeViewBase from the TreeViewKey
-        base.OnInitialized();
-
-        TextEditorStatesSelection.SelectedValueChanged += TextEditorStatesSelectionOnSelectedValueChanged;
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _onAfterRenderCounter++;
+        Console.WriteLine("OnAfterRenderAsync Enter");
+        
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (firstRender && 
             textEditorViewModel is not null)
         {
-            await ForceVirtualizationInvocation();
+            await textEditorViewModel.CalculateVirtualizationResultAsync();
 
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.preventDefaultOnWheelEvents",
@@ -165,34 +163,28 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (textEditorViewModel is not null && 
             textEditorViewModel.ShouldMeasureDimensions)
         {
-            textEditorViewModel.RememberCharacterWidthAndRowHeight(await JsRuntime
+            Console.WriteLine("OnAfterRenderAsync textEditorViewModel.ShouldMeasureDimensions "+ textEditorViewModel.ShouldMeasureDimensions);
+            
+            var characterWidthAndRowHeight = await JsRuntime
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
                     MeasureCharacterWidthAndRowHeightElementId,
-                    MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
+                    MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
                 
-            {
-                textEditorViewModel.ShouldMeasureDimensions = false;
-                await InvokeAsync(StateHasChanged);
-            }
+            TextEditorService.SetViewModelWith(
+                TextEditorViewModelKey,
+                previousViewModel => previousViewModel with
+                {
+                    ShouldMeasureDimensions = false,
+                    VirtualizationResult = previousViewModel.VirtualizationResult with
+                    {
+                        CharacterWidthAndRowHeight = characterWidthAndRowHeight,
+                    },
+                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                });
         }
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-    
-    private async Task ForceVirtualizationInvocation()
-    {
-        var textEditorViewModel = ReplaceableTextEditorViewModel;
-
-        if (textEditorViewModel is null)
-            return;
-        
-        await textEditorViewModel.CalculateVirtualizationResultAsync();
-    }
-    
-    private async void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
-    {
-        await ForceVirtualizationInvocation();
     }
 
     public async Task FocusTextEditorAsync()

@@ -486,22 +486,13 @@ public class TextEditorService : ITextEditorService
             .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
     }
 
-    public void SetViewModelVirtualizationResult(
+    public void SetViewModelWith(
         TextEditorViewModelKey textEditorViewModelKey,
-        VirtualizationResult<List<RichCharacter>> virtualizationResult)
+        Func<TextEditorViewModel, TextEditorViewModel> withFunc)
     {
-        _dispatcher.Dispatch(new SetViewVirtualizationResultAction(
+        _dispatcher.Dispatch(new SetViewModelWithAction(
             textEditorViewModelKey,
-            virtualizationResult));
-    }
-
-    public void SetViewModelShouldMeasureDimensions(
-        TextEditorViewModelKey textEditorViewModelKey,
-        bool shouldMeasureDimensions)
-    {
-        _dispatcher.Dispatch(new SetViewModelShouldMeasureDimensionsAction(
-            textEditorViewModelKey,
-            shouldMeasureDimensions));
+            withFunc));
     }
 
     public async Task MutateScrollHorizontalPositionByPixelsAsync(

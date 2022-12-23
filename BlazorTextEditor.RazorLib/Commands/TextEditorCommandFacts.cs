@@ -3,6 +3,7 @@ using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Commands;
@@ -159,7 +160,13 @@ public static class TextEditorCommandFacts
     
     public static readonly TextEditorCommand Remeasure = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter.TextEditorViewModel.ShouldMeasureDimensions = true;
+            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                previousViewModel => previousViewModel with
+                {
+                    ShouldMeasureDimensions = true,
+                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                });
             
             textEditorCommandParameter.TextEditorService
                 .ForceRerender(textEditorCommandParameter.TextEditor.Key);

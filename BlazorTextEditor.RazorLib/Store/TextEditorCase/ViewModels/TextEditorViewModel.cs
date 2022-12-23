@@ -13,28 +13,20 @@ public record TextEditorViewModel(
     TextEditorViewModelKey TextEditorViewModelKey,
     TextEditorKey TextEditorKey,
     ITextEditorService TextEditorService,
-    VirtualizationResult<List<RichCharacter>> VirtualizationResult)
+    VirtualizationResult<List<RichCharacter>> VirtualizationResult,
+    bool ShouldMeasureDimensions)
 {
     private CancellationTokenSource _calculateVirtualizationResultCancellationTokenSource = new();
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, CancellationToken.None);
     
-    // 'public' users should use the instance on the class 'VirtualizationResult<List<RichCharacter>>' as it is an immutable reference
-    private CharacterWidthAndRowHeight _characterWidthAndRowHeight = new(0, 0);
-
     public TextEditorCursor PrimaryCursor { get; } = new(true);
+    
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
+    public Action<TextEditorBase>? OnSaveRequested { get; init; }
     
     public string BodyElementId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
     public string PrimaryCursorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}_primary-cursor";
     public string GutterElementId => $"bte_text-editor-gutter_{TextEditorViewModelKey.Guid}";
-    
-    public Action<TextEditorBase>? OnSaveRequested { get; set; }
-    public bool ShouldMeasureDimensions { get; set; } = true;
-    
-    public void RememberCharacterWidthAndRowHeight(CharacterWidthAndRowHeight characterWidthAndRowHeight)
-    {
-        _characterWidthAndRowHeight = characterWidthAndRowHeight;
-    }
     
     public void CursorMovePageTop()
     {
@@ -90,7 +82,7 @@ public record TextEditorViewModel(
     public async Task MutateScrollVerticalPositionByLinesAsync(double lines)
     {
         await MutateScrollVerticalPositionByPixelsAsync(
-            lines * _characterWidthAndRowHeight.RowHeightInPixels);
+            lines * VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
     }
     
     /// <summary>
@@ -113,7 +105,7 @@ public record TextEditorViewModel(
     
     public async Task CalculateVirtualizationResultAsync()
     {
-        var localCharacterWidthAndRowHeight = _characterWidthAndRowHeight;
+        var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
         _calculateVirtualizationResultCancellationTokenSource.Cancel();
         _calculateVirtualizationResultCancellationTokenSource = new();
@@ -131,8 +123,7 @@ public record TextEditorViewModel(
             MeasurementsExpiredCancellationToken = cancellationToken 
         };
         
-        if (localCharacterWidthAndRowHeight is null ||
-            textEditorBase is null ||
+        if (textEditorBase is null ||
             bodyMeasurementsInPixels.MeasurementsExpiredCancellationToken.IsCancellationRequested)
         {
             return;
@@ -302,20 +293,25 @@ public record TextEditorViewModel(
             bottomBoundaryHeightInPixels,
             0,
             bottomBoundaryTopInPixels);
+
+        var virtualizationResult = new VirtualizationResult<List<RichCharacter>>(
+            virtualizedEntries,
+            leftBoundary,
+            rightBoundary,
+            topBoundary,
+            bottomBoundary,
+            bodyMeasurementsInPixels with
+            {
+                ScrollWidth = totalWidth,
+                ScrollHeight = totalHeight
+            },
+            localCharacterWidthAndRowHeight);
         
-        TextEditorService.SetViewModelVirtualizationResult(
-            TextEditorViewModelKey,
-            new VirtualizationResult<List<RichCharacter>>(
-                virtualizedEntries,
-                leftBoundary,
-                rightBoundary,
-                topBoundary,
-                bottomBoundary,
-                bodyMeasurementsInPixels with
+        TextEditorService.SetViewModelWith(
+                TextEditorViewModelKey,
+                previousViewModel => previousViewModel with
                 {
-                    ScrollWidth = totalWidth,
-                    ScrollHeight = totalHeight
-                },
-                localCharacterWidthAndRowHeight));
+                    VirtualizationResult = virtualizationResult
+                });
     }
 }

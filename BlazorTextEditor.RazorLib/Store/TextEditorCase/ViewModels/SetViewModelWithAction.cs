@@ -1,5 +1,5 @@
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 
-public record SetViewModelShouldMeasureDimensionsAction(
+public record SetViewModelWithAction(
     TextEditorViewModelKey TextEditorViewModelKey, 
-    bool ShouldMeasureDimensions);
+    Func<TextEditorViewModel, TextEditorViewModel> WithFunc);

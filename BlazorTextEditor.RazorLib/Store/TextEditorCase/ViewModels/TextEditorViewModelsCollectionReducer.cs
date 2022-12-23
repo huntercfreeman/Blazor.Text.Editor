@@ -25,14 +25,8 @@ public class TextEditorViewModelsCollectionReducer
             registerTextEditorViewModelAction.TextEditorViewModelKey,
             registerTextEditorViewModelAction.TextEditorKey,
             registerTextEditorViewModelAction.TextEditorService,
-            new VirtualizationResult<List<RichCharacter>>(
-                ImmutableArray<VirtualizationEntry<List<RichCharacter>>>.Empty,
-                new VirtualizationBoundary(0, 0, 0, 0),
-                new VirtualizationBoundary(0, 0, 0, 0),
-                new VirtualizationBoundary(0, 0, 0, 0),
-                new VirtualizationBoundary(0, 0, 0, 0),
-                new ElementMeasurementsInPixels(0, 0, 0, 0, 0, 0, CancellationToken.None),
-                new CharacterWidthAndRowHeight(0, 0)));
+            VirtualizationResult<List<RichCharacter>>.GetEmptyRichCharacters(),
+            true);
 
         var nextViewModelsList = previousTextEditorViewModelsCollection.ViewModelsList
             .Add(viewModel);
@@ -44,47 +38,18 @@ public class TextEditorViewModelsCollectionReducer
     }
 
     [ReducerMethod]
-    public static TextEditorViewModelsCollection ReduceSetViewVirtualizationResultAction(
+    public static TextEditorViewModelsCollection ReduceSetViewModelWithAction(
         TextEditorViewModelsCollection previousTextEditorViewModelsCollection,
-        SetViewVirtualizationResultAction setViewVirtualizationResultAction)
+        SetViewModelWithAction setViewModelWithAction)
     {
         var textEditorViewModel = previousTextEditorViewModelsCollection.ViewModelsList.FirstOrDefault(x =>
-            x.TextEditorViewModelKey == setViewVirtualizationResultAction.TextEditorViewModelKey);
+            x.TextEditorViewModelKey == setViewModelWithAction.TextEditorViewModelKey);
 
         if (textEditorViewModel is null)
             return previousTextEditorViewModelsCollection;
 
-        var nextViewModel = textEditorViewModel with
-        {
-            VirtualizationResult = setViewVirtualizationResultAction.VirtualizationResult,
-            TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
-        };
-
-        var nextViewModelsList = previousTextEditorViewModelsCollection.ViewModelsList
-            .Replace(textEditorViewModel, nextViewModel);
-
-        return new TextEditorViewModelsCollection
-        {
-            ViewModelsList = nextViewModelsList
-        };
-    }
-    
-    [ReducerMethod]
-    public static TextEditorViewModelsCollection ReduceSetViewModelShouldMeasureDimensionsAction(
-        TextEditorViewModelsCollection previousTextEditorViewModelsCollection,
-        SetViewModelShouldMeasureDimensionsAction setViewModelShouldMeasureDimensionsAction)
-    {
-        var textEditorViewModel = previousTextEditorViewModelsCollection.ViewModelsList.FirstOrDefault(x =>
-            x.TextEditorViewModelKey == setViewModelShouldMeasureDimensionsAction.TextEditorViewModelKey);
-
-        if (textEditorViewModel is null)
-            return previousTextEditorViewModelsCollection;
-
-        var nextViewModel = textEditorViewModel with
-        {
-            ShouldMeasureDimensions = setViewModelShouldMeasureDimensionsAction.ShouldMeasureDimensions,
-            TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
-        };
+        var nextViewModel = setViewModelWithAction.WithFunc
+            .Invoke(textEditorViewModel);
 
         var nextViewModelsList = previousTextEditorViewModelsCollection.ViewModelsList
             .Replace(textEditorViewModel, nextViewModel);
