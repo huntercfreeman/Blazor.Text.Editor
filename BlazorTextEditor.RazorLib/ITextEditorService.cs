@@ -260,9 +260,9 @@ public interface ITextEditorService : IDisposable
     
     public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey);
 
-    public Task MutateScrollHorizontalPositionByPixelsAsync(string textEditorContentId, double pixels);
-    public Task MutateScrollVerticalPositionByPixelsAsync(string textEditorContentId, double pixels);
-    public Task SetScrollPositionAsync(string textEditorContentId, double? scrollLeft, double? scrollTop);
+    public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
+    public Task MutateScrollVerticalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
+    public Task SetScrollPositionAsync(string bodyElementId, string gutterElementId, double? scrollLeft, double? scrollTop);
     
     public Task FocusPrimaryCursorAsync(string primaryCursorContentId);
     

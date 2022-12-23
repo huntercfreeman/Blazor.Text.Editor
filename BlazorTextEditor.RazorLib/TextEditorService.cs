@@ -503,12 +503,14 @@ public class TextEditorService : ITextEditorService
     }
 
     public async Task MutateScrollHorizontalPositionByPixelsAsync(
-        string textEditorContentId,
+        string bodyElementId,
+        string gutterElementId,
         double pixels)
     {
         await _jsRuntime.InvokeVoidAsync(
             "blazorTextEditor.mutateScrollHorizontalPositionByPixels",
-            textEditorContentId,
+            bodyElementId,
+            gutterElementId,
             pixels);
         
         // Blazor WebAssembly as of this comment is single threaded and
@@ -519,12 +521,14 @@ public class TextEditorService : ITextEditorService
     }
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(
-        string textEditorContentId,
+        string bodyElementId,
+        string gutterElementId,
         double pixels)
     {
         await _jsRuntime.InvokeVoidAsync(
             "blazorTextEditor.mutateScrollVerticalPositionByPixels",
-            textEditorContentId,
+            bodyElementId,
+            gutterElementId,
             pixels);
         
         // Blazor WebAssembly as of this comment is single threaded and
@@ -538,13 +542,15 @@ public class TextEditorService : ITextEditorService
     /// If a parameter is null the JavaScript will not modify that value
     /// </summary>
     public async Task SetScrollPositionAsync(
-        string textEditorContentId,
+        string bodyElementId,
+        string gutterElementId,
         double? scrollLeft,
         double? scrollTop)
     {
         await _jsRuntime.InvokeVoidAsync(
             "blazorTextEditor.setScrollPosition",
-            textEditorContentId,
+            bodyElementId,
+            gutterElementId,
             scrollLeft,
             scrollTop);
         

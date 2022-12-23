@@ -6,6 +6,10 @@
     height: calc(100% - var(--bte_text-editor-header-height) - var(--bte_text-editor-footer-height));
     color: var(--bte_primary-font-color);
     background-color: var(--bte_body-background-color);
+    cursor: text;
+    position: relative;
+    display: flex;
+    font-family: monospace;
 }
 
 .bte_method {
@@ -88,12 +92,9 @@
     background-color: var(--bte_text-editor-gutter-background-color);
 }
 
-.bte_text-editor-content {
-    cursor: text;
+.bte_gutter-section {
     position: relative;
-    display: flex;
-    height: 100%;
-    font-family: monospace;
+    overflow: hidden;
 }
 
 .bte_body-section {

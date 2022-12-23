@@ -165,7 +165,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
 
     private Guid _componentHtmlElementId = Guid.NewGuid();
-    
+    private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
+
     private string MeasureCharacterWidthAndRowHeightElementId =>
         $"bte_measure-character-width-and-row-height_{_componentHtmlElementId}";
     
@@ -281,10 +282,10 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
             // TODO: Change the name of 'WidthAndHeightOfTextEditor' class as it is confusingly being used for the TextEditor in its entirety and the body (body meaning entirety - gutter)
-            var widthAndHeightOfTextEditor = await JsRuntime
+            _widthAndHeightOfTextEditorEntirety = await JsRuntime
                 .InvokeAsync<WidthAndHeightOfTextEditor>(
                     "blazorTextEditor.measureWidthAndHeightOfTextEditor",
-                    textEditorViewModel.TextEditorContentId);
+                    ContentElementId);
 
             var mostDigitsInARowLineNumber = (textEditorModel?.RowCount ?? 0)
                 .ToString()
@@ -296,12 +297,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                                    TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
-            var widthOfBody = widthAndHeightOfTextEditor.WidthInPixels - gutterWidthInPixels;
+            var widthOfBody = _widthAndHeightOfTextEditorEntirety.WidthInPixels - gutterWidthInPixels;
             
             textEditorViewModel.WidthAndHeightOfBody = new WidthAndHeightOfTextEditor
             {
                 WidthInPixels = widthOfBody,
-                HeightInPixels = widthAndHeightOfTextEditor.HeightInPixels
+                HeightInPixels = _widthAndHeightOfTextEditorEntirety.HeightInPixels
             };
                 
             {
@@ -321,7 +322,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             return;
         
         _virtualizationDisplay?.InvokeEntriesProviderFunc();
-        _virtualizationDisplay?.ForceReadScrollPosition(textEditorViewModel.TextEditorContentId);
+        _virtualizationDisplay?.ForceReadScrollPosition(textEditorViewModel.BodyElementId);
     }
     
     private async void TextEditorStatesSelectionOnSelectedValueChanged(object? sender, TextEditorBase? e)
@@ -666,7 +667,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         RelativeCoordinatesOnClick = await JsRuntime
             .InvokeAsync<RelativeCoordinates>(
                 "blazorTextEditor.getRelativePosition",
-                safeTextEditorViewModel.TextEditorContentId,
+                safeTextEditorViewModel.BodyElementId,
                 mouseEventArgs.ClientX,
                 mouseEventArgs.ClientY);
 

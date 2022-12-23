@@ -18,8 +18,9 @@ public record TextEditorViewModel(
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
 
-    public string TextEditorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
+    public string BodyElementId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
     public string PrimaryCursorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}_primary-cursor";
+    public string GutterElementId => $"bte_text-editor-gutter_{TextEditorViewModelKey.Guid}";
 
     public bool ShouldMeasureDimensions { get; set; } = true;
     public Action<TextEditorBase>? OnSaveRequested { get; set; }
@@ -59,14 +60,16 @@ public record TextEditorViewModel(
     public async Task MutateScrollHorizontalPositionByPixelsAsync(double pixels)
     {
         await TextEditorService.MutateScrollHorizontalPositionByPixelsAsync(
-            TextEditorContentId,
+            BodyElementId,
+            GutterElementId,
             pixels);
     }
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
     {
         await TextEditorService.MutateScrollVerticalPositionByPixelsAsync(
-            TextEditorContentId,
+            BodyElementId,
+            GutterElementId,
             pixels);
     }
 
@@ -88,7 +91,8 @@ public record TextEditorViewModel(
     public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
     {
         await TextEditorService.SetScrollPositionAsync(
-            TextEditorContentId,
+            BodyElementId,
+            GutterElementId,
             scrollLeft,
             scrollTop);
     }
