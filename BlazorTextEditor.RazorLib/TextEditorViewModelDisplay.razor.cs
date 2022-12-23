@@ -25,8 +25,6 @@ namespace BlazorTextEditor.RazorLib;
 public partial class TextEditorViewModelDisplay : TextEditorView
 {
     [Inject]
-    private ITextEditorService TextEditorService { get; set; } = null!;
-    [Inject]
     private IAutocompleteIndexer AutocompleteIndexer { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
@@ -67,7 +65,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
 
     private int? _previousGlobalFontSizeInPixels;
-    private bool? _previousShouldRemeasureFlag;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
 
     private TextEditorKey? _previousTextEditorKey;
@@ -99,8 +96,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     
     protected override async Task OnParametersSetAsync()
     {
-        Console.WriteLine("Enter OnParametersSetAsync");
-        
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
         
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(
@@ -146,7 +141,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         _onAfterRenderCounter++;
-        Console.WriteLine("OnAfterRenderAsync Enter");
         
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
@@ -163,8 +157,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (textEditorViewModel is not null && 
             textEditorViewModel.ShouldMeasureDimensions)
         {
-            Console.WriteLine("OnAfterRenderAsync textEditorViewModel.ShouldMeasureDimensions "+ textEditorViewModel.ShouldMeasureDimensions);
-            
             var characterWidthAndRowHeight = await JsRuntime
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
@@ -179,9 +171,15 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     VirtualizationResult = previousViewModel.VirtualizationResult with
                     {
                         CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                    },
-                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    }
                 });
+
+            // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
+            // thus the local variable must be updated accordingly.
+            textEditorViewModel = ReplaceableTextEditorViewModel;
+
+            if (textEditorViewModel is not null)
+                await textEditorViewModel.CalculateVirtualizationResultAsync();
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -642,11 +640,18 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             {
                 do
                 {
-                    await textEditor.ApplySyntaxHighlightingAsync();
+                    // The TextEditorBase may have been changed by the time this logic is ran and
+                    // thus the local variable must be updated accordingly.
+                    textEditor = MutableReferenceToTextEditor;
 
-                    await InvokeAsync(StateHasChanged);
+                    if (textEditor is not null)
+                    {
+                        await textEditor.ApplySyntaxHighlightingAsync();
 
-                    await Task.Delay(_afterOnKeyDownSyntaxHighlightingDelay);
+                        await InvokeAsync(StateHasChanged);
+
+                        await Task.Delay(_afterOnKeyDownSyntaxHighlightingDelay);
+                    }
                 } while (StartSyntaxHighlightEventIfHasSkipped());
             }
             finally
