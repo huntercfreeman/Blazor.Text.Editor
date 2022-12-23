@@ -71,7 +71,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     private TextEditorKey? _previousTextEditorKey;
     private TextEditorViewModelKey? _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
-    private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private ElementReference _textEditorDisplayElementReference;
     
     /// <summary>
@@ -80,21 +79,22 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// </summary>
     private bool _thinksLeftMouseButtonIsDown;
 
-    private TextEditorHeader? _textEditorHeader;
-    private TextEditorFooter? _textEditorFooter;
-    private MeasureCharacterWidthAndRowHeight? _measureCharacterWidthAndRowHeightComponent;
-
-    public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
-
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
+    private BodySection? _bodySection;
 
+    private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
+    private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => 
+        _bodySection?.MeasureCharacterWidthAndRowHeightComponent;
+    
     private string MeasureCharacterWidthAndRowHeightElementId =>
         $"bte_measure-character-width-and-row-height_{_componentHtmlElementId}";
     
     private string ContentElementId =>
         $"bte_text-editor-content_{_componentHtmlElementId}";
 
+    public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
+    
     protected override async Task OnParametersSetAsync()
     {
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
@@ -122,7 +122,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     .InvokeAsync<CharacterWidthAndRowHeight>(
                         "blazorTextEditor.measureCharacterWidthAndRowHeight",
                         MeasureCharacterWidthAndRowHeightElementId,
-                        _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
+                        MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
 
                 await safeTextEditorViewModel.CalculateVirtualizationResultAsync();
             }
@@ -169,7 +169,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 .InvokeAsync<CharacterWidthAndRowHeight>(
                     "blazorTextEditor.measureCharacterWidthAndRowHeight",
                     MeasureCharacterWidthAndRowHeightElementId,
-                    _measureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
+                    MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0));
                 
             {
                 textEditorViewModel.ShouldMeasureDimensions = false;
@@ -197,8 +197,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     public async Task FocusTextEditorAsync()
     {
-        if (_textEditorCursorDisplay is not null)
-            await _textEditorCursorDisplay.FocusAsync();
+        if (TextEditorCursorDisplay is not null)
+            await TextEditorCursorDisplay.FocusAsync();
     }
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
@@ -227,11 +227,11 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         {
             if ((KeyboardKeyFacts.MovementKeys.ARROW_DOWN == keyboardEventArgs.Key ||
                  KeyboardKeyFacts.MovementKeys.ARROW_UP == keyboardEventArgs.Key) &&
-                _textEditorCursorDisplay is not null &&
-                _textEditorCursorDisplay.TextEditorMenuKind ==
+                TextEditorCursorDisplay is not null &&
+                TextEditorCursorDisplay.TextEditorMenuKind ==
                 TextEditorMenuKind.AutoCompleteMenu)
             {
-                _textEditorCursorDisplay.SetFocusToActiveMenu();
+                TextEditorCursorDisplay.SetFocusToActiveMenu();
             }
             else
             {
@@ -240,12 +240,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     primaryCursorSnapshot.UserCursor,
                     safeTextEditorReference);
 
-                _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+                TextEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
             }
         }
         else if (KeyboardKeyFacts.CheckIsContextMenuEvent(keyboardEventArgs))
         {
-            _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
+            TextEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
         }
         else
         {
@@ -268,7 +268,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                             KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventArgs.Key ||
                             KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventArgs.Key))
                     {
-                        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
+                        TextEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
                     }
                 }
 
@@ -292,7 +292,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var afterOnKeyDownAsync = AfterOnKeyDownAsync
                                   ?? HandleAfterOnKeyDownAsync;
 
-        var cursorDisplay = _textEditorCursorDisplay;
+        var cursorDisplay = TextEditorCursorDisplay;
 
         if (cursorDisplay is not null)
         {
@@ -312,7 +312,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     private void HandleOnContextMenuAsync()
     {
-        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
+        TextEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.ContextMenu);
     }
 
     private async Task HandleContentOnDoubleClickAsync(MouseEventArgs mouseEventArgs)
@@ -415,7 +415,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             // so assume ContextMenu is desired result.
             return;
 
-        _textEditorCursorDisplay?.SetShouldDisplayMenuAsync(
+        TextEditorCursorDisplay?.SetShouldDisplayMenuAsync(
             TextEditorMenuKind.None,
             false);
 
@@ -427,7 +427,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
             rowAndColumnIndex.columnIndex;
 
-        _textEditorCursorDisplay?.PauseBlinkAnimation();
+        TextEditorCursorDisplay?.PauseBlinkAnimation();
 
         var cursorPositionIndex = safeTextEditorReference
             .GetCursorPositionIndex(
@@ -501,7 +501,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
                     rowAndColumnIndex.columnIndex;
 
-                _textEditorCursorDisplay?.PauseBlinkAnimation();
+                TextEditorCursorDisplay?.PauseBlinkAnimation();
 
                 primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
                     safeTextEditorReference

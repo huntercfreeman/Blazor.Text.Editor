@@ -22,6 +22,8 @@ public partial class BodySection : ComponentBase
     [Parameter, EditorRequired]
     public int TabIndex { get; set; } = -1;
     [Parameter, EditorRequired]
+    public string HtmlElementId { get; set; } = null!;
+    [Parameter, EditorRequired]
     public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
     [Parameter, EditorRequired]
     public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
@@ -29,6 +31,7 @@ public partial class BodySection : ComponentBase
     private VirtualizationDisplay? _virtualizationDisplay;
     
     public TextEditorCursorDisplay? TextEditorCursorDisplay { get; private set; }
+    public MeasureCharacterWidthAndRowHeight MeasureCharacterWidthAndRowHeightComponent { get; private set; }
 
     private string GetBodyStyleCss()
     {

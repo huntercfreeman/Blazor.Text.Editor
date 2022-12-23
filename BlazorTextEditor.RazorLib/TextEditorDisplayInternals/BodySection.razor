@@ -8,8 +8,6 @@
     @{
         var primaryCursorSnapshot = new TextEditorCursorSnapshot(TextEditorViewModel.PrimaryCursor);
 
-        <TextSelectionGroup PrimaryCursorSnapshot="primaryCursorSnapshot"/>
-
         var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
         var spaceKeyOutput = "&nbsp;";
 
@@ -18,51 +16,47 @@
             tabKeyOutput = "--->";
             spaceKeyOutput = "·";
         }
-
-        <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
-                                 TextEditorCursor="TextEditorViewModel.PrimaryCursor"
-                                 ScrollableContainerId="@TextEditorViewModel.BodyElementId"
-                                 IsFocusTarget="true"
-                                 TabIndex="TabIndex"
-                                 GetMostRecentlyRenderedVirtualizationResultFunc="() => TextEditorViewModel.MostRecentlyRenderedVirtualizationResult"
-                                 TextEditorViewModel="TextEditorViewModel">
-
-            <OnContextMenuRenderFragment>
-                @if (ContextMenuRenderFragmentOverride is not null)
-                {
-                    @ContextMenuRenderFragmentOverride
-                }
-                else
-                {
-                                                @* This is the default context menu *@
-                    <TextEditorContextMenu TextEditorViewModelKey="TextEditorViewModel.TextEditorViewModelKey"/>
-                }
-            </OnContextMenuRenderFragment>
-            <AutoCompleteMenuRenderFragment>
-                @if (AutoCompleteMenuRenderFragmentOverride is not null)
-                {
-                    @AutoCompleteMenuRenderFragmentOverride
-                }
-                else
-                {
-                                                @* This is the default autocomplete menu *@
-                    <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"/>
-                }
-            </AutoCompleteMenuRenderFragment>
-        </TextEditorCursorDisplay>
     }
+
+    <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
+                                       HtmlElementId="@HtmlElementId"/>
 
     <VirtualizationDisplay @ref="_virtualizationDisplay"
                            VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"/>
 
-    <RowSection GlobalShowNewlines="GlobalShowNewlines"
-                SpaceKeyOutput="@SpaceKeyOutput"
-                TabKeyOutput="@TabKeyOutput"/>
+    <TextSelectionGroup PrimaryCursorSnapshot="primaryCursorSnapshot"/>
+
+    <RowSection GlobalShowNewlines="TextEditorService.GlobalShowNewlines"
+                SpaceKeyOutput="@spaceKeyOutput"
+                TabKeyOutput="@tabKeyOutput"/>
 
     <ScrollbarSection/>
 
-    <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
-                                       HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
+    <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
+                             TextEditorCursor="TextEditorViewModel.PrimaryCursor"
+                             ScrollableContainerId="@TextEditorViewModel.BodyElementId"
+                             IsFocusTarget="true"
+                             TabIndex="TabIndex">
 
-
+        <OnContextMenuRenderFragment>
+            @if (ContextMenuRenderFragmentOverride is not null)
+            {
+                @ContextMenuRenderFragmentOverride
+            }
+            else
+            {
+                <TextEditorContextMenu/>
+            }
+        </OnContextMenuRenderFragment>
+        <AutoCompleteMenuRenderFragment>
+            @if (AutoCompleteMenuRenderFragmentOverride is not null)
+            {
+                @AutoCompleteMenuRenderFragmentOverride
+            }
+            else
+            {
+                <TextEditorAutocompleteMenu/>
+            }
+        </AutoCompleteMenuRenderFragment>
+    </TextEditorCursorDisplay>
 </div>

@@ -39,7 +39,9 @@
 
                     <GutterSection/>
 
-                    <BodySection TabIndex="TabIndex"
+                    <BodySection @ref="_bodySection"
+                                 TabIndex="TabIndex"
+                                 HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
                                  ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
                                  AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
                 </div>
