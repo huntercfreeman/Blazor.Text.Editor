@@ -495,6 +495,20 @@ public class TextEditorService : ITextEditorService
             withFunc));
     }
 
+    public async Task SetGutterScrollTopAsync(string gutterElementId, double scrollTop)
+    {
+        await _jsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.setGutterScrollTop",
+            gutterElementId,
+            scrollTop);
+        
+        // Blazor WebAssembly as of this comment is single threaded and
+        // the UI freezes without this await Task.Yield
+        await Task.Yield();
+        
+        // TODO: await ForceVirtualizationInvocation();
+    }
+
     public async Task MutateScrollHorizontalPositionByPixelsAsync(
         string bodyElementId,
         string gutterElementId,

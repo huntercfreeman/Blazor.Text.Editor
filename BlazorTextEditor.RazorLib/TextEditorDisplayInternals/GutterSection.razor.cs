@@ -1,5 +1,6 @@
 ﻿using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
@@ -9,11 +10,31 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 
 public partial class GutterSection : ComponentBase
 {
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    
     [CascadingParameter]
     public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
-    
+
+    private TextEditorRenderStateKey _previousTextEditorRenderStateKey = TextEditorRenderStateKey.Empty;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        var viewModel = TextEditorViewModel;
+        
+        if (TextEditorViewModel.TextEditorRenderStateKey != _previousTextEditorRenderStateKey)
+        {
+            _previousTextEditorRenderStateKey = TextEditorViewModel.TextEditorRenderStateKey;
+            TextEditorService.SetGutterScrollTopAsync(
+                viewModel.GutterElementId,
+                viewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollTop);
+        }
+        
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
     private string GetGutterStyleCss(int index)
     {
         var top =

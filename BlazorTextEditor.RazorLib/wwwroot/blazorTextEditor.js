@@ -157,6 +157,15 @@ window.blazorTextEditor = {
             textEditorGutter.scrollTop = textEditorBody.scrollTop;
         }
     },
+    setGutterScrollTop: function (gutterElementId, scrollTop) {
+        let textEditorGutter = document.getElementById(gutterElementId);
+
+        if (!textEditorGutter) {
+            return;
+        }
+
+        textEditorGutter.scrollTop = scrollTop;
+    },
     getElementMeasurementsInPixelsById: function (elementId) {
         let elementReference = document.getElementById(elementId);
 

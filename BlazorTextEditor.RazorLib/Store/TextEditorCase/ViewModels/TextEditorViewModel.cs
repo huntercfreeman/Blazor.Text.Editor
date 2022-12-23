@@ -248,7 +248,7 @@ public record TextEditorViewModel(
             
             var marginScrollHeight = bodyMeasurementsInPixels.Height *
                 percentOfMarginScrollHeightByPageUnit;
-
+        
             totalHeight += marginScrollHeight;
         }
 
