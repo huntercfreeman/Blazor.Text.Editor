@@ -14,14 +14,18 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorAutocompleteMenu : TextEditorView
+public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this inheritance needed? It should cascade down from TextEditorViewModelDisplay.razor -> TextEditorView
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     [Inject]
     private IAutocompleteService AutocompleteService { get; set; } = null!;
 
-    [CascadingParameter(Name = "SetShouldDisplayMenuAsync")]
+    [CascadingParameter]
+    public TextEditorBase TextEditorBase { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
+    [CascadingParameter(Name="SetShouldDisplayMenuAsync")]
     public Func<TextEditorMenuKind, bool, Task> SetShouldDisplayMenuAsync { get; set; } = null!;
     [CascadingParameter(Name="TextEditorMenuShouldTakeFocusFunc")]
     public Func<bool> TextEditorMenuShouldTakeFocusFunc { get; set; } = null!;
@@ -56,21 +60,16 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
 
     private MenuRecord GetMenuRecord()
     {
-        var textEditor = TextEditorStatesSelection.Value;
-        var localTextEditorViewModel = ReplaceableTextEditorViewModel;
-
         var cursorSnapshots =
             TextEditorCursorSnapshot.TakeSnapshots(
-                localTextEditorViewModel?.PrimaryCursor ?? new TextEditorCursor(true));
+                TextEditorViewModel.PrimaryCursor);
 
         var primaryCursorSnapshot = cursorSnapshots
             .First(x => x.UserCursor.IsPrimaryCursor);
 
-        if (textEditor is not null &&
-            localTextEditorViewModel is not null &&
-            primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
+        if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
         {
-            var word = textEditor.ReadPreviousWordOrDefault(
+            var word = TextEditorBase.ReadPreviousWordOrDefault(
                 primaryCursorSnapshot.ImmutableCursor.RowIndex,
                 primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
@@ -90,7 +89,7 @@ public partial class TextEditorAutocompleteMenu : TextEditorView
                                 InsertAutocompleteMenuOption(
                                     word, 
                                     option,
-                                    localTextEditorViewModel))))
+                                    TextEditorViewModel))))
                     .ToList();
             }
             

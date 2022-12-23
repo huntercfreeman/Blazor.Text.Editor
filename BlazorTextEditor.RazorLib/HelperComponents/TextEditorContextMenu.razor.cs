@@ -12,13 +12,17 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorContextMenu : TextEditorView
+public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inheritance needed? It should cascade down from TextEditorViewModelDisplay.razor -> TextEditorView
 {
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
+    [CascadingParameter]
+    public TextEditorBase TextEditorBase { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter(Name = "SetShouldDisplayMenuAsync")]
     public Func<TextEditorMenuKind, bool, Task> SetShouldDisplayMenuAsync { get; set; } = null!;
 
@@ -47,16 +51,14 @@ public partial class TextEditorContextMenu : TextEditorView
         await base.OnAfterRenderAsync(firstRender);
     }
     
-    private TextEditorCommandParameter ConstructTextEditorCommandParameter(
-        TextEditorBase textEditorBase,
-        TextEditorViewModel textEditorViewModel)
+    private TextEditorCommandParameter ConstructTextEditorCommandParameter()
     {
         return new TextEditorCommandParameter(
-            textEditorBase,
-            TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
+            TextEditorBase,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
             ClipboardProvider,
             TextEditorService,
-            textEditorViewModel);
+            TextEditorViewModel);
     }
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
@@ -122,16 +124,7 @@ public partial class TextEditorContextMenu : TextEditorView
 
     private async Task CutMenuOption()
     {
-        var textEditorViewModel = ReplaceableTextEditorViewModel;
-        var textEditor = TextEditorStatesSelection.Value;
-
-        if (textEditorViewModel is null ||
-            textEditor is null)
-            return;
-        
-        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            textEditor,
-            textEditorViewModel);
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
         var command = TextEditorCommandFacts.Cut;
     
@@ -141,16 +134,7 @@ public partial class TextEditorContextMenu : TextEditorView
     
     private async Task CopyMenuOption()
     {
-        var textEditorViewModel = ReplaceableTextEditorViewModel;
-        var textEditor = TextEditorStatesSelection.Value;
-
-        if (textEditorViewModel is null ||
-            textEditor is null)
-            return;
-        
-        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            textEditor,
-            textEditorViewModel);
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
         var command = TextEditorCommandFacts.Copy;
     
@@ -160,16 +144,7 @@ public partial class TextEditorContextMenu : TextEditorView
 
     private async Task PasteMenuOption()
     {
-        var textEditorViewModel = ReplaceableTextEditorViewModel;
-        var textEditor = TextEditorStatesSelection.Value;
-
-        if (textEditorViewModel is null ||
-            textEditor is null)
-            return;
-        
-        var textEditorCommandParameter = ConstructTextEditorCommandParameter(
-            textEditor,
-            textEditorViewModel);
+        var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
         var command = TextEditorCommandFacts.Paste;
     

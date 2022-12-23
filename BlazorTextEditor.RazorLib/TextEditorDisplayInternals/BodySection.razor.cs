@@ -20,6 +20,10 @@ public partial class BodySection : ComponentBase
     public string TabKeyOutput { get; set; } = null!;
     [Parameter, EditorRequired]
     public string SpaceKeyOutput { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
     
     private VirtualizationDisplay? _virtualizationDisplay;
 

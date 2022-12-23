@@ -56,8 +56,9 @@
                                          TextEditorViewModel="textEditorViewModel">
 
                     <OnContextMenuRenderFragment>
-                        @if (OnContextMenuRenderFragment is not null)
+                        @if (ContextMenuRenderFragmentOverride is not null)
                         {
+                            @ContextMenuRenderFragmentOverride
                         }
                         else
                         {
@@ -66,8 +67,9 @@
                         }
                     </OnContextMenuRenderFragment>
                     <AutoCompleteMenuRenderFragment>
-                        @if (AutoCompleteMenuRenderFragment is not null)
+                        @if (AutoCompleteMenuRenderFragmentOverride is not null)
                         {
+                            @AutoCompleteMenuRenderFragmentOverride
                         }
                         else
                         {
