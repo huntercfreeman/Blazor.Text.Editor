@@ -14,7 +14,7 @@ public partial class GutterSection : ComponentBase
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
-    private string GetGutterStyleCss(int index, double? virtualizedRowLeftInPixels)
+    private string GetGutterStyleCss(int index)
     {
         var top =
             $"top: {index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
@@ -38,9 +38,7 @@ public partial class GutterSection : ComponentBase
         var paddingRight =
             $"padding-right: {TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS}px;";
 
-        var left = $"left: {virtualizedRowLeftInPixels}px;";
-
-        return $"{left} {top} {height} {width} {paddingLeft} {paddingRight}";
+        return $"{width} {height} {top} {paddingLeft} {paddingRight}";
     }
     
     private string GetGutterSectionStyleCss()
