@@ -1,6 +1,5 @@
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Measurement;
-using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 
 namespace BlazorTextEditor.RazorLib.Virtualization;
 
