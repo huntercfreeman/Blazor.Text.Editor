@@ -30,7 +30,7 @@ public class StorageEffects
             .Serialize(writeGlobalTextEditorOptionsToLocalStorageAction.GlobalTextEditorOptions);
 
         await _storageProvider.SetValue(
-            ITextEditorService.LocalStorageGlobalTextEditorOptionsKey, 
+            ITextEditorService.LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY, 
             optionsJsonString);
     }
 }

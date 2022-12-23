@@ -24,8 +24,6 @@ namespace BlazorTextEditor.RazorLib;
 public partial class TextEditorViewModelDisplay : TextEditorView
 {
     [Inject]
-    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
-    [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     [Inject]
     private IAutocompleteIndexer AutocompleteIndexer { get; set; } = null!;
@@ -37,99 +35,28 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
     [Parameter]
-    public RenderFragment? OnContextMenuRenderFragment { get; set; }
-    [Parameter]
-    public RenderFragment? AutoCompleteMenuRenderFragment { get; set; }
-    /// <summary>
-    /// If left null, the default <see cref="AfterOnKeyDownAsync"/> will
-    /// be used.
-    /// <br/><br/>
-    /// The default <see cref="AfterOnKeyDownAsync"/> will provide
-    /// syntax highlighting, and autocomplete.
-    /// <br/><br/>
-    /// The syntax highlighting occurs on ';', whitespace, paste, undo, redo
-    /// <br/><br/>
-    /// The autocomplete occurs on LetterOrDigit typed or { Ctrl + Space }.
-    /// Furthermore, the autocomplete is done via <see cref="IAutocompleteService"/>
-    /// and the one can provide their own implementation when registering the
-    /// BlazorTextEditor services using <see cref="TextEditorServiceOptions.AutocompleteServiceFactory"/>
-    /// <br/><br/>
-    /// (TextEditorBase textEditor, ImmutableArray&lt;TextEditorCursorSnapshot&gt; textEditorCursorSnapshots,
-    /// KeyboardEventArgs keyboardEventArgs, Func&lt;TextEditorMenuKind, Task&gt; setTextEditorMenuKind), Task
-    /// </summary>
-    [Parameter]
-    public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs,
-        Func<TextEditorMenuKind, bool, Task>, Task>? AfterOnKeyDownAsync { get; set; }
-    [Parameter]
-    public bool ShouldRemeasureFlag { get; set; }
-    [Parameter]
     public string StyleCssString { get; set; } = null!;
     [Parameter]
     public string ClassCssString { get; set; } = null!;
-    /// <summary>
-    ///     TabIndex is used for the html attribute: 'tabindex'
-    ///     <br /><br />
-    ///     tabindex of -1 means one can only set focus to the
-    ///     text editor by clicking on it.
-    ///     <br /><br />
-    ///     tabindex of 0 means one can both use the tab key to set focus to the
-    ///     text editor or click on it.
-    /// </summary>
+    /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;
-    /// <summary>
-    /// <see cref="IncludeHeaderHelperComponent"/> results in
-    /// <see cref="TextEditorHeader"/> being rendered above the
-    /// <see cref="TextEditorDisplay"/>
-    /// <br/><br/>
-    /// Default value is true
-    /// </summary>
+    [Parameter]
+    public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
+    [Parameter]
+    public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
+    /// <summary>If left null, the default <see cref="HandleAfterOnKeyDownAsync"/> will be used.</summary>
+    [Parameter]
+    public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs, Func<TextEditorMenuKind, bool, Task>, Task>? AfterOnKeyDownAsync { get; set; }
+    /// <summary>If set to false the <see cref="TextEditorHeader"/> will NOT render above the text editor.</summary>
     [Parameter]
     public bool IncludeHeaderHelperComponent { get; set; } = true;
-    /// <summary>
-    /// <see cref="HeaderButtonKinds"/> contains
-    /// the enum value that represents a button displayed
-    /// in the <see cref="TextEditorHeader"/>.
-    /// <br/><br/>
-    /// The <see cref="TextEditorHeader"/> is only displayed if
-    /// <see cref="IncludeHeaderHelperComponent"/> is set to true.
-    /// </summary>
+    /// <summary><see cref="HeaderButtonKinds"/> contains the enum value that represents a button displayed in the optional component: <see cref="TextEditorHeader"/>.</summary>
     [Parameter]
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
-    /// <summary>
-    /// <see cref="IncludeFooterHelperComponent"/> results in
-    /// <see cref="TextEditorFooter"/> being rendered below the
-    /// <see cref="TextEditorDisplay"/>
-    /// <br/><br/>
-    /// Default value is true
-    /// </summary>
+    /// <summary>If set to false the <see cref="TextEditorFooter"/> will NOT render below the text editor.</summary>
     [Parameter]
     public bool IncludeFooterHelperComponent { get; set; } = true;
-    /// <summary>
-    /// <see cref="IncludeDefaultContextMenu"/> results in
-    /// <see cref="TextEditorContextMenu"/> being rendered
-    /// On a context menu event which includes
-    /// <br/>
-    /// -ShiftKey + F10
-    /// <br/>
-    /// -ContextMenu button
-    /// <br/>
-    /// -RightClick of mouse
-    /// <br/><br/>
-    /// Default value is true
-    /// </summary>
-    [Parameter]
-    public bool IncludeDefaultContextMenu { get; set; } = true;
-    /// <summary>
-    /// <see cref="IncludeDefaultAutocompleteMenu"/> results in
-    /// <see cref="TextEditorAutocompleteMenu"/> being rendered
-    /// when the user types and possible autocomplete
-    /// options are available
-    /// <br/><br/>
-    /// Default value is true
-    /// </summary>
-    [Parameter]
-    public bool IncludeDefaultAutocompleteMenu { get; set; } = true;
 
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromMilliseconds(750);
@@ -148,12 +75,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private ElementReference _textEditorDisplayElementReference;
     
     /// <summary>
-    ///     Do not select text just because the user has the Left Mouse Button down.
-    ///     They might hold down Left Mouse Button from outside the TextEditorDisplay's content div
-    ///     then move their mouse over the content div while holding the Left Mouse Button down.
-    ///     <br /><br />
-    ///     Instead only select text if an @onmousedown event triggered <see cref="_thinksLeftMouseButtonIsDown" />
-    ///     to be equal to true and the @onmousemove event followed afterwards.
+    /// Accounts for one who might hold down Left Mouse Button from outside the TextEditorDisplay's content div
+    /// then move their mouse over the content div while holding the Left Mouse Button down.
     /// </summary>
     private bool _thinksLeftMouseButtonIsDown;
 
@@ -172,34 +95,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private string ContentElementId =>
         $"bte_text-editor-content_{_componentHtmlElementId}";
 
-    private MarkupString GetAllTextEscaped => (MarkupString)(MutableReferenceToTextEditor?
-                                                                 .GetAllText()
-                                                                 .Replace("\r\n", "\\r\\n<br/>")
-                                                                 .Replace("\r", "\\r<br/>")
-                                                                 .Replace("\n", "\\n<br/>")
-                                                                 .Replace("\t", "--->")
-                                                                 .Replace(" ", "·")
-                                                             ?? string.Empty);
-
-    private string GlobalThemeCssClassString => TextEditorService
-                                                    .TextEditorStates
-                                                    .GlobalTextEditorOptions
-                                                    .Theme?
-                                                    .CssClassString
-                                                ?? string.Empty;
-
-    private string GlobalFontSizeInPixelsStyling => "font-size: " + TextEditorService
-                                                                      .TextEditorStates
-                                                                      .GlobalTextEditorOptions
-                                                                      .FontSizeInPixels!.Value
-                                                                  + "px;";
-
-    private bool GlobalShowNewlines => TextEditorService
-        .TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
-
-    private bool GlobalShowWhitespace => TextEditorService
-        .TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
-
     protected override async Task OnParametersSetAsync()
     {
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
@@ -217,11 +112,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             _previousGlobalFontSizeInPixels is null ||
             _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
 
-        var dirtyShouldRemeasureFlag = _previousShouldRemeasureFlag is null ||
-                                       _previousShouldRemeasureFlag != ShouldRemeasureFlag;
-
-        if (safeTextEditorViewModel is not null &&
-            (dirtyGlobalFontSizeInPixels || dirtyShouldRemeasureFlag))
+        if (safeTextEditorViewModel is not null && dirtyGlobalFontSizeInPixels)
         {
             _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
             _previousShouldRemeasureFlag = ShouldRemeasureFlag;
@@ -741,11 +632,15 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     }
 
     /// <summary>
-    /// Default implementation so Syntax Highlighting
-    /// can be done with less setup.
+    /// The default <see cref="AfterOnKeyDownAsync"/> will provide
+    /// syntax highlighting, and autocomplete.
     /// <br/><br/>
-    /// One can further customize this method however
-    /// by passing in to the Func their own version.
+    /// The syntax highlighting occurs on ';', whitespace, paste, undo, redo
+    /// <br/><br/>
+    /// The autocomplete occurs on LetterOrDigit typed or { Ctrl + Space }.
+    /// Furthermore, the autocomplete is done via <see cref="IAutocompleteService"/>
+    /// and the one can provide their own implementation when registering the
+    /// BlazorTextEditor services using <see cref="TextEditorServiceOptions.AutocompleteServiceFactory"/>
     /// </summary>
     public async Task HandleAfterOnKeyDownAsync(
         TextEditorBase textEditor,
@@ -884,15 +779,5 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             return string.Empty;
 
         return $"height: {heightInPixels.Value}px;";
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            TextEditorStatesSelection.SelectedValueChanged -= TextEditorStatesSelectionOnSelectedValueChanged;
-        }
-
-        base.Dispose(true);
     }
 }

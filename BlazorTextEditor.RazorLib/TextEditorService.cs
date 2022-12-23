@@ -61,32 +61,13 @@ public class TextEditorService : ITextEditorService
     }
 
     public TextEditorStates TextEditorStates => _textEditorStates.Value;
-
-    public string GlobalThemeCssClassString => TextEditorStates
-                                                   .GlobalTextEditorOptions
-                                                   .Theme?
-                                                   .CssClassString
-                                               ?? string.Empty;
-
-    public ThemeRecord? GlobalThemeValue => TextEditorStates
-        .GlobalTextEditorOptions
-        .Theme;
-
-    public string GlobalFontSizeInPixelsStyling => "font-size: " + 
-                                                   GlobalFontSizeInPixelsValue +
-                                                   "px;";
-    
-    public int GlobalFontSizeInPixelsValue => TextEditorStates
-        .GlobalTextEditorOptions
-        .FontSizeInPixels!.Value;
-    
-    public int? GlobalHeightInPixelsValue => TextEditorStates
-        .GlobalTextEditorOptions
-        .HeightInPixels;
-
+    public ThemeRecord? GlobalThemeValue => TextEditorStates.GlobalTextEditorOptions.Theme;
+    public string GlobalThemeCssClassString => TextEditorStates.GlobalTextEditorOptions.Theme?.CssClassString ?? string.Empty;
+    public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value}px;";
     public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
-
     public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
+    public int GlobalFontSizeInPixelsValue => TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value;
+    public int? GlobalHeightInPixelsValue => TextEditorStates.GlobalTextEditorOptions.HeightInPixels;
 
     public event Action? OnTextEditorStatesChanged;
     
@@ -580,7 +561,7 @@ public class TextEditorService : ITextEditorService
     public async Task SetTextEditorOptionsFromLocalStorageAsync()
     {
         var optionsJsonString = (await _storageProvider
-            .GetValue(ITextEditorService.LocalStorageGlobalTextEditorOptionsKey))
+            .GetValue(ITextEditorService.LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY))
                 as string;
 
         if (string.IsNullOrWhiteSpace(optionsJsonString))
