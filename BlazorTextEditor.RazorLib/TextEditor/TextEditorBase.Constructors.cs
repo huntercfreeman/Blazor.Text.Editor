@@ -67,7 +67,7 @@ public partial class TextEditorBase
         DecorationMapper = original.DecorationMapper;
         TextEditorKeymap = original.TextEditorKeymap;
         EditBlockIndex = original.EditBlockIndex;
-        MostCharactersOnASingleRow = original.MostCharactersOnASingleRow;
+        MostCharactersOnASingleRowTuple = original.MostCharactersOnASingleRowTuple;
         TextEditorOptions = original.TextEditorOptions;
     }
 }

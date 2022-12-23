@@ -541,11 +541,11 @@ public partial class TextEditorBase
 
             if (character == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
             {
+                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength) 
+                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow);
+                
                 _rowEndingPositions.Add((index + 1, RowEndingKind.CarriageReturn));
                 rowIndex++;
-
-                if (charactersOnRow > MostCharactersOnASingleRow) 
-                    MostCharactersOnASingleRow = charactersOnRow;
 
                 charactersOnRow = 0;
 
@@ -553,6 +553,9 @@ public partial class TextEditorBase
             }
             else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
             {
+                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength) 
+                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow);
+                
                 if (previousCharacter == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
                 {
                     var lineEnding = _rowEndingPositions[rowIndex - 1];
@@ -568,13 +571,10 @@ public partial class TextEditorBase
                     _rowEndingPositions.Add((index + 1, RowEndingKind.Linefeed));
                     rowIndex++;
 
-                    if (charactersOnRow > MostCharactersOnASingleRow) 
-                        MostCharactersOnASingleRow = charactersOnRow;
-
-                    charactersOnRow = 0;
-
                     linefeedCount++;
                 }
+                
+                charactersOnRow = 0;
             }
 
             if (character == KeyboardKeyFacts.WhitespaceCharacters.TAB)

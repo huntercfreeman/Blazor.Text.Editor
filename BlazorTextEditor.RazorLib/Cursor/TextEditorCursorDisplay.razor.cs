@@ -152,7 +152,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
         var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var widthOfBody = textEditor.MostCharactersOnASingleRow *
+        var widthOfBody = textEditor.MostCharactersOnASingleRowTuple.rowLength *
                           TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight
                               .CharacterWidthInPixels;
         

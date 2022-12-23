@@ -64,7 +64,7 @@ public partial class TextEditorBase
     public ITextEditorKeymap TextEditorKeymap { get; }
     public int EditBlockIndex { get; private set; }
 
-    public int MostCharactersOnASingleRow { get; private set; }
+    public (int rowIndex, int rowLength) MostCharactersOnASingleRowTuple { get; private set; }
 
     public TextEditorOptions TextEditorOptions { get; } = TextEditorOptions.UnsetTextEditorOptions();
 

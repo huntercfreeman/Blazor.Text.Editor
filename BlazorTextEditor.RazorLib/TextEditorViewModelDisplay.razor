@@ -15,6 +15,15 @@
     _onAfterRenderCounter @_onAfterRenderCounter
 </div>
 
+@if (textEditorBase is not null)
+{
+    <div>
+        MostCharactersOnASingleRow as (rowIndex, rowLength):
+        &nbsp;
+        (@textEditorBase.MostCharactersOnASingleRowTuple.rowIndex, @textEditorBase.MostCharactersOnASingleRowTuple.rowLength)
+    </div>
+}
+
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @ClassCssString">
     

@@ -235,7 +235,7 @@ public record TextEditorViewModel(
             }).ToImmutableArray();
 
         var totalWidth =
-            textEditorBase.MostCharactersOnASingleRow *
+            textEditorBase.MostCharactersOnASingleRowTuple.rowLength *
             localCharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var totalHeight =
