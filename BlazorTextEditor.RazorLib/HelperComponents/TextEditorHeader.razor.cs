@@ -13,8 +13,6 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 public partial class TextEditorHeader : TextEditorView
 {
     [Inject]
-    private ITextEditorService TextEditorService { get; set; } = null!;
-    [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
     [Parameter]

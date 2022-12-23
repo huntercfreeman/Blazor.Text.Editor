@@ -9,9 +9,6 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 
 public partial class TextEditorFooter : TextEditorView
 {
-    [Inject]
-    private ITextEditorService TextEditorService { get; set; } = null!;
-
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
         var textEditor = TextEditorStatesWrap.Value;
