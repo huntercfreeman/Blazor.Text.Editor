@@ -15,6 +15,7 @@ public partial class TextEditorBase
     public const int GUTTER_PADDING_LEFT_IN_PIXELS = 5;
     public const int GUTTER_PADDING_RIGHT_IN_PIXELS = 15;
     public const int MAXIMUM_EDIT_BLOCKS = 10;
+    public const int MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN = 5;
 
     private readonly List<RichCharacter> _content = new();
     private readonly List<EditBlock> _editBlocksPersisted = new();

@@ -210,6 +210,30 @@ public partial class TextEditorBase
                 }
             }
         }
+        
+        // TODO: Fix tracking the MostCharactersOnASingleRowTuple this way is possibly inefficient - should instead only check the rows that changed
+        {
+            (int rowIndex, int rowLength) localMostCharactersOnASingleRowTuple = (0, 0);
+                
+            for (var i = 0; i < _rowEndingPositions.Count; i++)
+            {
+                var lengthOfRow = GetLengthOfRow(i);
+
+                if (lengthOfRow > localMostCharactersOnASingleRowTuple.rowLength)
+                {
+                    localMostCharactersOnASingleRowTuple = (i, lengthOfRow);
+                }
+            }
+
+            if (localMostCharactersOnASingleRowTuple.rowLength > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN)
+            {
+                localMostCharactersOnASingleRowTuple = 
+                    (localMostCharactersOnASingleRowTuple.rowIndex,
+                        localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+                
+                MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
+            }
+        }
     }
 
     private void PerformDeletions(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
@@ -465,6 +489,30 @@ public partial class TextEditorBase
                     _tabKeyPositions[i] -= charactersRemovedCount;
             }
         }
+        
+        // TODO: Fix tracking the MostCharactersOnASingleRowTuple this way is possibly inefficient - should instead only check the rows that changed
+        {
+            (int rowIndex, int rowLength) localMostCharactersOnASingleRowTuple = (0, 0);
+                
+            for (var i = 0; i < _rowEndingPositions.Count; i++)
+            {
+                var lengthOfRow = GetLengthOfRow(i);
+
+                if (lengthOfRow > localMostCharactersOnASingleRowTuple.rowLength)
+                {
+                    localMostCharactersOnASingleRowTuple = (i, lengthOfRow);
+                }
+            }
+                
+            if (localMostCharactersOnASingleRowTuple.rowLength > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN)
+            {
+                localMostCharactersOnASingleRowTuple = 
+                    (localMostCharactersOnASingleRowTuple.rowIndex,
+                        localMostCharactersOnASingleRowTuple.rowLength + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
+                
+                MostCharactersOnASingleRowTuple = localMostCharactersOnASingleRowTuple;
+            }
+        }
     }
 
     private void MutateRowEndingKindCount(RowEndingKind rowEndingKind, int changeBy)
@@ -541,8 +589,8 @@ public partial class TextEditorBase
 
             if (character == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
             {
-                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength) 
-                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow);
+                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN) 
+                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
                 
                 _rowEndingPositions.Add((index + 1, RowEndingKind.CarriageReturn));
                 rowIndex++;
@@ -553,8 +601,8 @@ public partial class TextEditorBase
             }
             else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
             {
-                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength) 
-                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow);
+                if (charactersOnRow > MostCharactersOnASingleRowTuple.rowLength - MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN) 
+                    MostCharactersOnASingleRowTuple = (rowIndex, charactersOnRow + MOST_CHARACTERS_ON_A_SINGLE_ROW_MARGIN);
                 
                 if (previousCharacter == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
                 {
