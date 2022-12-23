@@ -25,6 +25,8 @@ public partial class BodySection : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
+    private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
+
     private string GetBodyStyleCss()
     {
         var mostDigitsInARowLineNumber = TextEditor.RowCount

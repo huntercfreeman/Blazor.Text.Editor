@@ -1,136 +1,60 @@
 ﻿@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels
+@using BlazorTextEditor.RazorLib.TextEditor
 @using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
-@using BlazorTextEditor.RazorLib.Virtualization
 
 @inherits TextEditorView
 
-@if (_widthAndHeightOfTextEditorEntirety is not null)
-{
-    <div>
-        <div>
-            WidthInPixels:&nbsp;@_widthAndHeightOfTextEditorEntirety.WidthInPixels
-        </div>
-        
-        <div>
-            HeightInPixels:&nbsp;@_widthAndHeightOfTextEditorEntirety.HeightInPixels
-        </div>
-    </div>
-}
-else
-{
-    <div>_widthAndHeightOfTextEditorEntirety was null</div>
+@{
+    var textEditor = TextEditorStatesSelection.Value;
+    var textEditorViewModel = ReplaceableTextEditorViewModel;
 }
 
 <div style="@GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
      class="bte_text-editor-css-wrapper @GlobalThemeCssClassString @ClassCssString">
+    
+    @if (textEditor is not null &&
+         textEditorViewModel is not null)
+    {
+        <CascadingValue Value="textEditor">
+            <CascadingValue Value="textEditorViewModel">
 
-    <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
-                      HeaderButtonKinds="HeaderButtonKinds"/>
+                <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
+                                  HeaderButtonKinds="HeaderButtonKinds"/>
 
-    <div @ref="_textEditorDisplayElementReference"
-         @onclick="FocusTextEditorAsync"
-         @onkeydown="HandleOnKeyDownAsync"
-         @onkeydown:preventDefault="true"
-         @oncontextmenu="HandleOnContextMenuAsync"
-         @oncontextmenu:preventDefault="true"
-         @onmousedown="HandleContentOnMouseDownAsync"
-         @onmousemove="HandleContentOnMouseMoveAsync"
-         @ondblclick="HandleContentOnDoubleClickAsync"
-         @onwheel="HandleOnWheelAsync"
-         id="@ContentElementId"
-         class="bte_text-editor bte_unselectable"
-         tabindex="-1">
+                <div @ref="_textEditorDisplayElementReference"
+                     @onclick="FocusTextEditorAsync"
+                     @onkeydown="HandleOnKeyDownAsync"
+                     @onkeydown:preventDefault="true"
+                     @oncontextmenu="HandleOnContextMenuAsync"
+                     @oncontextmenu:preventDefault="true"
+                     @onmousedown="HandleContentOnMouseDownAsync"
+                     @onmousemove="HandleContentOnMouseMoveAsync"
+                     @ondblclick="HandleContentOnDoubleClickAsync"
+                     @onwheel="HandleOnWheelAsync"
+                     id="@ContentElementId"
+                     class="bte_text-editor bte_unselectable"
+                     tabindex="-1">
 
-        <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
-                                           ElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
+                    <GutterSection/>
 
-        @{
-            var textEditor = TextEditorStatesSelection.Value;
-            var textEditorViewModel = ReplaceableTextEditorViewModel;
+                    <BodySection/>
+                </div>
 
-            if (textEditor is not null &&
-                textEditorViewModel is not null)
-            {
-                var primaryCursorSnapshot = new TextEditorCursorSnapshot(textEditorViewModel.PrimaryCursor);
-
-                if (textEditorViewModel.CharacterWidthAndRowHeight is not null &&
-                    textEditorViewModel.WidthAndHeightOfBody is not null)
-                {
-                    <TextSelectionGroup TextEditor="textEditor"
-                                        PrimaryCursorSnapshot="primaryCursorSnapshot"
-                                        CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"/>
-
-                    var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
-                    var spaceKeyOutput = "&nbsp;";
-
-                    if (GlobalShowWhitespace)
-                    {
-                        tabKeyOutput = "--->";
-                        spaceKeyOutput = "·";
-                    }
-
-                    <VirtualizationDisplay @ref="_virtualizationDisplay"
-                                           EntriesProviderFunc="EntriesProvider"
-                                           Context="virtualizationResult">
-
-                        @{
-                            // TODO: Tracking the most recently rendered virtualization result feels hacky and needs to be looked into further. The need for this arose when implementing the method "CursorMovePageBottomAsync()"
-                            textEditorViewModel.MostRecentlyRenderedVirtualizationResult = virtualizationResult;
-                        }
-                        
-                        <CascadingValue Value="textEditor">
-                            <CascadingValue Value="textEditorViewModel.CharacterWidthAndRowHeight">
-                                <CascadingValue Value="virtualizationResult">
-                                    
-                                    <GutterSection TextEditorViewModel="textEditorViewModel"/>
-                                    
-                                    <BodySection GlobalShowNewlines="GlobalShowNewlines"
-                                                 TabKeyOutput="@tabKeyOutput"
-                                                 SpaceKeyOutput="@spaceKeyOutput"
-                                                 TextEditorViewModel="textEditorViewModel"/>
-                                    
-                                </CascadingValue>
-                            </CascadingValue>
-                        </CascadingValue>
-                    </VirtualizationDisplay>
-
-                    <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
-                                             TextEditorCursor="textEditorViewModel.PrimaryCursor"
-                                             CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"
-                                             WidthAndHeightOfTextEditor="textEditorViewModel.WidthAndHeightOfBody"
-                                             TextEditorViewModelKey="TextEditorViewModelKey"
-                                             ScrollableContainerId="@textEditorViewModel.BodyElementId"
-                                             IsFocusTarget="true"
-                                             TabIndex="TabIndex"
-                                             GetMostRecentlyRenderedVirtualizationResultFunc="() => textEditorViewModel.MostRecentlyRenderedVirtualizationResult"
-                                             TextEditorViewModel="textEditorViewModel">
-
-                        <OnContextMenuRenderFragment>
-                            @if (OnContextMenuRenderFragment is not null)
-                            {
-                            }
-                            else
-                            {
-                                @* This is the default context menu *@
-                                <TextEditorContextMenu TextEditorViewModelKey="textEditorViewModel.TextEditorViewModelKey"/>
-                            }
-                        </OnContextMenuRenderFragment>
-                        <AutoCompleteMenuRenderFragment>
-                            @if (AutoCompleteMenuRenderFragment is not null)
-                            {
-                            }
-                            else
-                            {
-                                @* This is the default autocomplete menu *@
-                                <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"/>
-                            }
-                        </AutoCompleteMenuRenderFragment>
-                    </TextEditorCursorDisplay>
-                }
-            }
+                <TextEditorFooter/>
+            </CascadingValue>
+        </CascadingValue>
+    }
+    else
+    {
+        if (textEditor is null)
+        {
+            <div>The @nameof(TextEditorBase) was null</div>
         }
-    </div>
+        else if (textEditorViewModel is not null)
+        {
+            <div>The @nameof(TextEditorViewModel) was null</div>
+        }
+    }
 </div>
-
-<TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>

@@ -1,25 +1,17 @@
-@typeparam T
-
-<div @ref="_scrollableParentFinder">
-
-</div>
-
 @if (UseHorizontalVirtualization)
 {
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@LeftVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@LeftBoundaryElementId"
                                    VirtualizationBoundary="_result.LeftVirtualizationBoundary"/>
 
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@RightVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@RightBoundaryElementId"
                                    VirtualizationBoundary="_result.RightVirtualizationBoundary"/>
 }
 
 @if (UseVerticalVirtualization)
 {
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@TopVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@TopBoundaryElementId"
                                    VirtualizationBoundary="_result.TopVirtualizationBoundary"/>
 
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@BottomVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@BottomBoundaryElementId"
                                    VirtualizationBoundary="_result.BottomVirtualizationBoundary"/>
 }
-
-@ChildContent(_result)

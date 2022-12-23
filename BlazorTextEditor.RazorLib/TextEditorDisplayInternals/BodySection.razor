@@ -1,6 +1,21 @@
-﻿<div class="bte_body-section"
+﻿@using BlazorTextEditor.RazorLib.Virtualization
+
+<div class="bte_body-section"
      style="@GetBodyStyleCss()">
     
+    <VirtualizationDisplay @ref="_virtualizationDisplay"
+                           EntriesProviderFunc="EntriesProvider"
+                           Context="virtualizationResult">
+        
+        <CascadingValue Value="textEditor">
+            <CascadingValue Value="textEditorViewModel.CharacterWidthAndRowHeight">
+                <CascadingValue Value="virtualizationResult">
+
+                </CascadingValue>
+            </CascadingValue>
+        </CascadingValue>
+    </VirtualizationDisplay>
+
     <RowSection TextEditorViewModel="TextEditorViewModel"
                 GlobalShowNewlines="GlobalShowNewlines"
                 SpaceKeyOutput="@SpaceKeyOutput"
@@ -8,4 +23,67 @@
 
     <ScrollbarSection WidthAndHeightOfTextEditor="TextEditorViewModel.WidthAndHeightOfBody"
                       TextEditorViewModel="TextEditorViewModel"/>
+
+    @{
+        <MeasureCharacterWidthAndRowHeight @ref="_measureCharacterWidthAndRowHeightComponent"
+                                           HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
+
+        if (textEditor is not null &&
+            textEditorViewModel is not null)
+        {
+            var primaryCursorSnapshot = new TextEditorCursorSnapshot(textEditorViewModel.PrimaryCursor);
+
+            if (textEditorViewModel.CharacterWidthAndRowHeight is not null &&
+                textEditorViewModel.WidthAndHeightOfBody is not null)
+            {
+                <TextSelectionGroup TextEditor="textEditor"
+                                    PrimaryCursorSnapshot="primaryCursorSnapshot"
+                                    CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"/>
+
+                var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                var spaceKeyOutput = "&nbsp;";
+
+                if (GlobalShowWhitespace)
+                {
+                    tabKeyOutput = "--->";
+                    spaceKeyOutput = "·";
+                }
+
+
+
+                <TextEditorCursorDisplay @ref="_textEditorCursorDisplay"
+                                         TextEditorCursor="textEditorViewModel.PrimaryCursor"
+                                         CharacterWidthAndRowHeight="textEditorViewModel.CharacterWidthAndRowHeight"
+                                         WidthAndHeightOfTextEditor="textEditorViewModel.WidthAndHeightOfBody"
+                                         TextEditorViewModelKey="TextEditorViewModelKey"
+                                         ScrollableContainerId="@textEditorViewModel.BodyElementId"
+                                         IsFocusTarget="true"
+                                         TabIndex="TabIndex"
+                                         GetMostRecentlyRenderedVirtualizationResultFunc="() => textEditorViewModel.MostRecentlyRenderedVirtualizationResult"
+                                         TextEditorViewModel="textEditorViewModel">
+
+                    <OnContextMenuRenderFragment>
+                        @if (OnContextMenuRenderFragment is not null)
+                        {
+                        }
+                        else
+                        {
+                                            @* This is the default context menu *@
+                            <TextEditorContextMenu TextEditorViewModelKey="textEditorViewModel.TextEditorViewModelKey"/>
+                        }
+                    </OnContextMenuRenderFragment>
+                    <AutoCompleteMenuRenderFragment>
+                        @if (AutoCompleteMenuRenderFragment is not null)
+                        {
+                        }
+                        else
+                        {
+                                            @* This is the default autocomplete menu *@
+                            <TextEditorAutocompleteMenu TextEditorViewModelKey="TextEditorViewModelKey"/>
+                        }
+                    </AutoCompleteMenuRenderFragment>
+                </TextEditorCursorDisplay>
+            }
+        }
+    }
 </div>
