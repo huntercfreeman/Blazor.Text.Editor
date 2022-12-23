@@ -152,7 +152,11 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
         var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var width = $"width: {textEditor.MostCharactersOnASingleRow * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels}px;";
+        var widthOfBody = textEditor.MostCharactersOnASingleRow *
+                          TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight
+                              .CharacterWidthInPixels;
+        
+        var width = $"width: {widthOfBody}px;";
 
         return $"{top} {width} {height}";
     }

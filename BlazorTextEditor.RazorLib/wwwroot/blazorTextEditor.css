@@ -177,6 +177,8 @@
     border-width: 2px;
     border-style: solid;
     border-color: var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
+    border-left: none;
+    border-right: none;
     position: absolute;
     left: 0;
     min-width: 100%;
