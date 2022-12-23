@@ -566,7 +566,7 @@ public class TextEditorService : ITextEditorService
     public async Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId)
     {
         return await _jsRuntime.InvokeAsync<ElementMeasurementsInPixels>(
-            "getElementMeasurementsInPixelsById",
+            "blazorTextEditor.getElementMeasurementsInPixelsById",
             elementId);
     }
     

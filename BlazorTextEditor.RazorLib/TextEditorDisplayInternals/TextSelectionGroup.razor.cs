@@ -51,18 +51,6 @@ public partial class TextSelectionGroup : ComponentBase
         var height =
             $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
 
-        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
-            .ToString()
-            .Length;
-
-        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
-                                    TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var gutterSizeInPixels =
-            widthOfGutterInPixels +
-            TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-            TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-
         var selectionStartInPixels =
             selectionStartingColumnIndex *
             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
@@ -83,7 +71,7 @@ public partial class TextSelectionGroup : ComponentBase
                                       TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
+        var left = $"left: {selectionStartInPixels}px;";
 
         var selectionWidthInPixels =
             selectionEndingColumnIndex *
