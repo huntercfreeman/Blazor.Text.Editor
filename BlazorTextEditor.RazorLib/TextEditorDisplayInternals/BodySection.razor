@@ -1,6 +1,4 @@
-﻿@using BlazorTextEditor.RazorLib.Virtualization
-@using BlazorTextEditor.RazorLib.HelperComponents
-@using BlazorTextEditor.RazorLib.Cursor
+﻿@using BlazorTextEditor.RazorLib.Cursor
 
 <div class="bte_body-section"
      style="@GetBodyStyleCss()">
@@ -18,45 +16,13 @@
         }
     }
 
-    <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
-                                       HtmlElementId="@HtmlElementId"/>
-
-    <VirtualizationDisplay @ref="_virtualizationDisplay"
-                           VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"/>
-
-    <TextSelectionGroup PrimaryCursorSnapshot="primaryCursorSnapshot"/>
-
-    <RowSection GlobalShowNewlines="TextEditorService.GlobalShowNewlines"
+    <RowSection @ref="_rowSection"
+                GlobalShowNewlines="TextEditorService.GlobalShowNewlines"
                 SpaceKeyOutput="@spaceKeyOutput"
-                TabKeyOutput="@tabKeyOutput"/>
+                TabKeyOutput="@tabKeyOutput"
+                TabIndex="@TabIndex"
+                HtmlElementId="@HtmlElementId"
+                PrimaryCursorSnapshot="primaryCursorSnapshot"/>
 
     <ScrollbarSection/>
-
-    <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
-                             TextEditorCursor="TextEditorViewModel.PrimaryCursor"
-                             ScrollableContainerId="@TextEditorViewModel.BodyElementId"
-                             IsFocusTarget="true"
-                             TabIndex="TabIndex">
-
-        <OnContextMenuRenderFragment>
-            @if (ContextMenuRenderFragmentOverride is not null)
-            {
-                @ContextMenuRenderFragmentOverride
-            }
-            else
-            {
-                <TextEditorContextMenu/>
-            }
-        </OnContextMenuRenderFragment>
-        <AutoCompleteMenuRenderFragment>
-            @if (AutoCompleteMenuRenderFragmentOverride is not null)
-            {
-                @AutoCompleteMenuRenderFragmentOverride
-            }
-            else
-            {
-                <TextEditorAutocompleteMenu/>
-            }
-        </AutoCompleteMenuRenderFragment>
-    </TextEditorCursorDisplay>
 </div>

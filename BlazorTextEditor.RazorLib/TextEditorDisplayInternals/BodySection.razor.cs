@@ -28,10 +28,10 @@ public partial class BodySection : ComponentBase
     [Parameter, EditorRequired]
     public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
     
-    private VirtualizationDisplay? _virtualizationDisplay;
-    
-    public TextEditorCursorDisplay? TextEditorCursorDisplay { get; private set; }
-    public MeasureCharacterWidthAndRowHeight MeasureCharacterWidthAndRowHeightComponent { get; private set; }
+    private RowSection? _rowSection;
+
+    public TextEditorCursorDisplay? TextEditorCursorDisplay => _rowSection?.TextEditorCursorDisplay;
+    public MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => _rowSection?.MeasureCharacterWidthAndRowHeightComponent;
 
     private string GetBodyStyleCss()
     {

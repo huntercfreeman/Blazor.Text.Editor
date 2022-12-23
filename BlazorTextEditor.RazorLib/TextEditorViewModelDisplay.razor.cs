@@ -537,12 +537,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             positionY += RelativeCoordinatesOnClick.RelativeScrollTop;
         }
 
-        // Gutter padding column offset
-        {
-            positionX -= TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-        }
-
         var columnIndexDouble = positionX / 
             safeTextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
@@ -575,15 +569,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
 
             columnIndexInt -= extraWidthPerTabKey * tabsOnSameRowBeforeCursor;
-        }
-
-        // Line number column offset
-        {
-            var mostDigitsInARowLineNumber = safeTextEditorReference.RowCount
-                .ToString()
-                .Length;
-
-            columnIndexInt -= mostDigitsInARowLineNumber;
         }
 
         columnIndexInt = columnIndexInt > lengthOfRow

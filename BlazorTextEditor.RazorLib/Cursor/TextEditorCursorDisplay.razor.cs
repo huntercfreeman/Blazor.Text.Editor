@@ -117,12 +117,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var leftInPixels = 0d;
 
-        // Gutter padding column offset
-        {
-            leftInPixels +=
-                TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS + TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-        }
-
         // Tab key column offset
         {
             var tabsOnSameRowBeforeCursor = textEditor
@@ -139,17 +133,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        // Line number column offset
-        {
-            var mostDigitsInARowLineNumber = textEditor.RowCount
-                .ToString()
-                .Length;
-
-            leftInPixels += mostDigitsInARowLineNumber * 
-                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
+                        TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
         var top =
@@ -178,12 +163,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         
         var leftInPixels = 0d;
 
-        // Gutter padding column offset
-        {
-            leftInPixels +=
-                TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS + TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
-        }
-
         // Tab key column offset
         {
             var tabsOnSameRowBeforeCursor = textEditor
@@ -199,16 +178,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        // Line number column offset
-        {
-            var mostDigitsInARowLineNumber = textEditor.RowCount
-                .ToString()
-                .Length;
-
-            leftInPixels += mostDigitsInARowLineNumber * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
-        }
-
-        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * TextEditorCursor.IndexCoordinates.columnIndex;
+        leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
+                        TextEditorCursor.IndexCoordinates.columnIndex;
 
         var left = $"left: {leftInPixels}px;";
 

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
@@ -21,6 +22,20 @@ public partial class RowSection : ComponentBase
     public string TabKeyOutput { get; set; } = null!;
     [Parameter, EditorRequired]
     public string SpaceKeyOutput { get; set; } = null!;
+    /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
+    [Parameter, EditorRequired]
+    public int TabIndex { get; set; } = -1;
+    [Parameter, EditorRequired]
+    public string HtmlElementId { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
+    [Parameter, EditorRequired]
+    public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
+    
+    public TextEditorCursorDisplay? TextEditorCursorDisplay { get; private set; }
+    public MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent { get; private set; }
 
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {

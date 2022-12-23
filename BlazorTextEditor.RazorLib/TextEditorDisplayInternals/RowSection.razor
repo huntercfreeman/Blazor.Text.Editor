@@ -1,7 +1,13 @@
 ﻿@using BlazorTextEditor.RazorLib.Row
 @using System.Text
+@using BlazorTextEditor.RazorLib.Virtualization
+@using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Cursor
+
 <div class="bte_row-section"
      id="@TextEditorViewModel.BodyElementId">
+    
+    <TextSelectionGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"/>
 
     @foreach (var virtualizedRow in TextEditorViewModel.VirtualizationResult.Entries)
     {
@@ -70,4 +76,37 @@
             }
         </div>
     }
+
+    <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
+                                       HtmlElementId="@HtmlElementId"/>
+
+    <VirtualizationDisplay VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"/>
+
+    <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
+                             TextEditorCursor="TextEditorViewModel.PrimaryCursor"
+                             ScrollableContainerId="@TextEditorViewModel.BodyElementId"
+                             IsFocusTarget="true"
+                             TabIndex="TabIndex">
+
+        <OnContextMenuRenderFragment>
+            @if (ContextMenuRenderFragmentOverride is not null)
+            {
+                @ContextMenuRenderFragmentOverride
+            }
+            else
+            {
+                <TextEditorContextMenu/>
+            }
+        </OnContextMenuRenderFragment>
+        <AutoCompleteMenuRenderFragment>
+            @if (AutoCompleteMenuRenderFragmentOverride is not null)
+            {
+                @AutoCompleteMenuRenderFragmentOverride
+            }
+            else
+            {
+                <TextEditorAutocompleteMenu/>
+            }
+        </AutoCompleteMenuRenderFragment>
+    </TextEditorCursorDisplay>
 </div>
