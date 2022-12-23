@@ -284,3 +284,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FIXED: When doing horizontal virtualization it seems tab key width is not accounted for?
     - Seeing nothing when using tab key to put text horizontally out of view then horizontally scrolling that text into view.
     - Proceeding to put an enter key to split the line and all the text appears again.
+
+### 6.0.0 (2022-12-30 release was delayed by a week from the original date of 2022-12-23)
+- This update changes the already existing "TextEditorBase" class to instead be a model of a "unique file" if one uses the file system as an example use case.
+- Added the class "TextEditorViewModel". This class acts contains any state one previously found on the Blazor Component: "TextEditorDisplay.razor". This allows one to maintain the TextEditorCursor position for example as its state is no longer tied to the lifecycle of the "TextEditorDisplay.razor" Blazor Component.
+- Rename "TextEditorDisplay.razor" to "TextEditorViewModelDisplay.razor" and change the Blazor Parameter from "TextEditorKey" to "TextEditorViewModelKey"
+- Added the class "TextEditorGroup". This class adds 'tab' functionality and maintains the state of the new Blazor component named "TextEditorGroupDisplay. razor".
+- The TextEditor's gutter and body have separate parent HTML elements which they are positioned relative to.
+    - (the gutter and body are position: absolute and previous versions had bugs involving the body being displayed within the gutter do to incorrectly calculating the CSS 'left' attribute value.)
