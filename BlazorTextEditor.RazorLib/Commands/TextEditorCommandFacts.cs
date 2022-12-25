@@ -246,4 +246,81 @@ public static class TextEditorCommandFacts
         false,
         "Move Cursor to Top of the Page",
         "defaults_cursor-move-page-top");
+    
+    public static readonly TextEditorCommand Duplicate = new(
+        async textEditorCommandParameter =>
+        {
+            var selectedText = TextEditorSelectionHelper
+                .GetSelectedText(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection,
+                    textEditorCommandParameter.TextEditor);
+
+            TextEditorCursor cursorForInsertion;
+
+            if (selectedText is null)
+            {
+                var positionIndex = textEditorCommandParameter.TextEditor
+                    .GetPositionIndex(
+                        textEditorCommandParameter
+                            .PrimaryCursorSnapshot
+                            .ImmutableCursor.RowIndex,
+                        textEditorCommandParameter
+                            .PrimaryCursorSnapshot
+                            .ImmutableCursor.ColumnIndex);
+                
+                var rowPositionData = textEditorCommandParameter.TextEditor
+                        .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                            positionIndex);
+                
+                var rowLengthWithLineEnding = textEditorCommandParameter.TextEditor
+                    .GetLengthOfRow(
+                        textEditorCommandParameter
+                            .PrimaryCursorSnapshot
+                            .ImmutableCursor.RowIndex,
+                        true);
+
+                var rowStartingPositionIndexInclusive = rowPositionData.rowStartPositionIndex;
+                var rowEndingPositionIndexExclusive = rowPositionData.rowStartPositionIndex + rowLengthWithLineEnding;
+                
+                selectedText = TextEditorSelectionHelper
+                    .GetSelectedText(
+                        new ImmutableTextEditorSelection(
+                            rowStartingPositionIndexInclusive,
+                            rowEndingPositionIndexExclusive),
+                        textEditorCommandParameter.TextEditor);
+                
+                cursorForInsertion = new TextEditorCursor(
+                    (textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        0),
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
+            }
+            else
+            {
+                // Clone the TextEditorCursor to remove the TextEditorSelection otherwise the
+                // selected text to duplicate would be overwritten by itself and do nothing
+                cursorForInsertion = new TextEditorCursor(
+                    (textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex),
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
+            }
+
+            if (selectedText is null)
+                return;
+            
+            var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
+                textEditorCommandParameter.TextEditor.Key,
+                TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
+                selectedText,
+                CancellationToken.None);
+                
+            textEditorCommandParameter
+                .TextEditorService
+                .InsertText(insertTextTextEditorBaseAction);
+        },
+        false,
+        "Duplicate",
+        "defaults_duplicate");
 }
