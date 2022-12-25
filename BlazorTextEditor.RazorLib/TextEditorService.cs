@@ -399,17 +399,6 @@ public class TextEditorService : ITextEditorService
                 settingsDialog));
     }
     
-    
-    /// <summary>
-    /// <see cref="ForceRerender"/> 
-    /// </summary>
-    public void ForceRerender(TextEditorKey textEditorKey)
-    {
-        _dispatcher.Dispatch(
-            new ForceRerenderAction(
-                textEditorKey));
-    }
-
     private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
     {
         OnTextEditorStatesChanged?.Invoke();
@@ -573,6 +562,12 @@ public class TextEditorService : ITextEditorService
         return await _jsRuntime.InvokeAsync<ElementMeasurementsInPixels>(
             "blazorTextEditor.getElementMeasurementsInPixelsById",
             elementId);
+    }
+    
+    public TextEditorBase? GetTextEditorBaseOrDefaultByResourceUri(string resourceUri)
+    {
+        return TextEditorStates.TextEditorList
+            .FirstOrDefault(x => x.ResourceUri == resourceUri);
     }
     
     public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)

@@ -192,13 +192,6 @@ public interface ITextEditorService : IDisposable
         RowEndingKind rowEndingKind);
     
     public void ShowSettingsDialog(bool isResizable = false);
-    /// <summary>
-    /// Avoid usage of <see cref="ForceRerender"/><br/><br/>it is used for Component to Component communication of
-    /// state changes not stored directly on the TextEditorBase but still needing to be notified of.<br/><br/>
-    /// Modification of a TextEditorBase through the TextEditorServer will automatically notify all components that are
-    /// viewing the TextEditorBase that they should re-render.
-    /// </summary>
-    public void ForceRerender(TextEditorKey textEditorKey);
 
     public void RegisterGroup(TextEditorGroupKey textEditorGroupKey);
     public void AddViewModelToGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
@@ -215,6 +208,8 @@ public interface ITextEditorService : IDisposable
     public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task MutateScrollVerticalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task SetScrollPositionAsync(string bodyElementId, string gutterElementId, double? scrollLeft, double? scrollTop);
+    
+    public TextEditorBase? GetTextEditorBaseOrDefaultByResourceUri(string resourceUri);
     
     public Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId);
     

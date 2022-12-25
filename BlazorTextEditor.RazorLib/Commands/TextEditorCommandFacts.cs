@@ -101,14 +101,22 @@ public static class TextEditorCommandFacts
 
     public static readonly TextEditorCommand Save = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter
+            var onSaveRequestedFunc = textEditorCommandParameter
                 .TextEditorViewModel
-                .OnSaveRequested?
-                .Invoke(
-                    textEditorCommandParameter.TextEditor);
+                .OnSaveRequested; 
             
-            textEditorCommandParameter.TextEditorService
-                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            if (onSaveRequestedFunc is not null)
+            {
+                onSaveRequestedFunc
+                    .Invoke(textEditorCommandParameter.TextEditor);
+                
+                textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                    textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    });
+            }
             
             return Task.CompletedTask;
         },
@@ -127,8 +135,12 @@ public static class TextEditorCommandFacts
             primaryCursor.TextEditorSelection.EndingPositionIndex =
                 textEditorCommandParameter.TextEditor.DocumentLength;
             
-            textEditorCommandParameter.TextEditorService
-                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                previousViewModel => previousViewModel with
+                {
+                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                });
             
             return Task.CompletedTask;
         },
@@ -168,8 +180,12 @@ public static class TextEditorCommandFacts
                     TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
                 });
             
-            textEditorCommandParameter.TextEditorService
-                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                previousViewModel => previousViewModel with
+                {
+                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                });
             
             return Task.CompletedTask;
         },
