@@ -72,6 +72,31 @@ public static class TextEditorSelectionHelper
         return null;
     }
 
+    public static TextEditorCursor SelectLinesRange(
+        TextEditorBase textEditorBase,
+        int startingRowIndex, 
+        int count)
+    {
+        var startingPositionIndexInclusive = textEditorBase.GetPositionIndex(
+            startingRowIndex,
+            0);
+
+        var lastRowIndexExclusive = startingRowIndex + count;
+        
+        var endingPositionIndexExclusive = textEditorBase.GetPositionIndex(
+            lastRowIndexExclusive,
+            0);
+
+        var textEditorCursor = new TextEditorCursor(
+            (startingRowIndex, 0),
+            false);
+
+        textEditorCursor.TextEditorSelection.AnchorPositionIndex = startingPositionIndexInclusive;
+        textEditorCursor.TextEditorSelection.EndingPositionIndex = endingPositionIndexExclusive;
+
+        return textEditorCursor;
+    }
+    
     public static (int lowerBound, int upperBound) GetSelectionBounds(
         TextEditorSelection textEditorSelection)
     {

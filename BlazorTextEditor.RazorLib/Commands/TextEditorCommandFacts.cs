@@ -56,20 +56,43 @@ public static class TextEditorCommandFacts
                         .ImmutableTextEditorSelection,
                     textEditorCommandParameter.TextEditorBase);
 
-            if (selectedText is not null)
+            var textEditorCursorSnapshots = textEditorCommandParameter.CursorSnapshots;
+            
+            if (selectedText is null)
             {
-                await textEditorCommandParameter
-                    .ClipboardProvider
-                    .SetClipboard(
-                        selectedText);
+                var textEditorCursor = TextEditorSelectionHelper.SelectLinesRange(
+                    textEditorCommandParameter.TextEditorBase,
+                    textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                    1);
 
-                await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
+                textEditorCursorSnapshots = TextEditorCursorSnapshot
+                    .TakeSnapshots(textEditorCursor);
+
+                var primaryCursorSnapshot = textEditorCursorSnapshots.FirstOrDefault();
+
+                if (primaryCursorSnapshot is null)
+                    return; // Should never occur
+                
+                selectedText = TextEditorSelectionHelper
+                    .GetSelectedText(
+                        primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection,
+                        textEditorCommandParameter.TextEditorBase);
             }
+
+            if (selectedText is null)
+                return; // Should never occur
+            
+            await textEditorCommandParameter
+                .ClipboardProvider
+                .SetClipboard(
+                    selectedText);
+
+            await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
             
             textEditorCommandParameter.TextEditorService
                 .HandleKeyboardEvent(new KeyboardEventTextEditorBaseAction(
                     textEditorCommandParameter.TextEditorBase.Key,
-                    textEditorCommandParameter.CursorSnapshots,
+                    textEditorCursorSnapshots,
                     new KeyboardEventArgs
                     {
                         Key = KeyboardKeyFacts.MetaKeys.DELETE
