@@ -1,5 +1,5 @@
 .bte_text-editor-css-wrapper {
-    height: calc(300px + var(--bte_text-editor-header-height) + var(--bte_text-editor-footer-height));
+    height: 100%;
 }
 
 .bte_text-editor {
@@ -10,6 +10,18 @@
     position: relative;
     display: flex;
     font-family: monospace;
+}
+
+.bte_text-editor-group {
+    height: 100%;
+}
+
+.bte_text-editor-group-tabs-list {
+    height: var(--balc_tabs-bar-height);
+}
+
+.bte_text-editor-group-active-view-model {
+    height: calc(100% - var(--balc_tabs-bar-height));
 }
 
 .bte_method {
