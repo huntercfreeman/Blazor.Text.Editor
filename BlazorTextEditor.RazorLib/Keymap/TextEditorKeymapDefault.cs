@@ -93,7 +93,14 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
     {
         if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.TAB_CODE)
         {
-            return TextEditorCommandFacts.IndentMore;
+            if (keyboardEventArgs.ShiftKey)
+            {
+                return TextEditorCommandFacts.IndentLess;
+            }
+            else
+            {
+                return TextEditorCommandFacts.IndentMore;
+            }
         }
         
         return null;

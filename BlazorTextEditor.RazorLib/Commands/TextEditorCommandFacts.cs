@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Commands;
@@ -356,9 +357,6 @@ public static class TextEditorCommandFacts
                     .InsertText(insertTextTextEditorBaseAction);
             }
 
-            var currentUserCursorSelectionBounds = TextEditorSelectionHelper.GetSelectionBounds(
-                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection);
-
             var lowerBoundPositionIndexChange = 1;
             var upperBoundPositionIndexChange = selectionBoundsInRowIndexUnits.upperRowIndexExclusive -
                                                 selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
@@ -388,6 +386,90 @@ public static class TextEditorCommandFacts
                 (userCursorIndexCoordinates.rowIndex, userCursorIndexCoordinates.columnIndex + 1);
         },
         false,
-        "Duplicate",
-        "defaults_duplicate");
+        "Indent More",
+        "defaults_indent-more");
+    
+    public static readonly TextEditorCommand IndentLess = new(
+        async textEditorCommandParameter =>
+        {
+            var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
+                .GetSelectionBounds(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection);
+
+            var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
+                .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
+                    textEditorCommandParameter.TextEditorBase,
+                    selectionBoundsInPositionIndexUnits);
+
+            for (var i = selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
+                 i < selectionBoundsInRowIndexUnits.upperRowIndexExclusive;
+                 i++)
+            {
+                var rowPositionIndex = textEditorCommandParameter.TextEditorBase
+                    .GetPositionIndex(
+                        i,
+                        0);
+
+                var characterReadCount = TextEditorBase.TAB_WIDTH;
+
+                var lengthOfRow = textEditorCommandParameter.TextEditorBase.GetLengthOfRow(i);
+
+                characterReadCount = Math.Min(lengthOfRow, characterReadCount);
+
+                var readResult =
+                    textEditorCommandParameter.TextEditorBase
+                        .GetTextRange(rowPositionIndex, characterReadCount);
+                
+                if (readResult.StartsWith(KeyboardKeyFacts.WhitespaceCharacters.TAB))
+                {
+                    var cursorForDeletion = new TextEditorCursor(
+                        (i, 0),
+                        true);
+                    
+                    var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
+                        textEditorCommandParameter.TextEditorBase.Key,
+                        TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
+                        1, // Delete a single "Tab" character
+                        CancellationToken.None);
+                
+                    textEditorCommandParameter
+                        .TextEditorService
+                        .DeleteTextByRange(deleteTextTextEditorBaseAction);
+                }
+                else if (readResult.StartsWith(KeyboardKeyFacts.WhitespaceCharacters.SPACE))
+                {
+                    var cursorForDeletion = new TextEditorCursor(
+                        (i, 0),
+                        true);
+
+                    var contiguousSpaceCount = 0;
+                    
+                    foreach (var character in readResult)
+                    {
+                        if (character == KeyboardKeyFacts.WhitespaceCharacters.SPACE)
+                            contiguousSpaceCount++;
+                    }
+                    
+                    var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
+                        textEditorCommandParameter.TextEditorBase.Key,
+                        TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
+                        contiguousSpaceCount,
+                        CancellationToken.None);
+                
+                    textEditorCommandParameter
+                        .TextEditorService
+                        .DeleteTextByRange(deleteTextTextEditorBaseAction);
+                }
+                else
+                {
+                    return;
+                }
+            }
+        },
+        false,
+        "Indent Less",
+        "defaults_indent-less");
 }
