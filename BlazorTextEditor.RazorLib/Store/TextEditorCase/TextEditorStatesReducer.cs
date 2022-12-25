@@ -1,4 +1,5 @@
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
@@ -150,6 +151,47 @@ public class TextEditorStatesReducer
             .Single(x => x.Key == redoEditAction.TextEditorKey);
 
         var nextTextEditor = textEditor.RedoEdit();
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceReloadTextEditorBaseAction(
+        TextEditorStates previousTextEditorStates,
+        ReduceReloadTextEditorBaseAction reduceReloadTextEditorBaseAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == reduceReloadTextEditorBaseAction.TextEditorKey);
+
+        var nextTextEditor = new TextEditorBase(textEditor);
+        nextTextEditor.SetContent(reduceReloadTextEditorBaseAction.Content);
+
+        var nextList = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorList = nextList,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetResourceDataAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetResourceDataAction textEditorSetResourceDataAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == textEditorSetResourceDataAction.TextEditorKey);
+
+        var nextTextEditor = textEditor.SetResourceData(
+            textEditorSetResourceDataAction.ResourceUri,
+            textEditorSetResourceDataAction.ResourceLastWriteTime);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);

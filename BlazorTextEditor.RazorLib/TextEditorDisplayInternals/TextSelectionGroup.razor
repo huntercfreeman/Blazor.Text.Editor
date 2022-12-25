@@ -4,28 +4,23 @@
     @if (TextEditorSelectionHelper.HasSelectedText(
         PrimaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
     {
-        var selectionBounds = TextEditorSelectionHelper
+        var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
             .GetSelectionBounds(
                 PrimaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
 
-        var firstRowToSelectData =
-            TextEditorBase
-                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                    selectionBounds.lowerBound);
+        var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
+            .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
+                TextEditorBase,
+                selectionBoundsInPositionIndexUnits);
 
-        var lastRowToSelectData =
-            TextEditorBase
-                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                    selectionBounds.upperBound);
-
-        for (var i = firstRowToSelectData.rowIndex;
-            i <= lastRowToSelectData.rowIndex;
+        for (var i = selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
+            i < selectionBoundsInRowIndexUnits.upperRowIndexExclusive;
             i++)
         {
             var rowIndex = i;
 
             <div class="bte_text-selection"
-                 style="@GetTextSelectionStyleCss(selectionBounds.lowerBound, selectionBounds.upperBound, rowIndex)">
+                 style="@GetTextSelectionStyleCss(selectionBoundsInPositionIndexUnits.lowerPositionIndexInclusive, selectionBoundsInPositionIndexUnits.upperPositionIndexExclusive, rowIndex)">
             </div>
         }
     }

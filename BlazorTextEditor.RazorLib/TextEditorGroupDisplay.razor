@@ -13,7 +13,7 @@
                                            TextEditorViewModelKey="viewModelKey"/>
             }
         </div>
-        <div>
+        <div class="bte_text-editor-group-active-view-model">
             @{
                 var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(
                     textEditorGroup.ActiveTextEditorViewModelKey);
@@ -25,7 +25,8 @@
                 else
                 {
                     <TextEditorViewModelDisplay TextEditorViewModelKey="textEditorGroup.ActiveTextEditorViewModelKey"
-                                                ClassCssString="bte_demo-text-editor"/>
+                                                ClassCssString="bte_demo-text-editor"
+                                                TabIndex="TabIndex"/>
                 }
             }
         </div>

@@ -1,8 +1,4 @@
-﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.JavaScriptObjects;
-using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Measurement;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+﻿using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 

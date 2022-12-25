@@ -68,9 +68,9 @@ public partial class TextEditorBase
 
                 var lowerRowData = 
                     FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                        selectionBounds.lowerBound);
+                        selectionBounds.lowerPositionIndexInclusive);
 
-                var lowerColumnIndex = selectionBounds.lowerBound -
+                var lowerColumnIndex = selectionBounds.lowerPositionIndexInclusive -
                                        lowerRowData.rowStartPositionIndex;
 
                 // Move cursor to lower bound of text selection
@@ -263,22 +263,22 @@ public partial class TextEditorBase
             if (TextEditorSelectionHelper.HasSelectedText(
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
             {
-                var lowerBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
+                var lowerPositionIndexInclusiveBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
                     .AnchorPositionIndex ?? 0;
 
-                var upperBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
+                var upperPositionIndexExclusive = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
                     .EndingPositionIndex;
 
-                if (lowerBound > upperBound)
-                    (lowerBound, upperBound) = (upperBound, lowerBound);
+                if (lowerPositionIndexInclusiveBound > upperPositionIndexExclusive)
+                    (lowerPositionIndexInclusiveBound, upperPositionIndexExclusive) = (upperPositionIndexExclusive, lowerPositionIndexInclusiveBound);
 
                 var lowerRowMetaData =
                     FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                        lowerBound);
+                        lowerPositionIndexInclusiveBound);
 
                 var upperRowMetaData =
                     FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                        upperBound);
+                        upperPositionIndexExclusive);
 
                 // Value is needed when knowing what row ending positions
                 // to update after deletion is done
@@ -288,10 +288,10 @@ public partial class TextEditorBase
                 // cursor after deletion is done
                 selectionLowerBoundIndexCoordinates =
                     (lowerRowMetaData.rowIndex,
-                        lowerBound - lowerRowMetaData.rowStartPositionIndex);
+                        lowerPositionIndexInclusiveBound - lowerRowMetaData.rowStartPositionIndex);
 
-                startingPositionIndexToRemoveInclusive = upperBound - 1;
-                countToRemove = upperBound - lowerBound;
+                startingPositionIndexToRemoveInclusive = upperPositionIndexExclusive - 1;
+                countToRemove = upperPositionIndexExclusive - lowerPositionIndexInclusiveBound;
                 moveBackwards = true;
 
                 cursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
@@ -562,7 +562,7 @@ public partial class TextEditorBase
         }
     }
 
-    private void SetContent(string content)
+    public void SetContent(string content)
     {
         ResetStateButNotEditHistory();
         

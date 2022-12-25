@@ -15,7 +15,6 @@ using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
-using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -26,7 +25,6 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
-using BlazorTextEditor.RazorLib.Virtualization;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -68,6 +66,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterCSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -81,6 +80,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterHtmlTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -94,6 +94,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -107,6 +108,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -120,6 +122,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -133,6 +136,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterRazorTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -146,6 +150,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -159,6 +164,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -172,6 +178,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -190,15 +197,12 @@ public interface ITextEditorService : IDisposable
     public void SetUsingRowEndingKind(
         TextEditorKey textEditorKey,
         RowEndingKind rowEndingKind);
+    public void SetResourceData(
+        TextEditorKey textEditorKey,
+        string resourceUri,
+        DateTime resourceLastWriteTime);
     
     public void ShowSettingsDialog(bool isResizable = false);
-    /// <summary>
-    /// Avoid usage of <see cref="ForceRerender"/><br/><br/>it is used for Component to Component communication of
-    /// state changes not stored directly on the TextEditorBase but still needing to be notified of.<br/><br/>
-    /// Modification of a TextEditorBase through the TextEditorServer will automatically notify all components that are
-    /// viewing the TextEditorBase that they should re-render.
-    /// </summary>
-    public void ForceRerender(TextEditorKey textEditorKey);
 
     public void RegisterGroup(TextEditorGroupKey textEditorGroupKey);
     public void AddViewModelToGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
@@ -215,6 +219,9 @@ public interface ITextEditorService : IDisposable
     public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task MutateScrollVerticalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
     public Task SetScrollPositionAsync(string bodyElementId, string gutterElementId, double? scrollLeft, double? scrollTop);
+    
+    public TextEditorBase? GetTextEditorBaseOrDefaultByResourceUri(string resourceUri);
+    public void ReloadTextEditorBase(TextEditorKey textEditorKey, string content);
     
     public Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId);
     

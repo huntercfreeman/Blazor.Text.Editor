@@ -61,8 +61,8 @@ public static class TextEditorSelectionHelper
                 anchorPositionIndex,
                 endingPositionIndex);
 
-            var result = textEditorBase.GetTextRange(selectionBounds.lowerBound,
-                selectionBounds.upperBound - selectionBounds.lowerBound);
+            var result = textEditorBase.GetTextRange(selectionBounds.lowerPositionIndexInclusive,
+                selectionBounds.upperPositionIndexExclusive - selectionBounds.lowerPositionIndexInclusive);
 
             return result.Length != 0
                 ? result
@@ -72,7 +72,32 @@ public static class TextEditorSelectionHelper
         return null;
     }
 
-    public static (int lowerBound, int upperBound) GetSelectionBounds(
+    public static TextEditorCursor SelectLinesRange(
+        TextEditorBase textEditorBase,
+        int startingRowIndex, 
+        int count)
+    {
+        var startingPositionIndexInclusive = textEditorBase.GetPositionIndex(
+            startingRowIndex,
+            0);
+
+        var lastRowIndexExclusive = startingRowIndex + count;
+        
+        var endingPositionIndexExclusive = textEditorBase.GetPositionIndex(
+            lastRowIndexExclusive,
+            0);
+
+        var textEditorCursor = new TextEditorCursor(
+            (startingRowIndex, 0),
+            false);
+
+        textEditorCursor.TextEditorSelection.AnchorPositionIndex = startingPositionIndexInclusive;
+        textEditorCursor.TextEditorSelection.EndingPositionIndex = endingPositionIndexExclusive;
+
+        return textEditorCursor;
+    }
+    
+    public static (int lowerPositionIndexInclusive, int upperPositionIndexExclusive) GetSelectionBounds(
         TextEditorSelection textEditorSelection)
     {
         return GetSelectionBounds(
@@ -80,7 +105,7 @@ public static class TextEditorSelectionHelper
             textEditorSelection.EndingPositionIndex);
     }
 
-    public static (int lowerBound, int upperBound) GetSelectionBounds(
+    public static (int lowerPositionIndexInclusive, int upperPositionIndexExclusive) GetSelectionBounds(
         ImmutableTextEditorSelection immutableTextEditorSelection)
     {
         return GetSelectionBounds(
@@ -88,7 +113,7 @@ public static class TextEditorSelectionHelper
             immutableTextEditorSelection.EndingPositionIndex);
     }
 
-    public static (int lowerBound, int upperBound) GetSelectionBounds(
+    public static (int lowerPositionIndexInclusive, int upperPositionIndexExclusive) GetSelectionBounds(
         int? anchorPositionIndex,
         int endingPositionIndex)
     {
@@ -98,13 +123,31 @@ public static class TextEditorSelectionHelper
                 $"{nameof(anchorPositionIndex)} was null.");
         }
 
-        var lowerBound = anchorPositionIndex.Value;
-        var upperBound = endingPositionIndex;
+        var lowerPositionIndexInclusive = anchorPositionIndex.Value;
+        var upperPositionIndexExclusive = endingPositionIndex;
 
-        if (lowerBound > upperBound)
+        if (lowerPositionIndexInclusive > upperPositionIndexExclusive)
             // Swap the values around
-            (lowerBound, upperBound) = (upperBound, lowerBound);
+            (lowerPositionIndexInclusive, upperPositionIndexExclusive) = (upperPositionIndexExclusive, lowerPositionIndexInclusive);
 
-        return (lowerBound, upperBound);
+        return (lowerPositionIndexInclusive, upperPositionIndexExclusive);
+    }
+    
+    public static (int lowerRowIndexInclusive, int upperRowIndexExclusive) ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
+        TextEditorBase textEditorBase,
+        (int lowerPositionIndexInclusive, int upperPositionIndexExclusive) positionIndexBounds)
+    {
+        var firstRowToSelectDataInclusive =
+            textEditorBase
+                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    positionIndexBounds.lowerPositionIndexInclusive).rowIndex;
+
+        var lastRowToSelectDataExclusive =
+            textEditorBase
+                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    positionIndexBounds.upperPositionIndexExclusive).rowIndex +
+            1;
+        
+        return (firstRowToSelectDataInclusive, lastRowToSelectDataExclusive);
     }
 }

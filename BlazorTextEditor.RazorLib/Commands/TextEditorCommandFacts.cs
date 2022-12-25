@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Commands;
@@ -25,17 +26,21 @@ public static class TextEditorCommandFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditor);
+                    textEditorCommandParameter.TextEditorBase);
 
-            if (selectedText is not null)
+            if (selectedText is null)
             {
-                await textEditorCommandParameter
-                    .ClipboardProvider
-                    .SetClipboard(
-                        selectedText);
-                
-                await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
+                selectedText = textEditorCommandParameter.TextEditorBase.GetLinesRange(
+                    textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                    1);
             }
+            
+            await textEditorCommandParameter
+                .ClipboardProvider
+                .SetClipboard(
+                    selectedText);
+
+            await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
         },
         false,
         "Copy",
@@ -50,22 +55,45 @@ public static class TextEditorCommandFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditor);
+                    textEditorCommandParameter.TextEditorBase);
 
-            if (selectedText is not null)
+            var textEditorCursorSnapshots = textEditorCommandParameter.CursorSnapshots;
+            
+            if (selectedText is null)
             {
-                await textEditorCommandParameter
-                    .ClipboardProvider
-                    .SetClipboard(
-                        selectedText);
+                var textEditorCursor = TextEditorSelectionHelper.SelectLinesRange(
+                    textEditorCommandParameter.TextEditorBase,
+                    textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                    1);
 
-                await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
+                textEditorCursorSnapshots = TextEditorCursorSnapshot
+                    .TakeSnapshots(textEditorCursor);
+
+                var primaryCursorSnapshot = textEditorCursorSnapshots.FirstOrDefault();
+
+                if (primaryCursorSnapshot is null)
+                    return; // Should never occur
+                
+                selectedText = TextEditorSelectionHelper
+                    .GetSelectedText(
+                        primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection,
+                        textEditorCommandParameter.TextEditorBase);
             }
+
+            if (selectedText is null)
+                return; // Should never occur
+            
+            await textEditorCommandParameter
+                .ClipboardProvider
+                .SetClipboard(
+                    selectedText);
+
+            await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
             
             textEditorCommandParameter.TextEditorService
                 .HandleKeyboardEvent(new KeyboardEventTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditor.Key,
-                    textEditorCommandParameter.CursorSnapshots,
+                    textEditorCommandParameter.TextEditorBase.Key,
+                    textEditorCursorSnapshots,
                     new KeyboardEventArgs
                     {
                         Key = KeyboardKeyFacts.MetaKeys.DELETE
@@ -85,7 +113,7 @@ public static class TextEditorCommandFacts
 
             textEditorCommandParameter.TextEditorService.InsertText(
                 new InsertTextTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditor.Key,
+                    textEditorCommandParameter.TextEditorBase.Key,
                     new[]
                     {
                         textEditorCommandParameter.PrimaryCursorSnapshot,
@@ -101,14 +129,22 @@ public static class TextEditorCommandFacts
 
     public static readonly TextEditorCommand Save = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter
+            var onSaveRequestedFunc = textEditorCommandParameter
                 .TextEditorViewModel
-                .OnSaveRequested?
-                .Invoke(
-                    textEditorCommandParameter.TextEditor);
+                .OnSaveRequested; 
             
-            textEditorCommandParameter.TextEditorService
-                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            if (onSaveRequestedFunc is not null)
+            {
+                onSaveRequestedFunc
+                    .Invoke(textEditorCommandParameter.TextEditorBase);
+                
+                textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                    textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    });
+            }
             
             return Task.CompletedTask;
         },
@@ -125,10 +161,14 @@ public static class TextEditorCommandFacts
                 0;
 
             primaryCursor.TextEditorSelection.EndingPositionIndex =
-                textEditorCommandParameter.TextEditor.DocumentLength;
+                textEditorCommandParameter.TextEditorBase.DocumentLength;
             
-            textEditorCommandParameter.TextEditorService
-                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                previousViewModel => previousViewModel with
+                {
+                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                });
             
             return Task.CompletedTask;
         },
@@ -139,7 +179,7 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Undo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .UndoEdit(textEditorCommandParameter.TextEditor.Key);
+                .UndoEdit(textEditorCommandParameter.TextEditorBase.Key);
             
             return Task.CompletedTask;
         },
@@ -150,7 +190,7 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .RedoEdit(textEditorCommandParameter.TextEditor.Key);
+                .RedoEdit(textEditorCommandParameter.TextEditorBase.Key);
 
             return Task.CompletedTask;
         },
@@ -168,8 +208,12 @@ public static class TextEditorCommandFacts
                     TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
                 });
             
-            textEditorCommandParameter.TextEditorService
-                .ForceRerender(textEditorCommandParameter.TextEditor.Key);
+            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                previousViewModel => previousViewModel with
+                {
+                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                });
             
             return Task.CompletedTask;
         },
@@ -230,4 +274,250 @@ public static class TextEditorCommandFacts
         false,
         "Move Cursor to Top of the Page",
         "defaults_cursor-move-page-top");
+    
+    public static readonly TextEditorCommand Duplicate = new(
+        async textEditorCommandParameter =>
+        {
+            var selectedText = TextEditorSelectionHelper
+                .GetSelectedText(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection,
+                    textEditorCommandParameter.TextEditorBase);
+
+            TextEditorCursor cursorForInsertion;
+
+            if (selectedText is null)
+            {
+                selectedText = textEditorCommandParameter.TextEditorBase.GetLinesRange(
+                        textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        1);
+                
+                cursorForInsertion = new TextEditorCursor(
+                    (textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        0),
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
+            }
+            else
+            {
+                // Clone the TextEditorCursor to remove the TextEditorSelection otherwise the
+                // selected text to duplicate would be overwritten by itself and do nothing
+                cursorForInsertion = new TextEditorCursor(
+                    (textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex),
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
+            }
+            
+            var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
+                textEditorCommandParameter.TextEditorBase.Key,
+                TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
+                selectedText,
+                CancellationToken.None);
+                
+            textEditorCommandParameter
+                .TextEditorService
+                .InsertText(insertTextTextEditorBaseAction);
+        },
+        false,
+        "Duplicate",
+        "defaults_duplicate");
+    
+    public static readonly TextEditorCommand IndentMore = new(
+        async textEditorCommandParameter =>
+        {
+            var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
+                .GetSelectionBounds(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection);
+
+            var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
+                .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
+                    textEditorCommandParameter.TextEditorBase,
+                    selectionBoundsInPositionIndexUnits);
+
+            for (var i = selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
+                 i < selectionBoundsInRowIndexUnits.upperRowIndexExclusive;
+                 i++)
+            {
+                var cursorForInsertion = new TextEditorCursor(
+                    (i, 0),
+                    true);
+                
+                var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
+                    textEditorCommandParameter.TextEditorBase.Key,
+                    TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
+                    KeyboardKeyFacts.WhitespaceCharacters.TAB.ToString(),
+                    CancellationToken.None);
+                
+                textEditorCommandParameter
+                    .TextEditorService
+                    .InsertText(insertTextTextEditorBaseAction);
+            }
+
+            var lowerBoundPositionIndexChange = 1;
+            var upperBoundPositionIndexChange = selectionBoundsInRowIndexUnits.upperRowIndexExclusive -
+                                                selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
+            
+            if (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex <
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex)
+            {
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex +=
+                    lowerBoundPositionIndexChange;
+                
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex +=
+                    upperBoundPositionIndexChange;
+            }
+            else
+            {
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex +=
+                    upperBoundPositionIndexChange;
+                
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex +=
+                    lowerBoundPositionIndexChange;
+            }
+
+            var userCursorIndexCoordinates =
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
+            
+            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                (userCursorIndexCoordinates.rowIndex, userCursorIndexCoordinates.columnIndex + 1);
+        },
+        false,
+        "Indent More",
+        "defaults_indent-more");
+    
+    public static readonly TextEditorCommand IndentLess = new(
+        async textEditorCommandParameter =>
+        {
+            var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
+                .GetSelectionBounds(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection);
+
+            var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
+                .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
+                    textEditorCommandParameter.TextEditorBase,
+                    selectionBoundsInPositionIndexUnits);
+
+            bool isFirstLoop = true;
+            
+            for (var i = selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
+                 i < selectionBoundsInRowIndexUnits.upperRowIndexExclusive;
+                 i++)
+            {
+                var rowPositionIndex = textEditorCommandParameter.TextEditorBase
+                    .GetPositionIndex(
+                        i,
+                        0);
+
+                var characterReadCount = TextEditorBase.TAB_WIDTH;
+
+                var lengthOfRow = textEditorCommandParameter.TextEditorBase.GetLengthOfRow(i);
+
+                characterReadCount = Math.Min(lengthOfRow, characterReadCount);
+
+                var readResult =
+                    textEditorCommandParameter.TextEditorBase
+                        .GetTextRange(rowPositionIndex, characterReadCount);
+
+                int removeCharacterCount = 0;
+                
+                if (readResult.StartsWith(KeyboardKeyFacts.WhitespaceCharacters.TAB))
+                {
+                    removeCharacterCount = 1;
+                    
+                    var cursorForDeletion = new TextEditorCursor(
+                        (i, 0),
+                        true);
+                    
+                    var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
+                        textEditorCommandParameter.TextEditorBase.Key,
+                        TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
+                        removeCharacterCount, // Delete a single "Tab" character
+                        CancellationToken.None);
+                
+                    textEditorCommandParameter
+                        .TextEditorService
+                        .DeleteTextByRange(deleteTextTextEditorBaseAction);
+                }
+                else if (readResult.StartsWith(KeyboardKeyFacts.WhitespaceCharacters.SPACE))
+                {
+                    var cursorForDeletion = new TextEditorCursor(
+                        (i, 0),
+                        true);
+
+                    var contiguousSpaceCount = 0;
+                    
+                    foreach (var character in readResult)
+                    {
+                        if (character == KeyboardKeyFacts.WhitespaceCharacters.SPACE)
+                            contiguousSpaceCount++;
+                    }
+
+                    removeCharacterCount = contiguousSpaceCount;
+                    
+                    var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
+                        textEditorCommandParameter.TextEditorBase.Key,
+                        TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
+                        removeCharacterCount,
+                        CancellationToken.None);
+                
+                    textEditorCommandParameter
+                        .TextEditorService
+                        .DeleteTextByRange(deleteTextTextEditorBaseAction);
+                }
+
+                // Modify the lower bound of user's text selection
+                if (isFirstLoop)
+                {
+                    isFirstLoop = false;
+                    
+                    if (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex <
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex)
+                    {
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex -=
+                            removeCharacterCount;
+                    }
+                    else
+                    {
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex -=
+                            removeCharacterCount;
+                    }
+                }
+                
+                // Modify the upper bound of user's text selection
+                if (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex <
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex)
+                {
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex -=
+                        removeCharacterCount;
+                }
+                else
+                {
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex -=
+                        removeCharacterCount;
+                }
+                
+                // Modify the column index of user's cursor
+                if (i == textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex)
+                {
+                    var nextColumnIndex = textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex -
+                                          removeCharacterCount;
+
+                    var userCursorIndexCoordinates = textEditorCommandParameter
+                        .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
+                    
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                        (userCursorIndexCoordinates.rowIndex, Math.Max(0, nextColumnIndex));
+                }
+            }
+        },
+        false,
+        "Indent Less",
+        "defaults_indent-less");
 }

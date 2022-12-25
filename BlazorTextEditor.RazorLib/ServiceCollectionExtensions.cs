@@ -16,14 +16,14 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBlazorTextEditor(
         this IServiceCollection services,
-        Action<TextEditorServiceOptions>? configure = null)
+        Action<TextEditorServiceOptions>? configureTextEditorServiceOptions = null,
+        Action<ThemeServiceOptions>? configureThemeServiceOptions = null)
     {
         return services
             .AddSharedServices(
-                x => 
-                    {},
-                x => 
-                    x.InitialThemeKey = ThemeFacts.VisualStudioDarkThemeClone.ThemeKey)
+                x => {},
+                configureThemeServiceOptions ?? new Action<ThemeServiceOptions>(x => 
+                    x.InitialThemeKey = ThemeFacts.VisualStudioDarkThemeClone.ThemeKey))
             .AddDialogServices()
             .AddTreeViewServices()
             .AddTextEditorClassLibServices(
@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
                     new AutocompleteService(serviceProvider.GetRequiredService<IAutocompleteIndexer>()),
                 serviceProvider =>
                     new AutocompleteIndexer(serviceProvider.GetRequiredService<ITextEditorService>()),
-                configure);
+                configureTextEditorServiceOptions);
     }
 
     private static IServiceCollection AddTextEditorClassLibServices(

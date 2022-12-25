@@ -408,6 +408,23 @@ public partial class TextEditorBase
             .Select(rc => rc.Value)
             .ToArray());
     }
+    
+    public string GetLinesRange(int startingRowIndex, int count)
+    {
+        var startingPositionIndexInclusive = GetPositionIndex(
+            startingRowIndex,
+            0);
+
+        var lastRowIndexExclusive = startingRowIndex + count;
+        
+        var endingPositionIndexExclusive = GetPositionIndex(
+            lastRowIndexExclusive,
+            0);
+
+        return GetTextRange(
+            startingPositionIndexInclusive,
+            endingPositionIndexExclusive - startingPositionIndexInclusive);
+    }
 
     public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple)
         FindRowIndexRowStartRowEndingTupleFromPositionIndex(int positionIndex)
@@ -501,6 +518,18 @@ public partial class TextEditorBase
         Lexer = lexer ?? new TextEditorLexerDefault();
 
         // TODO: Invoke an event to reapply the CSS classes?
+    }
+    
+    public TextEditorBase SetResourceData(
+        string resourceUri,
+        DateTime resourceLastWriteTime)
+    {
+        var nextTextEditor = new TextEditorBase(this);
+
+        nextTextEditor.ResourceUri = resourceUri;
+        nextTextEditor.ResourceLastWriteTime = resourceLastWriteTime;
+
+        return nextTextEditor;
     }
 
     public TextEditorBase SetUsingRowEndingKind(RowEndingKind rowEndingKind)

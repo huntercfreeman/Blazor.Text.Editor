@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Measurement;
@@ -23,6 +22,7 @@ public record TextEditorViewModel(
     
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
     public Action<TextEditorBase>? OnSaveRequested { get; init; }
+    public Func<TextEditorBase, string>? GetTabDisplayNameFunc { get; init; }
     
     public string BodyElementId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
     public string PrimaryCursorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}_primary-cursor";
