@@ -18,6 +18,10 @@
 
 .bte_text-editor-group-tabs-list {
     height: var(--balc_tabs-bar-height);
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    font-size: .8em;
 }
 
 .bte_text-editor-group-active-view-model {

@@ -18,12 +18,15 @@
         var heightOfGutter = localTextEditorViewModel.VirtualizationResult.Entries.Length *
                              localTextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels;
 
-        var remainingHeightToFill = localTextEditorViewModel
-            .VirtualizationResult.ElementMeasurementsInPixels.Height - 
-                                    heightOfGutter; 
+        if (heightOfGutter < localTextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
+        {
+            var remainingHeightToFill = localTextEditorViewModel
+                .VirtualizationResult.ElementMeasurementsInPixels.Height - 
+                                        heightOfGutter; 
         
-        <div class="bte_gutter"
-             style="@GetGutterStyleCss(localTextEditorViewModel.VirtualizationResult.Entries.Length) height: @(remainingHeightToFill)px;">
-        </div>
+            <div class="bte_gutter"
+                 style="@GetGutterStyleCss(localTextEditorViewModel.VirtualizationResult.Entries.Length) height: @(remainingHeightToFill)px;">
+            </div>
+        }
     }
 </div>
