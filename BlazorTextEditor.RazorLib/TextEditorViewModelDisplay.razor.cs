@@ -215,9 +215,14 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         {
             new(primaryCursorSnapshot.UserCursor),
         }.ToImmutableArray();
+
+        var keyboardEventAndHasSelectionTuple = (keyboardEventArgs,
+            TextEditorSelectionHelper
+                .HasSelectedText(
+                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection));
         
         var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
-            .Invoke(keyboardEventArgs);
+            .Invoke(keyboardEventAndHasSelectionTuple);
 
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key) && 
             command is null)

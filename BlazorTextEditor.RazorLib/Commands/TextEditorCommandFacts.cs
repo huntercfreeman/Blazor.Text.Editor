@@ -321,4 +321,73 @@ public static class TextEditorCommandFacts
         false,
         "Duplicate",
         "defaults_duplicate");
+    
+    public static readonly TextEditorCommand IndentMore = new(
+        async textEditorCommandParameter =>
+        {
+            var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
+                .GetSelectionBounds(
+                    textEditorCommandParameter
+                        .PrimaryCursorSnapshot
+                        .ImmutableCursor
+                        .ImmutableTextEditorSelection);
+
+            var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
+                .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
+                    textEditorCommandParameter.TextEditorBase,
+                    selectionBoundsInPositionIndexUnits);
+
+            for (var i = selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
+                 i < selectionBoundsInRowIndexUnits.upperRowIndexExclusive;
+                 i++)
+            {
+                var cursorForInsertion = new TextEditorCursor(
+                    (i, 0),
+                    true);
+                
+                var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
+                    textEditorCommandParameter.TextEditorBase.Key,
+                    TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
+                    KeyboardKeyFacts.WhitespaceCharacters.TAB.ToString(),
+                    CancellationToken.None);
+                
+                textEditorCommandParameter
+                    .TextEditorService
+                    .InsertText(insertTextTextEditorBaseAction);
+            }
+
+            var currentUserCursorSelectionBounds = TextEditorSelectionHelper.GetSelectionBounds(
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection);
+
+            var lowerBoundPositionIndexChange = 1;
+            var upperBoundPositionIndexChange = selectionBoundsInRowIndexUnits.upperRowIndexExclusive -
+                                                selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
+            
+            if (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex <
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex)
+            {
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex +=
+                    lowerBoundPositionIndexChange;
+                
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex +=
+                    upperBoundPositionIndexChange;
+            }
+            else
+            {
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex +=
+                    upperBoundPositionIndexChange;
+                
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex +=
+                    lowerBoundPositionIndexChange;
+            }
+
+            var userCursorIndexCoordinates =
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
+            
+            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                (userCursorIndexCoordinates.rowIndex, userCursorIndexCoordinates.columnIndex + 1);
+        },
+        false,
+        "Duplicate",
+        "defaults_duplicate");
 }

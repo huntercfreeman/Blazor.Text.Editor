@@ -74,13 +74,13 @@ public class TextEditorCursor
 
                     var lowerRowMetaData = textEditorBase
                         .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                            selectionBounds.lowerBound);
+                            selectionBounds.lowerPositionIndexInclusive);
 
                     localIndexCoordinates.rowIndex =
                         lowerRowMetaData.rowIndex;
 
                     localIndexCoordinates.columnIndex =
-                        selectionBounds.lowerBound - lowerRowMetaData.rowStartPositionIndex;
+                        selectionBounds.lowerPositionIndexInclusive - lowerRowMetaData.rowStartPositionIndex;
                 }
                 else
                 {
@@ -162,7 +162,7 @@ public class TextEditorCursor
                     var upperRowMetaData =
                         textEditorBase
                             .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                                selectionBounds.upperBound);
+                                selectionBounds.upperPositionIndexExclusive);
 
                     localIndexCoordinates.rowIndex =
                         upperRowMetaData.rowIndex;
@@ -179,7 +179,7 @@ public class TextEditorCursor
                     else
                     {
                         localIndexCoordinates.columnIndex =
-                            selectionBounds.upperBound -
+                            selectionBounds.upperPositionIndexExclusive -
                             upperRowMetaData.rowStartPositionIndex;
                     }
                 }

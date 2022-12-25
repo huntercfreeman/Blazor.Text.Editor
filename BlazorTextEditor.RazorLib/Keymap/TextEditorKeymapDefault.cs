@@ -6,16 +6,25 @@ namespace BlazorTextEditor.RazorLib.Keymap;
 
 public class TextEditorKeymapDefault : ITextEditorKeymap
 {
-    public Func<KeyboardEventArgs, TextEditorCommand?> KeymapFunc { get; } =
-        keyboardEventArgs =>
+    public Func<(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection), TextEditorCommand?> KeymapFunc { get; } =
+        keyboardEventAndHasSelectionTuple =>
         {
-            if (keyboardEventArgs.CtrlKey)
-                return CtrlModifiedKeymap(keyboardEventArgs);
+            if (keyboardEventAndHasSelectionTuple.keyboardEventArgs.CtrlKey)
+                return CtrlModifiedKeymap(
+                    keyboardEventAndHasSelectionTuple.keyboardEventArgs,
+                    keyboardEventAndHasSelectionTuple.hasTextSelection);
 
-            if (keyboardEventArgs.AltKey)
-                return AltModifiedKeymap(keyboardEventArgs);
+            if (keyboardEventAndHasSelectionTuple.keyboardEventArgs.AltKey)
+                return AltModifiedKeymap(
+                    keyboardEventAndHasSelectionTuple.keyboardEventArgs,
+                    keyboardEventAndHasSelectionTuple.hasTextSelection);
             
-            return keyboardEventArgs.Key switch
+            if (keyboardEventAndHasSelectionTuple.hasTextSelection)
+                return HasSelectionModifiedKeymap(
+                    keyboardEventAndHasSelectionTuple.keyboardEventArgs,
+                    keyboardEventAndHasSelectionTuple.hasTextSelection);
+            
+            return keyboardEventAndHasSelectionTuple.keyboardEventArgs.Key switch
             {
                 KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.ScrollPageDown,
                 KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.ScrollPageUp,
@@ -24,10 +33,11 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         };
 
     private static TextEditorCommand? CtrlModifiedKeymap(
-        KeyboardEventArgs keyboardEventArgs)
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection)
     {
         if (keyboardEventArgs.AltKey)
-            return CtrlAltModifiedKeymap(keyboardEventArgs);
+            return CtrlAltModifiedKeymap(keyboardEventArgs, hasTextSelection);
 
         var command = keyboardEventArgs.Key switch
         {
@@ -71,18 +81,27 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
     ///     keys and have a method for each permutation.
     /// </summary>
     private static TextEditorCommand? AltModifiedKeymap(
-        KeyboardEventArgs keyboardEventArgs)
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection)
     {
-        if (keyboardEventArgs.Key == "a")
+        return null;
+    }
+    
+    private static TextEditorCommand? HasSelectionModifiedKeymap(
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection)
+    {
+        if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.TAB_CODE)
         {
-            // Short term hack to avoid autocomplete keybind being typed.
+            return TextEditorCommandFacts.IndentMore;
         }
-
+        
         return null;
     }
 
     private static TextEditorCommand? CtrlAltModifiedKeymap(
-        KeyboardEventArgs keyboardEventArgs)
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection)
     {
         return null;
     }

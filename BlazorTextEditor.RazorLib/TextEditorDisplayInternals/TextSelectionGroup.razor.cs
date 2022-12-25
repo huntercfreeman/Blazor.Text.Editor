@@ -16,7 +16,7 @@ public partial class TextSelectionGroup : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
     
-    private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
+    private string GetTextSelectionStyleCss(int lowerPositionIndexInclusive, int upperPositionIndexExclusive, int rowIndex)
     {
         if (rowIndex >= TextEditorBase.RowEndingPositions.Length)
             return string.Empty;
@@ -30,18 +30,18 @@ public partial class TextSelectionGroup : ComponentBase
 
         var fullWidthOfRowIsSelected = true;
 
-        if (lowerBound > startOfRowTuple.positionIndex)
+        if (lowerPositionIndexInclusive > startOfRowTuple.positionIndex)
         {
             selectionStartingColumnIndex =
-                lowerBound - startOfRowTuple.positionIndex;
+                lowerPositionIndexInclusive - startOfRowTuple.positionIndex;
 
             fullWidthOfRowIsSelected = false;
         }
 
-        if (upperBound < endOfRowTuple.positionIndex)
+        if (upperPositionIndexExclusive < endOfRowTuple.positionIndex)
         {
             selectionEndingColumnIndex =
-                upperBound - startOfRowTuple.positionIndex;
+                upperPositionIndexExclusive - startOfRowTuple.positionIndex;
 
             fullWidthOfRowIsSelected = false;
         }
@@ -99,7 +99,7 @@ public partial class TextSelectionGroup : ComponentBase
         if (fullWidthOfRowIsSelected)
             widthCssStyleString += "100%";
         else if (selectionStartingColumnIndex != 0 &&
-                 upperBound > endOfRowTuple.positionIndex - 1)
+                 upperPositionIndexExclusive > endOfRowTuple.positionIndex - 1)
             widthCssStyleString += $"calc(100% - {selectionStartInPixels}px);";
         else
             widthCssStyleString += $"{selectionWidthInPixels}px;";

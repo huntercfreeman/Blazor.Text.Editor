@@ -6,10 +6,10 @@ namespace BlazorTextEditor.RazorLib.Keymap;
 public class TextEditorKeymap : ITextEditorKeymap
 {
     public TextEditorKeymap(
-        Func<KeyboardEventArgs, TextEditorCommand> keymapFunc)
+        Func<(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection), TextEditorCommand> keymapFunc)
     {
         KeymapFunc = keymapFunc;
     }
 
-    public Func<KeyboardEventArgs, TextEditorCommand> KeymapFunc { get; }
+    public Func<(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection), TextEditorCommand> KeymapFunc { get; }
 }
