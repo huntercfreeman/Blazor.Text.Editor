@@ -18,6 +18,7 @@ public partial class CssExamples : ComponentBase
         TextEditorService.RegisterCssTextEditor(
             TextEditorFacts.Css.CssTextEditorKey,
             nameof(CssExamples),
+            DateTime.UtcNow,
             "CSS",
             TestData.Css.EXAMPLE_TEXT_21_LINES);
 

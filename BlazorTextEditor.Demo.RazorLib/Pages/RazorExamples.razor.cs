@@ -18,6 +18,7 @@ public partial class RazorExamples : ComponentBase
         TextEditorService.RegisterRazorTextEditor(
             TextEditorFacts.Razor.RazorTextEditorKey,
             nameof(RazorExamples),
+            DateTime.UtcNow,
             "Razor",
             TestData.Razor.EXAMPLE_TEXT);
         

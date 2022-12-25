@@ -51,6 +51,7 @@ public class BlazorTextEditorTestingBase
 
         var textEditor = new TextEditorBase(
             nameof(BlazorTextEditorTestingBase),
+            DateTime.UtcNow,
             "UnitTests",
             string.Empty,
             null,
