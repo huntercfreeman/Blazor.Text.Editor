@@ -562,7 +562,7 @@ public partial class TextEditorBase
         }
     }
 
-    private void SetContent(string content)
+    public void SetContent(string content)
     {
         ResetStateButNotEditHistory();
         

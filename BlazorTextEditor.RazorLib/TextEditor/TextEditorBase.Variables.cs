@@ -53,6 +53,7 @@ public partial class TextEditorBase
     public RowEndingKind UsingRowEndingKind { get; private set; }
     public ILexer Lexer { get; private set; }
     public string ResourceUri { get; private set; }
+    public DateTime ResourceLastWriteTime { get; private set; }
     /// <summary>
     /// <see cref="FileExtension"/> is displayed as is within the
     /// <see cref="TextEditorFooter"/>.

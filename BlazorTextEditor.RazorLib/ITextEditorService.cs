@@ -66,6 +66,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterCSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -79,6 +80,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterHtmlTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -92,6 +94,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -105,6 +108,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -118,6 +122,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -131,6 +136,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterRazorTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -144,6 +150,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -157,6 +164,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -170,6 +178,7 @@ public interface ITextEditorService : IDisposable
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null);
@@ -188,6 +197,10 @@ public interface ITextEditorService : IDisposable
     public void SetUsingRowEndingKind(
         TextEditorKey textEditorKey,
         RowEndingKind rowEndingKind);
+    public void SetResourceData(
+        TextEditorKey textEditorKey,
+        string resourceUri,
+        DateTime resourceLastWriteTime);
     
     public void ShowSettingsDialog(bool isResizable = false);
 
@@ -208,6 +221,7 @@ public interface ITextEditorService : IDisposable
     public Task SetScrollPositionAsync(string bodyElementId, string gutterElementId, double? scrollLeft, double? scrollTop);
     
     public TextEditorBase? GetTextEditorBaseOrDefaultByResourceUri(string resourceUri);
+    public void ReloadTextEditorBase(TextEditorKey textEditorKey, string content);
     
     public Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId);
     

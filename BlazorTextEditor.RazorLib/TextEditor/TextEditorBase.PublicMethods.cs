@@ -502,6 +502,18 @@ public partial class TextEditorBase
 
         // TODO: Invoke an event to reapply the CSS classes?
     }
+    
+    public TextEditorBase SetResourceData(
+        string resourceUri,
+        DateTime resourceLastWriteTime)
+    {
+        var nextTextEditor = new TextEditorBase(this);
+
+        nextTextEditor.ResourceUri = resourceUri;
+        nextTextEditor.ResourceLastWriteTime = resourceLastWriteTime;
+
+        return nextTextEditor;
+    }
 
     public TextEditorBase SetUsingRowEndingKind(RowEndingKind rowEndingKind)
     {

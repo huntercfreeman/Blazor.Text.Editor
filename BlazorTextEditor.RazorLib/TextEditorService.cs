@@ -80,12 +80,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterCSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorCSharpLexer(),
@@ -105,12 +107,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterHtmlTextEditor(
         TextEditorKey textEditorKey, 
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorHtmlLexer(),
@@ -130,12 +134,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterCssTextEditor(
         TextEditorKey textEditorKey, 
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorCssLexer(),
@@ -155,12 +161,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterJsonTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorJsonLexer(),
@@ -180,12 +188,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterFSharpTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorFSharpLexer(),
@@ -205,12 +215,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterRazorTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorRazorLexer(),
@@ -230,12 +242,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterJavaScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorJavaScriptLexer(),
@@ -255,12 +269,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterTypeScriptTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             new TextEditorTypeScriptLexer(),
@@ -280,12 +296,14 @@ public class TextEditorService : ITextEditorService
     public void RegisterPlainTextEditor(
         TextEditorKey textEditorKey,
         string resourceUri,
+        DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
         var textEditorBase = new TextEditorBase(
             resourceUri,
+            resourceLastWriteTime,
             fileExtension,
             initialContent,
             null,
@@ -379,6 +397,18 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(
             new TextEditorSetUsingRowEndingKindAction(textEditorKey, rowEndingKind));
+    }
+    
+    public void SetResourceData(
+        TextEditorKey textEditorKey,
+        string resourceUri,
+        DateTime resourceLastWriteTime)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetResourceDataAction(
+                textEditorKey,
+                resourceUri,
+                resourceLastWriteTime));
     }
 
     public void ShowSettingsDialog(bool isResizable = false)
@@ -566,6 +596,16 @@ public class TextEditorService : ITextEditorService
     {
         return TextEditorStates.TextEditorList
             .FirstOrDefault(x => x.ResourceUri == resourceUri);
+    }
+    
+    public void ReloadTextEditorBase(
+        TextEditorKey textEditorKey,
+        string content)
+    {
+        _dispatcher.Dispatch(
+            new ReduceReloadTextEditorBaseAction(
+                textEditorKey,
+                content));
     }
     
     public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)
