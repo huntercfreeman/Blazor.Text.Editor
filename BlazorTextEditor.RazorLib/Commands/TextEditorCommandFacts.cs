@@ -404,6 +404,8 @@ public static class TextEditorCommandFacts
                     textEditorCommandParameter.TextEditorBase,
                     selectionBoundsInPositionIndexUnits);
 
+            bool isFirstLoop = true;
+            
             for (var i = selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
                  i < selectionBoundsInRowIndexUnits.upperRowIndexExclusive;
                  i++)
@@ -422,9 +424,13 @@ public static class TextEditorCommandFacts
                 var readResult =
                     textEditorCommandParameter.TextEditorBase
                         .GetTextRange(rowPositionIndex, characterReadCount);
+
+                int removeCharacterCount = 0;
                 
                 if (readResult.StartsWith(KeyboardKeyFacts.WhitespaceCharacters.TAB))
                 {
+                    removeCharacterCount = 1;
+                    
                     var cursorForDeletion = new TextEditorCursor(
                         (i, 0),
                         true);
@@ -432,7 +438,7 @@ public static class TextEditorCommandFacts
                     var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
                         textEditorCommandParameter.TextEditorBase.Key,
                         TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
-                        1, // Delete a single "Tab" character
+                        removeCharacterCount, // Delete a single "Tab" character
                         CancellationToken.None);
                 
                     textEditorCommandParameter
@@ -452,20 +458,62 @@ public static class TextEditorCommandFacts
                         if (character == KeyboardKeyFacts.WhitespaceCharacters.SPACE)
                             contiguousSpaceCount++;
                     }
+
+                    removeCharacterCount = contiguousSpaceCount;
                     
                     var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
                         textEditorCommandParameter.TextEditorBase.Key,
                         TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
-                        contiguousSpaceCount,
+                        removeCharacterCount,
                         CancellationToken.None);
                 
                     textEditorCommandParameter
                         .TextEditorService
                         .DeleteTextByRange(deleteTextTextEditorBaseAction);
                 }
+
+                // Modify the lower bound of user's text selection
+                if (isFirstLoop)
+                {
+                    isFirstLoop = false;
+                    
+                    if (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex <
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex)
+                    {
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex -=
+                            removeCharacterCount;
+                    }
+                    else
+                    {
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex -=
+                            removeCharacterCount;
+                    }
+                }
+                
+                // Modify the upper bound of user's text selection
+                if (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex <
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex)
+                {
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex -=
+                        removeCharacterCount;
+                }
                 else
                 {
-                    return;
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex -=
+                        removeCharacterCount;
+                }
+                
+                // Modify the column index of user's cursor
+                if (i == textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex)
+                {
+                    var nextColumnIndex = textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex -
+                                          removeCharacterCount;
+
+                    var userCursorIndexCoordinates = textEditorCommandParameter
+                        .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
+                    
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                        (userCursorIndexCoordinates.rowIndex, Math.Max(0, nextColumnIndex));
                 }
             }
         },
