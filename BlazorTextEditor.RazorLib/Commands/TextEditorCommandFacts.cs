@@ -27,19 +27,19 @@ public static class TextEditorCommandFacts
                         .ImmutableTextEditorSelection,
                     textEditorCommandParameter.TextEditorBase);
 
-            if (selectedText is not null)
+            if (selectedText is null)
             {
-                await textEditorCommandParameter
-                    .ClipboardProvider
-                    .SetClipboard(
-                        selectedText);
-                
-                await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
+                selectedText = textEditorCommandParameter.TextEditorBase.GetLinesRange(
+                    textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                    1);
             }
-            else
-            {
-                
-            }
+            
+            await textEditorCommandParameter
+                .ClipboardProvider
+                .SetClipboard(
+                    selectedText);
+
+            await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
         },
         false,
         "Copy",
