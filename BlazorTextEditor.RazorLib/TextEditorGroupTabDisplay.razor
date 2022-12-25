@@ -24,7 +24,7 @@
             }
             else
             {
-                <text>@textEditorBase.ResourceUri</text>
+                <text>@(viewModel.GetTabDisplayNameFunc?.Invoke(textEditorBase) ?? textEditorBase.ResourceUri)</text>
             }
         }
     }
