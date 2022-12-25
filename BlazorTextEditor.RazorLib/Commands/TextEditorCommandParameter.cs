@@ -15,14 +15,14 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
         ITextEditorService textEditorService,
         TextEditorViewModel textEditorViewModel)
     {
-        TextEditor = textEditor;
+        TextEditorBase = textEditor;
         CursorSnapshots = cursorSnapshots;
         ClipboardProvider = clipboardProvider;
         TextEditorService = textEditorService;
         TextEditorViewModel = textEditorViewModel;
     }
 
-    public TextEditorBase TextEditor { get; }
+    public TextEditorBase TextEditorBase { get; }
 
     public TextEditorCursorSnapshot PrimaryCursorSnapshot => CursorSnapshots
         .First(x => x.UserCursor.IsPrimaryCursor);

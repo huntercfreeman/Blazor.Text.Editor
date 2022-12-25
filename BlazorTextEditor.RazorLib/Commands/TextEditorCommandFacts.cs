@@ -25,7 +25,7 @@ public static class TextEditorCommandFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditor);
+                    textEditorCommandParameter.TextEditorBase);
 
             if (selectedText is not null)
             {
@@ -35,6 +35,10 @@ public static class TextEditorCommandFacts
                         selectedText);
                 
                 await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
+            }
+            else
+            {
+                
             }
         },
         false,
@@ -50,7 +54,7 @@ public static class TextEditorCommandFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditor);
+                    textEditorCommandParameter.TextEditorBase);
 
             if (selectedText is not null)
             {
@@ -64,7 +68,7 @@ public static class TextEditorCommandFacts
             
             textEditorCommandParameter.TextEditorService
                 .HandleKeyboardEvent(new KeyboardEventTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditor.Key,
+                    textEditorCommandParameter.TextEditorBase.Key,
                     textEditorCommandParameter.CursorSnapshots,
                     new KeyboardEventArgs
                     {
@@ -85,7 +89,7 @@ public static class TextEditorCommandFacts
 
             textEditorCommandParameter.TextEditorService.InsertText(
                 new InsertTextTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditor.Key,
+                    textEditorCommandParameter.TextEditorBase.Key,
                     new[]
                     {
                         textEditorCommandParameter.PrimaryCursorSnapshot,
@@ -108,7 +112,7 @@ public static class TextEditorCommandFacts
             if (onSaveRequestedFunc is not null)
             {
                 onSaveRequestedFunc
-                    .Invoke(textEditorCommandParameter.TextEditor);
+                    .Invoke(textEditorCommandParameter.TextEditorBase);
                 
                 textEditorCommandParameter.TextEditorService.SetViewModelWith(
                     textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
@@ -133,7 +137,7 @@ public static class TextEditorCommandFacts
                 0;
 
             primaryCursor.TextEditorSelection.EndingPositionIndex =
-                textEditorCommandParameter.TextEditor.DocumentLength;
+                textEditorCommandParameter.TextEditorBase.DocumentLength;
             
             textEditorCommandParameter.TextEditorService.SetViewModelWith(
                 textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
@@ -151,7 +155,7 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Undo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .UndoEdit(textEditorCommandParameter.TextEditor.Key);
+                .UndoEdit(textEditorCommandParameter.TextEditorBase.Key);
             
             return Task.CompletedTask;
         },
@@ -162,7 +166,7 @@ public static class TextEditorCommandFacts
     public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .RedoEdit(textEditorCommandParameter.TextEditor.Key);
+                .RedoEdit(textEditorCommandParameter.TextEditorBase.Key);
 
             return Task.CompletedTask;
         },
@@ -256,41 +260,15 @@ public static class TextEditorCommandFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditor);
+                    textEditorCommandParameter.TextEditorBase);
 
             TextEditorCursor cursorForInsertion;
 
             if (selectedText is null)
             {
-                var positionIndex = textEditorCommandParameter.TextEditor
-                    .GetPositionIndex(
-                        textEditorCommandParameter
-                            .PrimaryCursorSnapshot
-                            .ImmutableCursor.RowIndex,
-                        textEditorCommandParameter
-                            .PrimaryCursorSnapshot
-                            .ImmutableCursor.ColumnIndex);
-                
-                var rowPositionData = textEditorCommandParameter.TextEditor
-                        .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                            positionIndex);
-                
-                var rowLengthWithLineEnding = textEditorCommandParameter.TextEditor
-                    .GetLengthOfRow(
-                        textEditorCommandParameter
-                            .PrimaryCursorSnapshot
-                            .ImmutableCursor.RowIndex,
-                        true);
-
-                var rowStartingPositionIndexInclusive = rowPositionData.rowStartPositionIndex;
-                var rowEndingPositionIndexExclusive = rowPositionData.rowStartPositionIndex + rowLengthWithLineEnding;
-                
-                selectedText = TextEditorSelectionHelper
-                    .GetSelectedText(
-                        new ImmutableTextEditorSelection(
-                            rowStartingPositionIndexInclusive,
-                            rowEndingPositionIndexExclusive),
-                        textEditorCommandParameter.TextEditor);
+                selectedText = textEditorCommandParameter.TextEditorBase.GetLinesRange(
+                        textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                        1);
                 
                 cursorForInsertion = new TextEditorCursor(
                     (textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
@@ -306,12 +284,9 @@ public static class TextEditorCommandFacts
                         textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex),
                     textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
             }
-
-            if (selectedText is null)
-                return;
             
             var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
-                textEditorCommandParameter.TextEditor.Key,
+                textEditorCommandParameter.TextEditorBase.Key,
                 TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
                 selectedText,
                 CancellationToken.None);
