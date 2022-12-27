@@ -80,7 +80,8 @@
     <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
                                        HtmlElementId="@HtmlElementId"/>
 
-    <VirtualizationDisplay VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"/>
+    <VirtualizationDisplay VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"
+                           ItemsProviderFunc="VirtualizationDisplayItemsProviderFunc"/>
 
     <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
                              TextEditorCursor="TextEditorViewModel.PrimaryCursor"

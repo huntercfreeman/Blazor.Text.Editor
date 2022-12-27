@@ -13,7 +13,7 @@ namespace BlazorTextEditor.RazorLib;
 /// message broker abstraction between a
 /// Blazor component and a <see cref="TextEditorBase"/>
 /// </summary>
-public class TextEditorView : FluxorComponent, IDisposable
+public class TextEditorView : FluxorComponent
 {
     // TODO: Do not rerender so much too many things are touched by the [Inject] in this file
     //
@@ -37,35 +37,4 @@ public class TextEditorView : FluxorComponent, IDisposable
             x.TextEditorViewModelKey == TextEditorViewModelKey);
 
     private TextEditorRenderStateKey _previousViewModelRenderStateKey = TextEditorRenderStateKey.Empty;
-    private bool _disposed;
-
-    protected override void OnInitialized()
-    {
-        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
-        
-        base.OnInitialized();
-    }
-
-    private async void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
-    {
-        var viewModel = ReplaceableTextEditorViewModel;
-        
-        if (viewModel is not null)
-            await viewModel.CalculateVirtualizationResultAsync();
-    }
-    
-    protected override void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-    
-        if (disposing)
-        {
-            TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
-        }
-    
-        _disposed = true;
-    }
 }

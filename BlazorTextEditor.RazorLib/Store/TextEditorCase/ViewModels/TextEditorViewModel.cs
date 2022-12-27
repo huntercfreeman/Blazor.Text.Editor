@@ -15,7 +15,6 @@ public record TextEditorViewModel(
     VirtualizationResult<List<RichCharacter>> VirtualizationResult,
     bool ShouldMeasureDimensions)
 {
-    private CancellationTokenSource _calculateVirtualizationResultCancellationTokenSource = new();
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, CancellationToken.None);
     
     public TextEditorCursor PrimaryCursor { get; } = new(true);
@@ -63,8 +62,6 @@ public record TextEditorViewModel(
             BodyElementId,
             GutterElementId,
             pixels);
-        
-        await CalculateVirtualizationResultAsync();
     }
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
@@ -73,8 +70,6 @@ public record TextEditorViewModel(
             BodyElementId,
             GutterElementId,
             pixels);
-        
-        await CalculateVirtualizationResultAsync();
     }
 
     public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
@@ -99,34 +94,31 @@ public record TextEditorViewModel(
             GutterElementId,
             scrollLeft,
             scrollTop);
-        
-        await CalculateVirtualizationResultAsync();
     }
 
     public async Task FocusTextEditorAsync()
     {
         await TextEditorService.FocusPrimaryCursorAsync(
             PrimaryCursorContentId);
-
-        await CalculateVirtualizationResultAsync();
     }
     
-    public async Task CalculateVirtualizationResultAsync()
+    public async Task CalculateVirtualizationResultAsync(
+        ElementMeasurementsInPixels? bodyMeasurementsInPixels,
+        CancellationToken cancellationToken)
     {
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
-
+        
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
-        _calculateVirtualizationResultCancellationTokenSource.Cancel();
-        _calculateVirtualizationResultCancellationTokenSource = new();
-        
-        var cancellationToken = _calculateVirtualizationResultCancellationTokenSource.Token;
-        
         var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
-        var bodyMeasurementsInPixels = await TextEditorService
+
+        if (bodyMeasurementsInPixels is null)
+        {
+            bodyMeasurementsInPixels = await TextEditorService
                 .GetElementMeasurementsInPixelsById(BodyElementId);
+        }
 
         _mostRecentBodyMeasurementsInPixels = bodyMeasurementsInPixels; 
 

@@ -80,7 +80,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
-    private int _onAfterRenderCounter;
+    private bool _disposed;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
     private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => 
@@ -129,32 +129,33 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         {
             _previousTextEditorViewModelKey = TextEditorViewModelKey;
 
-            TextEditorService.SetViewModelWith(
-                TextEditorViewModelKey,
-                previousViewModel =>
-                {
-                    previousViewModel.PrimaryCursor.ShouldRevealCursor = true;
-                    
-                    return previousViewModel with
-                    {
-                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
-                    };
-                });
+            safeTextEditorViewModel.PrimaryCursor.ShouldRevealCursor = true;
+            
+            await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
+                null, 
+                CancellationToken.None);
         }
 
         await base.OnParametersSetAsync();
     }
 
+    protected override void OnInitialized()
+    {
+        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
+        
+        base.OnInitialized();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _onAfterRenderCounter++;
-        
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (firstRender && 
             textEditorViewModel is not null)
         {
-            await textEditorViewModel.CalculateVirtualizationResultAsync();
+            await textEditorViewModel.CalculateVirtualizationResultAsync(
+                null, 
+                CancellationToken.None);
 
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.preventDefaultOnWheelEvents",
@@ -186,12 +187,29 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             textEditorViewModel = ReplaceableTextEditorViewModel;
 
             if (textEditorViewModel is not null)
-                await textEditorViewModel.CalculateVirtualizationResultAsync();
+            {
+                await textEditorViewModel.CalculateVirtualizationResultAsync(
+                    null,
+                    CancellationToken.None);
+            }
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    // TODO: When the underlying "TextEditorBase" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
+    private async void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        var viewModel = ReplaceableTextEditorViewModel;
+
+        if (viewModel is not null)
+        {
+            await viewModel.CalculateVirtualizationResultAsync(
+                null,
+                CancellationToken.None);
+        }
+    }
+    
     public async Task FocusTextEditorAsync()
     {
         if (TextEditorCursorDisplay is not null)
@@ -759,5 +777,20 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             return string.Empty;
 
         return $"height: {heightInPixels.Value}px;";
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+    
+        if (disposing)
+        {
+            TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
+        }
+    
+        _disposed = true;
     }
 }

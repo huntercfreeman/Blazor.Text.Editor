@@ -74,23 +74,33 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            if (IsFocusTarget)
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
+                    _intersectionObserverMapKey.ToString(),
+                    ScrollableContainerId,
+                    TextEditorCursorDisplayId);
+            }
+        }
+        
         var textEditor = TextEditorBase;
         
         var rowIndex = TextEditorCursor.IndexCoordinates.rowIndex;
 
+        // Ensure cursor stays within the row count index range
         if (rowIndex > textEditor.RowCount - 1)
-        {
             rowIndex = textEditor.RowCount - 1;
-        }
         
         var columnIndex = TextEditorCursor.IndexCoordinates.columnIndex;
 
         var rowLength = textEditor.GetLengthOfRow(rowIndex);
 
+        // Ensure cursor stays within the column count index range for the current row
         if (columnIndex > rowLength)
-        {
             columnIndex = rowLength - 1;
-        }
 
         rowIndex = Math.Max(0, rowIndex);
         columnIndex = Math.Max(0, columnIndex);
@@ -345,8 +355,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                             setScrollLeftTo,
                             setScrollTopTo);
 
-                        await textEditorViewModel.CalculateVirtualizationResultAsync();
-
                         await Task.Delay(_checkCursorIsInViewDelay);
                     }
                 }
@@ -436,5 +444,15 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     {
         _blinkingCursorCancellationTokenSource.Cancel();
         _checkCursorIsInViewCancellationTokenSource.Cancel();
+        
+        if (IsFocusTarget)
+        {
+            _ = Task.Run(async () =>
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
+                    _intersectionObserverMapKey.ToString());
+            });
+        }
     }
 }

@@ -11,6 +11,9 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 
 public partial class RowSection : ComponentBase
 {
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
+    
     [CascadingParameter]
     public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
@@ -91,5 +94,16 @@ public partial class RowSection : ComponentBase
                 spanBuilder.Append(richCharacter.Value);
                 break;
         }
+    }
+
+    private void VirtualizationDisplayItemsProviderFunc(
+        VirtualizationRequest virtualizationRequest)
+    {
+        Task.Run(async () =>
+        {
+            await TextEditorViewModel.CalculateVirtualizationResultAsync(
+                null,
+                CancellationToken.None); 
+        });
     }
 }
