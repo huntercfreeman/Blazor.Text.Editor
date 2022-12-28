@@ -84,6 +84,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
+    private CancellationTokenSource _textEditorBaseChangedCancellationTokenSource = new();
     private bool _disposed;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
@@ -200,7 +201,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
         await base.OnAfterRenderAsync(firstRender);
     }
-
+    
     // TODO: When the underlying "TextEditorBase" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
     private async void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
     {
@@ -208,9 +209,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
         if (viewModel is not null)
         {
+            _textEditorBaseChangedCancellationTokenSource.Cancel();
+            _textEditorBaseChangedCancellationTokenSource = new CancellationTokenSource();
+            
             await viewModel.CalculateVirtualizationResultAsync(
-                null,
-                CancellationToken.None);
+                viewModel.VirtualizationResult.ElementMeasurementsInPixels,
+                _textEditorBaseChangedCancellationTokenSource.Token);
         }
     }
     
@@ -781,6 +785,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (disposing)
         {
             TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
+            _textEditorBaseChangedCancellationTokenSource.Cancel();
         }
     
         _disposed = true;
