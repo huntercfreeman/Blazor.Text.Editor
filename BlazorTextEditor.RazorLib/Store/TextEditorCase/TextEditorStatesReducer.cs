@@ -164,13 +164,13 @@ public class TextEditorStatesReducer
     [ReducerMethod]
     public static TextEditorStates ReduceReloadTextEditorBaseAction(
         TextEditorStates previousTextEditorStates,
-        ReduceReloadTextEditorBaseAction reduceReloadTextEditorBaseAction)
+        ReloadTextEditorBaseAction reloadTextEditorBaseAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == reduceReloadTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.Key == reloadTextEditorBaseAction.TextEditorKey);
 
         var nextTextEditor = new TextEditorBase(textEditor);
-        nextTextEditor.SetContent(reduceReloadTextEditorBaseAction.Content);
+        nextTextEditor.SetContent(reloadTextEditorBaseAction.Content);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);
@@ -228,6 +228,23 @@ public class TextEditorStatesReducer
                 .GlobalTextEditorOptions with
             {
                 FontSizeInPixels = textEditorSetFontSizeAction.FontSizeInPixels,
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions,
+        };
+    }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetCursorWidthAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetCursorWidthAction textEditorSetCursorWidthAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                CursorWidthInPixels = textEditorSetCursorWidthAction.CursorWidthInPixels,
             };
 
         return previousTextEditorStates with

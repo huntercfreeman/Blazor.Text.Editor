@@ -1,0 +1,12 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div class="bte_text-editor-input-cursor-size @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
+    <span class="@LabelElementCssClassString">
+        Cursor-Width in pixels:&nbsp;
+    </span>
+    
+    <input type="number"
+           step="0.01"
+           @bind="TextEditorCursorWidth"
+           class="@InputElementCssClassString" />
+</div>

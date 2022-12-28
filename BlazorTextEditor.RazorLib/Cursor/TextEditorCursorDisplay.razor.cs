@@ -16,6 +16,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public TextEditorBase TextEditorBase { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorOptions GlobalTextEditorOptions { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
@@ -163,8 +165,11 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         var top =
             $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
         var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        return $"{left} {top} {height}";
+        
+        
+        var width = $"width: {GlobalTextEditorOptions.CursorWidthInPixels!.Value}px;";
+        
+        return $"{left} {top} {height} {width}";
     }
 
     private string GetCaretRowStyleCss()

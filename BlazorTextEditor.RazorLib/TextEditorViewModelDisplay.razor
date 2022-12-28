@@ -9,6 +9,7 @@
 @{
     var textEditorBase = MutableReferenceToTextEditor;
     var textEditorViewModel = ReplaceableTextEditorViewModel;
+    var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
 }
 
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
@@ -19,34 +20,36 @@
     {
         <CascadingValue Value="textEditorBase">
             <CascadingValue Value="textEditorViewModel">
+                <CascadingValue Value="globalTextEditorOptions">
 
-                <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
-                                  HeaderButtonKinds="HeaderButtonKinds"/>
+                    <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
+                                      HeaderButtonKinds="HeaderButtonKinds"/>
 
-                <div @ref="_textEditorDisplayElementReference"
-                     @onclick="FocusTextEditorAsync"
-                     @onkeydown="HandleOnKeyDownAsync"
-                     @onkeydown:preventDefault="true"
-                     @oncontextmenu="HandleOnContextMenuAsync"
-                     @oncontextmenu:preventDefault="true"
-                     @onmousedown="HandleContentOnMouseDownAsync"
-                     @onmousemove="HandleContentOnMouseMoveAsync"
-                     @ondblclick="HandleContentOnDoubleClickAsync"
-                     @onwheel="HandleOnWheelAsync"
-                     id="@ContentElementId"
-                     class="bte_text-editor bte_unselectable"
-                     tabindex="-1">
+                    <div @ref="_textEditorDisplayElementReference"
+                         @onclick="FocusTextEditorAsync"
+                         @onkeydown="HandleOnKeyDownAsync"
+                         @onkeydown:preventDefault="true"
+                         @oncontextmenu="HandleOnContextMenuAsync"
+                         @oncontextmenu:preventDefault="true"
+                         @onmousedown="HandleContentOnMouseDownAsync"
+                         @onmousemove="HandleContentOnMouseMoveAsync"
+                         @ondblclick="HandleContentOnDoubleClickAsync"
+                         @onwheel="HandleOnWheelAsync"
+                         id="@ContentElementId"
+                         class="bte_text-editor bte_unselectable"
+                         tabindex="-1">
 
-                    <GutterSection/>
+                        <GutterSection/>
 
-                    <BodySection @ref="_bodySection"
-                                 TabIndex="TabIndex"
-                                 HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
-                                 ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
-                                 AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
-                </div>
+                        <BodySection @ref="_bodySection"
+                                     TabIndex="TabIndex"
+                                     HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
+                                     ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
+                                     AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
+                    </div>
 
-                <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                    <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                </CascadingValue>
             </CascadingValue>
         </CascadingValue>
     }

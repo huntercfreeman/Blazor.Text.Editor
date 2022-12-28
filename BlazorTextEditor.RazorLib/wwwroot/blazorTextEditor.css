@@ -175,7 +175,6 @@
 
 .bte_text-editor-cursor {
     position: absolute;
-    width: 0;
     display: inline-block;
     background-color: var(--bte_text-editor-cursor-foreground-color);
     margin: 0;
@@ -189,15 +188,15 @@
 
 .bte_text-editor-cursor:focus {
     outline: none !important;
+    color: transparent;
 }
 
-.bte_text-editor:focus-within .bte_text-editor-cursor {
-    width: 2px;
+.bte_text-editor:not(.bte_text-editor:focus-within) .bte_text-editor-cursor {
+    width: 0;
 }
 
-.bte_text-editor-cursor:focus {
-    width: 2px;
-    outline: none !important;
+.bte_text-editor-cursor:not(.bte_text-editor-cursor:focus) {
+    width: 0;
 }
 
 .bte_text-editor-caret-row {

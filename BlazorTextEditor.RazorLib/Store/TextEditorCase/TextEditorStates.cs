@@ -16,7 +16,8 @@ public record TextEditorStates(
             ThemeFacts.VisualStudioDarkThemeClone,
             false,
             false,
-            null))
+            null,
+            2.5))
     {
     }
 }

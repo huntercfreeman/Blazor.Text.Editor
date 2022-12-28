@@ -11,7 +11,8 @@ public record TextEditorOptions(
     ThemeRecord? Theme,
     bool? ShowWhitespace,
     bool? ShowNewlines,
-    int? HeightInPixels)
+    int? HeightInPixels,
+    double? CursorWidthInPixels)
 {
     public static TextEditorOptions UnsetTextEditorOptions()
     {
@@ -20,6 +21,7 @@ public record TextEditorOptions(
             null,
             false,
             false,
-            null);
+            null,
+            0);
     }
 }
