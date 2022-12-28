@@ -45,6 +45,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private int _textEditorMenuShouldGetFocusRequestCount;
     private bool _disposedValue;
 
+    private string _previouslyObservedTextEditorCursorDisplayId = string.Empty;
+
     /// <summary>
     /// Scroll by 2 more rows than necessary to bring an out of view row into view.
     /// </summary>
@@ -74,7 +76,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (_previouslyObservedTextEditorCursorDisplayId != TextEditorCursorDisplayId)
         {
             if (IsFocusTarget)
             {
@@ -84,6 +86,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                     DotNetObjectReference.Create(this),
                     ScrollableContainerId,
                     TextEditorCursorDisplayId);
+                
+                _previouslyObservedTextEditorCursorDisplayId = TextEditorCursorDisplayId;
             }
         }
         
@@ -111,6 +115,13 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         if (TextEditorCursor.ShouldRevealCursor)
         {
             TextEditorCursor.ShouldRevealCursor = false;
+
+            if (!TextEditorCursor.IsIntersecting)
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.scrollElementIntoView",
+                    TextEditorCursorDisplayId);
+            }
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -119,7 +130,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     [JSInvokable]
     public Task OnCursorPassedIntersectionThresholdAsync(bool cursorIsIntersecting)
     {
-        Console.WriteLine($"cursorIsIntersecting: {cursorIsIntersecting}");
         TextEditorCursor.IsIntersecting = cursorIsIntersecting;
         return Task.CompletedTask;
     }

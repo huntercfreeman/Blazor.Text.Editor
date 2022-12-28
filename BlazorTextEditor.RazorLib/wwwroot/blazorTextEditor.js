@@ -8,8 +8,7 @@ window.blazorTextEditor = {
 
         element.focus();
     },
-    scrollElementIntoView: function (intersectionObserverMapKey,
-                                     elementId) {
+    scrollElementIntoView: function (elementId) {
 
         let element = document.getElementById(elementId);
 
@@ -186,7 +185,7 @@ window.blazorTextEditor = {
         
         let options = {
             root: scrollableParent,
-            rootMargin: '0px',
+            rootMargin: '-20px',
             threshold: 0
         }
 
