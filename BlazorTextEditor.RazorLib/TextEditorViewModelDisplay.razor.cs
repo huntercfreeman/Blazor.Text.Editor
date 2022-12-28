@@ -707,6 +707,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     {
         return keyboardEventArgs.Key == ";" ||
                KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "s") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
