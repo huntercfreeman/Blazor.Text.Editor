@@ -97,10 +97,10 @@ public partial class TextSelectionGroup : ComponentBase
         var widthCssStyleString = "width: ";
 
         if (fullWidthOfRowIsSelected)
-            widthCssStyleString += "100%";
+            widthCssStyleString += $"{TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth}px;";
         else if (selectionStartingColumnIndex != 0 &&
                  upperPositionIndexExclusive > endOfRowTuple.positionIndex - 1)
-            widthCssStyleString += $"calc(100% - {selectionStartInPixels}px);";
+            widthCssStyleString += $"calc({TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth}px - {selectionStartInPixels}px);";
         else
             widthCssStyleString += $"{selectionWidthInPixels}px;";
 
