@@ -1,21 +1,24 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <div style="overflow: auto; height: 100%; padding: 10px;">
-    <TextEditorSettingsPreview TopLevelDivElementCssClassString="bte_add-margin-top"/>
-    <TextEditorInputFontSize TopLevelDivElementCssClassString="bte_add-margin-top"/>
-    <TextEditorInputCursorWidth TopLevelDivElementCssClassString="bte_add-margin-top"/>
-    <TextEditorInputHeight TopLevelDivElementCssClassString="bte_add-margin-top"/>
-    <TextEditorInputShowNewLines TopLevelDivElementCssClassString="bte_add-margin-top"/>
-    <TextEditorInputShowWhitespace TopLevelDivElementCssClassString="bte_add-margin-top"/>
-    <TextEditorInputTheme TopLevelDivElementCssClassString="bte_add-margin-top"/>
 
-    <div>
-        @{
-            var indexedStrings = AutocompleteIndexer.IndexedStrings;
+    <CascadingValue Name="InputElementCssClass" Value="InputElementCssClass">
+        <TextEditorSettingsPreview TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <TextEditorInputFontSize TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <TextEditorInputCursorWidth TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <TextEditorInputHeight TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <TextEditorInputShowNewLines TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <TextEditorInputShowWhitespace TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <TextEditorInputTheme TopLevelDivElementCssClassString="bte_add-margin-top"/>
 
-            <div>
-                Indexed Strings Count: @($"{indexedStrings.Length:N0}")
-            </div>
-        }
-    </div>
+        <div>
+            @{
+                var indexedStrings = AutocompleteIndexer.IndexedStrings;
+
+                <div>
+                    Indexed Strings Count: @($"{indexedStrings.Length:N0}")
+                </div>
+            }
+        </div>
+    </CascadingValue>
 </div>

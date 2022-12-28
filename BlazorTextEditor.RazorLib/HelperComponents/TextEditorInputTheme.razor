@@ -7,7 +7,7 @@
     </span>
 
     <select @onchange="SelectedThemeChanged"
-            class="@InputElementCssClassString">
+            class="@CascadingInputElementCssClass @InputElementCssClassString">
         @{
             var themes = ThemeStatesWrap.Value.ThemeRecordsList;
             var chosenTheme = TextEditorService.GlobalThemeValue;

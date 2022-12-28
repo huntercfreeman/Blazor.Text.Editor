@@ -12,4 +12,7 @@ public partial class TextEditorSettings : FluxorComponent
     private IAutocompleteIndexer AutocompleteIndexer { get; set; } = null!;
     [Inject]
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
+    
+    [Parameter]
+    public string InputElementCssClass { get; set; } = string.Empty;
 }

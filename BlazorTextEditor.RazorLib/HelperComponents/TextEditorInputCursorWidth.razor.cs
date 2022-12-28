@@ -22,6 +22,9 @@ public partial class TextEditorInputCursorWidth : FluxorComponent
     [Parameter]
     public string LabelElementCssClassString { get; set; } = string.Empty;
 
+    [CascadingParameter(Name="InputElementCssClass")]
+    public string CascadingInputElementCssClass { get; set; } = string.Empty;
+    
     private const double MINIMUM_CURSOR_SIZE_IN_PIXELS = 1;
     
     private double TextEditorCursorWidth
