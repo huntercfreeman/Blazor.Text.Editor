@@ -78,4 +78,33 @@ public partial class GutterSection : ComponentBase
 
         return width;
     }
+
+    private IVirtualizationResultWithoutTypeMask GetVirtualizationResult()
+    {
+        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
+            .ToString()
+            .Length;
+
+        var widthOfGutterInPixels = mostDigitsInARowLineNumber *
+                            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+        widthOfGutterInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
+                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+
+        var topBoundaryNarrow = TextEditorViewModel.VirtualizationResult.TopVirtualizationBoundary with
+        {
+            WidthInPixels = widthOfGutterInPixels
+        };
+        
+        var bottomBoundaryNarrow = TextEditorViewModel.VirtualizationResult.BottomVirtualizationBoundary with
+        {
+            WidthInPixels = widthOfGutterInPixels
+        };
+        
+        return TextEditorViewModel.VirtualizationResult with
+        {
+            TopVirtualizationBoundary = topBoundaryNarrow,
+            BottomVirtualizationBoundary = bottomBoundaryNarrow
+        };
+    }
 }

@@ -101,6 +101,8 @@ window.blazorTextEditor = {
         
         textEditorBody.scrollTop += pixels;
 
+        this.validateTextEditorBodyScrollPosition(textEditorBody);
+        
         if (textEditorGutter) {
             textEditorGutter.scrollTop = textEditorBody.scrollTop;
         }
@@ -113,6 +115,8 @@ window.blazorTextEditor = {
         }
         
         textEditorBody.scrollLeft += pixels;
+
+        this.validateTextEditorBodyScrollPosition(textEditorBody);
     },
     setScrollPosition: function (textEditorBodyId, gutterElementId, scrollLeft, scrollTop) {
         let textEditorBody = document.getElementById(textEditorBodyId);
@@ -130,10 +134,39 @@ window.blazorTextEditor = {
             textEditorBody.scrollTop = scrollTop;
         }
 
+        this.validateTextEditorBodyScrollPosition(textEditorBody);
+
         if (textEditorGutter) {
             textEditorGutter.scrollTop = textEditorBody.scrollTop;
         }
     },
+    validateTextEditorBodyScrollPosition: function (textEditorBodyElement) {
+        // Validate scrollLeft
+        
+        console.log("======================================================================");
+        console.log(`textEditorBodyElement.scrollLeft: ${textEditorBodyElement.scrollLeft}`);
+        console.log(`textEditorBodyElement.offsetWidth: ${textEditorBodyElement.offsetWidth}`);
+        console.log(`textEditorBodyElement.scrollWidth: ${textEditorBodyElement.scrollWidth}`);
+        
+        let currentLargestLeftPosition = 
+            textEditorBodyElement.scrollLeft + textEditorBodyElement.offsetWidth;
+        
+        if (currentLargestLeftPosition > textEditorBodyElement.scrollWidth) {
+            textEditorBodyElement.scrollLeft =
+                textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth;
+        }
+        
+        console.log(`textEditorBodyElement.scrollLeft: ${textEditorBodyElement.scrollLeft}`);
+
+        // Validate scrollTop
+        let currentLargestTopPosition =
+            textEditorBodyElement.scrollTop + textEditorBodyElement.offsetHeight;
+
+        if (currentLargestTopPosition > textEditorBodyElement.scrollHeight) {
+            textEditorBodyElement.scrollTop =
+                textEditorBodyElement.scrollHeight - textEditorBodyElement.offsetHeight;
+        }
+    }, 
     setGutterScrollTop: function (gutterElementId, scrollTop) {
         let textEditorGutter = document.getElementById(gutterElementId);
 
