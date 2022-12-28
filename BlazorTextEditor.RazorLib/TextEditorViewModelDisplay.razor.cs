@@ -34,9 +34,13 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
     [Parameter]
-    public string StyleCssString { get; set; } = null!;
+    public string WrapperStyleCssString { get; set; } = string.Empty;
     [Parameter]
-    public string ClassCssString { get; set; } = null!;
+    public string WrapperClassCssString { get; set; } = string.Empty;
+    [Parameter]
+    public string TextEditorStyleCssString { get; set; } = string.Empty;
+    [Parameter]
+    public string TextEditorClassCssString { get; set; } = string.Empty;
     /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;

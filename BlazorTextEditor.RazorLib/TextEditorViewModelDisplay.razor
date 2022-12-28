@@ -12,8 +12,8 @@
     var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
 }
 
-<div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
-     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @ClassCssString">
+<div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
+     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @WrapperClassCssString">
     
     @if (textEditorBase is not null &&
          textEditorViewModel is not null)
@@ -22,8 +22,11 @@
             <CascadingValue Value="textEditorViewModel">
                 <CascadingValue Value="globalTextEditorOptions">
 
-                    <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
-                                      HeaderButtonKinds="HeaderButtonKinds"/>
+                    @if (IncludeHeaderHelperComponent)
+                    {
+                        <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
+                                          HeaderButtonKinds="HeaderButtonKinds"/>
+                    }
 
                     <div @ref="_textEditorDisplayElementReference"
                          @onclick="FocusTextEditorAsync"
@@ -36,7 +39,8 @@
                          @ondblclick="HandleContentOnDoubleClickAsync"
                          @onwheel="HandleOnWheelAsync"
                          id="@ContentElementId"
-                         class="bte_text-editor bte_unselectable"
+                         style="@TextEditorStyleCssString"
+                         class="bte_text-editor bte_unselectable @TextEditorClassCssString"
                          tabindex="-1">
 
                         <GutterSection/>
@@ -48,7 +52,10 @@
                                      AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
                     </div>
 
-                    <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                    @if (IncludeFooterHelperComponent)
+                    {
+                        <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                    }
                 </CascadingValue>
             </CascadingValue>
         </CascadingValue>
