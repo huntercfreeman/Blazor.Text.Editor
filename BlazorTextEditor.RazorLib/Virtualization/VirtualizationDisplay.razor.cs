@@ -89,8 +89,6 @@ public partial class VirtualizationDisplay : ComponentBase, IDisposable
     [JSInvokable]
     public Task OnScrollEventAsync(VirtualizationScrollPosition scrollPosition)
     {
-        Console.WriteLine(nameof(OnScrollEventAsync));
-        
         _scrollEventCancellationTokenSource.Cancel();
         _scrollEventCancellationTokenSource = new CancellationTokenSource();
 

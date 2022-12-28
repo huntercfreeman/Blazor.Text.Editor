@@ -81,6 +81,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                 await JsRuntime.InvokeVoidAsync(
                     "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
                     _intersectionObserverMapKey.ToString(),
+                    DotNetObjectReference.Create(this),
                     ScrollableContainerId,
                     TextEditorCursorDisplayId);
             }
@@ -113,6 +114,14 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+    
+    [JSInvokable]
+    public Task OnCursorPassedIntersectionThresholdAsync(bool cursorIsIntersecting)
+    {
+        Console.WriteLine($"cursorIsIntersecting: {cursorIsIntersecting}");
+        TextEditorCursor.IsIntersecting = cursorIsIntersecting;
+        return Task.CompletedTask;
     }
 
     private string GetCursorStyleCss()

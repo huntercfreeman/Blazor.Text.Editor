@@ -147,6 +147,8 @@ window.blazorTextEditor = {
     getElementMeasurementsInPixelsById: function (elementId) {
         let elementReference = document.getElementById(elementId);
 
+        // The function "getElementMeasurementsInPixelsByElementReference"
+        // is safe to pass a null value to. Therefore no null check is being made here.
         return this.getElementMeasurementsInPixelsByElementReference(elementReference);
     },
     getElementMeasurementsInPixelsByElementReference: function (elementReference) {
@@ -172,11 +174,16 @@ window.blazorTextEditor = {
     },
     cursorIntersectionObserverMap: new Map(),
     initializeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey,
+                                                              virtualizationDisplayDotNetObjectReference,
                                                               scrollableParentElementId,
                                                               cursorElementId) {
 
         let scrollableParent = document.getElementById(scrollableParentElementId);
 
+        if (!scrollableParent) {
+            return;
+        }
+        
         let options = {
             root: scrollableParent,
             rootMargin: '0px',
@@ -193,8 +200,23 @@ window.blazorTextEditor = {
 
                 let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
                     .find(x => x.CursorElementId === entry.target.id);
+                
+                if (!cursorTuple) {
+                    virtualizationDisplayDotNetObjectReference
+                        .invokeMethodAsync("OnCursorPassedIntersectionThresholdAsync",
+                            false);
+                    
+                    return;
+                }
 
-                cursorTuple.IsIntersecting = entry.isIntersecting;
+                if (cursorTuple.IsIntersecting !== entry.isIntersecting) {
+                    
+                    cursorTuple.IsIntersecting = entry.isIntersecting;
+
+                    virtualizationDisplayDotNetObjectReference
+                        .invokeMethodAsync("OnCursorPassedIntersectionThresholdAsync",
+                            cursorTuple.IsIntersecting);
+                }
             }
         }, options);
 
@@ -202,6 +224,10 @@ window.blazorTextEditor = {
 
         let cursorElement = document.getElementById(cursorElementId);
 
+        if (!cursorElement) {
+            return;
+        }
+        
         intersectionObserver.observe(cursorElement);
 
         cursorIsIntersectingTuples.push({
@@ -223,9 +249,17 @@ window.blazorTextEditor = {
         let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
             .find(x => x.CursorElementId === cursorElementId);
 
+        if (!cursorTuple) {
+            return;
+        }
+        
         if (!cursorTuple.IsIntersecting) {
             let cursorElement = document.getElementById(cursorElementId);
 
+            if (!cursorElement) {
+                return;
+            }
+            
             cursorElement.scrollIntoView({
                 block: "nearest",
                 inline: "nearest"
@@ -251,6 +285,10 @@ window.blazorTextEditor = {
 
         let scrollableParent = scrollableParentFinder.parentElement;
 
+        if (!scrollableParent) {
+            return;
+        }
+        
         scrollableParent.addEventListener("scroll", (event) => {
             let hasIntersectingBoundary = false;
 
@@ -298,6 +336,10 @@ window.blazorTextEditor = {
 
                 let boundaryTuple = intersectionObserverMapValue.BoundaryIdIsIntersectingTuples
                     .find(x => x.BoundaryId === entry.target.id);
+                
+                if (!boundaryTuple) {
+                    return;
+                }
 
                 boundaryTuple.IsIntersecting = entry.isIntersecting;
 
@@ -321,12 +363,14 @@ window.blazorTextEditor = {
 
             let boundaryElement = document.getElementById(boundaryIds[i]);
 
-            intersectionObserver.observe(boundaryElement);
+            if (boundaryElement) {
+                intersectionObserver.observe(boundaryElement);
 
-            boundaryIdIsIntersectingTuples.push({
-                BoundaryId: boundaryIds[i],
-                IsIntersecting: false
-            });
+                boundaryIdIsIntersectingTuples.push({
+                    BoundaryId: boundaryIds[i],
+                    IsIntersecting: false
+                });
+            }
         }
 
         this.virtualizationIntersectionObserverMap.set(intersectionObserverMapKey, {
