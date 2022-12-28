@@ -184,10 +184,20 @@
     resize: none;
     border: none;
     overflow: hidden;
+    color: transparent;
+}
+
+.bte_text-editor-cursor:focus {
+    outline: none !important;
 }
 
 .bte_text-editor:focus-within .bte_text-editor-cursor {
     width: 2px;
+}
+
+.bte_text-editor-cursor:focus {
+    width: 2px;
+    outline: none !important;
 }
 
 .bte_text-editor-caret-row {
