@@ -1,4 +1,4 @@
-﻿using BlazorALaCarte.Shared.DragCase;
+﻿using BlazorALaCarte.Shared.Drag;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.DialogNotification;
-using BlazorALaCarte.DialogNotification.Store;
+using BlazorALaCarte.DialogNotification.Dialog;
 using BlazorALaCarte.Shared.Storage;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
