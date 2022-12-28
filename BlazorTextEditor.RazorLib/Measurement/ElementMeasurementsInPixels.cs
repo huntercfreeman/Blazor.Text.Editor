@@ -5,6 +5,7 @@ public record ElementMeasurementsInPixels(
     double ScrollTop,
     double ScrollWidth,
     double ScrollHeight,
+    double MarginScrollHeight,
     double Width,
     double Height,
     CancellationToken MeasurementsExpiredCancellationToken);

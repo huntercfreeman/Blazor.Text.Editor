@@ -21,6 +21,6 @@ public record VirtualizationResult<T>(
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
-        new ElementMeasurementsInPixels(0, 0, 0, 0, 0, 0, CancellationToken.None),
+        new ElementMeasurementsInPixels(0, 0, 0, 0, 0, 0, 0, CancellationToken.None),
         new CharacterWidthAndRowHeight(0, 0));
 }

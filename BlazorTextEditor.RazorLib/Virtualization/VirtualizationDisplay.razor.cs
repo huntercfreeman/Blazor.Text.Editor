@@ -12,7 +12,7 @@ public partial class VirtualizationDisplay : ComponentBase, IDisposable
     [Parameter, EditorRequired]
     public IVirtualizationResultWithoutTypeMask VirtualizationResultWithoutTypeMask { get; set; } = null!;
     [Parameter, EditorRequired]
-    public Action<VirtualizationRequest> ItemsProviderFunc { get; set; } = null!;
+    public Action<VirtualizationRequest>? ItemsProviderFunc { get; set; }
 
     [Parameter]
     public bool UseHorizontalVirtualization { get; set; } = true;
@@ -98,7 +98,9 @@ public partial class VirtualizationDisplay : ComponentBase, IDisposable
             scrollPosition,
             _scrollEventCancellationTokenSource.Token);
 
-        ItemsProviderFunc.Invoke(_request);
+        if (ItemsProviderFunc is not null)
+            ItemsProviderFunc.Invoke(_request);
+        
         return Task.CompletedTask;
     }
     

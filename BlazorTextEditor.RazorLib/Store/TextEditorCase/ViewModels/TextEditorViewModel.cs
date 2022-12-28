@@ -15,7 +15,7 @@ public record TextEditorViewModel(
     VirtualizationResult<List<RichCharacter>> VirtualizationResult,
     bool ShouldMeasureDimensions)
 {
-    private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, CancellationToken.None);
+    private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
     
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     
@@ -238,15 +238,16 @@ public record TextEditorViewModel(
             textEditorBase.RowEndingPositions.Length *
             localCharacterWidthAndRowHeight.RowHeightInPixels;
         
-        // // Add vertical margin so the user can scroll beyond the final row of content
-        // {
-        //     var percentOfMarginScrollHeightByPageUnit = 0.4;
-        //     
-        //     var marginScrollHeight = bodyMeasurementsInPixels.Height *
-        //         percentOfMarginScrollHeightByPageUnit;
-        //
-        //     totalHeight += marginScrollHeight;
-        // }
+        // Add vertical margin so the user can scroll beyond the final row of content
+        double marginScrollHeight;
+        {
+            var percentOfMarginScrollHeightByPageUnit = 0.4;
+            
+            marginScrollHeight = bodyMeasurementsInPixels.Height *
+                                 percentOfMarginScrollHeightByPageUnit;
+
+            totalHeight += marginScrollHeight;
+        }
 
         var leftBoundaryWidthInPixels =
             horizontalStartingIndex *
@@ -254,7 +255,7 @@ public record TextEditorViewModel(
 
         var leftBoundary = new VirtualizationBoundary(
             leftBoundaryWidthInPixels,
-            null,
+            totalHeight,
             0,
             0);
 
@@ -269,7 +270,7 @@ public record TextEditorViewModel(
 
         var rightBoundary = new VirtualizationBoundary(
             rightBoundaryWidthInPixels,
-            null,
+            totalHeight,
             rightBoundaryLeftInPixels,
             0);
 
@@ -278,7 +279,7 @@ public record TextEditorViewModel(
             localCharacterWidthAndRowHeight.RowHeightInPixels;
 
         var topBoundary = new VirtualizationBoundary(
-            null,
+            totalWidth,
             topBoundaryHeightInPixels,
             0,
             0);
@@ -293,7 +294,7 @@ public record TextEditorViewModel(
             bottomBoundaryTopInPixels;
 
         var bottomBoundary = new VirtualizationBoundary(
-            null,
+            totalWidth,
             bottomBoundaryHeightInPixels,
             0,
             bottomBoundaryTopInPixels);
@@ -307,7 +308,8 @@ public record TextEditorViewModel(
             bodyMeasurementsInPixels with
             {
                 ScrollWidth = totalWidth,
-                ScrollHeight = totalHeight
+                ScrollHeight = totalHeight,
+                MarginScrollHeight = marginScrollHeight
             },
             localCharacterWidthAndRowHeight);
         
