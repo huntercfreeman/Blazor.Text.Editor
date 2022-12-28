@@ -24,8 +24,8 @@ public partial class TextEditorSettingsPreview : FluxorComponent
     [Parameter]
     public string PreviewElementCssClassString { get; set; } = string.Empty;
 
-    public readonly TextEditorKey SettingsPreviewTextEditorKey = TextEditorKey.NewTextEditorKey();
-    public readonly TextEditorViewModelKey SettingsPreviewTextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
+    public static readonly TextEditorKey SettingsPreviewTextEditorKey = TextEditorKey.NewTextEditorKey();
+    public static readonly TextEditorViewModelKey SettingsPreviewTextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
 
     protected override void OnInitialized()
     {
