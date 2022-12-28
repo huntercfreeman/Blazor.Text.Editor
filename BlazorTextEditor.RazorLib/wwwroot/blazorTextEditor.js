@@ -142,21 +142,15 @@ window.blazorTextEditor = {
     },
     validateTextEditorBodyScrollPosition: function (textEditorBodyElement) {
         // Validate scrollLeft
-        
-        console.log("======================================================================");
-        console.log(`textEditorBodyElement.scrollLeft: ${textEditorBodyElement.scrollLeft}`);
-        console.log(`textEditorBodyElement.offsetWidth: ${textEditorBodyElement.offsetWidth}`);
-        console.log(`textEditorBodyElement.scrollWidth: ${textEditorBodyElement.scrollWidth}`);
-        
         let currentLargestLeftPosition = 
             textEditorBodyElement.scrollLeft + textEditorBodyElement.offsetWidth;
-        
-        if (currentLargestLeftPosition > textEditorBodyElement.scrollWidth) {
+
+        // TODO: Why does validating scrollLeft require "if (currentLargestLeftPosition > textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth)" when the validation for scrollTop is just "if (currentLargestTopPosition > textEditorBodyElement.scrollHeight)"
+        if (currentLargestLeftPosition > textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth) {
+            // TODO: Why does validating scrollLeft require "textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth - textEditorBodyElement.offsetWidth;" when the validation for scrollTop is just "textEditorBodyElement.scrollHeight - textEditorBodyElement.offsetHeight;"
             textEditorBodyElement.scrollLeft =
-                textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth;
+                textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth - textEditorBodyElement.offsetWidth;
         }
-        
-        console.log(`textEditorBodyElement.scrollLeft: ${textEditorBodyElement.scrollLeft}`);
 
         // Validate scrollTop
         let currentLargestTopPosition =
