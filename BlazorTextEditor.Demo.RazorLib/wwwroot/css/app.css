@@ -66,10 +66,6 @@ a, .btn-link {
 .sidebar {
     overflow-y: auto;
 }
-    
-.bte_text-editor-css-wrapper.bte_demo-text-editor {
-    height: 500px;
-}
 
 .page {
     min-height: 100vh;
