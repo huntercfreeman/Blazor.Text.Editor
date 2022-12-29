@@ -285,10 +285,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Seeing nothing when using tab key to put text horizontally out of view then horizontally scrolling that text into view.
     - Proceeding to put an enter key to split the line and all the text appears again.
 
-### 6.0.0 (2022-12-30 release was delayed by a week from the original date of 2022-12-23)
-- This update changes the already existing "TextEditorBase" class to instead be a model of a "unique file" if one uses the file system as an example use case.
-- Added the class "TextEditorViewModel". This class acts contains any state one previously found on the Blazor Component: "TextEditorDisplay.razor". This allows one to maintain the TextEditorCursor position for example as its state is no longer tied to the lifecycle of the "TextEditorDisplay.razor" Blazor Component.
-- Rename "TextEditorDisplay.razor" to "TextEditorViewModelDisplay.razor" and change the Blazor Parameter from "TextEditorKey" to "TextEditorViewModelKey"
-- Added the class "TextEditorGroup". This class adds 'tab' functionality and maintains the state of the new Blazor component named "TextEditorGroupDisplay. razor".
-- The TextEditor's gutter and body have separate parent HTML elements which they are positioned relative to.
-    - (the gutter and body are position: absolute and previous versions had bugs involving the body being displayed within the gutter do to incorrectly calculating the CSS 'left' attribute value.)
+### 6.0.0 2022-12-23
+
+- Instead of only having `TextEditorBase.cs` see the following child bullet points for all previous and new C# Classes that directly relate to a Text Editor.
+    - `TextEditorBase.cs` maps to a unique file. Perhaps it might be a file on ones filesystem.
+    - `TextEditorViewModel.cs` maps to the user interface state for a `TextEditorViewModelDisplay.razor`.
+    - `TextEditorGroup.cs` maps to the tab state of a `TextEditorGroupDisplay.razor`.
+- FIXBUG: User's text editor cursor appearing in the gutter, and any other {blank in gutter erroneously} situation
+    - Details: The TextEditor's gutter and body have the css attribute `position: absolute`. Succinctly speaking to render the user interface correctly the `left: {WIDTH_OF_GUTTER}` had to be used on varying Blazor components.
+
+### 6.1.0 2022-12-30
+- `Vim Emulation` starting point.
+    - This update provides `Vim Emulation` moreso as a `proof of concept`. Everything is architected out for Vim Emulation to work, however the keymap implementation itself `currently only has swapping from NormalMode to InsertMode and vice versa`.
+- `JavaScript Intersection Observer` returns for:
+    - Identifying if a `Virtualization Boundary` is intersecting.
+    - Identifying if the `Text Editor Cursor` is intersecting. (more specifically in the case of the cursor we are looking to see if it is not intersecting -- then we can `scroll it into view`).
+    - Details: Previously the JavaScript Intersection Observer was being used for both the virtualization and the text editor cursor. However, I thought I could mimic its behavior using C# and I realize now there are a variety of reasons for that having been a bad idea. So Adding the JavaScript Intersection Observer back in this update.
+- FIXBUG: `Scrollbar Vertical` would "jitter" so to speak when one tried scrolling to the very bottom of a Text Editor. That is to say, the scrollTop would +- 10 pixels every second.
+- Added: `ScrollHeightMarginBottom` so one can scroll `40%` of the TextEditor's height beyond the end of the TextEditor content.
+- Added: "`Preview settings here`" display in the settings dialog. It is a mini text editor so one can see what changes they're making more easily.
+- Added: "`Text Editor Cursor-Width (px):`" input helper component.
+- Changed: `Default height` of a `TextEditorViewModelDisplay.razor`. Now the default is `height: 100%;`. So it will get the height of whatever its parent element is.
+- Changed: An underscore '\_' no longer counts as punctuation. 
+    - Details: Private fields in C# have one of their conventions to be prepending the private field with an underscore '\_'. Therefore it used to be the case that expanding selection on a private field which followed this convention would either highlight only the underscore or only the text following the underscore depending on where one had double clicked.
