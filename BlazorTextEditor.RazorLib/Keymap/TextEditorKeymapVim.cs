@@ -17,23 +17,8 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     private readonly TextEditorKeymapDefault _textEditorKeymapDefault = new();
     
     public VimMode ActiveVimMode { get; private set; } = VimMode.Normal;
-    
-    /*
-     Vim Grammar Conditional Branching
-     ---------------------------------
-     
-     []Verb
-        []Modifier
-            []TextObject
-        []TextObject
-        []Repeat
-            []TextObject
-    []TextObject
-    []Repeat
-        []TextObject 
-     */
 
-    private readonly VimSentence _vimSentence = new();
+    public VimSentence VimSentence { get; } = new();
     
     public string GetCursorCssClassString()
     {
@@ -162,8 +147,10 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             default:
             {
-                command = null;
-                return false;
+                return VimSentence.TryLex(
+                    keyboardEventArgs,
+                    hasTextSelection,
+                    out command);
             }
         }
     }

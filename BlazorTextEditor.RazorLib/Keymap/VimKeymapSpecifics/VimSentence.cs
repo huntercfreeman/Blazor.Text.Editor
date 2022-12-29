@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Commands;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Commands;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
@@ -9,6 +10,9 @@ public class VimSentence
     {
         new VimGrammarToken(VimGrammarKind.Start, string.Empty)
     };
+
+    public ImmutableArray<VimGrammarToken> PendingSentence => _pendingSentence
+        .ToImmutableArray();
 
     /// <summary>
     /// TODO: Having this method is asking for trouble as one can just circumvent the method by invoking _pendingSentence.Clear() without adding in an initial VimGrammarKind.Start. This should be changed. The idea for this method is that one must always start the pending phrase with VimGrammarKind.Start yet as of this moment you need special knowledge to know to call this method so it is awkward.

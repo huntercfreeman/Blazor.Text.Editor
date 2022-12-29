@@ -1,8 +1,10 @@
 ﻿@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Keymap
 @using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels
 @using BlazorTextEditor.RazorLib.TextEditor
 @using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
+@using BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics
 
 @inherits TextEditorView
 
@@ -10,6 +12,23 @@
     var textEditorBase = MutableReferenceToTextEditor;
     var textEditorViewModel = ReplaceableTextEditorViewModel;
     var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
+}
+
+@if (globalTextEditorOptions.KeymapDefinition!.Keymap is TextEditorKeymapVim vimKeymap)
+{
+    <div class="bte_debug-vim-keymap" style="font-size: .8em;">
+        <div>
+            ActiveVimMode:&nbsp;@vimKeymap.ActiveVimMode
+        </div>
+        <div style="display: flex;">
+            @foreach (var vimGrammarToken in vimKeymap.VimSentence.PendingSentence)
+            {
+                <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
+                
+                <div>=></div>
+            }
+        </div>
+    </div>
 }
 
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
