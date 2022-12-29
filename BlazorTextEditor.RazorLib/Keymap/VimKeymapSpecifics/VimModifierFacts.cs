@@ -2,19 +2,19 @@
 
 namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
 
-public static class VimCommandFacts
+public static class VimModifierFacts
 {
-    public static bool TryConstructCommandToken(
+    public static bool TryConstructModifierToken(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out VimGrammarToken? vimGrammarToken)
     {
         switch (keyboardEventArgs.Key)
         {
-            case "d":
+            case "i":
             {
                 vimGrammarToken = new VimGrammarToken(
-                    VimGrammarKind.Command,
+                    VimGrammarKind.Modifier,
                     keyboardEventArgs.Key);
 
                 return true;

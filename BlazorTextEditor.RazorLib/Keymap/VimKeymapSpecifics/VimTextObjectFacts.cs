@@ -2,19 +2,19 @@
 
 namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
 
-public static class VimExpansionFacts
+public static class VimTextObjectFacts
 {
-    public static bool TryConstructExpansionToken(
+    public static bool TryConstructTextObjectToken(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out VimGrammarToken? vimGrammarToken)
     {
         switch (keyboardEventArgs.Key)
         {
-            case "i":
+            case "w":
             {
                 vimGrammarToken = new VimGrammarToken(
-                    VimGrammarKind.Expansion,
+                    VimGrammarKind.TextObject,
                     keyboardEventArgs.Key);
 
                 return true;

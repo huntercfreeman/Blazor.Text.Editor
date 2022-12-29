@@ -37,25 +37,25 @@ public class VimPhrase
                 
                 break;
             }
-            case VimGrammarKind.Command:
+            case VimGrammarKind.Verb:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromCommand(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromVerb(
                     keyboardEventArgs,
                     hasTextSelection);
                 
                 break;
             }
-            case VimGrammarKind.Expansion:
+            case VimGrammarKind.Modifier:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromExpansion(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromModifier(
                     keyboardEventArgs,
                     hasTextSelection);
                 
                 break;
             }
-            case VimGrammarKind.Motion:
+            case VimGrammarKind.TextObject:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromMotion(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromTextObject(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -96,9 +96,9 @@ public class VimPhrase
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimCommandFacts.TryConstructCommandToken( // Example: "d..." is valid albeit incomplete
+        _ = VimVerbFacts.TryConstructVerbToken( // Example: "d..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimMotionFacts.TryConstructMotionToken( // Example: "w" => move cursor forward until reaching the next word.
+            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "w" => move cursor forward until reaching the next word.
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
             VimRepeatFacts.TryConstructRepeatToken( // Example: "3..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
@@ -108,18 +108,18 @@ public class VimPhrase
 
         switch (vimGrammarToken.VimGrammarKind)
         {
-            case VimGrammarKind.Command:
+            case VimGrammarKind.Verb:
             {
                 _pendingPhrase.Add(vimGrammarToken);
                 return false;
             }
-            case VimGrammarKind.Expansion:
+            case VimGrammarKind.Modifier:
             {
-                // VimGrammarKind.Expansion is
+                // VimGrammarKind.Modifier is
                 // invalid here so ignore and keep VimGrammarKind.Start
                 return false;
             }
-            case VimGrammarKind.Motion:
+            case VimGrammarKind.TextObject:
             {
                 _pendingPhrase.Add(vimGrammarToken);
                 return true;
@@ -134,15 +134,15 @@ public class VimPhrase
         return false;
     }
     
-    private bool ContinuePhraseFromCommand(
+    private bool ContinuePhraseFromVerb(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimCommandFacts.TryConstructCommandToken( // Example: "dd" => delete line
+        _ = VimVerbFacts.TryConstructVerbToken( // Example: "dd" => delete line
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimMotionFacts.TryConstructMotionToken( // Example: "dw" => delete word
+            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "dw" => delete word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
             VimRepeatFacts.TryConstructRepeatToken( // Example: "d3..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
@@ -152,7 +152,7 @@ public class VimPhrase
 
         switch (vimGrammarToken.VimGrammarKind)
         {
-            case VimGrammarKind.Command:
+            case VimGrammarKind.Verb:
             {
                 if (_pendingPhrase.Last().TextValue == vimGrammarToken.TextValue)
                 {
@@ -160,19 +160,19 @@ public class VimPhrase
                     return true;
                 }
 
-                // The command was overriden so restart phrase
+                // The verb was overriden so restart phrase
                 ResetPendingPhrase();
                 
                 return ContinuePhraseFromStart(
                     keyboardEventArgs,
                     hasTextSelection);
             }
-            case VimGrammarKind.Expansion:
+            case VimGrammarKind.Modifier:
             {
                 _pendingPhrase.Add(vimGrammarToken);
                 return false;
             }
-            case VimGrammarKind.Motion:
+            case VimGrammarKind.TextObject:
             {
                 _pendingPhrase.Add(vimGrammarToken);
                 return true;
@@ -187,14 +187,60 @@ public class VimPhrase
         return false;
     }
     
-    private bool ContinuePhraseFromExpansion(
+    private bool ContinuePhraseFromModifier(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
-        throw new NotImplementedException();
+        VimGrammarToken? vimGrammarToken;
+
+        _ = VimVerbFacts.TryConstructVerbToken( // Example: "dd" => delete line
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "dw" => delete word
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimRepeatFacts.TryConstructRepeatToken( // Example: "d3..." is valid albeit incomplete
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken);
+
+        if (vimGrammarToken is null)
+            return false;
+
+        switch (vimGrammarToken.VimGrammarKind)
+        {
+            case VimGrammarKind.Verb:
+            {
+                if (_pendingPhrase.Last().TextValue == vimGrammarToken.TextValue)
+                {
+                    _pendingPhrase.Add(vimGrammarToken);
+                    return true;
+                }
+
+                // The verb was overriden so restart phrase
+                ResetPendingPhrase();
+                
+                return ContinuePhraseFromStart(
+                    keyboardEventArgs,
+                    hasTextSelection);
+            }
+            case VimGrammarKind.Modifier:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return false;
+            }
+            case VimGrammarKind.TextObject:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return true;
+            }
+            case VimGrammarKind.Repeat:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return false;
+            }
+        }
+
+        return false;
     }
 
-    private bool ContinuePhraseFromMotion(
+    private bool ContinuePhraseFromTextObject(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {

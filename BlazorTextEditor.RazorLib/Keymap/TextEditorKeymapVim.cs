@@ -22,15 +22,15 @@ public class TextEditorKeymapVim : ITextEditorKeymap
      Vim Grammar Conditional Branching
      ---------------------------------
      
-     []Command
-        []Expand
-            []Motion
-        []Motion
+     []Verb
+        []Modifier
+            []TextObject
+        []TextObject
         []Repeat
-            []Motion
-    []Motion
+            []TextObject
+    []TextObject
     []Repeat
-        []Motion 
+        []TextObject 
      */
 
     private readonly VimPhrase _vimPhrase = new();
