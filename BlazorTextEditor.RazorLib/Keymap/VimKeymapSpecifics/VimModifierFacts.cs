@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Commands;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
 
@@ -23,5 +25,15 @@ public static class VimModifierFacts
 
         vimGrammarToken = null;
         return false;
+    }
+
+    public static bool TryParseVimSentence(
+        ImmutableArray<VimGrammarToken> sentenceSnapshot,
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection,
+        out TextEditorCommand textEditorCommand)
+    {
+        textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        return true;
     }
 }

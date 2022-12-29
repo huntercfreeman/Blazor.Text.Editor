@@ -6,23 +6,10 @@ namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
 
 public class VimSentence
 {
-    private readonly List<VimGrammarToken> _pendingSentence = new()
-    {
-        new VimGrammarToken(VimGrammarKind.Start, string.Empty)
-    };
+    private readonly List<VimGrammarToken> _pendingSentence = new();
 
     public ImmutableArray<VimGrammarToken> PendingSentence => _pendingSentence
         .ToImmutableArray();
-
-    /// <summary>
-    /// TODO: Having this method is asking for trouble as one can just circumvent the method by invoking _pendingSentence.Clear() without adding in an initial VimGrammarKind.Start. This should be changed. The idea for this method is that one must always start the pending phrase with VimGrammarKind.Start yet as of this moment you need special knowledge to know to call this method so it is awkward.
-    /// </summary>
-    private void ResetPendingSentence()
-    {
-        _pendingSentence.Clear();
-        _pendingSentence.Add(
-            new VimGrammarToken(VimGrammarKind.Start, string.Empty));
-    }
 
     /// <summary>
     /// TODO: Remove the argument "List&gt;(VimSentence, TextEditorCommand)&lt; textEditorCommandHistoryTuples". Am using it while developing to easily see what is going on.
@@ -34,62 +21,68 @@ public class VimSentence
         out TextEditorCommand textEditorCommand)
     {
         bool sentenceIsSyntacticallyComplete;
-        
-        switch (_pendingSentence.Last().VimGrammarKind)
+
+        var mostRecentToken = _pendingSentence.LastOrDefault();
+
+        if (mostRecentToken is null)
         {
-            case VimGrammarKind.Start:
+            sentenceIsSyntacticallyComplete = ContinueSentenceFromStart(
+                keyboardEventArgs,
+                hasTextSelection);
+        }
+        else
+        {
+            switch (mostRecentToken.VimGrammarKind)
             {
-                sentenceIsSyntacticallyComplete = ContinueSentenceFromStart(
-                    keyboardEventArgs,
-                    hasTextSelection);
+                case VimGrammarKind.Verb:
+                {
+                    sentenceIsSyntacticallyComplete = ContinueSentenceFromVerb(
+                        keyboardEventArgs,
+                        hasTextSelection);
                 
-                break;
-            }
-            case VimGrammarKind.Verb:
-            {
-                sentenceIsSyntacticallyComplete = ContinueSentenceFromVerb(
-                    keyboardEventArgs,
-                    hasTextSelection);
+                    break;
+                }
+                case VimGrammarKind.Modifier:
+                {
+                    sentenceIsSyntacticallyComplete = ContinueSentenceFromModifier(
+                        keyboardEventArgs,
+                        hasTextSelection);
                 
-                break;
-            }
-            case VimGrammarKind.Modifier:
-            {
-                sentenceIsSyntacticallyComplete = ContinueSentenceFromModifier(
-                    keyboardEventArgs,
-                    hasTextSelection);
+                    break;
+                }
+                case VimGrammarKind.TextObject:
+                {
+                    sentenceIsSyntacticallyComplete = ContinueSentenceFromTextObject(
+                        keyboardEventArgs,
+                        hasTextSelection);
                 
-                break;
-            }
-            case VimGrammarKind.TextObject:
-            {
-                sentenceIsSyntacticallyComplete = ContinueSentenceFromTextObject(
-                    keyboardEventArgs,
-                    hasTextSelection);
+                    break;
+                }
+                case VimGrammarKind.Repeat:
+                {
+                    sentenceIsSyntacticallyComplete = ContinueSentenceFromRepeat(
+                        keyboardEventArgs,
+                        hasTextSelection);
                 
-                break;
-            }
-            case VimGrammarKind.Repeat:
-            {
-                sentenceIsSyntacticallyComplete = ContinueSentenceFromRepeat(
-                    keyboardEventArgs,
-                    hasTextSelection);
-                
-                break;
-            }
-            default:
-            {
-                throw new ApplicationException(
-                    $"The {nameof(VimGrammarKind)}:" +
-                    $" {_pendingSentence.Last().VimGrammarKind} was not recognized.");
+                    break;
+                }
+                default:
+                {
+                    throw new ApplicationException(
+                        $"The {nameof(VimGrammarKind)}:" +
+                        $" {_pendingSentence.Last().VimGrammarKind} was not recognized.");
+                }
             }
         }
 
         if (sentenceIsSyntacticallyComplete)
         {
-            return TryParseSentence(
+            var sentenceSnapshot = PendingSentence;
+            _pendingSentence.Clear();
+            
+            return TryParseVimSentence(
                 textEditorCommandHistoryTuples,
-                _pendingSentence,
+                sentenceSnapshot,
                 keyboardEventArgs,
                 hasTextSelection,
                 out textEditorCommand);
@@ -114,7 +107,7 @@ public class VimSentence
 
         if (vimGrammarToken is null)
         {
-            ResetPendingSentence();
+            _pendingSentence.Clear();
             return false;
         }
 
@@ -161,7 +154,7 @@ public class VimSentence
 
         if (vimGrammarToken is null)
         {
-            ResetPendingSentence();
+            _pendingSentence.Clear();
             return false;
         }
 
@@ -176,7 +169,7 @@ public class VimSentence
                 }
 
                 // The verb was overriden so restart sentence
-                ResetPendingSentence();
+                _pendingSentence.Clear();
                 
                 return ContinueSentenceFromStart(
                     keyboardEventArgs,
@@ -213,7 +206,7 @@ public class VimSentence
 
         if (vimGrammarToken is null)
         {
-            ResetPendingSentence();
+            _pendingSentence.Clear();
             return false;
         }
 
@@ -234,7 +227,7 @@ public class VimSentence
         bool hasTextSelection)
     {
         // This state should not occur as a TextObject always ends a sentence if it is there.
-        ResetPendingSentence();
+        _pendingSentence.Clear();
         return false;
     }
     
@@ -251,7 +244,7 @@ public class VimSentence
 
         if (vimGrammarToken is null)
         {
-            ResetPendingSentence();
+            _pendingSentence.Clear();
             return false;
         }
 
@@ -273,7 +266,7 @@ public class VimSentence
     }
 
     /// <summary>
-    /// It is expected that one will only invoke <see cref="TryParseSentence"/> when
+    /// It is expected that one will only invoke <see cref="TryParseVimSentence"/> when
     /// the Lexed sentence is syntactically complete. This method will then
     /// semantically interpret the sentence.
     /// <br/><br/>
@@ -284,18 +277,75 @@ public class VimSentence
     /// <br/><br/>
     /// Returns false if a sentence not able to be parsed.
     /// </returns>
-    public bool TryParseSentence(
+    public bool TryParseVimSentence(
         List<(ImmutableArray<VimGrammarToken>, TextEditorCommand)> textEditorCommandHistoryTuples,
-        List<VimGrammarToken> sentence,
+        ImmutableArray<VimGrammarToken> sentenceSnapshot,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
-        textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        var firstToken = sentenceSnapshot.FirstOrDefault();
 
-        textEditorCommandHistoryTuples.Add((PendingSentence, textEditorCommand));
-        
-        ResetPendingSentence();
-        return true;
+        var success = false;
+
+        if (firstToken is null)
+        {
+            textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        }
+        else
+        {
+            switch (firstToken.VimGrammarKind)
+            {
+                case VimGrammarKind.Verb:
+                {
+                    success = VimVerbFacts.TryParseVimSentence(
+                        sentenceSnapshot,
+                        keyboardEventArgs,
+                        hasTextSelection,
+                        out textEditorCommand);
+                
+                    break;
+                }
+                case VimGrammarKind.Modifier:
+                {
+                    success = VimModifierFacts.TryParseVimSentence(
+                            sentenceSnapshot,
+                            keyboardEventArgs,
+                            hasTextSelection,
+                            out textEditorCommand);
+                
+                    break;
+                }
+                case VimGrammarKind.TextObject:
+                {
+                    success = VimTextObjectFacts.TryParseVimSentence(
+                            sentenceSnapshot,
+                            keyboardEventArgs,
+                            hasTextSelection,
+                            out textEditorCommand);
+                
+                    break;
+                }
+                case VimGrammarKind.Repeat:
+                {
+                    success = VimRepeatFacts.TryParseVimSentence(
+                            sentenceSnapshot,
+                            keyboardEventArgs,
+                            hasTextSelection,
+                            out textEditorCommand);
+                
+                    break;
+                }
+                default:
+                {
+                    throw new ApplicationException(
+                        $"The {nameof(VimGrammarKind)}:" +
+                        $" {sentenceSnapshot.Last().VimGrammarKind} was not recognized.");
+                }
+            }
+        }
+
+        textEditorCommandHistoryTuples.Add((sentenceSnapshot, textEditorCommand));
+        return success;
     }
 }
