@@ -21,7 +21,7 @@ public class VimPhrase
         {
             case VimGrammarKind.Start:
             {
-                phraseIsSyntacticallyComplete = HandleLexStart(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromStart(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -29,7 +29,7 @@ public class VimPhrase
             }
             case VimGrammarKind.Command:
             {
-                phraseIsSyntacticallyComplete = HandleLexCommand(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromCommand(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -37,7 +37,7 @@ public class VimPhrase
             }
             case VimGrammarKind.Expansion:
             {
-                phraseIsSyntacticallyComplete = HandleLexExpansion(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromExpansion(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -45,7 +45,7 @@ public class VimPhrase
             }
             case VimGrammarKind.Motion:
             {
-                phraseIsSyntacticallyComplete = HandleLexMotion(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromMotion(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -53,7 +53,7 @@ public class VimPhrase
             }
             case VimGrammarKind.Repeat:
             {
-                phraseIsSyntacticallyComplete = HandleLexRepeat(
+                phraseIsSyntacticallyComplete = ContinuePhraseFromRepeat(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -80,35 +80,51 @@ public class VimPhrase
         return true;
     }
 
-    private bool HandleLexRepeat(
+    private bool ContinuePhraseFromStart(
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection)
+    {
+        VimGrammarToken? vimGrammarToken;
+
+        _ = VimCommandFacts.TryConstructCommandToken(
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimMotionFacts.TryConstructMotionToken(
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimRepeatFacts.TryConstructRepeatToken(
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken);
+
+        if (vimGrammarToken is null)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }
+    
+    private bool ContinuePhraseFromCommand(
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection)
+    {
+        throw new NotImplementedException();
+    }
+    
+    private bool ContinuePhraseFromExpansion(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         throw new NotImplementedException();
     }
 
-    private bool HandleLexMotion(
+    private bool ContinuePhraseFromMotion(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         throw new NotImplementedException();
     }
-
-    private bool HandleLexExpansion(
-        KeyboardEventArgs keyboardEventArgs,
-        bool hasTextSelection)
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool HandleLexCommand(
-        KeyboardEventArgs keyboardEventArgs,
-        bool hasTextSelection)
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool HandleLexStart(
+    
+    private bool ContinuePhraseFromRepeat(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
