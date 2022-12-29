@@ -5,6 +5,8 @@
 @using BlazorTextEditor.RazorLib.TextEditor
 @using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
 @using BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics
+@using BlazorTextEditor.RazorLib.Commands
+@using System.Collections.Immutable
 
 @inherits TextEditorView
 
@@ -18,14 +20,60 @@
 {
     <div class="bte_debug-vim-keymap" style="font-size: .8em;">
         <div>
-            ActiveVimMode:&nbsp;@vimKeymap.ActiveVimMode
+            <div style="font-size: 1em; border-bottom: 2px solid var(--balc_primary-emphasis-foreground-color); color: var(--balc_primary-emphasis-foreground-color);">
+                Active Vim State
+            </div>
+            
+            <div>
+                Mode:&nbsp;@vimKeymap.ActiveVimMode
+            </div>
+
+            <div style="display: flex;">
+                Sentence:&nbsp;[&nbsp;
+                @foreach (var vimGrammarToken in vimKeymap.VimSentence.PendingSentence)
+                {
+                    <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
+
+                    <div>,&nbsp;</div>
+                }
+                &nbsp;]
+            </div>
         </div>
-        <div style="display: flex;">
-            @foreach (var vimGrammarToken in vimKeymap.VimSentence.PendingSentence)
+
+        <div style="height: 120px; overflow: scroll;">
+            
+            <div style="font-size: 1em; border-bottom: 2px solid var(--balc_primary-emphasis-foreground-color); color: var(--balc_primary-emphasis-foreground-color);">
+                Vim History
+            </div>
+
+            @{
+                var immutableTextEditorCommandHistoryTuples = vimKeymap.TextEditorCommandHistoryTuples
+                    .ToImmutableArray();
+            }
+
+            @for (int i = immutableTextEditorCommandHistoryTuples.Length - 1; i >= 0; i--)
             {
-                <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
-                
-                <div>=></div>
+                var index = i;
+                var commandHistoryTuple = immutableTextEditorCommandHistoryTuples[index];
+
+                <div style="display: flex;">
+                    <div>
+                        Sentence&nbsp;[&nbsp;
+                    </div>
+
+                    @foreach (var vimGrammarToken in commandHistoryTuple.tokens)
+                    {
+                        <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
+
+                        <div>,&nbsp;</div>
+                    }
+
+                    <div>&nbsp;]&nbsp;</div>
+
+                    <div>=>&nbsp;</div>
+
+                    <TextEditorCommandDebugDisplay TextEditorCommand="commandHistoryTuple.command"/>
+                </div>
             }
         </div>
     </div>

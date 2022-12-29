@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.Shared.JavaScriptObjects;
+﻿using System.Collections.Immutable;
+using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
@@ -15,9 +16,11 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     public string KeymapDisplayName => KeymapFacts.VimKeymapDefinition.DisplayName;
 
     private readonly TextEditorKeymapDefault _textEditorKeymapDefault = new();
-    
-    public VimMode ActiveVimMode { get; private set; } = VimMode.Normal;
+    public readonly List<(ImmutableArray<VimGrammarToken> tokens, TextEditorCommand command)>
+        TextEditorCommandHistoryTuples = new();
 
+    public VimMode ActiveVimMode { get; private set; } = VimMode.Normal;
+    
     public VimSentence VimSentence { get; } = new();
     
     public string GetCursorCssClassString()
@@ -147,10 +150,13 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             default:
             {
-                return VimSentence.TryLex(
+                var success = VimSentence.TryLex(
+                    TextEditorCommandHistoryTuples,
                     keyboardEventArgs,
                     hasTextSelection,
                     out command);
+
+                return success;
             }
         }
     }

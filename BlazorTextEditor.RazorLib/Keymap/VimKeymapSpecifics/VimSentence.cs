@@ -24,7 +24,11 @@ public class VimSentence
             new VimGrammarToken(VimGrammarKind.Start, string.Empty));
     }
 
+    /// <summary>
+    /// TODO: Remove the argument "List&gt;(VimSentence, TextEditorCommand)&lt; textEditorCommandHistoryTuples". Am using it while developing to easily see what is going on.
+    /// </summary>
     public bool TryLex(
+        List<(ImmutableArray<VimGrammarToken>, TextEditorCommand)> textEditorCommandHistoryTuples,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
@@ -84,6 +88,7 @@ public class VimSentence
         if (sentenceIsSyntacticallyComplete)
         {
             return TryParseSentence(
+                textEditorCommandHistoryTuples,
                 _pendingSentence,
                 keyboardEventArgs,
                 hasTextSelection,
@@ -271,6 +276,8 @@ public class VimSentence
     /// It is expected that one will only invoke <see cref="TryParseSentence"/> when
     /// the Lexed sentence is syntactically complete. This method will then
     /// semantically interpret the sentence.
+    /// <br/><br/>
+    /// TODO: Remove the argument "List&gt;(VimSentence, TextEditorCommand)&lt; textEditorCommandHistoryTuples". Am using it while developing to easily see what is going on.
     /// </summary>
     /// <returns>
     /// Returns true if a sentence was successfully parsed into a <see cref="TextEditorCommand"/>
@@ -278,12 +285,15 @@ public class VimSentence
     /// Returns false if a sentence not able to be parsed.
     /// </returns>
     public bool TryParseSentence(
+        List<(ImmutableArray<VimGrammarToken>, TextEditorCommand)> textEditorCommandHistoryTuples,
         List<VimGrammarToken> sentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
         textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+
+        textEditorCommandHistoryTuples.Add((PendingSentence, textEditorCommand));
         
         ResetPendingSentence();
         return true;
