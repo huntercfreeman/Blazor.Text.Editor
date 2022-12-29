@@ -1,5 +1,8 @@
 ﻿using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap;
@@ -8,6 +11,19 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
 {
     public virtual KeymapKey KeymapKey => KeymapFacts.DefaultKeymapDefinition.KeymapKey;
     public virtual string KeymapDisplayName => KeymapFacts.DefaultKeymapDefinition.DisplayName;
+
+    public virtual string GetCursorCssClassString()
+    {
+        return TextCursorKindFacts.BeamCssClassString;
+    }
+    
+    public virtual string GetCursorCssStyleString(
+        TextEditorBase textEditorBase,
+        TextEditorViewModel textEditorViewModel,
+        TextEditorOptions textEditorOptions)
+    {
+        return string.Empty;
+    }
     
     public virtual TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
     {

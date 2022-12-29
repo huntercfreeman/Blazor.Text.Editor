@@ -20,7 +20,6 @@ public class TextEditorCursor
 
     public (int rowIndex, int columnIndex) IndexCoordinates { get; set; }
     public int PreferredColumnIndex { get; set; }
-    public TextCursorKind TextCursorKind { get; set; }
     public TextEditorSelection TextEditorSelection { get; } = new();
     public bool ShouldRevealCursor { get; set; }
     public bool IsPrimaryCursor { get; }

@@ -168,8 +168,14 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         
         
         var width = $"width: {GlobalTextEditorOptions.CursorWidthInPixels!.Value}px;";
+
+        var keymapStyling = GlobalTextEditorOptions.KeymapDefinition!.Keymap
+            .GetCursorCssStyleString(
+                TextEditorBase,
+                TextEditorViewModel,
+                GlobalTextEditorOptions);
         
-        return $"{left} {top} {height} {width}";
+        return $"{left} {top} {height} {width} {keymapStyling}";
     }
 
     private string GetCaretRowStyleCss()
