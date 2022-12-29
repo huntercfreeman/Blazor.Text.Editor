@@ -33,7 +33,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         []TextObject 
      */
 
-    private readonly VimPhrase _vimPhrase = new();
+    private readonly VimSentence _vimSentence = new();
     
     public string GetCursorCssClassString()
     {

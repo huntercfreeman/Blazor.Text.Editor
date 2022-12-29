@@ -3,35 +3,35 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
 
-public class VimPhrase
+public class VimSentence
 {
-    private readonly List<VimGrammarToken> _pendingPhrase = new()
+    private readonly List<VimGrammarToken> _pendingSentence = new()
     {
         new VimGrammarToken(VimGrammarKind.Start, string.Empty)
     };
 
     /// <summary>
-    /// TODO: Having this method is asking for trouble as one can just circumvent the method by invoking _pendingPhrase.Clear() without adding in an initial VimGrammarKind.Start. This should be changed. The idea for this method is that one must always start the pending phrase with VimGrammarKind.Start yet as of this moment you need special knowledge to know to call this method so it is awkward.
+    /// TODO: Having this method is asking for trouble as one can just circumvent the method by invoking _pendingSentence.Clear() without adding in an initial VimGrammarKind.Start. This should be changed. The idea for this method is that one must always start the pending phrase with VimGrammarKind.Start yet as of this moment you need special knowledge to know to call this method so it is awkward.
     /// </summary>
-    private void ResetPendingPhrase()
+    private void ResetPendingSentence()
     {
-        _pendingPhrase.Clear();
-        _pendingPhrase.Add(
+        _pendingSentence.Clear();
+        _pendingSentence.Add(
             new VimGrammarToken(VimGrammarKind.Start, string.Empty));
     }
 
-    public bool TryLexPhrase(
+    public bool TryLex(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
-        bool phraseIsSyntacticallyComplete;
+        bool sentenceIsSyntacticallyComplete;
         
-        switch (_pendingPhrase.Last().VimGrammarKind)
+        switch (_pendingSentence.Last().VimGrammarKind)
         {
             case VimGrammarKind.Start:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromStart(
+                sentenceIsSyntacticallyComplete = ContinueSentenceFromStart(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -39,7 +39,7 @@ public class VimPhrase
             }
             case VimGrammarKind.Verb:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromVerb(
+                sentenceIsSyntacticallyComplete = ContinueSentenceFromVerb(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -47,7 +47,7 @@ public class VimPhrase
             }
             case VimGrammarKind.Modifier:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromModifier(
+                sentenceIsSyntacticallyComplete = ContinueSentenceFromModifier(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -55,7 +55,7 @@ public class VimPhrase
             }
             case VimGrammarKind.TextObject:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromTextObject(
+                sentenceIsSyntacticallyComplete = ContinueSentenceFromTextObject(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -63,7 +63,7 @@ public class VimPhrase
             }
             case VimGrammarKind.Repeat:
             {
-                phraseIsSyntacticallyComplete = ContinuePhraseFromRepeat(
+                sentenceIsSyntacticallyComplete = ContinueSentenceFromRepeat(
                     keyboardEventArgs,
                     hasTextSelection);
                 
@@ -73,14 +73,14 @@ public class VimPhrase
             {
                 throw new ApplicationException(
                     $"The {nameof(VimGrammarKind)}:" +
-                    $" {_pendingPhrase.Last().VimGrammarKind} was not recognized.");
+                    $" {_pendingSentence.Last().VimGrammarKind} was not recognized.");
             }
         }
 
-        if (phraseIsSyntacticallyComplete)
+        if (sentenceIsSyntacticallyComplete)
         {
-            return TryParsePhrase(
-                _pendingPhrase,
+            return TryParseSentence(
+                _pendingSentence,
                 keyboardEventArgs,
                 hasTextSelection,
                 out textEditorCommand);
@@ -90,7 +90,7 @@ public class VimPhrase
         return true;
     }
 
-    private bool ContinuePhraseFromStart(
+    private bool ContinueSentenceFromStart(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
@@ -104,13 +104,16 @@ public class VimPhrase
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
+        {
+            ResetPendingSentence();
             return false;
+        }
 
         switch (vimGrammarToken.VimGrammarKind)
         {
             case VimGrammarKind.Verb:
             {
-                _pendingPhrase.Add(vimGrammarToken);
+                _pendingSentence.Add(vimGrammarToken);
                 return false;
             }
             case VimGrammarKind.Modifier:
@@ -121,12 +124,12 @@ public class VimPhrase
             }
             case VimGrammarKind.TextObject:
             {
-                _pendingPhrase.Add(vimGrammarToken);
+                _pendingSentence.Add(vimGrammarToken);
                 return true;
             }
             case VimGrammarKind.Repeat:
             {
-                _pendingPhrase.Add(vimGrammarToken);
+                _pendingSentence.Add(vimGrammarToken);
                 return false;
             }
         }
@@ -134,7 +137,7 @@ public class VimPhrase
         return false;
     }
     
-    private bool ContinuePhraseFromVerb(
+    private bool ContinueSentenceFromVerb(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
@@ -148,38 +151,41 @@ public class VimPhrase
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
+        {
+            ResetPendingSentence();
             return false;
+        }
 
         switch (vimGrammarToken.VimGrammarKind)
         {
             case VimGrammarKind.Verb:
             {
-                if (_pendingPhrase.Last().TextValue == vimGrammarToken.TextValue)
+                if (_pendingSentence.Last().TextValue == vimGrammarToken.TextValue)
                 {
-                    _pendingPhrase.Add(vimGrammarToken);
+                    _pendingSentence.Add(vimGrammarToken);
                     return true;
                 }
 
-                // The verb was overriden so restart phrase
-                ResetPendingPhrase();
+                // The verb was overriden so restart sentence
+                ResetPendingSentence();
                 
-                return ContinuePhraseFromStart(
+                return ContinueSentenceFromStart(
                     keyboardEventArgs,
                     hasTextSelection);
             }
             case VimGrammarKind.Modifier:
             {
-                _pendingPhrase.Add(vimGrammarToken);
+                _pendingSentence.Add(vimGrammarToken);
                 return false;
             }
             case VimGrammarKind.TextObject:
             {
-                _pendingPhrase.Add(vimGrammarToken);
+                _pendingSentence.Add(vimGrammarToken);
                 return true;
             }
             case VimGrammarKind.Repeat:
             {
-                _pendingPhrase.Add(vimGrammarToken);
+                _pendingSentence.Add(vimGrammarToken);
                 return false;
             }
         }
@@ -187,89 +193,93 @@ public class VimPhrase
         return false;
     }
     
-    private bool ContinuePhraseFromModifier(
+    private bool ContinueSentenceFromModifier(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimVerbFacts.TryConstructVerbToken( // Example: "dd" => delete line
-                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "dw" => delete word
-                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeatToken( // Example: "d3..." is valid albeit incomplete
+        _ = VimTextObjectFacts.TryConstructTextObjectToken( // Example: "diw" => delete inner word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
+        {
+            ResetPendingSentence();
             return false;
+        }
 
         switch (vimGrammarToken.VimGrammarKind)
         {
-            case VimGrammarKind.Verb:
-            {
-                if (_pendingPhrase.Last().TextValue == vimGrammarToken.TextValue)
-                {
-                    _pendingPhrase.Add(vimGrammarToken);
-                    return true;
-                }
-
-                // The verb was overriden so restart phrase
-                ResetPendingPhrase();
-                
-                return ContinuePhraseFromStart(
-                    keyboardEventArgs,
-                    hasTextSelection);
-            }
-            case VimGrammarKind.Modifier:
-            {
-                _pendingPhrase.Add(vimGrammarToken);
-                return false;
-            }
             case VimGrammarKind.TextObject:
             {
-                _pendingPhrase.Add(vimGrammarToken);
+                _pendingSentence.Add(vimGrammarToken);
                 return true;
-            }
-            case VimGrammarKind.Repeat:
-            {
-                _pendingPhrase.Add(vimGrammarToken);
-                return false;
             }
         }
 
         return false;
     }
 
-    private bool ContinuePhraseFromTextObject(
+    private bool ContinueSentenceFromTextObject(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
-        throw new NotImplementedException();
+        // This state should not occur as a TextObject always ends a sentence if it is there.
+        ResetPendingSentence();
+        return false;
     }
     
-    private bool ContinuePhraseFromRepeat(
+    private bool ContinueSentenceFromRepeat(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
-        throw new NotImplementedException();
+        VimGrammarToken? vimGrammarToken;
+
+        _ = VimVerbFacts.TryConstructVerbToken( // Example: "3dd" => 3 times do delete line
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "3w" => 3 times do move cursor to the start of next word
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken);
+
+        if (vimGrammarToken is null)
+        {
+            ResetPendingSentence();
+            return false;
+        }
+
+        switch (vimGrammarToken.VimGrammarKind)
+        {
+            case VimGrammarKind.Verb:
+            {
+                _pendingSentence.Add(vimGrammarToken);
+                return false;
+            }
+            case VimGrammarKind.TextObject:
+            {
+                _pendingSentence.Add(vimGrammarToken);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
-    /// It is expected that one will only invoke <see cref="TryParsePhrase"/> when
-    /// the Lexed phrase is syntactically complete. This method will then
-    /// semantically interpret the phrase.
+    /// It is expected that one will only invoke <see cref="TryParseSentence"/> when
+    /// the Lexed sentence is syntactically complete. This method will then
+    /// semantically interpret the sentence.
     /// </summary>
     /// <returns>
-    /// Returns true if a phrase was successfully parsed into a <see cref="TextEditorCommand"/>
+    /// Returns true if a sentence was successfully parsed into a <see cref="TextEditorCommand"/>
     /// <br/><br/>
-    /// Returns false if a phrase not able to be parsed.
+    /// Returns false if a sentence not able to be parsed.
     /// </returns>
-    public bool TryParsePhrase(
-        List<VimGrammarToken> phrase,
+    public bool TryParseSentence(
+        List<VimGrammarToken> sentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
-        
+        textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        return true;
     }
 }
