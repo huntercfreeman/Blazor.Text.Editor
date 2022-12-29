@@ -1,5 +1,8 @@
 ﻿using System.Collections.Immutable;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Editing;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
@@ -33,11 +36,32 @@ public static class VimTextObjectFacts
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
+        var testingThings = new TextEditorCommand(
+            parameter =>
+            {
+                var word = new KeyboardEventArgs
+                {
+                    Key = KeyboardKeyFacts.MovementKeys.ARROW_RIGHT,
+                    CtrlKey = true
+                };
+                
+                TextEditorCursor.MoveCursor(
+                    word,
+                    parameter.PrimaryCursorSnapshot.UserCursor,
+                    parameter.TextEditorBase);
+                
+                return Task.CompletedTask;
+            },
+            true,
+            "Word",
+            "word",
+            TextEditKind.None);
+        
         switch (keyboardEventArgs.Key)
         {
             case "w":
             {
-                textEditorCommand = TextEditorCommandFacts.SelectAll;
+                textEditorCommand = testingThings;
                 return true;
             }
         }
