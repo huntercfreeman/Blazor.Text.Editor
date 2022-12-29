@@ -6,6 +6,8 @@ namespace BlazorTextEditor.RazorLib.Keymap;
 
 public class TextEditorKeymapVim : TextEditorKeymapDefault
 {
+    public override string KeymapDisplayName => "Vim";
+    
     public override TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
     {
         if (keyboardEventArgs.CtrlKey)

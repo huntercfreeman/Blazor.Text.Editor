@@ -6,6 +6,9 @@ namespace BlazorTextEditor.RazorLib.Keymap;
 
 public class TextEditorKeymapDefault : ITextEditorKeymap
 {
+    public virtual KeymapKey KeymapKey => KeymapFacts.DefaultKeymapDefinition.KeymapKey;
+    public virtual string KeymapDisplayName => KeymapFacts.DefaultKeymapDefinition.DisplayName;
+    
     public virtual TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
     {
         if (keyboardEventArgs.CtrlKey)
@@ -36,7 +39,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             _ => null,
         };
     }
-    
+
     protected TextEditorCommand? DefaultCtrlModifiedKeymap(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)

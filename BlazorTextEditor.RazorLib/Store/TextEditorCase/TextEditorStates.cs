@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Facts;
+using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
@@ -17,7 +18,8 @@ public record TextEditorStates(
             false,
             false,
             null,
-            2.5))
+            2.5,
+            KeymapFacts.DefaultKeymapDefinition))
     {
     }
 }

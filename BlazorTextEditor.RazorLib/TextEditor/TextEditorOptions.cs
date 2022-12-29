@@ -1,10 +1,13 @@
 ﻿using BlazorALaCarte.Shared.Theme;
+using BlazorTextEditor.RazorLib.Keymap;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
 /// <summary>
-///     Any property on <see cref="TextEditorServiceOptions" /> will be equal to
-///     the
+/// The Global instance of <see cref="TextEditorOptions"/> is not to have any null
+/// values.
+/// <br/><br/>
+/// TODO: Marking properties nullable and then mysteriously deciding the global instance of the options is not to have nulls is confusing and needs changed. The nullable properties are for TextEditors that have specific values they want to override the global options with. 
 /// </summary>
 public record TextEditorOptions(
     int? FontSizeInPixels,
@@ -12,7 +15,8 @@ public record TextEditorOptions(
     bool? ShowWhitespace,
     bool? ShowNewlines,
     int? HeightInPixels,
-    double? CursorWidthInPixels)
+    double? CursorWidthInPixels,
+    KeymapDefinition? KeymapDefinition)
 {
     public static TextEditorOptions UnsetTextEditorOptions()
     {
@@ -22,6 +26,7 @@ public record TextEditorOptions(
             false,
             false,
             null,
-            0);
+            2.5,
+            KeymapFacts.DefaultKeymapDefinition);
     }
 }

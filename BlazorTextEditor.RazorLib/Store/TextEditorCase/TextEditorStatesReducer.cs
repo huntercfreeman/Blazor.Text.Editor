@@ -286,6 +286,23 @@ public class TextEditorStatesReducer
             GlobalTextEditorOptions = nextTextEditorOptions,
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceTextEditorSetKeymapAction(
+        TextEditorStates previousTextEditorStates,
+        TextEditorSetKeymapAction textEditorSetKeymapAction)
+    {
+        var nextTextEditorOptions = previousTextEditorStates
+                .GlobalTextEditorOptions with
+            {
+                KeymapDefinition = textEditorSetKeymapAction.KeymapDefinition,
+            };
+
+        return previousTextEditorStates with
+        {
+            GlobalTextEditorOptions = nextTextEditorOptions,
+        };
+    }
 
     [ReducerMethod]
     public static TextEditorStates ReduceTextEditorSetShowWhitespaceAction(
