@@ -284,6 +284,8 @@ public class VimSentence
         out TextEditorCommand textEditorCommand)
     {
         textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        
+        ResetPendingSentence();
         return true;
     }
 }
