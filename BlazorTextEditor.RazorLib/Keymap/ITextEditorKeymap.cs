@@ -5,5 +5,5 @@ namespace BlazorTextEditor.RazorLib.Keymap;
 
 public interface ITextEditorKeymap
 {
-    public Func<(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection), TextEditorCommand?> KeymapFunc { get; }
+    public TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection);
 }

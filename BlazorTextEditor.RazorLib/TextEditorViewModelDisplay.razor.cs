@@ -242,13 +242,13 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             new(primaryCursorSnapshot.UserCursor),
         }.ToImmutableArray();
 
-        var keyboardEventAndHasSelectionTuple = (keyboardEventArgs,
-            TextEditorSelectionHelper
+        var hasSelection = TextEditorSelectionHelper
                 .HasSelectedText(
-                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection));
+                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
-        var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
-            .Invoke(keyboardEventAndHasSelectionTuple);
+        var command = safeTextEditorReference.TextEditorKeymap.Map(
+            keyboardEventArgs,
+            hasSelection);
 
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key) && 
             command is null)
