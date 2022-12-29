@@ -17,7 +17,24 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     private readonly TextEditorKeymapDefault _textEditorKeymapDefault = new();
     
     public VimMode ActiveVimMode { get; private set; } = VimMode.Normal;
+    
+    /*
+     Vim Grammar Conditional Branching
+     ---------------------------------
+     
+     []Command
+        []Expand
+            []Motion
+        []Motion
+        []Repeat
+            []Motion
+    []Motion
+    []Repeat
+        []Motion 
+     */
 
+    private readonly VimPhrase _vimPhrase = new();
+    
     public string GetCursorCssClassString()
     {
         return ActiveVimMode switch
@@ -43,7 +60,9 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         return string.Empty;
     }
     
-    public TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
+    public TextEditorCommand? Map(
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection)
     {
         if (TryMapToVimKeymap(
                 keyboardEventArgs,
