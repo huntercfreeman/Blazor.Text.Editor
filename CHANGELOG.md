@@ -296,7 +296,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 6.1.0 2022-12-30
 - `Vim Emulation` starting point.
-    - This update provides `Vim Emulation` moreso as a `proof of concept`. Everything is architected out for Vim Emulation to work, however the keymap implementation itself `currently only has swapping from NormalMode to InsertMode and vice versa`.
+    - This update provides `Vim Emulation` moreso as a `proof of concept`. Everything is architected out for Vim Emulation to work - need to add a "keymap chord" like idea I realize after writing this README.md Hopefully I get to it before the 30th when this update goes out. -, however the keymap implementation itself `currently only has swapping from NormalMode to InsertMode and vice versa`.
 - `JavaScript Intersection Observer` returns for:
     - Identifying if a `Virtualization Boundary` is intersecting.
     - Identifying if the `Text Editor Cursor` is intersecting. (more specifically in the case of the cursor we are looking to see if it is not intersecting -- then we can `scroll it into view`).
