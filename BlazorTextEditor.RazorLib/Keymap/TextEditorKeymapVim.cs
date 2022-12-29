@@ -9,13 +9,16 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap;
 
-public class TextEditorKeymapVim : TextEditorKeymapDefault
+public class TextEditorKeymapVim : ITextEditorKeymap
 {
-    public override string KeymapDisplayName => "Vim";
+    public KeymapKey KeymapKey => KeymapFacts.VimKeymapDefinition.KeymapKey;
+    public string KeymapDisplayName => KeymapFacts.VimKeymapDefinition.DisplayName;
 
+    private readonly TextEditorKeymapDefault _textEditorKeymapDefault = new();
+    
     public VimMode ActiveVimMode { get; private set; } = VimMode.Normal;
 
-    public override string GetCursorCssClassString()
+    public string GetCursorCssClassString()
     {
         return ActiveVimMode switch
         {
@@ -24,7 +27,7 @@ public class TextEditorKeymapVim : TextEditorKeymapDefault
         };
     }
     
-    public override string GetCursorCssStyleString(
+    public string GetCursorCssStyleString(
         TextEditorBase textEditorBase,
         TextEditorViewModel textEditorViewModel,
         TextEditorOptions textEditorOptions)
@@ -40,25 +43,40 @@ public class TextEditorKeymapVim : TextEditorKeymapDefault
         return string.Empty;
     }
     
-    public override TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
+    public TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
     {
+        if (TryMapToVimKeymap(
+                keyboardEventArgs,
+                hasTextSelection,
+                out var command))
+        {
+            return command;
+        }
+        
         if (keyboardEventArgs.CtrlKey)
         {
-            return DefaultCtrlModifiedKeymap(
+            return _textEditorKeymapDefault.DefaultCtrlModifiedKeymap(
+                keyboardEventArgs,
+                hasTextSelection);
+        }
+        
+        if (keyboardEventArgs.CtrlKey)
+        {
+            return _textEditorKeymapDefault.DefaultCtrlModifiedKeymap(
                 keyboardEventArgs,
                 hasTextSelection);
         }
 
         if (keyboardEventArgs.AltKey)
         {
-            return DefaultAltModifiedKeymap(
+            return _textEditorKeymapDefault.DefaultAltModifiedKeymap(
                 keyboardEventArgs,
                 hasTextSelection);
         }
             
         if (hasTextSelection)
         {
-            return DefaultHasSelectionModifiedKeymap(
+            return _textEditorKeymapDefault.DefaultHasSelectionModifiedKeymap(
                 keyboardEventArgs,
                 hasTextSelection);
         }
@@ -69,5 +87,88 @@ public class TextEditorKeymapVim : TextEditorKeymapDefault
             KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.ScrollPageUp,
             _ => null,
         };
+    }
+
+    public bool TryMapToVimKeymap(
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection,
+        out TextEditorCommand? command)
+    {
+        switch (ActiveVimMode)
+        {
+            case VimMode.Normal:
+            {
+                if (TryMapToVimNormalModeKeymap(
+                        keyboardEventArgs,
+                        hasTextSelection,
+                        out command))
+                {
+                    return true;
+                }
+
+                command = TextEditorCommandFacts.DoNothingDiscard;
+                return true;
+            }
+            case VimMode.Insert:
+            {
+                if (TryMapToVimInsertModeKeymap(
+                        keyboardEventArgs,
+                        hasTextSelection,
+                        out command))
+                {
+                    return true;
+                }
+
+                command = TextEditorCommandFacts.DoNothingDiscard;
+                return true;
+            }
+            default:
+            {
+                command = null;
+                return false;
+            }
+        }
+    }
+
+    public bool TryMapToVimNormalModeKeymap(
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection,
+        out TextEditorCommand? command)
+    {
+        switch (keyboardEventArgs.Key)
+        {
+            case "i":
+            {
+                ActiveVimMode = VimMode.Insert;
+                command = TextEditorCommandFacts.DoNothingDiscard;
+                return true;
+            }
+            default:
+            {
+                command = null;
+                return false;
+            }
+        }
+    }
+    
+    public bool TryMapToVimInsertModeKeymap(
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection,
+        out TextEditorCommand command)
+    {
+        switch (keyboardEventArgs.Key)
+        {
+            case KeyboardKeyFacts.MetaKeys.ESCAPE:
+            {
+                ActiveVimMode = VimMode.Normal;
+                command = TextEditorCommandFacts.DoNothingDiscard;
+                return true;
+            }
+            default:
+            {
+                command = null;
+                return false;
+            }
+        }
     }
 }

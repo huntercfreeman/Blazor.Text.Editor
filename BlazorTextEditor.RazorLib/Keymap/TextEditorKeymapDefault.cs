@@ -9,15 +9,15 @@ namespace BlazorTextEditor.RazorLib.Keymap;
 
 public class TextEditorKeymapDefault : ITextEditorKeymap
 {
-    public virtual KeymapKey KeymapKey => KeymapFacts.DefaultKeymapDefinition.KeymapKey;
-    public virtual string KeymapDisplayName => KeymapFacts.DefaultKeymapDefinition.DisplayName;
+    public KeymapKey KeymapKey => KeymapFacts.DefaultKeymapDefinition.KeymapKey;
+    public string KeymapDisplayName => KeymapFacts.DefaultKeymapDefinition.DisplayName;
 
-    public virtual string GetCursorCssClassString()
+    public string GetCursorCssClassString()
     {
         return TextCursorKindFacts.BeamCssClassString;
     }
     
-    public virtual string GetCursorCssStyleString(
+    public string GetCursorCssStyleString(
         TextEditorBase textEditorBase,
         TextEditorViewModel textEditorViewModel,
         TextEditorOptions textEditorOptions)
@@ -25,7 +25,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         return string.Empty;
     }
     
-    public virtual TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
+    public TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
     {
         if (keyboardEventArgs.CtrlKey)
         {
@@ -56,7 +56,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         };
     }
 
-    protected TextEditorCommand? DefaultCtrlModifiedKeymap(
+    public TextEditorCommand? DefaultCtrlModifiedKeymap(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
@@ -104,14 +104,14 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
     ///     all the possible keyboard modifier
     ///     keys and have a method for each permutation.
     /// </summary>
-    protected TextEditorCommand? DefaultAltModifiedKeymap(
+    public TextEditorCommand? DefaultAltModifiedKeymap(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         return null;
     }
     
-    protected TextEditorCommand? DefaultHasSelectionModifiedKeymap(
+    public TextEditorCommand? DefaultHasSelectionModifiedKeymap(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
@@ -126,7 +126,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         return null;
     }
 
-    protected TextEditorCommand? DefaultCtrlAltModifiedKeymap(
+    public TextEditorCommand? DefaultCtrlAltModifiedKeymap(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {

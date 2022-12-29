@@ -246,7 +246,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 .HasSelectedText(
                     primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
-        var command = safeTextEditorReference.TextEditorKeymap.Map(
+        var command = TextEditorStatesWrap.Value.GlobalTextEditorOptions.KeymapDefinition!.Keymap.Map(
             keyboardEventArgs,
             hasSelection);
 
