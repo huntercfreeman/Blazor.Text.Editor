@@ -145,11 +145,9 @@ window.blazorTextEditor = {
         let currentLargestLeftPosition = 
             textEditorBodyElement.scrollLeft + textEditorBodyElement.offsetWidth;
 
-        // TODO: Why does validating scrollLeft require "if (currentLargestLeftPosition > textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth)" when the validation for scrollTop is just "if (currentLargestTopPosition > textEditorBodyElement.scrollHeight)"
-        if (currentLargestLeftPosition > textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth) {
-            // TODO: Why does validating scrollLeft require "textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth - textEditorBodyElement.offsetWidth;" when the validation for scrollTop is just "textEditorBodyElement.scrollHeight - textEditorBodyElement.offsetHeight;"
+        if (currentLargestLeftPosition > textEditorBodyElement.scrollWidth) {
             textEditorBodyElement.scrollLeft =
-                textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth - textEditorBodyElement.offsetWidth;
+                textEditorBodyElement.scrollWidth - textEditorBodyElement.offsetWidth;
         }
 
         // Validate scrollTop
