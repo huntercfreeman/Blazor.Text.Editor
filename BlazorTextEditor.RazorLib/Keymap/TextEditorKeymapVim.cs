@@ -106,8 +106,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     return true;
                 }
 
-                command = TextEditorCommandFacts.DoNothingDiscard;
-                return true;
+                goto default;
             }
             case VimMode.Insert:
             {
@@ -119,8 +118,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     return true;
                 }
 
-                command = TextEditorCommandFacts.DoNothingDiscard;
-                return true;
+                goto default;
             }
             default:
             {
