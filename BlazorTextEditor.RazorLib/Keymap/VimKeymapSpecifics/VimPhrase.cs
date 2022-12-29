@@ -10,6 +10,16 @@ public class VimPhrase
         new VimGrammarToken(VimGrammarKind.Start, string.Empty)
     };
 
+    /// <summary>
+    /// TODO: Having this method is asking for trouble as one can just circumvent the method by invoking _pendingPhrase.Clear() without adding in an initial VimGrammarKind.Start. This should be changed. The idea for this method is that one must always start the pending phrase with VimGrammarKind.Start yet as of this moment you need special knowledge to know to call this method so it is awkward.
+    /// </summary>
+    private void ResetPendingPhrase()
+    {
+        _pendingPhrase.Clear();
+        _pendingPhrase.Add(
+            new VimGrammarToken(VimGrammarKind.Start, string.Empty));
+    }
+
     public bool TryLexPhrase(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
@@ -86,28 +96,95 @@ public class VimPhrase
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimCommandFacts.TryConstructCommandToken(
+        _ = VimCommandFacts.TryConstructCommandToken( // Example: "d..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimMotionFacts.TryConstructMotionToken(
+            VimMotionFacts.TryConstructMotionToken( // Example: "w" => move cursor forward until reaching the next word.
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeatToken(
+            VimRepeatFacts.TryConstructRepeatToken( // Example: "3..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
+            return false;
+
+        switch (vimGrammarToken.VimGrammarKind)
         {
-            
+            case VimGrammarKind.Command:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return false;
+            }
+            case VimGrammarKind.Expansion:
+            {
+                // VimGrammarKind.Expansion is
+                // invalid here so ignore and keep VimGrammarKind.Start
+                return false;
+            }
+            case VimGrammarKind.Motion:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return true;
+            }
+            case VimGrammarKind.Repeat:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return false;
+            }
         }
-        else
-        {
-            
-        }
+
+        return false;
     }
     
     private bool ContinuePhraseFromCommand(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
-        throw new NotImplementedException();
+        VimGrammarToken? vimGrammarToken;
+
+        _ = VimCommandFacts.TryConstructCommandToken( // Example: "dd" => delete line
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimMotionFacts.TryConstructMotionToken( // Example: "dw" => delete word
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimRepeatFacts.TryConstructRepeatToken( // Example: "d3..." is valid albeit incomplete
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken);
+
+        if (vimGrammarToken is null)
+            return false;
+
+        switch (vimGrammarToken.VimGrammarKind)
+        {
+            case VimGrammarKind.Command:
+            {
+                if (_pendingPhrase.Last().TextValue == vimGrammarToken.TextValue)
+                {
+                    _pendingPhrase.Add(vimGrammarToken);
+                    return true;
+                }
+
+                // The command was overriden so restart phrase
+                ResetPendingPhrase();
+                
+                return ContinuePhraseFromStart(
+                    keyboardEventArgs,
+                    hasTextSelection);
+            }
+            case VimGrammarKind.Expansion:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return false;
+            }
+            case VimGrammarKind.Motion:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return true;
+            }
+            case VimGrammarKind.Repeat:
+            {
+                _pendingPhrase.Add(vimGrammarToken);
+                return false;
+            }
+        }
+
+        return false;
     }
     
     private bool ContinuePhraseFromExpansion(
