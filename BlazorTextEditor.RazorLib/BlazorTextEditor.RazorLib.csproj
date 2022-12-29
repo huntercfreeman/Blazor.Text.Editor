@@ -20,9 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlazorALaCarte.DialogNotification" Version="1.3.0" />
-        <PackageReference Include="BlazorALaCarte.Shared" Version="1.3.0" />
-        <PackageReference Include="BlazorALaCarte.TreeView" Version="1.3.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.6.0" />
         <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" />
     </ItemGroup>
@@ -37,6 +34,12 @@
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\BlazorALaCarte\BlazorALaCarte.DialogNotification\BlazorALaCarte.DialogNotification\BlazorALaCarte.DialogNotification.csproj" />
+      <ProjectReference Include="..\..\BlazorALaCarte\BlazorALaCarte.Shared\BlazorALaCarte.Shared\BlazorALaCarte.Shared.csproj" />
+      <ProjectReference Include="..\..\BlazorALaCarte\BlazorALaCarte.TreeView\BlazorALaCarte.TreeView\BlazorALaCarte.TreeView.csproj" />
     </ItemGroup>
 
 </Project>
