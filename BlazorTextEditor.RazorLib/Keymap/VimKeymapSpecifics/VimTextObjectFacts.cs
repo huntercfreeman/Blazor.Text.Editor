@@ -33,6 +33,15 @@ public static class VimTextObjectFacts
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
+        switch (keyboardEventArgs.Key)
+        {
+            case "w":
+            {
+                textEditorCommand = TextEditorCommandFacts.SelectAll;
+                return true;
+            }
+        }
+        
         textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
         return true;
     }
