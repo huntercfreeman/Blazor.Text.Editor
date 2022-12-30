@@ -69,6 +69,7 @@ public static class VimRepeatFacts
             $"Vim::Repeat(count: {intValue}," +
             $" arg: {innerTextEditorCommand.DisplayName})";
         
+        // Repeat the inner TextEditorCommand using a for loop
         textEditorCommand = new TextEditorCommand(
             async textEditorCommandParameter =>
             {

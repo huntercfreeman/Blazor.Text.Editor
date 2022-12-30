@@ -18,6 +18,7 @@ public static class VimTextObjectFacts
         {
             case "w":
             case "e":
+            case "b":
             case "h":
             case "j":
             case "k":
@@ -50,6 +51,8 @@ public static class VimTextObjectFacts
         {
             case "w":
             {
+                // Move to the start of the next word.
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {
@@ -67,6 +70,8 @@ public static class VimTextObjectFacts
             }
             case "e":
             {
+                // Move to the end of the next word.
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {
@@ -82,8 +87,30 @@ public static class VimTextObjectFacts
                 
                 return true;
             }
+            case "b":
+            {
+                // Move cursor to the beginning of the previous word.
+                // As well, skip any whitespace that is along the way.
+                
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        VimTextEditorMotionFacts.Back(
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim::b",
+                    "vim_b");
+                
+                return true;
+            }
             case "h":
             {
+                // Move the cursor 1 column to the left
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {
@@ -105,6 +132,8 @@ public static class VimTextObjectFacts
             }
             case "j":
             {
+                // Move the cursor 1 row down
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {
@@ -126,6 +155,8 @@ public static class VimTextObjectFacts
             }
             case "k":
             {
+                // Move the cursor 1 row up
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {
@@ -147,6 +178,8 @@ public static class VimTextObjectFacts
             }
             case "l":
             {
+                // Move the cursor 1 column to the right
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {
@@ -168,6 +201,8 @@ public static class VimTextObjectFacts
             }
             case "$":
             {
+                // Move the cursor to the end of the current line.
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {
@@ -189,6 +224,8 @@ public static class VimTextObjectFacts
             }
             case "0":
             {
+                // Move the cursor to the start of the current line.
+                
                 textEditorCommand = new TextEditorCommand(
                     textEditorCommandParameter =>
                     {

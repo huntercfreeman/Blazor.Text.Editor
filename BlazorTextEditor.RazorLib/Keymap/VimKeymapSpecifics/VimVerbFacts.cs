@@ -63,6 +63,8 @@ public static class VimVerbFacts
             {
                 case "d":
                 {
+                    // Delete the current line
+                    
                     textEditorCommand = new TextEditorCommand(
                         async textEditorCommandParameter =>
                         {                         
@@ -84,6 +86,14 @@ public static class VimVerbFacts
         }
         else
         {
+            // Track locally the starting PositionIndex
+            //
+            // Perform any Vim Motion to displace the cursor
+            //
+            // Delete inclusively the starting PositionIndex up to
+            // the exclusive ending PositionIndex.
+            
+            
             success = VimSentence.TryParseMoveNext(
                 sentenceSnapshot,
                 indexInSentence + 1,
