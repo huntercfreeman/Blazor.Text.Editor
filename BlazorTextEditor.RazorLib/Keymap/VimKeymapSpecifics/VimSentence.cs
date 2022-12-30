@@ -294,58 +294,71 @@ public class VimSentence
         }
         else
         {
-            switch (firstToken.VimGrammarKind)
-            {
-                case VimGrammarKind.Verb:
-                {
-                    success = VimVerbFacts.TryParseVimSentence(
-                        sentenceSnapshot,
-                        keyboardEventArgs,
-                        hasTextSelection,
-                        out textEditorCommand);
-                
-                    break;
-                }
-                case VimGrammarKind.Modifier:
-                {
-                    success = VimModifierFacts.TryParseVimSentence(
-                            sentenceSnapshot,
-                            keyboardEventArgs,
-                            hasTextSelection,
-                            out textEditorCommand);
-                
-                    break;
-                }
-                case VimGrammarKind.TextObject:
-                {
-                    success = VimTextObjectFacts.TryParseVimSentence(
-                            sentenceSnapshot,
-                            keyboardEventArgs,
-                            hasTextSelection,
-                            out textEditorCommand);
-                
-                    break;
-                }
-                case VimGrammarKind.Repeat:
-                {
-                    success = VimRepeatFacts.TryParseVimSentence(
-                            sentenceSnapshot,
-                            keyboardEventArgs,
-                            hasTextSelection,
-                            out textEditorCommand);
-                
-                    break;
-                }
-                default:
-                {
-                    throw new ApplicationException(
-                        $"The {nameof(VimGrammarKind)}:" +
-                        $" {sentenceSnapshot.Last().VimGrammarKind} was not recognized.");
-                }
-            }
+            success = TryParseMoveNext(
+                sentenceSnapshot,
+                0,
+                keyboardEventArgs,
+                hasTextSelection,
+                out textEditorCommand);
         }
 
         textEditorCommandHistoryTuples.Add((sentenceSnapshot, textEditorCommand));
         return success;
+    }
+
+    public static bool TryParseMoveNext(
+        ImmutableArray<VimGrammarToken> sentenceSnapshot,
+        int indexInSentence,
+        KeyboardEventArgs keyboardEventArgs,
+        bool hasTextSelection,
+        out TextEditorCommand textEditorCommand)
+    {
+        var currentToken = sentenceSnapshot[indexInSentence];
+        
+        switch (currentToken.VimGrammarKind)
+        {
+            case VimGrammarKind.Verb:
+            {
+                return VimVerbFacts.TryParseVimSentence(
+                    sentenceSnapshot,
+                    indexInSentence,
+                    keyboardEventArgs,
+                    hasTextSelection,
+                    out textEditorCommand);
+            }
+            case VimGrammarKind.Modifier:
+            {
+                return VimModifierFacts.TryParseVimSentence(
+                    sentenceSnapshot,
+                    indexInSentence,
+                    keyboardEventArgs,
+                    hasTextSelection,
+                    out textEditorCommand);
+            }
+            case VimGrammarKind.TextObject:
+            {
+                return VimTextObjectFacts.TryParseVimSentence(
+                    sentenceSnapshot,
+                    indexInSentence,
+                    keyboardEventArgs,
+                    hasTextSelection,
+                    out textEditorCommand);
+            }
+            case VimGrammarKind.Repeat:
+            {
+                return VimRepeatFacts.TryParseVimSentence(
+                    sentenceSnapshot,
+                    indexInSentence,
+                    keyboardEventArgs,
+                    hasTextSelection,
+                    out textEditorCommand);
+            }
+            default:
+            {
+                throw new ApplicationException(
+                    $"The {nameof(VimGrammarKind)}:" +
+                    $" {sentenceSnapshot.Last().VimGrammarKind} was not recognized.");
+            }
+        }
     }
 }

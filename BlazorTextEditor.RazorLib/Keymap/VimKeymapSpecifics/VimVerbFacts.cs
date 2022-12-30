@@ -29,6 +29,7 @@ public static class VimVerbFacts
 
     public static bool TryParseVimSentence(
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
+        int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text;
 using BlazorTextEditor.RazorLib.Commands;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -34,11 +35,52 @@ public static class VimRepeatFacts
 
     public static bool TryParseVimSentence(
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
+        int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
-        textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
-        return true;
+        int modifiedIndexInSentence = indexInSentence;
+        
+        var numberBuilder = new StringBuilder();
+
+        for (int i = indexInSentence; i < sentenceSnapshot.Length; i++)
+        {
+            var currentToken = sentenceSnapshot[i];
+
+            if (currentToken.VimGrammarKind == VimGrammarKind.Repeat)
+            {
+                numberBuilder.Append(currentToken.TextValue);
+                modifiedIndexInSentence++;
+            }
+        }
+        
+        var intValue = Int32.Parse(numberBuilder.ToString());
+
+        var success = VimSentence.TryParseMoveNext(
+            sentenceSnapshot,
+            modifiedIndexInSentence,
+            keyboardEventArgs,
+            hasTextSelection,
+            out var innerTextEditorCommand);
+
+        var textEditorCommandDisplayName = 
+            $"do{intValue}Times: {innerTextEditorCommand.DisplayName}";
+        
+        textEditorCommand = new TextEditorCommand(
+            async textEditorCommandParameter =>
+            {
+                for (int index = 0; index < intValue; index++)
+                {
+                    await innerTextEditorCommand.DoAsyncFunc
+                        .Invoke(textEditorCommandParameter);
+                }
+            },
+            true,
+            textEditorCommandDisplayName,
+            textEditorCommandDisplayName);
+        
+        
+        return success;
     }
 }

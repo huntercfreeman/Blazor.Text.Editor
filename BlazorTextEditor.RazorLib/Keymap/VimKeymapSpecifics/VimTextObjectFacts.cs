@@ -40,11 +40,14 @@ public static class VimTextObjectFacts
 
     public static bool TryParseVimSentence(
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
+        int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
-        switch (keyboardEventArgs.Key)
+        var currentToken = sentenceSnapshot[indexInSentence];
+        
+        switch (currentToken.TextValue)
         {
             case "w":
             {
