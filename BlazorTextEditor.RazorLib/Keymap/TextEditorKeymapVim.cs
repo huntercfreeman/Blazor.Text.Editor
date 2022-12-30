@@ -150,6 +150,12 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             default:
             {
+                if (keyboardEventArgs.Key == "Shift")
+                {
+                    command = TextEditorCommandFacts.DoNothingDiscard;
+                    return false;
+                }
+                
                 var success = VimSentence.TryLex(
                     TextEditorCommandHistoryTuples,
                     keyboardEventArgs,
