@@ -20,7 +20,8 @@ public static class VimRepeatFacts
 
         var possibleNumeric = keyboardEventArgs.Key.Single();
 
-        if (char.IsNumber(possibleNumeric))
+        if (char.IsNumber(possibleNumeric) &&
+            possibleNumeric != '0')
         {
             vimGrammarToken = new VimGrammarToken(
                 VimGrammarKind.Repeat,

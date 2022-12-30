@@ -22,6 +22,8 @@ public static class VimTextObjectFacts
             case "j":
             case "k":
             case "l":
+            case "$":
+            case "0":
             {
                 vimGrammarToken = new VimGrammarToken(
                     VimGrammarKind.TextObject,
@@ -161,6 +163,48 @@ public static class VimTextObjectFacts
                     true,
                     "Vim::l",
                     "vim_l");
+                
+                return true;
+            }
+            case "$":
+            {
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        TextEditorCursor.MoveCursor(
+                            new KeyboardEventArgs
+                            {
+                                Key = KeyboardKeyFacts.MovementKeys.END
+                            },
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim::$",
+                    "vim_$");
+                
+                return true;
+            }
+            case "0":
+            {
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        TextEditorCursor.MoveCursor(
+                            new KeyboardEventArgs
+                            {
+                                Key = KeyboardKeyFacts.MovementKeys.HOME
+                            },
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim::0",
+                    "vim_0");
                 
                 return true;
             }
