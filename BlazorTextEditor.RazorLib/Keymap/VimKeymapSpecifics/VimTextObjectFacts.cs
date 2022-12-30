@@ -24,6 +24,14 @@ public static class VimTextObjectFacts
 
                 return true;
             }
+            case "e":
+            {
+                vimGrammarToken = new VimGrammarToken(
+                    VimGrammarKind.TextObject,
+                    keyboardEventArgs.Key);
+
+                return true;
+            }
         }
 
         vimGrammarToken = null;
@@ -36,32 +44,40 @@ public static class VimTextObjectFacts
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
-        var testingThings = new TextEditorCommand(
-            parameter =>
-            {
-                var word = new KeyboardEventArgs
-                {
-                    Key = KeyboardKeyFacts.MovementKeys.ARROW_RIGHT,
-                    CtrlKey = true
-                };
-                
-                TextEditorCursor.MoveCursor(
-                    word,
-                    parameter.PrimaryCursorSnapshot.UserCursor,
-                    parameter.TextEditorBase);
-                
-                return Task.CompletedTask;
-            },
-            true,
-            "Word",
-            "word",
-            TextEditKind.None);
-        
         switch (keyboardEventArgs.Key)
         {
             case "w":
             {
-                textEditorCommand = testingThings;
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        VimTextEditorMotionFacts.Word(
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim NextWord",
+                    "vim_next-word");
+                
+                return true;
+            }
+            case "e":
+            {
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        VimTextEditorMotionFacts.End(
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "VimEndWord",
+                    "vim_end-word");
+                
                 return true;
             }
         }

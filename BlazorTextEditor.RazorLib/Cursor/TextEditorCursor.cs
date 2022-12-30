@@ -28,10 +28,9 @@ public class TextEditorCursor
     /// </summary>
     public bool IsIntersecting { get; set; }
 
-    /// <summary>
-    ///     TODO: handle control modifier
-    /// </summary>
-    public static void MoveCursor(KeyboardEventArgs keyboardEventArgs, TextEditorCursor textEditorCursor,
+    public static void MoveCursor(
+        KeyboardEventArgs keyboardEventArgs,
+        TextEditorCursor textEditorCursor,
         TextEditorBase textEditorBase)
     {
         var localIndexCoordinates = textEditorCursor.IndexCoordinates;
