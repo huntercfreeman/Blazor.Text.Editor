@@ -22,12 +22,12 @@
             var contentPaddingTopInRem = 1.1;
             
             
-            var contentPaddingTopInRemString = contentPaddingTopInRem
+            var contentPaddingTopInRemInvariantCulture = contentPaddingTopInRem
                 .ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
         
         <article class="content px-4"
-                 style="height: calc(100% - @(topRowOffsetHeightInPixels)px - @(contentPaddingTopInRemString)rem);">
+                 style="height: calc(100% - @(topRowOffsetHeightInPixels)px - @(contentPaddingTopInRemInvariantCulture)rem);">
             @Body
         </article>
     </main>
