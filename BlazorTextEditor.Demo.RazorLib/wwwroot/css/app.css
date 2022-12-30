@@ -106,3 +106,7 @@ div.top-row:not(.navbar) {
 .bte_top-row .bte_top-row-link {
     height: fit-content;
 }
+
+.bte_demo-text-editor .bte_text-editor {
+    min-height: 200px;
+}
