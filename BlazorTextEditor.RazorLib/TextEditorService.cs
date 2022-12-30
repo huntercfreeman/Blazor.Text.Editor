@@ -1,7 +1,9 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.DialogNotification;
-using BlazorALaCarte.DialogNotification.Store;
+using BlazorALaCarte.DialogNotification.Dialog;
+using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Storage;
+using BlazorALaCarte.Shared.Store;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
@@ -36,6 +38,7 @@ namespace BlazorTextEditor.RazorLib;
 public class TextEditorService : ITextEditorService
 {
     private readonly IState<TextEditorStates> _textEditorStates;
+    private readonly IState<ThemeState> _themeState;
     private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollection;
     private readonly IDispatcher _dispatcher;
     private readonly IStorageProvider _storageProvider;
@@ -45,12 +48,14 @@ public class TextEditorService : ITextEditorService
 
     public TextEditorService(
         IState<TextEditorStates> textEditorStates,
+        IState<ThemeState> themeState,
         IState<TextEditorViewModelsCollection> textEditorViewModelsCollection,
         IDispatcher dispatcher,
         IStorageProvider storageProvider,
         IJSRuntime jsRuntime)
     {
         _textEditorStates = textEditorStates;
+        _themeState = themeState;
         _textEditorViewModelsCollection = textEditorViewModelsCollection;
         _dispatcher = dispatcher;
         _storageProvider = storageProvider;
@@ -66,6 +71,8 @@ public class TextEditorService : ITextEditorService
     public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
     public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
     public int GlobalFontSizeInPixelsValue => TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value;
+    public double GlobalCursorWidthInPixelsValue => TextEditorStates.GlobalTextEditorOptions.CursorWidthInPixels!.Value;
+    public KeymapDefinition GlobalKeymapDefinition => TextEditorStates.GlobalTextEditorOptions.KeymapDefinition!;
     public int? GlobalHeightInPixelsValue => TextEditorStates.GlobalTextEditorOptions.HeightInPixels;
 
     public event Action? OnTextEditorStatesChanged;
@@ -363,6 +370,14 @@ public class TextEditorService : ITextEditorService
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
     
+    public void SetCursorWidth(double cursorWidthInPixels)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetCursorWidthAction(cursorWidthInPixels));
+        
+        WriteGlobalTextEditorOptionsToLocalStorage();
+    }
+    
     public void SetHeight(int? heightInPixels)
     {
         _dispatcher.Dispatch(
@@ -375,6 +390,16 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(
             new TextEditorSetThemeAction(theme));
+        
+        WriteGlobalTextEditorOptionsToLocalStorage();
+    }
+    
+    public void SetKeymap(KeymapDefinition foundKeymap)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorSetKeymapAction(foundKeymap));
+        
+        WriteGlobalTextEditorOptionsToLocalStorage();
     }
 
     public void SetShowWhitespace(bool showWhitespace)
@@ -522,8 +547,6 @@ public class TextEditorService : ITextEditorService
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
-        
-        // TODO: await ForceVirtualizationInvocation();
     }
 
     public async Task MutateScrollHorizontalPositionByPixelsAsync(
@@ -540,8 +563,6 @@ public class TextEditorService : ITextEditorService
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
-        
-        // TODO: await ForceVirtualizationInvocation();
     }
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(
@@ -558,8 +579,6 @@ public class TextEditorService : ITextEditorService
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
-        
-        // TODO: await ForceVirtualizationInvocation();
     }
 
     /// <summary>
@@ -581,8 +600,6 @@ public class TextEditorService : ITextEditorService
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
-        
-        // TODO: await ForceVirtualizationInvocation();
     }
 
     public async Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId)
@@ -603,7 +620,7 @@ public class TextEditorService : ITextEditorService
         string content)
     {
         _dispatcher.Dispatch(
-            new ReduceReloadTextEditorBaseAction(
+            new ReloadTextEditorBaseAction(
                 textEditorKey,
                 content));
     }
@@ -631,10 +648,28 @@ public class TextEditorService : ITextEditorService
             return;
         
         if (options.Theme is not null)
-            SetTheme(options.Theme);
+        {
+            var matchedTheme = _themeState.Value.ThemeRecordsList
+                .FirstOrDefault(x =>
+                    x.ThemeKey == options.Theme.ThemeKey);
+
+            SetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
+        }
+        
+        if (options.KeymapDefinition is not null)
+        {
+            var matchedKeymapDefinition = KeymapFacts.AllKeymapDefinitions
+                .FirstOrDefault(x =>
+                    x.KeymapKey == options.KeymapDefinition.KeymapKey);
+            
+            SetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
+        }
         
         if (options.FontSizeInPixels is not null)
             SetFontSize(options.FontSizeInPixels.Value);
+        
+        if (options.CursorWidthInPixels is not null)
+            SetCursorWidth(options.CursorWidthInPixels.Value);
         
         if (options.HeightInPixels is not null)
             SetHeight(options.HeightInPixels.Value);

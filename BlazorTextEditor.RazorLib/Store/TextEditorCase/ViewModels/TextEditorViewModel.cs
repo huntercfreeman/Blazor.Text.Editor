@@ -15,8 +15,7 @@ public record TextEditorViewModel(
     VirtualizationResult<List<RichCharacter>> VirtualizationResult,
     bool ShouldMeasureDimensions)
 {
-    private CancellationTokenSource _calculateVirtualizationResultCancellationTokenSource = new();
-    private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, CancellationToken.None);
+    private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
     
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     
@@ -63,8 +62,6 @@ public record TextEditorViewModel(
             BodyElementId,
             GutterElementId,
             pixels);
-        
-        await CalculateVirtualizationResultAsync();
     }
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
@@ -73,8 +70,6 @@ public record TextEditorViewModel(
             BodyElementId,
             GutterElementId,
             pixels);
-        
-        await CalculateVirtualizationResultAsync();
     }
 
     public async Task MutateScrollVerticalPositionByPagesAsync(double pages)
@@ -99,34 +94,31 @@ public record TextEditorViewModel(
             GutterElementId,
             scrollLeft,
             scrollTop);
-        
-        await CalculateVirtualizationResultAsync();
     }
 
     public async Task FocusTextEditorAsync()
     {
         await TextEditorService.FocusPrimaryCursorAsync(
             PrimaryCursorContentId);
-
-        await CalculateVirtualizationResultAsync();
     }
     
-    public async Task CalculateVirtualizationResultAsync()
+    public async Task CalculateVirtualizationResultAsync(
+        ElementMeasurementsInPixels? bodyMeasurementsInPixels,
+        CancellationToken cancellationToken)
     {
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
-
+        
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
-        _calculateVirtualizationResultCancellationTokenSource.Cancel();
-        _calculateVirtualizationResultCancellationTokenSource = new();
-        
-        var cancellationToken = _calculateVirtualizationResultCancellationTokenSource.Token;
-        
         var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
-        var bodyMeasurementsInPixels = await TextEditorService
+
+        if (bodyMeasurementsInPixels is null)
+        {
+            bodyMeasurementsInPixels = await TextEditorService
                 .GetElementMeasurementsInPixelsById(BodyElementId);
+        }
 
         _mostRecentBodyMeasurementsInPixels = bodyMeasurementsInPixels; 
 
@@ -246,15 +238,16 @@ public record TextEditorViewModel(
             textEditorBase.RowEndingPositions.Length *
             localCharacterWidthAndRowHeight.RowHeightInPixels;
         
-        // // Add vertical margin so the user can scroll beyond the final row of content
-        // {
-        //     var percentOfMarginScrollHeightByPageUnit = 0.4;
-        //     
-        //     var marginScrollHeight = bodyMeasurementsInPixels.Height *
-        //         percentOfMarginScrollHeightByPageUnit;
-        //
-        //     totalHeight += marginScrollHeight;
-        // }
+        // Add vertical margin so the user can scroll beyond the final row of content
+        double marginScrollHeight;
+        {
+            var percentOfMarginScrollHeightByPageUnit = 0.4;
+            
+            marginScrollHeight = bodyMeasurementsInPixels.Height *
+                                 percentOfMarginScrollHeightByPageUnit;
+
+            totalHeight += marginScrollHeight;
+        }
 
         var leftBoundaryWidthInPixels =
             horizontalStartingIndex *
@@ -262,7 +255,7 @@ public record TextEditorViewModel(
 
         var leftBoundary = new VirtualizationBoundary(
             leftBoundaryWidthInPixels,
-            null,
+            totalHeight,
             0,
             0);
 
@@ -277,7 +270,7 @@ public record TextEditorViewModel(
 
         var rightBoundary = new VirtualizationBoundary(
             rightBoundaryWidthInPixels,
-            null,
+            totalHeight,
             rightBoundaryLeftInPixels,
             0);
 
@@ -286,7 +279,7 @@ public record TextEditorViewModel(
             localCharacterWidthAndRowHeight.RowHeightInPixels;
 
         var topBoundary = new VirtualizationBoundary(
-            null,
+            totalWidth,
             topBoundaryHeightInPixels,
             0,
             0);
@@ -301,7 +294,7 @@ public record TextEditorViewModel(
             bottomBoundaryTopInPixels;
 
         var bottomBoundary = new VirtualizationBoundary(
-            null,
+            totalWidth,
             bottomBoundaryHeightInPixels,
             0,
             bottomBoundaryTopInPixels);
@@ -315,7 +308,8 @@ public record TextEditorViewModel(
             bodyMeasurementsInPixels with
             {
                 ScrollWidth = totalWidth,
-                ScrollHeight = totalHeight
+                ScrollHeight = totalHeight,
+                MarginScrollHeight = marginScrollHeight
             },
             localCharacterWidthAndRowHeight);
         

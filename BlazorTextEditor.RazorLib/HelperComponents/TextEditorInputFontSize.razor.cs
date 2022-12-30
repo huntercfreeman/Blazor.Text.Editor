@@ -11,6 +11,9 @@ public partial class TextEditorInputFontSize : FluxorComponent
     private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
+    
+    [CascadingParameter(Name="InputElementCssClass")]
+    public string CascadingInputElementCssClass { get; set; } = string.Empty;
 
     [Parameter]
     public string TopLevelDivElementCssClassString { get; set; } = string.Empty;

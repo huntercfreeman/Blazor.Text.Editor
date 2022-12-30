@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Facts;
+using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
@@ -16,7 +17,9 @@ public record TextEditorStates(
             ThemeFacts.VisualStudioDarkThemeClone,
             false,
             false,
-            null))
+            null,
+            2.5,
+            KeymapFacts.DefaultKeymapDefinition))
     {
     }
 }

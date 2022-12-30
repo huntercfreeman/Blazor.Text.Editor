@@ -96,11 +96,20 @@ public partial class TextSelectionGroup : ComponentBase
 
         var widthCssStyleString = "width: ";
 
+        var fullWidthValue = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
+
+        if (TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width >
+            TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
+        {
+            // If content does not fill the viewable width of the Text Editor User Interface
+            fullWidthValue = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+        }
+        
         if (fullWidthOfRowIsSelected)
-            widthCssStyleString += "100%";
+            widthCssStyleString += $"{fullWidthValue}px;";
         else if (selectionStartingColumnIndex != 0 &&
                  upperPositionIndexExclusive > endOfRowTuple.positionIndex - 1)
-            widthCssStyleString += $"calc(100% - {selectionStartInPixels}px);";
+            widthCssStyleString += $"calc({fullWidthValue}px - {selectionStartInPixels}px);";
         else
             widthCssStyleString += $"{selectionWidthInPixels}px;";
 

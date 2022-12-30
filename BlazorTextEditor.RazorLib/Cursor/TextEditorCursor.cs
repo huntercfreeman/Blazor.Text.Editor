@@ -20,15 +20,17 @@ public class TextEditorCursor
 
     public (int rowIndex, int columnIndex) IndexCoordinates { get; set; }
     public int PreferredColumnIndex { get; set; }
-    public TextCursorKind TextCursorKind { get; set; }
     public TextEditorSelection TextEditorSelection { get; } = new();
     public bool ShouldRevealCursor { get; set; }
     public bool IsPrimaryCursor { get; }
-
     /// <summary>
-    ///     TODO: handle control modifier
+    /// Relates to whether the cursor is within the viewable area of the Text Editor on the UI
     /// </summary>
-    public static void MoveCursor(KeyboardEventArgs keyboardEventArgs, TextEditorCursor textEditorCursor,
+    public bool IsIntersecting { get; set; }
+
+    public static void MoveCursor(
+        KeyboardEventArgs keyboardEventArgs,
+        TextEditorCursor textEditorCursor,
         TextEditorBase textEditorBase)
     {
         var localIndexCoordinates = textEditorCursor.IndexCoordinates;

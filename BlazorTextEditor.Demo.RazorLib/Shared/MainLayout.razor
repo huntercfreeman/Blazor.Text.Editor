@@ -17,7 +17,13 @@
     <main>
         <LinksDisplay CssClassString="bte_top-row"/>
 
-        <article class="content px-4">
+        @{
+            var topRowOffsetHeightInPixels = 56;
+            var contentPaddingTopInREM = 1.1;
+        }
+        
+        <article class="content px-4"
+                 style="height: calc(100% - @(topRowOffsetHeightInPixels)px - @(contentPaddingTopInREM)rem);">
             @Body
         </article>
     </main>

@@ -11,6 +11,7 @@
     </span>
 
     <input type="checkbox"
+           class="@CascadingInputElementCssClass @CheckboxElementCssClassString"
            checked="@(!globalHeightInPixelsValueIsNull)"
            @onclick="() => ToggleUseGlobalHeightInPixels(globalHeightInPixelsValueIsNull)"/>
 
@@ -24,8 +25,8 @@
 
             <input type="number"
                    disabled=@globalHeightInPixelsValueIsNull
-                               @bind="TextEditorHeight"
-                   class="@InputElementCssClassString"/>
+                   @bind="TextEditorHeight"
+                   class="@CascadingInputElementCssClass @InputElementCssClassString"/>
         </div>
     </div>
 </div>

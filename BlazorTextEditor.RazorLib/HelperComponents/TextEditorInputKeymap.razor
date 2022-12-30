@@ -1,0 +1,25 @@
+﻿@using BlazorALaCarte.Shared.Theme
+@using BlazorTextEditor.RazorLib.Keymap
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div class="bte_text-editor-input-keymap @TextEditorService.GlobalKeymapDefinition @TopLevelDivElementCssClassString">
+    <span class="@LabelElementCssClassString">
+        Keymap:&nbsp;
+    </span>
+
+    <select @onchange="SelectedKeymapChanged"
+            class="@InputElementCssClassString">
+        @{
+            var keymaps = KeymapFacts.AllKeymapDefinitions;
+            var chosenKeymap = TextEditorService.GlobalKeymapDefinition;
+            
+            foreach (var keymap in keymaps)
+            {
+                <option value="@keymap.KeymapKey.Guid.ToString()"
+                        selected="@((chosenKeymap?.KeymapKey ?? KeymapKey.Empty) == keymap.KeymapKey)">
+                    @keymap.DisplayName
+                </option>
+            }
+        }
+    </select>
+</div>

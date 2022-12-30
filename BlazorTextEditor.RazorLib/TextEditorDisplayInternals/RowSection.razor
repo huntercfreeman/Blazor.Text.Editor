@@ -7,6 +7,10 @@
 <div class="bte_row-section"
      id="@TextEditorViewModel.BodyElementId">
     
+    @* VirtualizationDisplay must be rendered first as it will modify the scrollHeight / scrollWidth of the scrollable parent *@
+    <VirtualizationDisplay VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"
+                           ItemsProviderFunc="VirtualizationDisplayItemsProviderFunc"/>
+
     <TextSelectionGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"/>
 
     @foreach (var virtualizedRow in TextEditorViewModel.VirtualizationResult.Entries)
@@ -79,8 +83,6 @@
 
     <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
                                        HtmlElementId="@HtmlElementId"/>
-
-    <VirtualizationDisplay VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"/>
 
     <TextEditorCursorDisplay @ref="TextEditorCursorDisplay"
                              TextEditorCursor="TextEditorViewModel.PrimaryCursor"

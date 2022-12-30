@@ -1,52 +1,129 @@
 ﻿@using BlazorTextEditor.RazorLib.Cursor
 @using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorTextEditor.RazorLib.Keymap
 @using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels
 @using BlazorTextEditor.RazorLib.TextEditor
 @using BlazorTextEditor.RazorLib.TextEditorDisplayInternals
+@using BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics
+@using BlazorTextEditor.RazorLib.Commands
+@using System.Collections.Immutable
 
 @inherits TextEditorView
 
 @{
     var textEditorBase = MutableReferenceToTextEditor;
     var textEditorViewModel = ReplaceableTextEditorViewModel;
+    var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
 }
 
-<div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @StyleCssString"
-     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @ClassCssString">
+@if (globalTextEditorOptions.KeymapDefinition!.Keymap is TextEditorKeymapVim vimKeymap)
+{
+    <div class="bte_debug-vim-keymap" style="font-size: .8em;">
+        <div>
+            <div style="font-size: 1em; border-bottom: 2px solid var(--balc_primary-emphasis-foreground-color); color: var(--balc_primary-emphasis-foreground-color);">
+                Active Vim State
+            </div>
+            
+            <div>
+                Mode:&nbsp;@vimKeymap.ActiveVimMode
+            </div>
+
+            <div style="display: flex;">
+                Sentence:&nbsp;[&nbsp;
+                @foreach (var vimGrammarToken in vimKeymap.VimSentence.PendingSentence)
+                {
+                    <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
+
+                    <div>,&nbsp;</div>
+                }
+                &nbsp;]
+            </div>
+        </div>
+
+        <div style="height: 120px; overflow: scroll;">
+            
+            <div style="font-size: 1em; border-bottom: 2px solid var(--balc_primary-emphasis-foreground-color); color: var(--balc_primary-emphasis-foreground-color);">
+                Vim History
+            </div>
+
+            @{
+                var immutableTextEditorCommandHistoryTuples = vimKeymap.TextEditorCommandHistoryTuples
+                    .ToImmutableArray();
+            }
+
+            @for (int i = immutableTextEditorCommandHistoryTuples.Length - 1; i >= 0; i--)
+            {
+                var index = i;
+                var commandHistoryTuple = immutableTextEditorCommandHistoryTuples[index];
+
+                <div style="display: flex;">
+                    <div>
+                        Sentence&nbsp;[&nbsp;
+                    </div>
+
+                    @foreach (var vimGrammarToken in commandHistoryTuple.tokens)
+                    {
+                        <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
+
+                        <div>,&nbsp;</div>
+                    }
+
+                    <div>&nbsp;]&nbsp;</div>
+
+                    <div>=>&nbsp;</div>
+
+                    <TextEditorCommandDebugDisplay TextEditorCommand="commandHistoryTuple.command"/>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
+     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @WrapperClassCssString">
     
     @if (textEditorBase is not null &&
          textEditorViewModel is not null)
     {
         <CascadingValue Value="textEditorBase">
             <CascadingValue Value="textEditorViewModel">
+                <CascadingValue Value="globalTextEditorOptions">
 
-                <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
-                                  HeaderButtonKinds="HeaderButtonKinds"/>
+                    @if (IncludeHeaderHelperComponent)
+                    {
+                        <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
+                                          HeaderButtonKinds="HeaderButtonKinds"/>
+                    }
 
-                <div @ref="_textEditorDisplayElementReference"
-                     @onclick="FocusTextEditorAsync"
-                     @onkeydown="HandleOnKeyDownAsync"
-                     @onkeydown:preventDefault="true"
-                     @oncontextmenu="HandleOnContextMenuAsync"
-                     @oncontextmenu:preventDefault="true"
-                     @onmousedown="HandleContentOnMouseDownAsync"
-                     @onmousemove="HandleContentOnMouseMoveAsync"
-                     @ondblclick="HandleContentOnDoubleClickAsync"
-                     @onwheel="HandleOnWheelAsync"
-                     id="@ContentElementId"
-                     class="bte_text-editor bte_unselectable"
-                     tabindex="-1">
+                    <div @ref="_textEditorDisplayElementReference"
+                         @onclick="FocusTextEditorAsync"
+                         @onkeydown="HandleOnKeyDownAsync"
+                         @onkeydown:preventDefault="true"
+                         @oncontextmenu="HandleOnContextMenuAsync"
+                         @oncontextmenu:preventDefault="true"
+                         @onmousedown="HandleContentOnMouseDownAsync"
+                         @onmousemove="HandleContentOnMouseMoveAsync"
+                         @ondblclick="HandleContentOnDoubleClickAsync"
+                         @onwheel="HandleOnWheelAsync"
+                         id="@ContentElementId"
+                         style="@TextEditorStyleCssString"
+                         class="bte_text-editor bte_unselectable @TextEditorClassCssString"
+                         tabindex="-1">
 
-                    <GutterSection/>
+                        <GutterSection/>
 
-                    <BodySection @ref="_bodySection"
-                                 TabIndex="TabIndex"
-                                 HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
-                                 ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
-                                 AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
-                </div>
+                        <BodySection @ref="_bodySection"
+                                     TabIndex="TabIndex"
+                                     HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
+                                     ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
+                                     AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
+                    </div>
 
-                <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                    @if (IncludeFooterHelperComponent)
+                    {
+                        <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                    }
+                </CascadingValue>
             </CascadingValue>
         </CascadingValue>
     }

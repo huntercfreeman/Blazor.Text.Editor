@@ -44,6 +44,9 @@ public partial class TextEditorBase
         if (!_rowEndingPositions.Any())
             return 0;
 
+        if (rowIndex > _rowEndingPositions.Count - 1)
+            rowIndex = _rowEndingPositions.Count - 1;
+        
         var startOfRowTupleInclusive = GetStartOfRowTuple(rowIndex);
 
         var endOfRowTupleExclusive = _rowEndingPositions[rowIndex];

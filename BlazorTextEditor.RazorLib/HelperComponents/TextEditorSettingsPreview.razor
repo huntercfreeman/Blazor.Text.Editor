@@ -1,0 +1,18 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@using BlazorTextEditor.RazorLib
+
+<div class="bte_text-editor-input-cursor-size @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
+    <span class="@LabelElementCssClassString">
+        Preview Settings:&nbsp;
+    </span>
+    
+    <div class="@PreviewElementCssClassString">
+        <TextEditorViewModelDisplay WrapperStyleCssString="height: 100px;"
+                                    TextEditorStyleCssString="height: 100%;"
+                                    IncludeHeaderHelperComponent="false"
+                                    IncludeFooterHelperComponent="false"
+                                    AfterOnKeyDownAsync="(_, _, _, _) => { return Task.CompletedTask; }"
+                                    TextEditorViewModelKey="SettingsPreviewTextEditorViewModelKey"/>
+    </div>
+</div>

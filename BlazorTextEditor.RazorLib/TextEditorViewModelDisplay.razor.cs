@@ -34,9 +34,13 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
     [Parameter]
-    public string StyleCssString { get; set; } = null!;
+    public string WrapperStyleCssString { get; set; } = string.Empty;
     [Parameter]
-    public string ClassCssString { get; set; } = null!;
+    public string WrapperClassCssString { get; set; } = string.Empty;
+    [Parameter]
+    public string TextEditorStyleCssString { get; set; } = string.Empty;
+    [Parameter]
+    public string TextEditorClassCssString { get; set; } = string.Empty;
     /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;
@@ -80,7 +84,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
-    private int _onAfterRenderCounter;
+    private CancellationTokenSource _textEditorBaseChangedCancellationTokenSource = new();
+    private bool _disposed;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
     private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => 
@@ -129,32 +134,33 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         {
             _previousTextEditorViewModelKey = TextEditorViewModelKey;
 
-            TextEditorService.SetViewModelWith(
-                TextEditorViewModelKey,
-                previousViewModel =>
-                {
-                    previousViewModel.PrimaryCursor.ShouldRevealCursor = true;
-                    
-                    return previousViewModel with
-                    {
-                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
-                    };
-                });
+            safeTextEditorViewModel.PrimaryCursor.ShouldRevealCursor = true;
+            
+            await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
+                null, 
+                CancellationToken.None);
         }
 
         await base.OnParametersSetAsync();
     }
 
+    protected override void OnInitialized()
+    {
+        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
+        
+        base.OnInitialized();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _onAfterRenderCounter++;
-        
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (firstRender && 
             textEditorViewModel is not null)
         {
-            await textEditorViewModel.CalculateVirtualizationResultAsync();
+            await textEditorViewModel.CalculateVirtualizationResultAsync(
+                null, 
+                CancellationToken.None);
 
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.preventDefaultOnWheelEvents",
@@ -186,12 +192,32 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             textEditorViewModel = ReplaceableTextEditorViewModel;
 
             if (textEditorViewModel is not null)
-                await textEditorViewModel.CalculateVirtualizationResultAsync();
+            {
+                await textEditorViewModel.CalculateVirtualizationResultAsync(
+                    null,
+                    CancellationToken.None);
+            }
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
+    
+    // TODO: When the underlying "TextEditorBase" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
+    private async void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        var viewModel = ReplaceableTextEditorViewModel;
 
+        if (viewModel is not null)
+        {
+            _textEditorBaseChangedCancellationTokenSource.Cancel();
+            _textEditorBaseChangedCancellationTokenSource = new CancellationTokenSource();
+            
+            await viewModel.CalculateVirtualizationResultAsync(
+                viewModel.VirtualizationResult.ElementMeasurementsInPixels,
+                _textEditorBaseChangedCancellationTokenSource.Token);
+        }
+    }
+    
     public async Task FocusTextEditorAsync()
     {
         if (TextEditorCursorDisplay is not null)
@@ -216,13 +242,13 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             new(primaryCursorSnapshot.UserCursor),
         }.ToImmutableArray();
 
-        var keyboardEventAndHasSelectionTuple = (keyboardEventArgs,
-            TextEditorSelectionHelper
+        var hasSelection = TextEditorSelectionHelper
                 .HasSelectedText(
-                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection));
+                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
-        var command = safeTextEditorReference.TextEditorKeymap.KeymapFunc
-            .Invoke(keyboardEventAndHasSelectionTuple);
+        var command = TextEditorStatesWrap.Value.GlobalTextEditorOptions.KeymapDefinition!.Keymap.Map(
+            keyboardEventArgs,
+            hasSelection);
 
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key) && 
             command is null)
@@ -689,6 +715,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     {
         return keyboardEventArgs.Key == ";" ||
                KeyboardKeyFacts.IsWhitespaceCode(keyboardEventArgs.Code) ||
+               (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "s") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "v") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "z") ||
                (keyboardEventArgs.CtrlKey && keyboardEventArgs.Key == "y");
@@ -725,21 +752,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         
         if (wheelEventArgs.ShiftKey)
         {
-            var toBeScrollLeft = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft +
-                                 wheelEventArgs.DeltaY;
-            
-            if (toBeScrollLeft + textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width > 
-                textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
-            {
-                toBeScrollLeft = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth -
-                                 textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
-            }
-
-            var mutateScrollLeftBy = toBeScrollLeft -
-                                     textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft;
-            
             await textEditorViewModel.MutateScrollHorizontalPositionByPixelsAsync(
-                mutateScrollLeftBy);
+                wheelEventArgs.DeltaY);
         }
         else
         {
@@ -759,5 +773,21 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             return string.Empty;
 
         return $"height: {heightInPixels.Value}px;";
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+    
+        if (disposing)
+        {
+            TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
+            _textEditorBaseChangedCancellationTokenSource.Cancel();
+        }
+    
+        _disposed = true;
     }
 }

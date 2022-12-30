@@ -1,10 +1,25 @@
-﻿<div class="bte_gutter-section"
+﻿@using BlazorTextEditor.RazorLib.Virtualization
+@using BlazorTextEditor.RazorLib.Scrollbar
+
+<div class="bte_gutter-section"
      style="@GetGutterSectionStyleCss()"
      id="@TextEditorViewModel.GutterElementId">
     
-    @{
-        var localTextEditorViewModel = TextEditorViewModel;
-    }
+    @* VirtualizationDisplay must be rendered first as it will modify the scrollHeight / scrollWidth of the scrollable parent *@
+    @*
+        The GutterSection needs to render the "VirtualizationDisplay"
+        in order to increase its ScrollHeight in accordance with
+        the "RowSection".
+        
+        The actual behavior of JavaScript Intersection Observers
+        and invoking a providers func when a boundary comes into view
+        gets turned off for the gutter. This is unlike the "RowSection".
+    *@
+    <VirtualizationDisplay VirtualizationResultWithoutTypeMask="GetVirtualizationResult()"
+                           UseHorizontalVirtualization="false"
+                           ItemsProviderFunc="null"/>
+
+    @{ var localTextEditorViewModel = TextEditorViewModel; }
     
     @foreach (var virtualizedRow in localTextEditorViewModel.VirtualizationResult.Entries)
     {
@@ -20,12 +35,18 @@
 
         if (heightOfGutter < localTextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
         {
-            var remainingHeightToFill = localTextEditorViewModel
-                .VirtualizationResult.ElementMeasurementsInPixels.Height - 
-                                        heightOfGutter; 
-        
+            var remainingHeightToFill = 
+                localTextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height -
+                heightOfGutter +
+                ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
+
+            var imaginaryNextIndex = 
+                (localTextEditorViewModel.VirtualizationResult.Entries
+                    .LastOrDefault()?.Index ?? -1) + 
+                1;
+            
             <div class="bte_gutter"
-                 style="@GetGutterStyleCss(localTextEditorViewModel.VirtualizationResult.Entries.Length) height: @(remainingHeightToFill)px;">
+                 style="@GetGutterStyleCss(imaginaryNextIndex) height: @(remainingHeightToFill)px;">
             </div>
         }
     }

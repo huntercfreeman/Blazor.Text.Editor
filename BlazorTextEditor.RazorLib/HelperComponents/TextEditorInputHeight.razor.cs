@@ -12,12 +12,17 @@ public partial class TextEditorInputHeight : FluxorComponent
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
+    [CascadingParameter(Name="InputElementCssClass")]
+    public string CascadingInputElementCssClass { get; set; } = string.Empty;
+    
     [Parameter]
     public string TopLevelDivElementCssClassString { get; set; } = string.Empty;
     [Parameter]
     public string InputElementCssClassString { get; set; } = string.Empty;
     [Parameter]
     public string LabelElementCssClassString { get; set; } = string.Empty;
+    [Parameter]
+    public string CheckboxElementCssClassString { get; set; } = string.Empty;
 
     private const int MINIMUM_HEIGHT_IN_PIXELS = 200;
     

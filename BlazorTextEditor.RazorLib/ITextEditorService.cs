@@ -46,6 +46,8 @@ public interface ITextEditorService : IDisposable
     public bool GlobalShowNewlines { get; }
     public bool GlobalShowWhitespace { get; }
     public int GlobalFontSizeInPixelsValue { get; }
+    public double GlobalCursorWidthInPixelsValue { get; }
+    public KeymapDefinition GlobalKeymapDefinition { get; }
     public int? GlobalHeightInPixelsValue { get; }
 
     public event Action? OnTextEditorStatesChanged;
@@ -190,8 +192,10 @@ public interface ITextEditorService : IDisposable
     public void UndoEdit(TextEditorKey textEditorKey);
     public void DisposeTextEditor(TextEditorKey textEditorKey);
     public void SetFontSize(int fontSizeInPixels);
+    public void SetCursorWidth(double cursorWidthInPixels);
     public void SetHeight(int? heightInPixels);
     public void SetTheme(ThemeRecord theme);
+    public void SetKeymap(KeymapDefinition foundKeymap);
     public void SetShowWhitespace(bool showWhitespace);
     public void SetShowNewlines(bool showNewlines);
     public void SetUsingRowEndingKind(
