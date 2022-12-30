@@ -124,12 +124,23 @@ public static class VimVerbFacts
                         motionedPrimaryImmutableCursor.RowIndex,
                         motionedPrimaryImmutableCursor.ColumnIndex);
 
-                    var removeCharacterCount = endingPositionIndexExclusive - startingPositionIndexInclusive;
-                    
                     var cursorForDeletion = new TextEditorCursor(
                         (currentPrimaryImmutableCursor.RowIndex, 
                             currentPrimaryImmutableCursor.ColumnIndex),
                         true);
+                    
+                    if (startingPositionIndexInclusive > endingPositionIndexExclusive)
+                    {
+                        (startingPositionIndexInclusive, endingPositionIndexExclusive) = 
+                            (endingPositionIndexExclusive, startingPositionIndexInclusive);
+                        
+                        cursorForDeletion = new TextEditorCursor(
+                            (motionedPrimaryImmutableCursor.RowIndex, 
+                                motionedPrimaryImmutableCursor.ColumnIndex),
+                            true);
+                    }
+
+                    var removeCharacterCount = endingPositionIndexExclusive - startingPositionIndexInclusive;
                     
                     var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
                         textEditorCommandParameter.TextEditorBase.Key,
