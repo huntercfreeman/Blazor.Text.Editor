@@ -17,33 +17,61 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
         // Width
         {
             if (VirtualizationBoundary.WidthInPixels is null)
+            {
                 styleBuilder.Append(" width: 100%;");
+            }
             else
-                styleBuilder.Append($" width: {VirtualizationBoundary.WidthInPixels}px;");
+            {
+                var widthInPixelsInvariantCulture = VirtualizationBoundary.WidthInPixels.Value
+                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                
+                styleBuilder.Append($" width: {widthInPixelsInvariantCulture}px;");
+            }
         }
 
         // Height
         {
             if (VirtualizationBoundary.HeightInPixels is null)
+            {
                 styleBuilder.Append(" height: 100%;");
+            }
             else
-                styleBuilder.Append($" height: {VirtualizationBoundary.HeightInPixels}px;");
+            {
+                var heightInPixelsInvariantCulture = VirtualizationBoundary.HeightInPixels.Value
+                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                
+                styleBuilder.Append($" height: {heightInPixelsInvariantCulture}px;");
+            }
         }
 
         // Left
         {
             if (VirtualizationBoundary.LeftInPixels is null)
+            {
                 styleBuilder.Append(" left: 100%;");
+            }
             else
-                styleBuilder.Append($" left: {VirtualizationBoundary.LeftInPixels}px;");
+            {
+                var leftInPixelsInvariantCulture = VirtualizationBoundary.LeftInPixels.Value
+                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                
+                styleBuilder.Append($" left: {leftInPixelsInvariantCulture}px;");
+            }
         }
 
         // Top
         {
             if (VirtualizationBoundary.TopInPixels is null)
+            {
                 styleBuilder.Append(" top: 100%;");
+            }
             else
-                styleBuilder.Append($" top: {VirtualizationBoundary.TopInPixels}px;");
+            {
+                var topInPixelsInvariantCulture = VirtualizationBoundary.TopInPixels.Value
+                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                
+                styleBuilder.Append($" top: {topInPixelsInvariantCulture}px;");
+            }
         }
 
         return styleBuilder.ToString();

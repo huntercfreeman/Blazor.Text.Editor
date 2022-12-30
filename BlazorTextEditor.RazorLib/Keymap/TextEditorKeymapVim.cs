@@ -42,7 +42,12 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         switch (ActiveVimMode)
         {
             case VimMode.Normal:
-                return $"width: {characterWidthInPixels}px;";
+            {
+                var characterWidthInPixelsInvariantCulture = characterWidthInPixels
+                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                
+                return $"width: {characterWidthInPixelsInvariantCulture}px;";
+            }
         }
 
         return string.Empty;

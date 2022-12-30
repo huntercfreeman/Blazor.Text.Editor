@@ -53,8 +53,11 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
         var sliderProportionalTopInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollTop *
                                             scrollbarHeightInPixels /
                                             TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
+        
+        var sliderProportionalTopInPixelsInvariantCulture = sliderProportionalTopInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
               
-        var top = $"top: {sliderProportionalTopInPixels}px;";
+        var top = $"top: {sliderProportionalTopInPixelsInvariantCulture}px;";
         
         // Proportional Height
         var pageHeight = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
@@ -62,8 +65,11 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
         var sliderProportionalHeightInPixels = pageHeight *
                                                scrollbarHeightInPixels /
                                                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
+        
+        var sliderProportionalHeightInPixelsInvariantCulture = sliderProportionalHeightInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        var height = $"height: {sliderProportionalHeightInPixels}px;";
+        var height = $"height: {sliderProportionalHeightInPixelsInvariantCulture}px;";
         
         return $"{top} {height}";
     }

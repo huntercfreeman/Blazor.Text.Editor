@@ -396,3 +396,7 @@
     color: var(--bte_secondary-font-color);
     box-shadow: 0 0 2px var(--bte_primary-overlay-box-shadow-color);
 }
+
+.bte_use-vim-keymap {
+    height: calc(100% - 200px);
+}

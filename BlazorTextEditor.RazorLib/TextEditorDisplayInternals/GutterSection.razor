@@ -39,6 +39,9 @@
                 localTextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height -
                 heightOfGutter +
                 ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
+            
+            var remainingHeightToFillInvariantCulture = remainingHeightToFill
+                .ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             var imaginaryNextIndex = 
                 (localTextEditorViewModel.VirtualizationResult.Entries
@@ -46,7 +49,7 @@
                 1;
             
             <div class="bte_gutter"
-                 style="@GetGutterStyleCss(imaginaryNextIndex) height: @(remainingHeightToFill)px;">
+                 style="@GetGutterStyleCss(imaginaryNextIndex) height: @(remainingHeightToFillInvariantCulture)px;">
             </div>
         }
     }

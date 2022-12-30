@@ -772,7 +772,10 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (heightInPixels is null)
             return string.Empty;
 
-        return $"height: {heightInPixels.Value}px;";
+        var heightInPixelsInvariantCulture = heightInPixels.Value
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        return $"height: {heightInPixelsInvariantCulture}px;";
     }
 
     protected override void Dispose(bool disposing)
