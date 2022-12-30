@@ -240,6 +240,8 @@ public class VimSentence
         _ = VimVerbFacts.TryConstructVerbToken( // Example: "3dd" => 3 times do delete line
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
             VimTextObjectFacts.TryConstructTextObjectToken( // Example: "3w" => 3 times do move cursor to the start of next word
+                keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
+            VimRepeatFacts.TryConstructRepeatToken( // Example: "27w" => 27 times do move cursor to the start of next word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -259,6 +261,11 @@ public class VimSentence
             {
                 _pendingSentence.Add(vimGrammarToken);
                 return true;
+            }
+            case VimGrammarKind.Repeat:
+            {
+                _pendingSentence.Add(vimGrammarToken);
+                return false;
             }
         }
 
