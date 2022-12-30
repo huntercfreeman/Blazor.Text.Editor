@@ -23,6 +23,14 @@ public static class VimVerbFacts
 
                 return true;
             }
+            case "c":
+            {
+                vimGrammarToken = new VimGrammarToken(
+                    VimGrammarKind.Verb,
+                    keyboardEventArgs.Key);
+
+                return true;
+            }
         }
 
         vimGrammarToken = null;
@@ -77,6 +85,28 @@ public static class VimVerbFacts
                     
                     break;
                 }
+                case "c":
+                {
+                    // Delete the current line, enter Vim Insert Mode
+                    
+                    textEditorCommand = new TextEditorCommand(
+                        async textEditorCommandParameter =>
+                        {                         
+                            await TextEditorCommandFacts.Cut.DoAsyncFunc
+                                .Invoke(textEditorCommandParameter);
+
+                            if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                                is TextEditorKeymapVim vimKeymap)
+                            {
+                                vimKeymap.ActiveVimMode = VimMode.Insert;
+                            }
+                        },
+                        true,
+                        "Vim::Delete(Line)",
+                        "Vim::Delete(Line)");
+                    
+                    break;
+                }
                 default:
                 {
                     textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
@@ -93,13 +123,18 @@ public static class VimVerbFacts
             // Delete inclusively the starting PositionIndex up to
             // the exclusive ending PositionIndex.
             
-            
-            success = VimSentence.TryParseMoveNext(
-                sentenceSnapshot,
-                indexInSentence + 1,
-                keyboardEventArgs,
-                hasTextSelection,
-                out var innerTextEditorCommand);
+            switch (currentToken.TextValue)
+            {
+                case "d":
+                {
+                    // Delete
+                    
+                    success = VimSentence.TryParseMoveNext(
+                        sentenceSnapshot,
+                        indexInSentence + 1,
+                        keyboardEventArgs,
+                        hasTextSelection,
+                        out var innerTextEditorCommand);
 
             var displayName = 
                 $"Vim::Delete({innerTextEditorCommand.DisplayName})";
@@ -155,8 +190,37 @@ public static class VimVerbFacts
                 true,
                 displayName,
                 displayName);
-            
-            
+                    
+                    break;
+                }
+                case "c":
+                {
+                    // Change, enter Vim Insert Mode
+                    
+                    textEditorCommand = new TextEditorCommand(
+                        async textEditorCommandParameter =>
+                        {                         
+                            await TextEditorCommandFacts.Cut.DoAsyncFunc
+                                .Invoke(textEditorCommandParameter);
+
+                            if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                                is TextEditorKeymapVim vimKeymap)
+                            {
+                                vimKeymap.ActiveVimMode = VimMode.Insert;
+                            }
+                        },
+                        true,
+                        "Vim::Delete(Line)",
+                        "Vim::Delete(Line)");
+                    
+                    break;
+                }
+                default:
+                {
+                    textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+                    break;
+                }
+            }
         }
         
         return success;

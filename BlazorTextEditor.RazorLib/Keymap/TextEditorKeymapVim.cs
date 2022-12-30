@@ -19,7 +19,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     public readonly List<(ImmutableArray<VimGrammarToken> tokens, TextEditorCommand command)>
         TextEditorCommandHistoryTuples = new();
 
-    public VimMode ActiveVimMode { get; private set; } = VimMode.Normal;
+    public VimMode ActiveVimMode { get; set; } = VimMode.Normal;
     
     public VimSentence VimSentence { get; } = new();
     
