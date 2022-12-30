@@ -65,7 +65,8 @@ public static class VimRepeatFacts
             out var innerTextEditorCommand);
 
         var textEditorCommandDisplayName = 
-            $"do{intValue}Times: {innerTextEditorCommand.DisplayName}";
+            $"Vim::Repeat(count: {intValue}," +
+            $" arg: {innerTextEditorCommand.DisplayName})";
         
         textEditorCommand = new TextEditorCommand(
             async textEditorCommandParameter =>

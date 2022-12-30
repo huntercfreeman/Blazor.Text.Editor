@@ -17,14 +17,11 @@ public static class VimTextObjectFacts
         switch (keyboardEventArgs.Key)
         {
             case "w":
-            {
-                vimGrammarToken = new VimGrammarToken(
-                    VimGrammarKind.TextObject,
-                    keyboardEventArgs.Key);
-
-                return true;
-            }
             case "e":
+            case "h":
+            case "j":
+            case "k":
+            case "l":
             {
                 vimGrammarToken = new VimGrammarToken(
                     VimGrammarKind.TextObject,
@@ -61,8 +58,8 @@ public static class VimTextObjectFacts
                         return Task.CompletedTask;
                     },
                     true,
-                    "Vim NextWord",
-                    "vim_next-word");
+                    "Vim::w",
+                    "vim_w");
                 
                 return true;
             }
@@ -78,8 +75,92 @@ public static class VimTextObjectFacts
                         return Task.CompletedTask;
                     },
                     true,
-                    "VimEndWord",
-                    "vim_end-word");
+                    "Vim::e",
+                    "vim_e");
+                
+                return true;
+            }
+            case "h":
+            {
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        TextEditorCursor.MoveCursor(
+                            new KeyboardEventArgs
+                            {
+                                Key = KeyboardKeyFacts.MovementKeys.ARROW_LEFT
+                            },
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim::h",
+                    "vim_h");
+                
+                return true;
+            }
+            case "j":
+            {
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        TextEditorCursor.MoveCursor(
+                            new KeyboardEventArgs
+                            {
+                                Key = KeyboardKeyFacts.MovementKeys.ARROW_DOWN
+                            },
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim::j",
+                    "vim_j");
+                
+                return true;
+            }
+            case "k":
+            {
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        TextEditorCursor.MoveCursor(
+                            new KeyboardEventArgs
+                            {
+                                Key = KeyboardKeyFacts.MovementKeys.ARROW_UP
+                            },
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim::k",
+                    "vim_k");
+                
+                return true;
+            }
+            case "l":
+            {
+                textEditorCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        TextEditorCursor.MoveCursor(
+                            new KeyboardEventArgs
+                            {
+                                Key = KeyboardKeyFacts.MovementKeys.ARROW_RIGHT
+                            },
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "Vim::l",
+                    "vim_l");
                 
                 return true;
             }
