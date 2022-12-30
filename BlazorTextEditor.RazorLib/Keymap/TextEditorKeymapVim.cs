@@ -25,11 +25,14 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     
     public string GetCursorCssClassString()
     {
-        return ActiveVimMode switch
+        switch (ActiveVimMode)
         {
-            VimMode.Normal => TextCursorKindFacts.BlockCssClassString,
-            _ => string.Empty
-        };
+            case VimMode.Normal:
+            case VimMode.Visual:
+                return TextCursorKindFacts.BlockCssClassString;
+            default:
+                return string.Empty;
+        }
     }
     
     public string GetCursorCssStyleString(
@@ -42,6 +45,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         switch (ActiveVimMode)
         {
             case VimMode.Normal:
+            case VimMode.Visual:
             {
                 var characterWidthInPixelsInvariantCulture = characterWidthInPixels
                     .ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -57,19 +61,53 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
+        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
+        {
+            return new TextEditorCommand(
+                textEditorCommandParameter =>
+                {
+                    TextEditorCommand? modifiedCommand = null;
+                        
+                    if (keyboardEventArgs.CtrlKey)
+                    {
+                        modifiedCommand = _textEditorKeymapDefault.DefaultCtrlModifiedKeymap(
+                            keyboardEventArgs,
+                            hasTextSelection);
+                    }
+                    
+                    if (modifiedCommand is null &&
+                        keyboardEventArgs.AltKey)
+                    {
+                        modifiedCommand = _textEditorKeymapDefault.DefaultAltModifiedKeymap(
+                            keyboardEventArgs,
+                            hasTextSelection);
+                    }
+                    
+                    if (modifiedCommand is not null)
+                    {
+                        modifiedCommand.DoAsyncFunc.Invoke(textEditorCommandParameter);
+                    }
+                    else
+                    {
+                        TextEditorCursor.MoveCursor(
+                            keyboardEventArgs,
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
+                            textEditorCommandParameter.TextEditorBase);
+                    }
+                    
+                    return Task.CompletedTask;
+                },
+                true,
+                keyboardEventArgs.Key,
+                keyboardEventArgs.Key);
+        }
+        
         if (TryMapToVimKeymap(
                 keyboardEventArgs,
                 hasTextSelection,
                 out var command))
         {
             return command;
-        }
-        
-        if (keyboardEventArgs.CtrlKey)
-        {
-            return _textEditorKeymapDefault.DefaultCtrlModifiedKeymap(
-                keyboardEventArgs,
-                hasTextSelection);
         }
         
         if (keyboardEventArgs.CtrlKey)
@@ -109,6 +147,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         switch (ActiveVimMode)
         {
             case VimMode.Normal:
+            case VimMode.Visual:
             {
                 if (TryMapToVimNormalModeKeymap(
                         keyboardEventArgs,
@@ -151,6 +190,33 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             {
                 ActiveVimMode = VimMode.Insert;
                 command = TextEditorCommandFacts.DoNothingDiscard;
+                return true;
+            }
+            case "v":
+            {
+                ActiveVimMode = VimMode.Visual;
+                
+                command = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        var positionIndex =
+                            textEditorCommandParameter.TextEditorBase.GetPositionIndex(
+                                textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                                textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex);
+
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                            positionIndex;
+
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                                .EndingPositionIndex =
+                            positionIndex + 1;
+                    
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    keyboardEventArgs.Key,
+                    keyboardEventArgs.Key); 
+                
                 return true;
             }
             default:
