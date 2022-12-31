@@ -45,7 +45,7 @@ public static class VimVerbFacts
         out TextEditorCommand textEditorCommand)
     {
         bool verbHasRepeat = false;
-        
+
         var currentToken = sentenceSnapshot[indexInSentence];
 
         if (indexInSentence + 1 < sentenceSnapshot.Length)
@@ -66,32 +66,32 @@ public static class VimVerbFacts
             // TODO: When a verb is repeated is it always the case that the position indices to operate over are known without the need of a motion? Example, "dd" would delete the current line and copy it to the in memory clipboard. But no motion was needed to know what text to delete.
 
             success = true;
-            
+
             switch (currentToken.TextValue)
             {
                 case "d":
                 {
                     // Delete the current line
-                    
+
                     textEditorCommand = new TextEditorCommand(
                         async textEditorCommandParameter =>
-                        {                         
+                        {
                             await TextEditorCommandFacts.Cut.DoAsyncFunc
                                 .Invoke(textEditorCommandParameter);
                         },
                         true,
                         "Vim::Delete(Line)",
                         "Vim::Delete(Line)");
-                    
+
                     break;
                 }
                 case "c":
                 {
                     // Delete the current line, enter Vim Insert Mode
-                    
+
                     textEditorCommand = new TextEditorCommand(
                         async textEditorCommandParameter =>
-                        {                         
+                        {
                             await TextEditorCommandFacts.Cut.DoAsyncFunc
                                 .Invoke(textEditorCommandParameter);
 
@@ -104,7 +104,7 @@ public static class VimVerbFacts
                         true,
                         "Vim::Delete(Line)",
                         "Vim::Delete(Line)");
-                    
+
                     break;
                 }
                 default:
@@ -122,97 +122,75 @@ public static class VimVerbFacts
             //
             // Delete inclusively the starting PositionIndex up to
             // the exclusive ending PositionIndex.
+
+            success = VimSentence.TryParseMoveNext(
+                sentenceSnapshot,
+                indexInSentence + 1,
+                keyboardEventArgs,
+                hasTextSelection,
+                out var innerTextEditorCommand);
             
             switch (currentToken.TextValue)
             {
                 case "d":
-                {
-                    // Delete
-                    
-                    success = VimSentence.TryParseMoveNext(
-                        sentenceSnapshot,
-                        indexInSentence + 1,
-                        keyboardEventArgs,
-                        hasTextSelection,
-                        out var innerTextEditorCommand);
-
-            var displayName = 
-                $"Vim::Delete({innerTextEditorCommand.DisplayName})";
-
-            textEditorCommand = new TextEditorCommand(
-                async textEditorCommandParameter =>
-                {
-                    var currentPrimaryImmutableCursor = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.ImmutableCursor;
-                    
-                    await innerTextEditorCommand.DoAsyncFunc
-                        .Invoke(textEditorCommandParameter);
-
-                    var motionedPrimaryImmutableCursor = new ImmutableTextEditorCursor(
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor);
-
-                    var startingPositionIndexInclusive = textEditorCommandParameter.TextEditorBase.GetPositionIndex(
-                        currentPrimaryImmutableCursor.RowIndex,
-                        currentPrimaryImmutableCursor.ColumnIndex);
-                    
-                    var endingPositionIndexExclusive = textEditorCommandParameter.TextEditorBase.GetPositionIndex(
-                        motionedPrimaryImmutableCursor.RowIndex,
-                        motionedPrimaryImmutableCursor.ColumnIndex);
-
-                    var cursorForDeletion = new TextEditorCursor(
-                        (currentPrimaryImmutableCursor.RowIndex, 
-                            currentPrimaryImmutableCursor.ColumnIndex),
-                        true);
-                    
-                    if (startingPositionIndexInclusive > endingPositionIndexExclusive)
-                    {
-                        (startingPositionIndexInclusive, endingPositionIndexExclusive) = 
-                            (endingPositionIndexExclusive, startingPositionIndexInclusive);
-                        
-                        cursorForDeletion = new TextEditorCursor(
-                            (motionedPrimaryImmutableCursor.RowIndex, 
-                                motionedPrimaryImmutableCursor.ColumnIndex),
-                            true);
-                    }
-
-                    var removeCharacterCount = endingPositionIndexExclusive - startingPositionIndexInclusive;
-                    
-                    var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
-                        textEditorCommandParameter.TextEditorBase.Key,
-                        TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
-                        removeCharacterCount,
-                        CancellationToken.None);
-                
-                    textEditorCommandParameter
-                        .TextEditorService
-                        .DeleteTextByRange(deleteTextTextEditorBaseAction); 
-                },
-                true,
-                displayName,
-                displayName);
-                    
-                    break;
-                }
                 case "c":
                 {
-                    // Change, enter Vim Insert Mode
+                    // Delete
+
+                    var displayName = $"Vim::Delete({innerTextEditorCommand.DisplayName})";
                     
+                    if (currentToken.TextValue == "c")
+                        displayName = $"Vim::Change({innerTextEditorCommand.DisplayName})";
+
                     textEditorCommand = new TextEditorCommand(
                         async textEditorCommandParameter =>
-                        {                         
-                            await TextEditorCommandFacts.Cut.DoAsyncFunc
-                                .Invoke(textEditorCommandParameter);
+                        {
+                            var textEditorCursorForMotion = new TextEditorCursor(
+                                textEditorCommandParameter
+                                    .PrimaryCursorSnapshot.UserCursor.IndexCoordinates,
+                                true);
+                            
+                            var textEditorCommandParameterForMotion = new TextEditorCommandParameter(
+                                textEditorCommandParameter.TextEditorBase,
+                                TextEditorCursorSnapshot.TakeSnapshots(textEditorCursorForMotion),
+                                textEditorCommandParameter.ClipboardProvider,
+                                textEditorCommandParameter.TextEditorService,
+                                textEditorCommandParameter.TextEditorViewModel);
+                            
+                            var motionResult = await VimMotionResult
+                                .GetResultAsync(
+                                    textEditorCommandParameter,
+                                    textEditorCursorForMotion,
+                                    async () =>
+                                    await innerTextEditorCommand.DoAsyncFunc
+                                        .Invoke(textEditorCommandParameterForMotion));
 
-                            if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
-                                is TextEditorKeymapVim vimKeymap)
+                            var cursorForDeletion = new TextEditorCursor(
+                                (motionResult.LowerPositionIndexImmutableCursor.RowIndex,
+                                    motionResult.LowerPositionIndexImmutableCursor.ColumnIndex),
+                                true);
+
+                            var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
+                                textEditorCommandParameter.TextEditorBase.Key,
+                                TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
+                                motionResult.PositionIndexDisplacement,
+                                CancellationToken.None);
+
+                            textEditorCommandParameter
+                                .TextEditorService
+                                .DeleteTextByRange(deleteTextTextEditorBaseAction);
+
+                            if (currentToken.TextValue == "c" &&
+                                textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                                    is TextEditorKeymapVim textEditorKeymapVim)
                             {
-                                vimKeymap.ActiveVimMode = VimMode.Insert;
+                                textEditorKeymapVim.ActiveVimMode = VimMode.Insert;
                             }
                         },
                         true,
-                        "Vim::Delete(Line)",
-                        "Vim::Delete(Line)");
-                    
+                        displayName,
+                        displayName);
+
                     break;
                 }
                 default:
@@ -222,7 +200,7 @@ public static class VimVerbFacts
                 }
             }
         }
-        
+
         return success;
     }
 }
