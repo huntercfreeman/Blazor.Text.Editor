@@ -119,6 +119,15 @@
     top: 0;
 }
 
+.bte_command-bar {
+    height: var(--bte_text-editor-command-bar-height);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: aqua;
+    z-index: 1;
+}
+
 .bte_row-section {
     width: 100%;
     height: 100%;

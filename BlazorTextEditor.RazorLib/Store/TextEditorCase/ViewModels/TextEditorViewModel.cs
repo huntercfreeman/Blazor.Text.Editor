@@ -13,7 +13,8 @@ public record TextEditorViewModel(
     TextEditorKey TextEditorKey,
     ITextEditorService TextEditorService,
     VirtualizationResult<List<RichCharacter>> VirtualizationResult,
-    bool ShouldMeasureDimensions)
+    bool ShouldMeasureDimensions,
+    bool DisplayCommandBar)
 {
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
     
@@ -22,6 +23,8 @@ public record TextEditorViewModel(
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
     public Action<TextEditorBase>? OnSaveRequested { get; init; }
     public Func<TextEditorBase, string>? GetTabDisplayNameFunc { get; init; }
+
+    public string CommandBarValue { get; set; } = string.Empty;
     
     public string BodyElementId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
     public string PrimaryCursorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}_primary-cursor";

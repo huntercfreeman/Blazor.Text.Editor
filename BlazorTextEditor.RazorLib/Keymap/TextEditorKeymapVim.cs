@@ -219,6 +219,24 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 
                 return true;
             }
+            case ":":
+            {
+                command = new TextEditorCommand(
+                    async textEditorCommandParameter =>
+                    {
+                        textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                            textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                            previousViewModel => previousViewModel with
+                            {
+                                DisplayCommandBar = true
+                            });
+                    },
+                    false,
+                    "Command Mode",
+                    "Command Mode");
+
+                return true;
+            }
             default:
             {
                 if (keyboardEventArgs.Key == "Shift")

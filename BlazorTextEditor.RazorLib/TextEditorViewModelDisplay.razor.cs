@@ -85,6 +85,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorBaseChangedCancellationTokenSource = new();
+    private int _rerenderCount;
     private bool _disposed;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
@@ -153,6 +154,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _rerenderCount++;
+        
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (firstRender && 

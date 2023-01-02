@@ -16,77 +16,13 @@
     var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
 }
 
-@{
-    var keymapIsVimCssClass = string.Empty;
-}
+<div>Re-render count:&nbsp;:@_rerenderCount</div>
 
-@if (globalTextEditorOptions.KeymapDefinition!.Keymap is TextEditorKeymapVim vimKeymap)
-{
-    keymapIsVimCssClass = "bte_use-vim-keymap";
-    
-    <div class="bte_debug-vim-keymap">
-        <div>
-            <div style="font-size: 1em; border-bottom: 2px solid var(--balc_primary-emphasis-foreground-color); color: var(--balc_primary-emphasis-foreground-color);">
-                Active Vim State
-            </div>
-            
-            <div>
-                Mode:&nbsp;@vimKeymap.ActiveVimMode
-            </div>
+<div>@(globalTextEditorOptions.KeymapDefinition?.DisplayName ?? "null")</div>
 
-            <div style="display: flex;">
-                Sentence:&nbsp;[&nbsp;
-                @foreach (var vimGrammarToken in vimKeymap.VimSentence.PendingSentence)
-                {
-                    <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
-
-                    <div>,&nbsp;</div>
-                }
-                &nbsp;]
-            </div>
-        </div>
-
-        <div style="height: 120px; overflow: scroll;">
-            
-            <div style="font-size: 1em; border-bottom: 2px solid var(--balc_primary-emphasis-foreground-color); color: var(--balc_primary-emphasis-foreground-color);">
-                Vim History
-            </div>
-
-            @{
-                var immutableTextEditorCommandHistoryTuples = vimKeymap.TextEditorCommandHistoryTuples
-                    .ToImmutableArray();
-            }
-
-            @for (int i = immutableTextEditorCommandHistoryTuples.Length - 1; i >= 0; i--)
-            {
-                var index = i;
-                var commandHistoryTuple = immutableTextEditorCommandHistoryTuples[index];
-
-                <div style="display: flex;">
-                    <div>
-                        Sentence&nbsp;[&nbsp;
-                    </div>
-
-                    @foreach (var vimGrammarToken in commandHistoryTuple.tokens)
-                    {
-                        <VimGrammarTokenDebugDisplay VimGrammarToken="vimGrammarToken"/>
-
-                        <div>,&nbsp;</div>
-                    }
-
-                    <div>&nbsp;]&nbsp;</div>
-
-                    <div>=>&nbsp;</div>
-
-                    <TextEditorCommandDebugDisplay TextEditorCommand="commandHistoryTuple.command"/>
-                </div>
-            }
-        </div>
-    </div>
-}
 
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
-     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @WrapperClassCssString @keymapIsVimCssClass">
+     class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @WrapperClassCssString">
     
     @if (textEditorBase is not null &&
          textEditorViewModel is not null)
@@ -123,6 +59,11 @@
                                      HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
                                      ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
                                      AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
+                        
+                        @if (textEditorViewModel.DisplayCommandBar)
+                        {
+                            <CommandBarDisplay RestoreFocusToTextEditor="FocusTextEditorAsync"/>
+                        }
                     </div>
 
                     @if (IncludeFooterHelperComponent)

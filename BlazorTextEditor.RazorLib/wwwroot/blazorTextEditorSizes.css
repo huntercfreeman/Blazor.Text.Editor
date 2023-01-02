@@ -3,6 +3,8 @@
     --bte_text-editor-footer-padding-left: 5px;
     --bte_text-editor-header-height: 2.2em;
     --bte_text-editor-header-padding-left: 5px;
+    --bte_text-editor-command-bar-height: 2.2em;
+    --bte_text-editor-command-bar-padding-left: 5px;
     --bte_dialog-display-toolbar-height: 2rem;
     --bte_dialog-display-z-index: 10;
     --bte_dialog-display-box-shadow-blur-radius: 2px;
