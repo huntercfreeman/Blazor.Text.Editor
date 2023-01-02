@@ -1,5 +1,7 @@
-﻿namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
+﻿using Microsoft.AspNetCore.Components.Web;
+
+namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
 
 public record VimGrammarToken(
     VimGrammarKind VimGrammarKind,
-    string TextValue);
+    KeyboardEventArgs KeyboardEventArgs);

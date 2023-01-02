@@ -16,8 +16,6 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     public string KeymapDisplayName => KeymapFacts.VimKeymapDefinition.DisplayName;
 
     private readonly TextEditorKeymapDefault _textEditorKeymapDefault = new();
-    public readonly List<(ImmutableArray<VimGrammarToken> tokens, TextEditorCommand command)>
-        TextEditorCommandHistoryTuples = new();
 
     public VimMode ActiveVimMode { get; set; } = VimMode.Normal;
     
@@ -237,6 +235,39 @@ public class TextEditorKeymapVim : ITextEditorKeymap
 
                 return true;
             }
+            case "u":
+            {
+                command = new TextEditorCommand(
+                    async textEditorCommandParameter =>
+                    {
+                        textEditorCommandParameter.TextEditorService.UndoEdit(
+                            textEditorCommandParameter.TextEditorBase.Key);
+                    },
+                    false,
+                    "Undo",
+                    "undo");
+
+                return true;
+            }
+            case "r":
+            {
+                if (keyboardEventArgs.CtrlKey)
+                {
+                    command = new TextEditorCommand(
+                        async textEditorCommandParameter =>
+                        {
+                            textEditorCommandParameter.TextEditorService.RedoEdit(
+                                textEditorCommandParameter.TextEditorBase.Key);
+                        },
+                        false,
+                        "Redo",
+                        "redo");
+
+                    return true;
+                }
+
+                goto default;
+            }
             default:
             {
                 if (keyboardEventArgs.Key == "Shift")
@@ -246,7 +277,6 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 }
                 
                 var success = VimSentence.TryLex(
-                    TextEditorCommandHistoryTuples,
                     keyboardEventArgs,
                     hasTextSelection,
                     out command);

@@ -25,7 +25,7 @@ public static class VimRepeatFacts
         {
             vimGrammarToken = new VimGrammarToken(
                 VimGrammarKind.Repeat,
-                keyboardEventArgs.Key);
+                keyboardEventArgs);
 
             return true;
         }
@@ -51,7 +51,7 @@ public static class VimRepeatFacts
 
             if (currentToken.VimGrammarKind == VimGrammarKind.Repeat)
             {
-                numberBuilder.Append(currentToken.TextValue);
+                numberBuilder.Append(currentToken.KeyboardEventArgs.Key);
                 modifiedIndexInSentence++;
             }
         }

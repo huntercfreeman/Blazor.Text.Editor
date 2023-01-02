@@ -11,11 +11,7 @@ public class VimSentence
     public ImmutableArray<VimGrammarToken> PendingSentence => _pendingSentence
         .ToImmutableArray();
 
-    /// <summary>
-    /// TODO: Remove the argument "List&gt;(VimSentence, TextEditorCommand)&lt; textEditorCommandHistoryTuples". Am using it while developing to easily see what is going on.
-    /// </summary>
     public bool TryLex(
-        List<(ImmutableArray<VimGrammarToken>, TextEditorCommand)> textEditorCommandHistoryTuples,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
@@ -81,7 +77,6 @@ public class VimSentence
             _pendingSentence.Clear();
             
             return TryParseVimSentence(
-                textEditorCommandHistoryTuples,
                 sentenceSnapshot,
                 keyboardEventArgs,
                 hasTextSelection,
@@ -115,6 +110,17 @@ public class VimSentence
         {
             case VimGrammarKind.Verb:
             {
+                if (keyboardEventArgs.CtrlKey)
+                {
+                    // This if case relates to 'Ctrl + e' which does not get
+                    // double tapped instead it only takes one press of the keymap
+                    
+                    _pendingSentence.Clear();
+                    _pendingSentence.Add(vimGrammarToken);
+                    
+                    return true;
+                }
+                
                 _pendingSentence.Add(vimGrammarToken);
                 return false;
             }
@@ -162,9 +168,20 @@ public class VimSentence
         {
             case VimGrammarKind.Verb:
             {
-                if (_pendingSentence.Last().TextValue == vimGrammarToken.TextValue)
+                if (_pendingSentence.Last().KeyboardEventArgs.Key == vimGrammarToken.KeyboardEventArgs.Key)
                 {
                     _pendingSentence.Add(vimGrammarToken);
+                    return true;
+                }
+
+                if (keyboardEventArgs.CtrlKey)
+                {
+                    // This if case relates to 'Ctrl + e' which does not get
+                    // double tapped instead it only takes one press of the keymap
+                    
+                    _pendingSentence.Clear();
+                    _pendingSentence.Add(vimGrammarToken);
+                    
                     return true;
                 }
 
@@ -276,8 +293,6 @@ public class VimSentence
     /// It is expected that one will only invoke <see cref="TryParseVimSentence"/> when
     /// the Lexed sentence is syntactically complete. This method will then
     /// semantically interpret the sentence.
-    /// <br/><br/>
-    /// TODO: Remove the argument "List&gt;(VimSentence, TextEditorCommand)&lt; textEditorCommandHistoryTuples". Am using it while developing to easily see what is going on.
     /// </summary>
     /// <returns>
     /// Returns true if a sentence was successfully parsed into a <see cref="TextEditorCommand"/>
@@ -285,7 +300,6 @@ public class VimSentence
     /// Returns false if a sentence not able to be parsed.
     /// </returns>
     public bool TryParseVimSentence(
-        List<(ImmutableArray<VimGrammarToken>, TextEditorCommand)> textEditorCommandHistoryTuples,
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
@@ -309,7 +323,6 @@ public class VimSentence
                 out textEditorCommand);
         }
 
-        textEditorCommandHistoryTuples.Add((sentenceSnapshot, textEditorCommand));
         return success;
     }
 

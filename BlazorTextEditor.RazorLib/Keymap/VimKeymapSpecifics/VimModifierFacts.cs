@@ -17,7 +17,7 @@ public static class VimModifierFacts
             {
                 vimGrammarToken = new VimGrammarToken(
                     VimGrammarKind.Modifier,
-                    keyboardEventArgs.Key);
+                    keyboardEventArgs);
 
                 return true;
             }

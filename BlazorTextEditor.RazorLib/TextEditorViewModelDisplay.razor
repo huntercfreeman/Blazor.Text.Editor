@@ -16,11 +16,6 @@
     var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
 }
 
-<div>Re-render count:&nbsp;:@_rerenderCount</div>
-
-<div>@(globalTextEditorOptions.KeymapDefinition?.DisplayName ?? "null")</div>
-
-
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @WrapperClassCssString">
     

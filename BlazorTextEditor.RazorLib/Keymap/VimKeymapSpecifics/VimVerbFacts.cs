@@ -13,13 +13,36 @@ public static class VimVerbFacts
         bool hasTextSelection,
         out VimGrammarToken? vimGrammarToken)
     {
+        if (keyboardEventArgs.CtrlKey)
+        {
+            switch (keyboardEventArgs.Key)
+            {
+                case "e":
+                {
+                    vimGrammarToken = new VimGrammarToken(
+                        VimGrammarKind.Verb,
+                        keyboardEventArgs);
+
+                    return true;
+                }
+                case "y":
+                {
+                    vimGrammarToken = new VimGrammarToken(
+                        VimGrammarKind.Verb,
+                        keyboardEventArgs);
+
+                    return true;
+                }
+            }
+        }
+        
         switch (keyboardEventArgs.Key)
         {
             case "d":
             {
                 vimGrammarToken = new VimGrammarToken(
                     VimGrammarKind.Verb,
-                    keyboardEventArgs.Key);
+                    keyboardEventArgs);
 
                 return true;
             }
@@ -27,7 +50,7 @@ public static class VimVerbFacts
             {
                 vimGrammarToken = new VimGrammarToken(
                     VimGrammarKind.Verb,
-                    keyboardEventArgs.Key);
+                    keyboardEventArgs);
 
                 return true;
             }
@@ -44,7 +67,7 @@ public static class VimVerbFacts
         bool hasTextSelection,
         out TextEditorCommand textEditorCommand)
     {
-        bool verbHasRepeat = false;
+        bool verbWasDoubled = false;
 
         var currentToken = sentenceSnapshot[indexInSentence];
 
@@ -53,21 +76,21 @@ public static class VimVerbFacts
             var nextToken = sentenceSnapshot[indexInSentence + 1];
 
             if (nextToken.VimGrammarKind == VimGrammarKind.Verb &&
-                nextToken.TextValue == currentToken.TextValue)
+                nextToken.KeyboardEventArgs.Key == currentToken.KeyboardEventArgs.Key)
             {
-                verbHasRepeat = true;
+                verbWasDoubled = true;
             }
         }
 
         var success = false;
 
-        if (verbHasRepeat)
+        if (verbWasDoubled)
         {
-            // TODO: When a verb is repeated is it always the case that the position indices to operate over are known without the need of a motion? Example, "dd" would delete the current line and copy it to the in memory clipboard. But no motion was needed to know what text to delete.
+            // TODO: When a verb is doubled is it always the case that the position indices to operate over are known without the need of a motion? Example, "dd" would delete the current line and copy it to the in memory clipboard. But no motion was needed to know what text to delete.
 
             success = true;
 
-            switch (currentToken.TextValue)
+            switch (currentToken.KeyboardEventArgs.Key)
             {
                 case "d":
                 {
@@ -83,7 +106,7 @@ public static class VimVerbFacts
                         "Vim::Delete(Line)",
                         "Vim::Delete(Line)");
 
-                    break;
+                    return true;
                 }
                 case "c":
                 {
@@ -105,12 +128,39 @@ public static class VimVerbFacts
                         "Vim::Delete(Line)",
                         "Vim::Delete(Line)");
 
-                    break;
+                    return true;
                 }
                 default:
                 {
                     textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
-                    break;
+                    return true;
+                }
+            }
+        }
+        
+        if (keyboardEventArgs.CtrlKey)
+        {
+            switch (currentToken.KeyboardEventArgs.Key)
+            {
+                case "e":
+                {
+                    // Scroll vertically down by the height of a row without moving cursor
+
+                    textEditorCommand = TextEditorCommandFacts.ScrollLineDown;
+                    return true;
+                }
+                case "y":
+                {
+                    // Scroll vertically up by the height of a row without moving cursor
+
+                    textEditorCommand = TextEditorCommandFacts.ScrollLineUp;
+
+                    return true;
+                }
+                default:
+                {
+                    textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+                    return true;
                 }
             }
         }
@@ -130,7 +180,7 @@ public static class VimVerbFacts
                 hasTextSelection,
                 out var innerTextEditorCommand);
             
-            switch (currentToken.TextValue)
+            switch (currentToken.KeyboardEventArgs.Key)
             {
                 case "d":
                 case "c":
@@ -139,7 +189,7 @@ public static class VimVerbFacts
 
                     var displayName = $"Vim::Delete({innerTextEditorCommand.DisplayName})";
                     
-                    if (currentToken.TextValue == "c")
+                    if (currentToken.KeyboardEventArgs.Key == "c")
                         displayName = $"Vim::Change({innerTextEditorCommand.DisplayName})";
 
                     textEditorCommand = new TextEditorCommand(
@@ -180,7 +230,7 @@ public static class VimVerbFacts
                                 .TextEditorService
                                 .DeleteTextByRange(deleteTextTextEditorBaseAction);
 
-                            if (currentToken.TextValue == "c" &&
+                            if (currentToken.KeyboardEventArgs.Key == "c" &&
                                 textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
                                     is TextEditorKeymapVim textEditorKeymapVim)
                             {
@@ -191,12 +241,12 @@ public static class VimVerbFacts
                         displayName,
                         displayName);
 
-                    break;
+                    return true;
                 }
                 default:
                 {
                     textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
-                    break;
+                    return true;
                 }
             }
         }
