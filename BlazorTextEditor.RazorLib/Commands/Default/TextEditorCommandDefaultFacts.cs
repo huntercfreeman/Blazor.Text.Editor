@@ -16,7 +16,7 @@ public static class TextEditorCommandDefaultFacts
         false,
         "DoNothingDiscard",
         "defaults_do-nothing-discard");
-    
+
     public static readonly TextEditorCommand Copy = new(
         async textEditorCommandParameter =>
         {
@@ -520,4 +520,16 @@ public static class TextEditorCommandDefaultFacts
         false,
         "Indent Less",
         "defaults_indent-less");
+    
+    public static readonly TextEditorCommand? ClearTextSelection = new(
+        textEditorCommandParameter =>
+        {
+            textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
+            
+            return Task.CompletedTask;
+        },
+        false,
+        "ClearTextSelection",
+        "defaults_clear-text-selection");
 }

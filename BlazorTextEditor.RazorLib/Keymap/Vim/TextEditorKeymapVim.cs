@@ -1,6 +1,7 @@
 ﻿using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
+using BlazorTextEditor.RazorLib.Commands.Vim;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Keymap.Default;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
@@ -62,145 +63,53 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     {
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
-            return new TextEditorCommand(
-                textEditorCommandParameter =>
-                {
-                    var previousAnchorPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex;
+            if (ActiveVimMode == VimMode.Visual ||
+                ActiveVimMode == VimMode.VisualLine)
+            {
+                keyboardEventArgs.ShiftKey = true;
+            }
 
-                    var previousEndingPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
-
-                    if (ActiveVimMode == VimMode.VisualLine ||
-                        ActiveVimMode == VimMode.Visual)
-                    {
-                        keyboardEventArgs.ShiftKey = true;
-                    }
-                    
-                    TextEditorCommand? modifiedCommand = null;
+            TextEditorCommand? modifiedCommand = null;
                         
-                    if (keyboardEventArgs.CtrlKey)
-                    {
-                        modifiedCommand = _textEditorKeymapDefault.DefaultCtrlModifiedKeymap(
-                            keyboardEventArgs,
-                            hasTextSelection);
-                    }
+            if (keyboardEventArgs.CtrlKey)
+            {
+                modifiedCommand = _textEditorKeymapDefault.DefaultCtrlModifiedKeymap(
+                    keyboardEventArgs,
+                    hasTextSelection);
+            }
                     
-                    if (modifiedCommand is null &&
-                        keyboardEventArgs.AltKey)
-                    {
-                        modifiedCommand = _textEditorKeymapDefault.DefaultAltModifiedKeymap(
-                            keyboardEventArgs,
-                            hasTextSelection);
-                    }
-                    
-                    if (modifiedCommand is not null)
-                    {
-                        modifiedCommand.DoAsyncFunc.Invoke(textEditorCommandParameter);
-                    }
-                    else
+            if (modifiedCommand is null &&
+                keyboardEventArgs.AltKey)
+            {
+                modifiedCommand = _textEditorKeymapDefault.DefaultAltModifiedKeymap(
+                    keyboardEventArgs,
+                    hasTextSelection);
+            }
+
+            if (modifiedCommand is null)
+            {
+                modifiedCommand = new TextEditorCommand(
+                    textEditorCommandParameter =>
                     {
                         TextEditorCursor.MoveCursor(
                             keyboardEventArgs,
                             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                             textEditorCommandParameter.TextEditorBase);
-                    }
 
-                    if (ActiveVimMode == VimMode.VisualLine)
-                    {
-                        var nextEndingPositionIndex = textEditorCommandParameter
-                            .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    "MoveCursor",
+                    "MoveCursor");
+            }
+            
+            if (ActiveVimMode == VimMode.VisualLine)
+                return TextEditorCommandVimFacts.Motions
+                    .GetVisualLine(modifiedCommand, $"{nameof(TextEditorKeymapVim)}");
 
-                        if (nextEndingPositionIndex < textEditorCommandParameter
-                                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
-                        {
-                            if (previousAnchorPositionIndex < previousEndingPositionIndex)
-                            {
-                                // Anchor went from being the lower bound to the upper bound.
-                                
-                                var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorBase
-                                    .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                                        previousAnchorPositionIndex.Value);
-                            
-                                textEditorCommandParameter
-                                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = 
-                                    textEditorCommandParameter
-                                        .TextEditorBase.RowEndingPositions[rowDataAnchorIsOn.rowIndex]
-                                        .positionIndex;
-                            }
-
-                            var startingPositionOfRow = textEditorCommandParameter.TextEditorBase
-                                .GetStartOfRowTuple(textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor
-                                    .IndexCoordinates.rowIndex)
-                                .positionIndex;
-                            
-                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
-                                .EndingPositionIndex = startingPositionOfRow;
-                        }
-                        else if (nextEndingPositionIndex >= textEditorCommandParameter
-                                     .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
-                        {
-                            if (previousAnchorPositionIndex > previousEndingPositionIndex)
-                            {
-                                // Anchor went from being the upper bound to the lower bound.
-                                
-                                var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorBase
-                                    .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
-                                        previousAnchorPositionIndex.Value);
-                                
-                                textEditorCommandParameter
-                                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = 
-                                    textEditorCommandParameter.TextEditorBase.GetStartOfRowTuple(
-                                            rowDataAnchorIsOn.rowIndex - 1)
-                                        .positionIndex; 
-                            } 
-                            
-                            var endingPositionOfRow = textEditorCommandParameter
-                                .TextEditorBase.RowEndingPositions[
-                                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex]
-                                .positionIndex;
-
-                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
-                                .EndingPositionIndex = endingPositionOfRow;
-                        }
-                    }
-                    else if (ActiveVimMode == VimMode.Visual)
-                    {
-                        var nextEndingPositionIndex = textEditorCommandParameter
-                            .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
-
-                        if (nextEndingPositionIndex < textEditorCommandParameter
-                                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
-                        {
-                            if (previousAnchorPositionIndex < previousEndingPositionIndex)
-                            {
-                                // Anchor went from being the lower bound to the upper bound.
-
-                                textEditorCommandParameter
-                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex += 1; 
-                            }
-                        }
-                        else if (nextEndingPositionIndex >= textEditorCommandParameter
-                                     .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
-                        {
-                            if (previousAnchorPositionIndex > previousEndingPositionIndex)
-                            {
-                                // Anchor went from being the upper bound to the lower bound.
-                                
-                                textEditorCommandParameter
-                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex -= 1;
-                            }
-                            
-                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
-                                .EndingPositionIndex += 1;
-                        }
-                    }
-                    
-                    return Task.CompletedTask;
-                },
-                true,
-                keyboardEventArgs.Key,
-                keyboardEventArgs.Key);
+            if (ActiveVimMode == VimMode.Visual)
+                return TextEditorCommandVimFacts.Motions
+                    .GetVisual(modifiedCommand, $"{nameof(TextEditorKeymapVim)}");
         }
         
         if (TryMapToVimKeymap(
@@ -252,11 +161,26 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             case VimMode.VisualLine:
             case VimMode.Command:
             {
+                var previousActiveVimMode = ActiveVimMode;
+                
                 if (TryMapToVimNormalModeKeymap(
                         keyboardEventArgs,
                         hasTextSelection,
-                        out command))
+                        out command) &&
+                    command is not null)
                 {
+                    if (previousActiveVimMode == VimMode.Visual &&
+                        ActiveVimMode == VimMode.Visual)
+                    {
+                        command = TextEditorCommandVimFacts.Motions.GetVisual(command, command.DisplayName);
+                    }
+                    
+                    if (previousActiveVimMode == VimMode.VisualLine &&
+                        ActiveVimMode == VimMode.VisualLine)
+                    {
+                        command = TextEditorCommandVimFacts.Motions.GetVisualLine(command, command.DisplayName);
+                    }
+                    
                     return true;
                 }
 
@@ -287,6 +211,15 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         bool hasTextSelection,
         out TextEditorCommand? command)
     {
+        if (ActiveVimMode != VimMode.Normal &&
+            keyboardEventArgs.Key == KeyboardKeyFacts.MetaKeys.ESCAPE)
+        {
+            ActiveVimMode = VimMode.Normal;
+            
+            command = TextEditorCommandDefaultFacts.ClearTextSelection;
+            return true;
+        }
+        
         switch (keyboardEventArgs.Key)
         {
             case "i":
@@ -297,6 +230,14 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             case "v":
             {
+                if (ActiveVimMode == VimMode.Visual)
+                {
+                    ActiveVimMode = VimMode.Normal;
+                    
+                    command = TextEditorCommandDefaultFacts.DoNothingDiscard;
+                    return true;
+                }
+
                 ActiveVimMode = VimMode.Visual;
                 
                 command = new TextEditorCommand(
@@ -324,6 +265,14 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             case "V":
             {
+                if (ActiveVimMode == VimMode.VisualLine)
+                {
+                    ActiveVimMode = VimMode.Normal;
+                    
+                    command = TextEditorCommandDefaultFacts.DoNothingDiscard;
+                    return true;
+                }
+                
                 ActiveVimMode = VimMode.VisualLine;
                 
                 command = new TextEditorCommand(
@@ -413,6 +362,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 }
                 
                 var success = VimSentence.TryLex(
+                    this,
                     keyboardEventArgs,
                     hasTextSelection,
                     out command);

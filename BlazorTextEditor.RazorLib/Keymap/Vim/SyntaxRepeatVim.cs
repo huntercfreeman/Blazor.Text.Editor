@@ -34,7 +34,7 @@ public static class SyntaxRepeatVim
         return false;
     }
 
-    public static bool TryParse(
+    public static bool TryParse(TextEditorKeymapVim textEditorKeymapVim,
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
@@ -59,6 +59,7 @@ public static class SyntaxRepeatVim
         var intValue = Int32.Parse(numberBuilder.ToString());
 
         var success = VimSentence.TryParseNextToken(
+            textEditorKeymapVim,
             sentenceSnapshot,
             modifiedIndexInSentence,
             keyboardEventArgs,

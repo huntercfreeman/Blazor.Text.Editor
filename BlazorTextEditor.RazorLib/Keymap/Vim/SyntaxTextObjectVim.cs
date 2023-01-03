@@ -42,7 +42,7 @@ public static class SyntaxTextObjectVim
         return false;
     }
 
-    public static bool TryParse(
+    public static bool TryParse(TextEditorKeymapVim textEditorKeymapVim,
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,

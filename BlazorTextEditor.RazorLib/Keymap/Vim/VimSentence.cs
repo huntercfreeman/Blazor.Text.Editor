@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
+using BlazorTextEditor.RazorLib.Commands.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.Vim;
@@ -13,6 +14,7 @@ public class VimSentence
         .ToImmutableArray();
 
     public bool TryLex(
+        TextEditorKeymapVim textEditorKeymapVim,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out TextEditorCommand? textEditorCommand)
@@ -77,8 +79,10 @@ public class VimSentence
             var sentenceSnapshot = PendingSentence;
             _pendingSentence.Clear();
             
-            return TryParseSentence(
+            return TryParseNextToken(
+                textEditorKeymapVim,
                 sentenceSnapshot,
+                0,
                 keyboardEventArgs,
                 hasTextSelection,
                 out textEditorCommand);
@@ -287,39 +291,8 @@ public class VimSentence
         return false;
     }
 
-    /// <summary>
-    /// It is expected that one will only invoke <see cref="TryParseSentence"/> when
-    /// the Lexed sentence is syntactically complete. This method will then
-    /// semantically interpret the sentence.
-    /// </summary>
-    /// <returns>
-    /// Returns true if a sentence was successfully parsed into a <see cref="TextEditorCommand"/>
-    /// <br/><br/>
-    /// Returns false if a sentence not able to be parsed.
-    /// </returns>
-    public bool TryParseSentence(
-        ImmutableArray<VimGrammarToken> sentenceSnapshot,
-        KeyboardEventArgs keyboardEventArgs,
-        bool hasTextSelection,
-        out TextEditorCommand? textEditorCommand)
-    {
-        var firstToken = sentenceSnapshot.FirstOrDefault();
-
-        if (firstToken is null)
-        {
-            textEditorCommand = null;
-            return false;
-        }
-        
-        return TryParseNextToken(
-            sentenceSnapshot,
-            0,
-            keyboardEventArgs,
-            hasTextSelection,
-            out textEditorCommand);
-    }
-
     public static bool TryParseNextToken(
+        TextEditorKeymapVim textEditorKeymapVim,
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
@@ -333,41 +306,73 @@ public class VimSentence
         }
 
         var currentToken = sentenceSnapshot[indexInSentence];
+
+        var success = false;
         
         switch (currentToken.VimGrammarKind)
         {
             case VimGrammarKind.Verb:
-                return SyntaxVerbVim.TryParse(
+                success = SyntaxVerbVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
+
+                break;
             case VimGrammarKind.Modifier:
-                return SyntaxModifierVim.TryParse(
+                success = SyntaxModifierVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
+                
+                break;
             case VimGrammarKind.TextObject:
-                return SyntaxTextObjectVim.TryParse(
+                success = SyntaxTextObjectVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
+                
+                break;
             case VimGrammarKind.Repeat:
-                return SyntaxRepeatVim.TryParse(
+                success = SyntaxRepeatVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
+                
+                break;
             default:
                 throw new ApplicationException(
                     $"The {nameof(VimGrammarKind)}:" +
                     $" {sentenceSnapshot.Last().VimGrammarKind} was not recognized.");
         }
+
+        if (success &&
+            textEditorCommand is not null)
+        {
+            if (textEditorKeymapVim.ActiveVimMode == VimMode.Visual)
+            {
+                textEditorCommand = TextEditorCommandVimFacts.Motions
+                    .GetVisual(textEditorCommand, textEditorCommand.DisplayName);
+            }
+            
+            if (textEditorKeymapVim.ActiveVimMode == VimMode.VisualLine)
+            {
+                textEditorCommand = TextEditorCommandVimFacts.Motions
+                    .GetVisualLine(textEditorCommand, textEditorCommand.DisplayName);
+            }
+        }
+
+        return success;
     }
 }
