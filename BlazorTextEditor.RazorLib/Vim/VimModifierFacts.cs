@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
+using BlazorTextEditor.RazorLib.Keymap.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
+namespace BlazorTextEditor.RazorLib.Vim;
 
 public static class VimModifierFacts
 {
@@ -27,14 +29,14 @@ public static class VimModifierFacts
         return false;
     }
 
-    public static bool TryParseVimSentence(
+    public static bool TryParseModifier(
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
-        out TextEditorCommand textEditorCommand)
+        out TextEditorCommand? textEditorCommand)
     {
-        textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        textEditorCommand = TextEditorCommandDefaultFacts.DoNothingDiscard;
         return true;
     }
 }

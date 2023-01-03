@@ -1,10 +1,7 @@
-﻿using BlazorALaCarte.Shared.Keyboard;
-using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Cursor;
+﻿using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.TextEditor;
-using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
+namespace BlazorTextEditor.RazorLib.Vim;
 
 public static class VimTextEditorVerbFacts
 {

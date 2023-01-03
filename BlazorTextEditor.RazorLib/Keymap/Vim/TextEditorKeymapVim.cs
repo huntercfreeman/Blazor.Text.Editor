@@ -1,14 +1,13 @@
-﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.JavaScriptObjects;
-using BlazorALaCarte.Shared.Keyboard;
+﻿using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
+using BlazorTextEditor.RazorLib.Keymap.Default;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Keymap;
+namespace BlazorTextEditor.RazorLib.Keymap.Vim;
 
 public class TextEditorKeymapVim : ITextEditorKeymap
 {
@@ -235,8 +234,8 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             
         return keyboardEventArgs.Key switch
         {
-            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.ScrollPageDown,
-            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.ScrollPageUp,
+            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandDefaultFacts.ScrollPageDown,
+            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandDefaultFacts.ScrollPageUp,
             _ => null,
         };
     }
@@ -293,7 +292,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             case "i":
             {
                 ActiveVimMode = VimMode.Insert;
-                command = TextEditorCommandFacts.DoNothingDiscard;
+                command = TextEditorCommandDefaultFacts.DoNothingDiscard;
                 return true;
             }
             case "v":
@@ -409,7 +408,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             {
                 if (keyboardEventArgs.Key == "Shift")
                 {
-                    command = TextEditorCommandFacts.DoNothingDiscard;
+                    command = TextEditorCommandDefaultFacts.DoNothingDiscard;
                     return false;
                 }
                 
@@ -426,14 +425,14 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     public bool TryMapToVimInsertModeKeymap(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
-        out TextEditorCommand command)
+        out TextEditorCommand? command)
     {
         switch (keyboardEventArgs.Key)
         {
             case KeyboardKeyFacts.MetaKeys.ESCAPE:
             {
                 ActiveVimMode = VimMode.Normal;
-                command = TextEditorCommandFacts.DoNothingDiscard;
+                command = TextEditorCommandDefaultFacts.DoNothingDiscard;
                 return true;
             }
             default:

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Keymap.Default;
+using BlazorTextEditor.RazorLib.Keymap.Vim;
 
 namespace BlazorTextEditor.RazorLib.Keymap;
 

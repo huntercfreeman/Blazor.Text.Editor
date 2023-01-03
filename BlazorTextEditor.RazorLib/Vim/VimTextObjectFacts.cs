@@ -1,15 +1,16 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Editing;
+using BlazorTextEditor.RazorLib.Keymap.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
+namespace BlazorTextEditor.RazorLib.Vim;
 
 public static class VimTextObjectFacts
 {
-    public static bool TryConstructTextObjectToken(
+    public static bool TryConstructTextObject(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out VimGrammarToken? vimGrammarToken)
@@ -41,12 +42,12 @@ public static class VimTextObjectFacts
         return false;
     }
 
-    public static bool TryParseVimSentence(
+    public static bool TryParseTextObject(
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
-        out TextEditorCommand textEditorCommand)
+        out TextEditorCommand? textEditorCommand)
     {
         var currentToken = sentenceSnapshot[indexInSentence];
 
@@ -253,7 +254,7 @@ public static class VimTextObjectFacts
             }
         }
 
-        textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        textEditorCommand = TextEditorCommandDefaultFacts.DoNothingDiscard;
         return true;
     }
 }

@@ -7,11 +7,11 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Commands;
+namespace BlazorTextEditor.RazorLib.Commands.Default;
 
-public static class TextEditorCommandFacts
+public static class TextEditorCommandDefaultFacts
 {
-    public static readonly TextEditorCommand DoNothingDiscard = new(
+    public static readonly TextEditorCommand? DoNothingDiscard = new(
         _ => Task.CompletedTask,
         false,
         "DoNothingDiscard",
@@ -221,7 +221,7 @@ public static class TextEditorCommandFacts
         "Remeasure",
         "defaults_remeasure");
     
-    public static readonly TextEditorCommand ScrollLineDown = new(async textEditorCommandParameter =>
+    public static readonly TextEditorCommand? ScrollLineDown = new(async textEditorCommandParameter =>
         {
             await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByLinesAsync(1);
@@ -230,7 +230,7 @@ public static class TextEditorCommandFacts
         "Scroll Line Down",
         "defaults_scroll-line-down");
     
-    public static readonly TextEditorCommand ScrollLineUp = new(async textEditorCommandParameter =>
+    public static readonly TextEditorCommand? ScrollLineUp = new(async textEditorCommandParameter =>
         {
             await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByLinesAsync(-1);
