@@ -5,5 +5,6 @@ public enum VimMode
     Normal,
     Insert,
     Visual,
+    VisualLine,
     Command
 }

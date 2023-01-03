@@ -64,6 +64,18 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             return new TextEditorCommand(
                 textEditorCommandParameter =>
                 {
+                    var previousAnchorPositionIndex = textEditorCommandParameter
+                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex;
+
+                    var previousEndingPositionIndex = textEditorCommandParameter
+                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+
+                    if (ActiveVimMode == VimMode.VisualLine ||
+                        ActiveVimMode == VimMode.Visual)
+                    {
+                        keyboardEventArgs.ShiftKey = true;
+                    }
+                    
                     TextEditorCommand? modifiedCommand = null;
                         
                     if (keyboardEventArgs.CtrlKey)
@@ -91,6 +103,65 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                             keyboardEventArgs,
                             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                             textEditorCommandParameter.TextEditorBase);
+                    }
+
+                    if (ActiveVimMode == VimMode.VisualLine)
+                    {
+                        var nextEndingPositionIndex = textEditorCommandParameter
+                            .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+
+                        if (nextEndingPositionIndex < textEditorCommandParameter
+                                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                        {
+                            if (previousAnchorPositionIndex < previousEndingPositionIndex)
+                            {
+                                // Anchor went from being the lower bound to the upper bound.
+                                
+                                var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorBase
+                                    .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                                        previousAnchorPositionIndex.Value);
+                            
+                                textEditorCommandParameter
+                                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = 
+                                    textEditorCommandParameter
+                                        .TextEditorBase.RowEndingPositions[rowDataAnchorIsOn.rowIndex]
+                                        .positionIndex;
+                            }
+
+                            var startingPositionOfRow = textEditorCommandParameter.TextEditorBase
+                                .GetStartOfRowTuple(textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor
+                                    .IndexCoordinates.rowIndex)
+                                .positionIndex;
+                            
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                                .EndingPositionIndex = startingPositionOfRow;
+                        }
+                        else if (nextEndingPositionIndex > textEditorCommandParameter
+                                     .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                        {
+                            if (previousAnchorPositionIndex > previousEndingPositionIndex)
+                            {
+                                // Anchor went from being the upper bound to the lower bound.
+                                
+                                var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorBase
+                                    .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                                        previousAnchorPositionIndex.Value);
+                                
+                                textEditorCommandParameter
+                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = 
+                                        textEditorCommandParameter.TextEditorBase.GetStartOfRowTuple(
+                                                rowDataAnchorIsOn.rowIndex)
+                                        .positionIndex; 
+                            } 
+                            
+                            var endingPositionOfRow = textEditorCommandParameter
+                                .TextEditorBase.RowEndingPositions[
+                                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex]
+                                .positionIndex;
+
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                                .EndingPositionIndex = endingPositionOfRow;
+                        }
                     }
                     
                     return Task.CompletedTask;
@@ -146,6 +217,8 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         {
             case VimMode.Normal:
             case VimMode.Visual:
+            case VimMode.VisualLine:
+            case VimMode.Command:
             {
                 if (TryMapToVimNormalModeKeymap(
                         keyboardEventArgs,
@@ -208,6 +281,37 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                         textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
                                 .EndingPositionIndex =
                             positionIndex + 1;
+                    
+                        return Task.CompletedTask;
+                    },
+                    true,
+                    keyboardEventArgs.Key,
+                    keyboardEventArgs.Key); 
+                
+                return true;
+            }
+            case "V":
+            {
+                ActiveVimMode = VimMode.VisualLine;
+                
+                command = new TextEditorCommand(
+                    textEditorCommandParameter =>
+                    {
+                        var startOfRowPositionIndexInclusive =
+                            textEditorCommandParameter.TextEditorBase.GetPositionIndex(
+                                textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
+                                0);
+
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                            startOfRowPositionIndexInclusive;
+
+                        var endOfRowPositionIndexExclusive = textEditorCommandParameter.TextEditorBase.RowEndingPositions[
+                                textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex]
+                            .positionIndex;
+                        
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                                .EndingPositionIndex =
+                            endOfRowPositionIndexExclusive;
                     
                         return Task.CompletedTask;
                     },
