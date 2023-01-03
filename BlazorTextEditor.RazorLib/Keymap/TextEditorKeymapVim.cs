@@ -150,9 +150,9 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                                         previousAnchorPositionIndex.Value);
                                 
                                 textEditorCommandParameter
-                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = 
-                                        textEditorCommandParameter.TextEditorBase.GetStartOfRowTuple(
-                                                rowDataAnchorIsOn.rowIndex - 1)
+                                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = 
+                                    textEditorCommandParameter.TextEditorBase.GetStartOfRowTuple(
+                                            rowDataAnchorIsOn.rowIndex - 1)
                                         .positionIndex; 
                             } 
                             
@@ -163,6 +163,37 @@ public class TextEditorKeymapVim : ITextEditorKeymap
 
                             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
                                 .EndingPositionIndex = endingPositionOfRow;
+                        }
+                    }
+                    else if (ActiveVimMode == VimMode.Visual)
+                    {
+                        var nextEndingPositionIndex = textEditorCommandParameter
+                            .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+
+                        if (nextEndingPositionIndex < textEditorCommandParameter
+                                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                        {
+                            if (previousAnchorPositionIndex < previousEndingPositionIndex)
+                            {
+                                // Anchor went from being the lower bound to the upper bound.
+
+                                textEditorCommandParameter
+                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex += 1; 
+                            }
+                        }
+                        else if (nextEndingPositionIndex >= textEditorCommandParameter
+                                     .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                        {
+                            if (previousAnchorPositionIndex > previousEndingPositionIndex)
+                            {
+                                // Anchor went from being the upper bound to the lower bound.
+                                
+                                textEditorCommandParameter
+                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex -= 1;
+                            }
+                            
+                            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                                .EndingPositionIndex += 1;
                         }
                     }
                     
