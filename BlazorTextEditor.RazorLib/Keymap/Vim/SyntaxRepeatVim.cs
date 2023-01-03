@@ -1,14 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
 using BlazorTextEditor.RazorLib.Commands;
-using BlazorTextEditor.RazorLib.Keymap.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Vim;
+namespace BlazorTextEditor.RazorLib.Keymap.Vim;
 
-public static class VimRepeatFacts
+public static class SyntaxRepeatVim
 {
-    public static bool TryConstructRepeat(
+    public static bool TryLex(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out VimGrammarToken? vimGrammarToken)
@@ -35,7 +34,7 @@ public static class VimRepeatFacts
         return false;
     }
 
-    public static bool TryParseRepeat(
+    public static bool TryParse(
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,

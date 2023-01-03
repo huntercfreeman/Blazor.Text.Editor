@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 
-namespace BlazorTextEditor.RazorLib.Vim;
+namespace BlazorTextEditor.RazorLib.Keymap.Vim;
 
 public record VimMotionResult(
     ImmutableTextEditorCursor LowerPositionIndexImmutableCursor,

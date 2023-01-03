@@ -2,15 +2,16 @@
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
+using BlazorTextEditor.RazorLib.Commands.Vim;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Keymap.Vim;
+using BlazorTextEditor.RazorLib.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Vim;
+namespace BlazorTextEditor.RazorLib.Keymap.Vim;
 
-public static class VimTextObjectFacts
+public static class SyntaxTextObjectVim
 {
-    public static bool TryConstructTextObject(
+    public static bool TryLex(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out VimGrammarToken? vimGrammarToken)
@@ -42,7 +43,7 @@ public static class VimTextObjectFacts
         return false;
     }
 
-    public static bool TryParseTextObject(
+    public static bool TryParse(
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
@@ -57,40 +58,12 @@ public static class VimTextObjectFacts
             {
                 case "w":
                 {
-                    // Move to the start of the next word.
-
-                    textEditorCommand = new TextEditorCommand(
-                        textEditorCommandParameter =>
-                        {
-                            VimTextEditorMotionFacts.Word(
-                                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorBase);
-
-                            return Task.CompletedTask;
-                        },
-                        true,
-                        "Vim::w",
-                        "vim_w");
-
+                    textEditorCommand = TextEditorCommandVimFacts.Motions.Word;
                     return true;
                 }
                 case "e":
                 {
-                    // Move to the end of the next word.
-
-                    textEditorCommand = new TextEditorCommand(
-                        textEditorCommandParameter =>
-                        {
-                            VimTextEditorMotionFacts.End(
-                                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorBase);
-
-                            return Task.CompletedTask;
-                        },
-                        true,
-                        "Vim::e",
-                        "vim_e");
-
+                    textEditorCommand = TextEditorCommandVimFacts.Motions.End;
                     return true;
                 }
                 case "b":

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
-using BlazorTextEditor.RazorLib.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.Vim;
@@ -95,13 +94,13 @@ public class VimSentence
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimVerbFacts.TryConstructVerb(
+        _ = SyntaxVerbVim.TryLex(
                 // Example: "d..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimTextObjectFacts.TryConstructTextObject(
+            SyntaxTextObjectVim.TryLex(
                 // Example: "w" => move cursor forward until reaching the next word.
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeat(
+            SyntaxRepeatVim.TryLex(
                 // Example: "3..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
@@ -150,11 +149,11 @@ public class VimSentence
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimVerbFacts.TryConstructVerb( // Example: "dd" => delete line
+        _ = SyntaxVerbVim.TryLex( // Example: "dd" => delete line
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimTextObjectFacts.TryConstructTextObject( // Example: "dw" => delete word
+            SyntaxTextObjectVim.TryLex( // Example: "dw" => delete word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeat( // Example: "d3..." is valid albeit incomplete
+            SyntaxRepeatVim.TryLex( // Example: "d3..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -217,7 +216,7 @@ public class VimSentence
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimTextObjectFacts.TryConstructTextObject( // Example: "diw" => delete inner word
+        _ = SyntaxTextObjectVim.TryLex( // Example: "diw" => delete inner word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -253,11 +252,11 @@ public class VimSentence
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimVerbFacts.TryConstructVerb( // Example: "3dd" => 3 times do delete line
+        _ = SyntaxVerbVim.TryLex( // Example: "3dd" => 3 times do delete line
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimTextObjectFacts.TryConstructTextObject( // Example: "3w" => 3 times do move cursor to the start of next word
+            SyntaxTextObjectVim.TryLex( // Example: "3w" => 3 times do move cursor to the start of next word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeat( // Example: "27w" => 27 times do move cursor to the start of next word
+            SyntaxRepeatVim.TryLex( // Example: "27w" => 27 times do move cursor to the start of next word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -338,28 +337,28 @@ public class VimSentence
         switch (currentToken.VimGrammarKind)
         {
             case VimGrammarKind.Verb:
-                return VimVerbFacts.TryParseVerb(
+                return SyntaxVerbVim.TryParse(
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
             case VimGrammarKind.Modifier:
-                return VimModifierFacts.TryParseModifier(
+                return SyntaxModifierVim.TryParse(
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
             case VimGrammarKind.TextObject:
-                return VimTextObjectFacts.TryParseTextObject(
+                return SyntaxTextObjectVim.TryParse(
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
             case VimGrammarKind.Repeat:
-                return VimRepeatFacts.TryParseRepeat(
+                return SyntaxRepeatVim.TryParse(
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
