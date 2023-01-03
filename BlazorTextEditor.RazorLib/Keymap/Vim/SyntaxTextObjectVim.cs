@@ -4,7 +4,6 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Commands.Vim;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.Vim;
@@ -57,35 +56,14 @@ public static class SyntaxTextObjectVim
             switch (currentToken.KeyboardEventArgs.Key)
             {
                 case "w":
-                {
                     textEditorCommand = TextEditorCommandVimFacts.Motions.Word;
                     return true;
-                }
                 case "e":
-                {
                     textEditorCommand = TextEditorCommandVimFacts.Motions.End;
                     return true;
-                }
                 case "b":
-                {
-                    // Move cursor to the beginning of the previous word.
-                    // As well, skip any whitespace that is along the way.
-
-                    textEditorCommand = new TextEditorCommand(
-                        textEditorCommandParameter =>
-                        {
-                            VimTextEditorMotionFacts.Back(
-                                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorBase);
-
-                            return Task.CompletedTask;
-                        },
-                        true,
-                        "Vim::b",
-                        "vim_b");
-
+                    textEditorCommand = TextEditorCommandVimFacts.Motions.Back;
                     return true;
-                }
                 case "h":
                 {
                     // Move the cursor 1 column to the left
