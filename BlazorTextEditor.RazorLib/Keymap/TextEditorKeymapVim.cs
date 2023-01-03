@@ -27,6 +27,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         {
             case VimMode.Normal:
             case VimMode.Visual:
+            case VimMode.VisualLine:
                 return TextCursorKindFacts.BlockCssClassString;
             default:
                 return string.Empty;
@@ -44,6 +45,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         {
             case VimMode.Normal:
             case VimMode.Visual:
+            case VimMode.VisualLine:
             {
                 var characterWidthInPixelsInvariantCulture = characterWidthInPixels
                     .ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -136,7 +138,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
                                 .EndingPositionIndex = startingPositionOfRow;
                         }
-                        else if (nextEndingPositionIndex > textEditorCommandParameter
+                        else if (nextEndingPositionIndex >= textEditorCommandParameter
                                      .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
                         {
                             if (previousAnchorPositionIndex > previousEndingPositionIndex)
@@ -150,7 +152,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                                 textEditorCommandParameter
                                     .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = 
                                         textEditorCommandParameter.TextEditorBase.GetStartOfRowTuple(
-                                                rowDataAnchorIsOn.rowIndex)
+                                                rowDataAnchorIsOn.rowIndex - 1)
                                         .positionIndex; 
                             } 
                             

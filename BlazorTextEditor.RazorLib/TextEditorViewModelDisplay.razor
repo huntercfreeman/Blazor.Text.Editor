@@ -16,6 +16,20 @@
     var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
 }
 
+@if (textEditorViewModel is not null)
+{
+    <div>
+        <div>
+            AnchorPositionIndex:&nbsp;
+            @textEditorViewModel.PrimaryCursor.TextEditorSelection.AnchorPositionIndex.GetValueOrDefault()
+        </div>
+        <div>
+            EndingPositionIndex:&nbsp;
+            @textEditorViewModel.PrimaryCursor.TextEditorSelection.EndingPositionIndex
+        </div>
+    </div>
+}
+
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @WrapperClassCssString">
     
