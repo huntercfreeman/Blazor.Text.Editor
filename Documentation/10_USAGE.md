@@ -7,27 +7,22 @@
 - Modify Pages/Index.razor to render a C# Text Editor with Syntax Highlighting
 
 ### Steps
-- One can write the upcoming code however they would like, I will be using the `@code` section in Razor markup.
+- One can write the upcoming code however they would like, I will be using a `codebehind`.
 
-- Add in `Pages/Index.razor` an `@code` section.
+- Add in `Pages/` a file named `Index.razor.cs`. Ensure the templated class name is `Index`. Mark this class as `partial`, and inherit from `ComponentBase`
 
-- Within the `@code` section proceed to inject the `ITextEditorService`.
+- Within the `Index codebehind` proceed to inject the `ITextEditorService`.
 
-- At this stage my Index.razor looks like the following:
+- At this stage my Index.razor.cs looks like the following:
 
-```html
-@page "/"
-@using BlazorTextEditor.RazorLib
+```csharp
+using BlazorTextEditor.RazorLib;
+using Microsoft.AspNetCore.Components;
 
-<PageTitle>Index</PageTitle>
+namespace BlazorTextEditorDocumentation.Pages;
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?"/>
-
-@code {
+public partial class Index : ComponentBase
+{
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 }
@@ -35,7 +30,7 @@ Welcome to your new app.
 
 - In order to change pages and `maintain` the TextEditor's `state` the `TextEditorKey` which is used `must not change`.
 
-- One can maintain a reference to an unchanging `TextEditorKey` in various ways. I will be making a static readonly `TextEditorKey` within the `@code` section of `Index.razor`.
+- One can maintain a reference to an unchanging `TextEditorKey` in various ways. I will be making a static readonly `TextEditorKey` within the `Index codebehind`.
 
 - To make a `TextEditorKey` one should use the factory method: `TextEditorKey.NewTextEditorKey()`
 
@@ -55,24 +50,40 @@ private static readonly TextEditorKey IndexTextEditorKey = TextEditorKey.NewText
 
 - In this step we specifically will be invoking `TextEditorService.RegisterCSharpTextEditor(...);` to get a C# Text Editor with Syntax Highlighting.
 
-- The `RegisterCSharpTextEditor` method wants us to provide as arguments: a `TextEditorKey`, and a `string to set` as the `initial text contents` of the text editor.
+- The `RegisterCSharpTextEditor` method wants us to provide as arguments:
+    - `TextEditorKey textEditorKey`
+    - `string resourceUri`
+    - `DateTime resourceLastWriteTime`
+    - `string fileExtension`
+    - `string initialContent`
 
 - I will invoke the method as shown in the following code snippet
 
 ```csharp
-[Inject]
-private ITextEditorService TextEditorService { get; set; } = null!;
+using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.TextEditor;
+using Microsoft.AspNetCore.Components;
 
-private static readonly TextEditorKey IndexTextEditorKey = 
-    TextEditorKey.NewTextEditorKey();
+namespace BlazorTextEditorDocumentation.Pages;
 
-protected override void OnInitialized()
+public partial class Index : ComponentBase
 {
-    TextEditorService.RegisterCSharpTextEditor(
-        IndexTextEditorKey,
-        string.Empty);
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
     
-    base.OnInitialized();
+    private static readonly TextEditorKey IndexTextEditorKey = TextEditorKey.NewTextEditorKey();
+
+    protected override void OnInitialized()
+    {
+        TextEditorService.RegisterCSharpTextEditor(
+            IndexTextEditorKey,
+            "/users/individual/home/ExampleCSharp.cs",
+            DateTime.Now,
+            "C#",
+            string.Empty);
+        
+        base.OnInitialized();
+    }
 }
 ```
 
@@ -82,23 +93,63 @@ protected override void OnInitialized()
 @using BlazorTextEditor.RazorLib
 ```
 
-- Render to Index.razor a self closing Blazor component by the name of `TextEditorDisplay`. See the following code snippet
+- Render to Index.razor a self closing Blazor component by the name of `TextEditorViewModelDisplay`. See the following code snippet
 
 ```html
-<TextEditorDisplay/>
+<TextEditorViewModelDisplay/>
 ```
 
-- The `TextEditorDisplay` Blazor component has many Blazor parameters available for customization.
+- The `TextEditorViewModelDisplay` Blazor component has many Blazor parameters available for customization.
 
-- However, only one parameter is needed to render a `TextEditorDisplay` and that is `TextEditorKey`.
+- However, only one parameter is needed to render a `TextEditorViewModelDisplay` and that is `TextEditorViewModelKey`.
 
-- Pass to the `TextEditorDisplay` the Blazor parameter named, `TextEditorKey` with the value of `IndexTextEditorKey`. See the following code snippet.
+- We can return to the `Index codebehind` to create a `TextEditorViewModel.cs`. The step prior to this registered a `TextEditorBase.cs`.
+
+- It is important to note that `TextEditorBase.cs` maps to a unique resource, perhaps a unique file on one's file system. Whereas `TextEditorViewModel.cs` maps to the user interface state of a Blazor component. Many `TextEditorViewModel.cs` can reference the same `TextEditorBase.cs`.
+
+- I will be making a static readonly `TextEditorViewModelKey` within the `Index codebehind`. Having `TextEditorViewModelKey` be static and readonly allows the user interface to maintain its state when navigating pages.
+
+- To make a `TextEditorViewModelKey` one should use the factory method: `TextEditorViewModelKey.NewTextEditorViewModelKey()`
+
+```csharp
+private static readonly TextEditorViewModelKey IndexTextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
+```
+
+- Now that we have a `TextEditorViewModelKey` in the Blazor lifecycle method `OnInitialized` we can register a `TextEditorViewModel.cs`.
+
+- To register a `TextEditorViewModel.cs` invoke the method: `TextEditorService.RegisterViewModel(...)` which has arguments:
+    - TextEditorViewModelKey textEditorViewModelKey
+    - TextEditorKey textEditorKey
+
+- Pass in the `IndexTextEditorViewModelKey` and the `IndexTextEditorKey`.
+
+- My `Index codebehind` is overriding `OnInitialized` as the following:
+
+```csharp
+protected override void OnInitialized()
+{
+    TextEditorService.RegisterCSharpTextEditor(
+        IndexTextEditorKey,
+        "/users/individual/home/ExampleCSharp.cs",
+        DateTime.Now,
+        "C#",
+        string.Empty);
+    
+    TextEditorService.RegisterViewModel(
+        IndexTextEditorViewModelKey,
+        IndexTextEditorKey);
+    
+    base.OnInitialized();
+}
+```
+
+- Pass to the `TextEditorViewModelDisplay` the Blazor parameter named, `TextEditorViewModelKey` with the value of `IndexTextEditorViewModelKey`. See the following code snippet.
 
 ```html
-<TextEditorDisplay TextEditorKey="IndexTextEditorKey"/>
+<TextEditorViewModelDisplay TextEditorViewModelKey="IndexTextEditorViewModelKey"/>
 ```
 
-- Now run the application and you will have rendered a `TextEditorDisplay` with C# syntax highlighting.
+- Now run the application and you will have rendered a `TextEditorViewModelDisplay` with C# syntax highlighting.
 
 ![Rendered C# Text Editor](/Images/Gifs/10_usage-rendered.gif)
 

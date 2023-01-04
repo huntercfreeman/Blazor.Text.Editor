@@ -4,6 +4,7 @@
 
 .bte_text-editor {
     height: calc(100% - var(--bte_text-editor-header-height) - var(--bte_text-editor-footer-height));
+    min-height: 200px;
     color: var(--bte_primary-font-color);
     background-color: var(--bte_body-background-color);
     cursor: text;
