@@ -348,12 +348,12 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             case "o":
             {
-                command = TextEditorCommandDefaultFacts.NewLineBelow;
+                command = TextEditorCommandVimFacts.Verbs.NewLineBelow;
                 return true;
             }
             case "O":
             {
-                command = TextEditorCommandDefaultFacts.NewLineAbove;
+                command = TextEditorCommandVimFacts.Verbs.NewLineAbove;
                 return true;
             }
             default:

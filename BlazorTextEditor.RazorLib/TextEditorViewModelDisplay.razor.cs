@@ -6,6 +6,7 @@ using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
@@ -252,6 +253,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var command = TextEditorStatesWrap.Value.GlobalTextEditorOptions.KeymapDefinition!.Keymap.Map(
             keyboardEventArgs,
             hasSelection);
+        
+        if (KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE == keyboardEventArgs.Code &&
+            keyboardEventArgs.ShiftKey)
+        {
+            command = TextEditorCommandDefaultFacts.NewLineBelow;
+        }
 
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key) && 
             command is null)

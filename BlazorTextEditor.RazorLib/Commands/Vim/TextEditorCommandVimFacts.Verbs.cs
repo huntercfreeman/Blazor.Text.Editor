@@ -108,8 +108,8 @@ public static partial class TextEditorCommandVimFacts
                 }
             },
             true,
-            $"Vim::Change(Selection)",
-            $"Vim::Change(Selection)");
+            "Vim::Change(Selection)",
+            "Vim::Change(Selection)");
         
         public static readonly TextEditorCommand Yank = new(
             async textEditorCommandParameter =>
@@ -121,7 +121,39 @@ public static partial class TextEditorCommandVimFacts
                     .Invoke(textEditorCommandParameter);
             },
             true,
-            $"Vim::Change(Selection)",
-            $"Vim::Change(Selection)");
+            "Vim::Change(Selection)",
+            "Vim::Change(Selection)");
+        
+        public static readonly TextEditorCommand NewLineBelow = new(
+            async textEditorCommandParameter =>
+            {
+                await TextEditorCommandDefaultFacts.NewLineBelow.DoAsyncFunc
+                    .Invoke(textEditorCommandParameter);
+                
+                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                    is TextEditorKeymapVim textEditorKeymapVim)
+                {
+                    textEditorKeymapVim.ActiveVimMode = VimMode.Insert;
+                }
+            },
+            true,
+            "Vim::NewLineBelow()",
+            "Vim::NewLineBelow()");
+        
+        public static readonly TextEditorCommand NewLineAbove = new(
+            async textEditorCommandParameter =>
+            {
+                await TextEditorCommandDefaultFacts.NewLineAbove.DoAsyncFunc
+                    .Invoke(textEditorCommandParameter);
+                
+                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                    is TextEditorKeymapVim textEditorKeymapVim)
+                {
+                    textEditorKeymapVim.ActiveVimMode = VimMode.Insert;
+                }
+            },
+            true,
+            "Vim::NewLineAbove()",
+            "Vim::NewLineAbove()");
     }
 }

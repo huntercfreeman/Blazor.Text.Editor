@@ -48,6 +48,12 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
                 keyboardEventArgs,
                 hasTextSelection);
         }
+
+        if (keyboardEventArgs.ShiftKey &&
+            KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE == keyboardEventArgs.Code)
+        {
+            return TextEditorCommandDefaultFacts.NewLineBelow;
+        }
             
         return keyboardEventArgs.Key switch
         {
@@ -85,8 +91,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         {
             command = keyboardEventArgs.Code switch
             {
-                KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE => 
-                    TextEditorCommandDefaultFacts.DoNothingDiscard,
+                KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE => TextEditorCommandDefaultFacts.NewLineAbove,
                 _ => null,
             };
         }
