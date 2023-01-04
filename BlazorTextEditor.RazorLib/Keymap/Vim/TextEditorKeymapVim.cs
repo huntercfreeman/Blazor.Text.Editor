@@ -314,6 +314,9 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     {
                         textEditorCommandParameter.TextEditorService.UndoEdit(
                             textEditorCommandParameter.TextEditorBase.Key);
+
+                        await textEditorCommandParameter.TextEditorBase
+                            .ApplySyntaxHighlightingAsync();
                     },
                     false,
                     "Undo",
@@ -330,6 +333,9 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                         {
                             textEditorCommandParameter.TextEditorService.RedoEdit(
                                 textEditorCommandParameter.TextEditorBase.Key);
+                            
+                            await textEditorCommandParameter.TextEditorBase
+                                .ApplySyntaxHighlightingAsync();
                         },
                         false,
                         "Redo",

@@ -35,6 +35,9 @@ public static class SyntaxVerbVim
             case "c":
             case "y":
             case "p":
+            case "<":
+            case ">":
+            case "o":
             {
                 vimGrammarToken = new VimGrammarToken(
                     VimGrammarKind.Verb,
@@ -102,7 +105,7 @@ public static class SyntaxVerbVim
                     return true;
             }
         }
-        else
+        else if (indexInSentence + 1 < sentenceSnapshot.Length)
         {
             // Track locally the displacement of the user's cursor after the
             // inner text editor command is invoked.
@@ -131,6 +134,49 @@ public static class SyntaxVerbVim
                         return true;
                     case "p":
                         textEditorCommand = TextEditorCommandDefaultFacts.Paste;
+                        return true;
+                }
+            }
+        }
+        else if (hasTextSelection)
+        {
+            if (sentenceSnapshot.Any(x =>
+                    x.VimGrammarKind == VimGrammarKind.Repeat))
+            {
+                switch (currentToken.KeyboardEventArgs.Key)
+                {
+                    case "p":
+                        textEditorCommand = TextEditorCommandDefaultFacts.Paste;
+                        return true;
+                    case ">":
+                        textEditorCommand = TextEditorCommandDefaultFacts.IndentMore;
+                        return true;
+                    case "<":
+                        textEditorCommand = TextEditorCommandDefaultFacts.IndentLess;
+                        return true;
+                }
+            }
+            else
+            {
+                switch (currentToken.KeyboardEventArgs.Key)
+                {
+                    case "d":
+                        textEditorCommand = TextEditorCommandDefaultFacts.Cut;
+                        return true;
+                    case "c":
+                        textEditorCommand = TextEditorCommandVimFacts.Verbs.ChangeSelection;
+                        return true;
+                    case "y":
+                        textEditorCommand = TextEditorCommandVimFacts.Verbs.Yank;
+                        return true;
+                    case "p":
+                        textEditorCommand = TextEditorCommandDefaultFacts.Paste;
+                        return true;
+                    case ">":
+                        textEditorCommand = TextEditorCommandDefaultFacts.IndentMore;
+                        return true;
+                    case "<":
+                        textEditorCommand = TextEditorCommandDefaultFacts.IndentLess;
                         return true;
                 }
             }

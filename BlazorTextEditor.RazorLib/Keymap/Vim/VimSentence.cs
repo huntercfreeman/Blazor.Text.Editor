@@ -129,6 +129,14 @@ public class VimSentence
                     return true;
                 }
                 
+                if (hasTextSelection)
+                {
+                    _pendingSentence.Clear();
+                    _pendingSentence.Add(vimGrammarToken);
+                    
+                    return true;
+                }
+                
                 _pendingSentence.Add(vimGrammarToken);
                 return false;
             }

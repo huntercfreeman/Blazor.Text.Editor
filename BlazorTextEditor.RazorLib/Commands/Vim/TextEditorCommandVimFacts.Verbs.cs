@@ -82,7 +82,8 @@ public static partial class TextEditorCommandVimFacts
             {
                 var deleteMotion = GetDeleteMotion(innerTextEditorCommand);
 
-                await deleteMotion.DoAsyncFunc(textEditorCommandParameter);
+                await deleteMotion.DoAsyncFunc
+                    .Invoke(textEditorCommandParameter);
                 
                 if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
                     is TextEditorKeymapVim textEditorKeymapVim)
@@ -93,5 +94,34 @@ public static partial class TextEditorCommandVimFacts
             true,
             $"Vim::Change({innerTextEditorCommand.DisplayName})",
             $"Vim::Change({innerTextEditorCommand.DisplayName})");
+        
+        public static readonly TextEditorCommand ChangeSelection = new(
+            async textEditorCommandParameter =>
+            {
+                await TextEditorCommandDefaultFacts.Cut.DoAsyncFunc
+                    .Invoke(textEditorCommandParameter);
+                
+                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                    is TextEditorKeymapVim textEditorKeymapVim)
+                {
+                    textEditorKeymapVim.ActiveVimMode = VimMode.Insert;
+                }
+            },
+            true,
+            $"Vim::Change(Selection)",
+            $"Vim::Change(Selection)");
+        
+        public static readonly TextEditorCommand Yank = new(
+            async textEditorCommandParameter =>
+            {
+                await TextEditorCommandDefaultFacts.Copy.DoAsyncFunc
+                    .Invoke(textEditorCommandParameter);
+                
+                await TextEditorCommandDefaultFacts.ClearTextSelection.DoAsyncFunc
+                    .Invoke(textEditorCommandParameter);
+            },
+            true,
+            $"Vim::Change(Selection)",
+            $"Vim::Change(Selection)");
     }
 }

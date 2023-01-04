@@ -66,24 +66,31 @@ public static class SyntaxRepeatVim
             hasTextSelection,
             out var innerTextEditorCommand);
 
-        var textEditorCommandDisplayName = 
-            $"Vim::Repeat(count: {intValue}," +
-            $" arg: {innerTextEditorCommand.DisplayName})";
+        if (success && 
+            innerTextEditorCommand is not null)
+        {
+            var textEditorCommandDisplayName = 
+                $"Vim::Repeat(count: {intValue}," +
+                $" arg: {innerTextEditorCommand.DisplayName})";
         
-        // Repeat the inner TextEditorCommand using a for loop
-        textEditorCommand = new TextEditorCommand(
-            async textEditorCommandParameter =>
-            {
-                for (int index = 0; index < intValue; index++)
+            // Repeat the inner TextEditorCommand using a for loop
+            textEditorCommand = new TextEditorCommand(
+                async textEditorCommandParameter =>
                 {
-                    await innerTextEditorCommand.DoAsyncFunc
-                        .Invoke(textEditorCommandParameter);
-                }
-            },
-            true,
-            textEditorCommandDisplayName,
-            textEditorCommandDisplayName);
-        
+                    for (int index = 0; index < intValue; index++)
+                    {
+                        await innerTextEditorCommand.DoAsyncFunc
+                            .Invoke(textEditorCommandParameter);
+                    }
+                },
+                true,
+                textEditorCommandDisplayName,
+                textEditorCommandDisplayName);
+        }
+        else
+        {
+            textEditorCommand = null;
+        }
         
         return success;
     }

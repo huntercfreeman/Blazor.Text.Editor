@@ -11,7 +11,7 @@ namespace BlazorTextEditor.RazorLib.Commands.Default;
 
 public static class TextEditorCommandDefaultFacts
 {
-    public static readonly TextEditorCommand? DoNothingDiscard = new(
+    public static readonly TextEditorCommand DoNothingDiscard = new(
         _ => Task.CompletedTask,
         false,
         "DoNothingDiscard",
@@ -221,7 +221,7 @@ public static class TextEditorCommandDefaultFacts
         "Remeasure",
         "defaults_remeasure");
     
-    public static readonly TextEditorCommand? ScrollLineDown = new(async textEditorCommandParameter =>
+    public static readonly TextEditorCommand ScrollLineDown = new(async textEditorCommandParameter =>
         {
             await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByLinesAsync(1);
@@ -230,7 +230,7 @@ public static class TextEditorCommandDefaultFacts
         "Scroll Line Down",
         "defaults_scroll-line-down");
     
-    public static readonly TextEditorCommand? ScrollLineUp = new(async textEditorCommandParameter =>
+    public static readonly TextEditorCommand ScrollLineUp = new(async textEditorCommandParameter =>
         {
             await textEditorCommandParameter.TextEditorViewModel
                 .MutateScrollVerticalPositionByLinesAsync(-1);
@@ -521,7 +521,7 @@ public static class TextEditorCommandDefaultFacts
         "Indent Less",
         "defaults_indent-less");
     
-    public static readonly TextEditorCommand? ClearTextSelection = new(
+    public static readonly TextEditorCommand ClearTextSelection = new(
         textEditorCommandParameter =>
         {
             textEditorCommandParameter
