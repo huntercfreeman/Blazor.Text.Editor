@@ -346,6 +346,16 @@ public class TextEditorKeymapVim : ITextEditorKeymap
 
                 goto default;
             }
+            case "o":
+            {
+                command = TextEditorCommandDefaultFacts.NewLineBelow;
+                return true;
+            }
+            case "O":
+            {
+                command = TextEditorCommandDefaultFacts.NewLineAbove;
+                return true;
+            }
             default:
             {
                 if (keyboardEventArgs.Key == "Shift")
