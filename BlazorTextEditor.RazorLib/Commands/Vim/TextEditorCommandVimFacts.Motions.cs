@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Keymap.Vim;
 
 namespace BlazorTextEditor.RazorLib.Commands.Vim;
@@ -21,8 +22,6 @@ public static partial class TextEditorCommandVimFacts
                     localIndexCoordinates.columnIndex = columnIndex;
                     localPreferredColumnIndex = columnIndex;
                 }
-
-                textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
 
                 var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
@@ -51,6 +50,14 @@ public static partial class TextEditorCommandVimFacts
 
                 textEditorCursor.IndexCoordinates = localIndexCoordinates;
                 textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
+
+                if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
+                {
+                    textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                        textEditorBase.GetCursorPositionIndex(textEditorCursor);
+                }
+                
+                textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
             },
             true,
             "Vim::Word()",
@@ -78,8 +85,6 @@ public static partial class TextEditorCommandVimFacts
                 localIndexCoordinates.columnIndex = columnIndex;
                 localPreferredColumnIndex = columnIndex;
             }
-
-            textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
 
             var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
@@ -154,6 +159,12 @@ public static partial class TextEditorCommandVimFacts
 
             textEditorCursor.IndexCoordinates = localIndexCoordinates;
             textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
+            
+            if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
+            {
+                textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                    textEditorBase.GetCursorPositionIndex(textEditorCursor);
+            }
         }
 
         public static readonly TextEditorCommand Back = new(
@@ -170,8 +181,6 @@ public static partial class TextEditorCommandVimFacts
                     localIndexCoordinates.columnIndex = columnIndex;
                     localPreferredColumnIndex = columnIndex;
                 }
-
-                textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
 
                 if (localIndexCoordinates.columnIndex == 0)
                 {
@@ -203,6 +212,12 @@ public static partial class TextEditorCommandVimFacts
 
                 textEditorCursor.IndexCoordinates = localIndexCoordinates;
                 textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
+                
+                if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
+                {
+                    textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                        textEditorBase.GetCursorPositionIndex(textEditorCursor);
+                }
             },
             true,
             "Vim::Back()",
@@ -224,9 +239,12 @@ public static partial class TextEditorCommandVimFacts
                         .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
 
                     await textEditorCommandMotion.DoAsyncFunc.Invoke(textEditorCommandParameter);
-
+                    
                     var nextEndingPositionIndex = textEditorCommandParameter
                         .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+                    
+                    Console.WriteLine($"previousEndingPositionIndex: {previousEndingPositionIndex}");
+                    Console.WriteLine($"nextEndingPositionIndex: {nextEndingPositionIndex}");
 
                     if (nextEndingPositionIndex < textEditorCommandParameter
                             .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)

@@ -15,6 +15,18 @@
     var globalTextEditorOptions = TextEditorStatesWrap.Value.GlobalTextEditorOptions;
 }
 
+@if (textEditorViewModel is not null &&
+     textEditorBase is not null)
+{
+    <div>
+        <div>Anchor:&nbsp;@(textEditorViewModel.PrimaryCursor.TextEditorSelection.AnchorPositionIndex ?? -1)</div>
+        <div>Ending:&nbsp;@textEditorViewModel.PrimaryCursor.TextEditorSelection.EndingPositionIndex</div>
+        <div>IndexCoordinates(row, column):&nbsp;(@(textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex), @(textEditorViewModel.PrimaryCursor.IndexCoordinates.columnIndex))</div>
+        <div>PositionIndex of cursor:&nbsp;@(textEditorBase.GetCursorPositionIndex(textEditorViewModel.PrimaryCursor))</div>
+        <div>PositionIndex of index coordinates:&nbsp;@(textEditorBase.GetPositionIndex(textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex, textEditorViewModel.PrimaryCursor.IndexCoordinates.columnIndex))</div>
+    </div>
+}
+
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.GlobalThemeCssClassString @WrapperClassCssString">
     

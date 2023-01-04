@@ -50,6 +50,10 @@ public static class SyntaxTextObjectVim
         out TextEditorCommand? textEditorCommand)
     {
         var currentToken = sentenceSnapshot[indexInSentence];
+        
+        var shiftKey =
+            textEditorKeymapVim.ActiveVimMode == VimMode.Visual ||
+            textEditorKeymapVim.ActiveVimMode == VimMode.VisualLine;
 
         if (!currentToken.KeyboardEventArgs.CtrlKey)
         {
@@ -68,13 +72,14 @@ public static class SyntaxTextObjectVim
                 {
                     // Move the cursor 1 column to the left
 
-                    textEditorCommand = new TextEditorCommand(
+                                   textEditorCommand = new TextEditorCommand(
                         textEditorCommandParameter =>
                         {
                             TextEditorCursor.MoveCursor(
                                 new KeyboardEventArgs
                                 {
-                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_LEFT
+                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_LEFT,
+                                    ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                                 textEditorCommandParameter.TextEditorBase);
@@ -97,7 +102,8 @@ public static class SyntaxTextObjectVim
                             TextEditorCursor.MoveCursor(
                                 new KeyboardEventArgs
                                 {
-                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_DOWN
+                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_DOWN,
+                                    ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                                 textEditorCommandParameter.TextEditorBase);
@@ -120,7 +126,8 @@ public static class SyntaxTextObjectVim
                             TextEditorCursor.MoveCursor(
                                 new KeyboardEventArgs
                                 {
-                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_UP
+                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_UP,
+                                    ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                                 textEditorCommandParameter.TextEditorBase);
@@ -143,7 +150,8 @@ public static class SyntaxTextObjectVim
                             TextEditorCursor.MoveCursor(
                                 new KeyboardEventArgs
                                 {
-                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_RIGHT
+                                    Key = KeyboardKeyFacts.MovementKeys.ARROW_RIGHT,
+                                    ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                                 textEditorCommandParameter.TextEditorBase);
@@ -166,7 +174,8 @@ public static class SyntaxTextObjectVim
                             TextEditorCursor.MoveCursor(
                                 new KeyboardEventArgs
                                 {
-                                    Key = KeyboardKeyFacts.MovementKeys.END
+                                    Key = KeyboardKeyFacts.MovementKeys.END,
+                                    ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                                 textEditorCommandParameter.TextEditorBase);
@@ -189,7 +198,8 @@ public static class SyntaxTextObjectVim
                             TextEditorCursor.MoveCursor(
                                 new KeyboardEventArgs
                                 {
-                                    Key = KeyboardKeyFacts.MovementKeys.HOME
+                                    Key = KeyboardKeyFacts.MovementKeys.HOME,
+                                    ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
                                 textEditorCommandParameter.TextEditorBase);

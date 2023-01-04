@@ -103,13 +103,15 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     "MoveCursor");
             }
             
+            if (ActiveVimMode == VimMode.Visual)
+                return TextEditorCommandVimFacts.Motions
+                    .GetVisual(modifiedCommand, $"{nameof(TextEditorKeymapVim)}");
+            
             if (ActiveVimMode == VimMode.VisualLine)
                 return TextEditorCommandVimFacts.Motions
                     .GetVisualLine(modifiedCommand, $"{nameof(TextEditorKeymapVim)}");
 
-            if (ActiveVimMode == VimMode.Visual)
-                return TextEditorCommandVimFacts.Motions
-                    .GetVisual(modifiedCommand, $"{nameof(TextEditorKeymapVim)}");
+            return modifiedCommand;
         }
         
         if (TryMapToVimKeymap(
@@ -161,26 +163,12 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             case VimMode.VisualLine:
             case VimMode.Command:
             {
-                var previousActiveVimMode = ActiveVimMode;
-                
                 if (TryMapToVimNormalModeKeymap(
                         keyboardEventArgs,
                         hasTextSelection,
                         out command) &&
                     command is not null)
                 {
-                    if (previousActiveVimMode == VimMode.Visual &&
-                        ActiveVimMode == VimMode.Visual)
-                    {
-                        command = TextEditorCommandVimFacts.Motions.GetVisual(command, command.DisplayName);
-                    }
-                    
-                    if (previousActiveVimMode == VimMode.VisualLine &&
-                        ActiveVimMode == VimMode.VisualLine)
-                    {
-                        command = TextEditorCommandVimFacts.Motions.GetVisualLine(command, command.DisplayName);
-                    }
-                    
                     return true;
                 }
 
@@ -211,8 +199,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
         bool hasTextSelection,
         out TextEditorCommand? command)
     {
-        if (ActiveVimMode != VimMode.Normal &&
-            keyboardEventArgs.Key == KeyboardKeyFacts.MetaKeys.ESCAPE)
+        if (keyboardEventArgs.Key == KeyboardKeyFacts.MetaKeys.ESCAPE)
         {
             ActiveVimMode = VimMode.Normal;
             
