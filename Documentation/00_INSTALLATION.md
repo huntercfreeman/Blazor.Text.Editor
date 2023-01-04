@@ -13,7 +13,7 @@
 ### Steps
 - Reference the `Blazor.Text.Editor` NuGet Package
 
-Use your preferred way to install NuGet Packages to install v5.0.0 of `Blazor.Text.Editor`.
+Use your preferred way to install NuGet Packages to install v6.1.0 of `Blazor.Text.Editor`.
 
 The nuget.org link to the NuGet Package is here: https://www.nuget.org/packages/Blazor.Text.Editor
 
@@ -39,41 +39,41 @@ The following is a gif of me registering the Services
 
 - Reference the CSS
 
-In my C# Project CSS files are referenced from wwwroot/index.html
+In my C# Project CSS files are referenced from Pages/_Layout.cshtml
 
 Go to the file that you reference CSS files from and add the following CSS references.
 
 ```html
     <!-- Blazor.Text.Editor | Required CSS -->
+    <link href="_content/BlazorALaCarte.Shared/blazorShared.css" rel="stylesheet"/>
+    <link href="_content/BlazorALaCarte.DialogNotification/blazorDialogNotification.css" rel="stylesheet"/>
+    <link href="_content/BlazorALaCarte.TreeView/blazorTreeView.css" rel="stylesheet"/>
     <link href="_content/Blazor.Text.Editor/blazorTextEditor.css" rel="stylesheet"/>
-    <!-- Blazor.Text.Editor | Required CSS -->
     <link href="_content/Blazor.Text.Editor/blazorTextEditorSizes.css" rel="stylesheet"/>
-    
-    <!-- Blazor.Text.Editor | Theme: Default (:root level, no css class needed) -->
+
+    <!-- Blazor.Text.Editor | Theme: Visual Studio Dark Clone (:root level, no css class needed) -->
     <link href="_content/Blazor.Text.Editor/blazorTextEditorDefaultColors.css" rel="stylesheet"/>
-    
-    <!-- Blazor.Text.Editor | Theme: Visual Studio Dark Clone  -->
-    <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioDarkTheme.css" rel="stylesheet"/>
     <!-- Blazor.Text.Editor | Theme: Visual Studio Light Clone -->
     <link href="_content/Blazor.Text.Editor/Themes/blazorTextEditorVisualStudioLightTheme.css" rel="stylesheet"/>
 ```
 
-The following is a gif of me referencing the CSS
+The following is a gif of me referencing the CSS (the exact text pasted in this gif is outdated)
 
 ![Reference the CSS](/Images/Gifs/00_reference-css.gif)
 
 - Reference the JavaScript
 
-In my C# Project JavaScript files are referenced from wwwroot/index.html
+In my C# Project JavaScript files are referenced from Pages/_Layout.cshtml
 
 Go to the file that you reference JavaScript files from and add the following JavaScript reference below the Blazor framework JavaScript reference
 
 ```html
     <!-- Blazor.Text.Editor | Required JavaScript -->
+    <script src="_content/BlazorALaCarte.Shared/blazorShared.js"></script>
     <script src="_content/Blazor.Text.Editor/blazorTextEditor.js"></script>
 ```
 
-The following is a gif of me referencing the JavaScript
+The following is a gif of me referencing the JavaScript (the exact text pasted in this gif is outdated)
 
 ![Reference the JavaScript](/Images/Gifs/00_reference-js.gif)
 
