@@ -294,9 +294,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FIXBUG: User's text editor cursor appearing in the gutter, and any other {blank in gutter erroneously} situation
     - Details: The TextEditor's gutter and body have the css attribute `position: absolute`. Succinctly speaking to render the user interface correctly the `left: {WIDTH_OF_GUTTER}` had to be used on varying Blazor components.
 
-### 6.1.0 2022-12-30
+### 6.1.0 2023-01-04
 - `Vim Emulation` starting point.
-    - This update provides `Vim Emulation` moreso as a `proof of concept`. Everything is architected out for Vim Emulation to work - need to add a "keymap chord" like idea I realize after writing this README.md Hopefully I get to it before the 30th when this update goes out. -, however the keymap implementation itself `currently only has swapping from NormalMode to InsertMode and vice versa`.
 - `JavaScript Intersection Observer` returns for:
     - Identifying if a `Virtualization Boundary` is intersecting.
     - Identifying if the `Text Editor Cursor` is intersecting. (more specifically in the case of the cursor we are looking to see if it is not intersecting -- then we can `scroll it into view`).
