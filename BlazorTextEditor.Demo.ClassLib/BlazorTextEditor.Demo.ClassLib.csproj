@@ -7,12 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Blazor.Text.Editor" Version="6.1.0" />
       <PackageReference Include="Fluxor" Version="5.6.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\BlazorTextEditor.RazorLib\BlazorTextEditor.RazorLib.csproj" />
     </ItemGroup>
 
 </Project>
