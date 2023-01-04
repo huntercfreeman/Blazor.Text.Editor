@@ -18,13 +18,6 @@ public static class SyntaxVerbVim
             switch (keyboardEventArgs.Key)
             {
                 case "e":
-                {
-                    vimGrammarToken = new VimGrammarToken(
-                        VimGrammarKind.Verb,
-                        keyboardEventArgs);
-
-                    return true;
-                }
                 case "y":
                 {
                     vimGrammarToken = new VimGrammarToken(
@@ -39,14 +32,9 @@ public static class SyntaxVerbVim
         switch (keyboardEventArgs.Key)
         {
             case "d":
-            {
-                vimGrammarToken = new VimGrammarToken(
-                    VimGrammarKind.Verb,
-                    keyboardEventArgs);
-
-                return true;
-            }
             case "c":
+            case "y":
+            case "p":
             {
                 vimGrammarToken = new VimGrammarToken(
                     VimGrammarKind.Verb,
@@ -93,6 +81,12 @@ public static class SyntaxVerbVim
                 case "c":
                     textEditorCommand = TextEditorCommandVimFacts.Verbs.ChangeLine;
                     return true;
+                case "y":
+                    textEditorCommand = TextEditorCommandDefaultFacts.Copy;
+                    return true;
+                case "p":
+                    textEditorCommand = TextEditorCommandDefaultFacts.Paste;
+                    return true;
             }
         }
 
@@ -127,12 +121,16 @@ public static class SyntaxVerbVim
                     case "d":
                         textEditorCommand = TextEditorCommandVimFacts.Verbs.GetDeleteMotion(
                             innerTextEditorCommand);
-
                         return true;
                     case "c":
                         textEditorCommand = TextEditorCommandVimFacts.Verbs.GetChangeMotion(
                             innerTextEditorCommand);
-
+                        return true;
+                    case "y":
+                        textEditorCommand = TextEditorCommandDefaultFacts.Copy;
+                        return true;
+                    case "p":
+                        textEditorCommand = TextEditorCommandDefaultFacts.Paste;
                         return true;
                 }
             }

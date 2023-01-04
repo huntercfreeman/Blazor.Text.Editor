@@ -221,7 +221,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 {
                     ActiveVimMode = VimMode.Normal;
                     
-                    command = TextEditorCommandDefaultFacts.DoNothingDiscard;
+                    command = TextEditorCommandDefaultFacts.ClearTextSelection;
                     return true;
                 }
 
@@ -256,7 +256,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 {
                     ActiveVimMode = VimMode.Normal;
                     
-                    command = TextEditorCommandDefaultFacts.DoNothingDiscard;
+                    command = TextEditorCommandDefaultFacts.ClearTextSelection;
                     return true;
                 }
                 
