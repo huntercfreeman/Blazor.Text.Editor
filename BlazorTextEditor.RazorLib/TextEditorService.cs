@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.DialogNotification;
 using BlazorALaCarte.DialogNotification.Dialog;
 using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Storage;
@@ -67,7 +66,7 @@ public class TextEditorService : ITextEditorService
     public TextEditorStates TextEditorStates => _textEditorStates.Value;
     public ThemeRecord? GlobalThemeValue => TextEditorStates.GlobalTextEditorOptions.Theme;
     public string GlobalThemeCssClassString => TextEditorStates.GlobalTextEditorOptions.Theme?.CssClassString ?? string.Empty;
-    public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value}px;";
+    public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;";
     public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
     public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
     public int GlobalFontSizeInPixelsValue => TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value;

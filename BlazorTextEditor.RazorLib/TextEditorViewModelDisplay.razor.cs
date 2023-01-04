@@ -6,6 +6,7 @@ using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
@@ -85,6 +86,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorBaseChangedCancellationTokenSource = new();
+    private int _rerenderCount;
     private bool _disposed;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
@@ -153,6 +155,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _rerenderCount++;
+        
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
         if (firstRender && 
@@ -249,6 +253,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var command = TextEditorStatesWrap.Value.GlobalTextEditorOptions.KeymapDefinition!.Keymap.Map(
             keyboardEventArgs,
             hasSelection);
+        
+        if (KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE == keyboardEventArgs.Code &&
+            keyboardEventArgs.ShiftKey)
+        {
+            command = TextEditorCommandDefaultFacts.NewLineBelow;
+        }
 
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key) && 
             command is null)
@@ -772,7 +782,10 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (heightInPixels is null)
             return string.Empty;
 
-        return $"height: {heightInPixels.Value}px;";
+        var heightInPixelsInvariantCulture = heightInPixels.Value
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        return $"height: {heightInPixelsInvariantCulture}px;";
     }
 
     protected override void Dispose(bool disposing)

@@ -43,6 +43,10 @@ See the [CHANGELOG.md](/CHANGELOG.md) for release history.
 
 See the [ROADMAP.md](/ROADMAP.md) for planned future updates.
 
+## Features
+
+See the [FEATURES.md](/FEATURES.md) for a list of features.
+
 # Licence
 
 [MIT](https://opensource.org/licenses/MIT)

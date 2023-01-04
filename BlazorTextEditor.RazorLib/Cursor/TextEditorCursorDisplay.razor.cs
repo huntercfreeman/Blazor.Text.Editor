@@ -161,13 +161,26 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
                         TextEditorCursor.IndexCoordinates.columnIndex;
 
-        var left = $"left: {leftInPixels}px;";
+        var leftInPixelsInvariantCulture = leftInPixels.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var left = $"left: {leftInPixelsInvariantCulture}px;";
+
+        var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
+                                 TextEditorCursor.IndexCoordinates.rowIndex)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
         var top =
-            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"top: {topInPixelsInvariantCulture}px;";
         
+        var heightInPixelsInvariantCulture = TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
         
-        var width = $"width: {GlobalTextEditorOptions.CursorWidthInPixels!.Value}px;";
+        var height = $"height: {heightInPixelsInvariantCulture}px;";
+
+        var widthInPixelsInvariantCulture = GlobalTextEditorOptions.CursorWidthInPixels!.Value
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var width = $"width: {widthInPixelsInvariantCulture}px;";
 
         var keymapStyling = GlobalTextEditorOptions.KeymapDefinition!.Keymap
             .GetCursorCssStyleString(
@@ -182,15 +195,24 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     {
         var textEditor = TextEditorBase;
 
-        var top =
-            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * TextEditorCursor.IndexCoordinates.rowIndex}px;";
-        var height = $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-
-        var widthOfBody = textEditor.MostCharactersOnASingleRowTuple.rowLength *
-                          TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight
-                              .CharacterWidthInPixels;
+        var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
+                                 TextEditorCursor.IndexCoordinates.rowIndex)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
         
-        var width = $"width: {widthOfBody}px;";
+        var top = $"top: {topInPixelsInvariantCulture}px;";
+
+        var heightInPixelsInvariantCulture =
+            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
+                .ToString(System.Globalization.CultureInfo.InvariantCulture); 
+        
+        var height = $"height: {heightInPixelsInvariantCulture}px;";
+
+        var widthOfBodyInPixelsInvariantCulture = (textEditor.MostCharactersOnASingleRowTuple.rowLength *
+                                         TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight
+                                             .CharacterWidthInPixels)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var width = $"width: {widthOfBodyInPixelsInvariantCulture}px;";
 
         return $"{top} {width} {height}";
     }
@@ -219,14 +241,30 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
                         TextEditorCursor.IndexCoordinates.columnIndex;
 
-        var left = $"left: {leftInPixels}px;";
+        var leftInPixelsInvariantCulture = leftInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var left = $"left: {leftInPixelsInvariantCulture}px;";
 
+        var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
+                                 (TextEditorCursor.IndexCoordinates.rowIndex + 1))
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
         // Top is 1 row further than the cursor so it does not cover text at cursor position.
         var top =
-            $"top: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * (TextEditorCursor.IndexCoordinates.rowIndex + 1)}px;";
+            $"top: {topInPixelsInvariantCulture}px;";
 
-        var minWidth = $"min-Width: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * 16}px;";
-        var minHeight = $"min-height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * 4}px;";
+        var minWidthInPixelsInvariantCulture =
+            (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * 16)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var minWidth = $"min-Width: {minWidthInPixelsInvariantCulture}px;";
+        
+        var minHeightInPixelsInvariantCulture =
+            (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * 4)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var minHeight = $"min-height: {minHeightInPixelsInvariantCulture}px;";
 
         return $"{left} {top} {minWidth} {minHeight}";
     }

@@ -1,5 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
+using BlazorTextEditor.RazorLib.Keymap.Default;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;

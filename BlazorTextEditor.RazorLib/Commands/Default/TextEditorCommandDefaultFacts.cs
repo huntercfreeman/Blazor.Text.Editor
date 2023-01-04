@@ -7,16 +7,16 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Commands;
+namespace BlazorTextEditor.RazorLib.Commands.Default;
 
-public static class TextEditorCommandFacts
+public static class TextEditorCommandDefaultFacts
 {
     public static readonly TextEditorCommand DoNothingDiscard = new(
         _ => Task.CompletedTask,
         false,
         "DoNothingDiscard",
         "defaults_do-nothing-discard");
-    
+
     public static readonly TextEditorCommand Copy = new(
         async textEditorCommandParameter =>
         {
@@ -520,4 +520,84 @@ public static class TextEditorCommandFacts
         false,
         "Indent Less",
         "defaults_indent-less");
+    
+    public static readonly TextEditorCommand ClearTextSelection = new(
+        textEditorCommandParameter =>
+        {
+            textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
+            
+            return Task.CompletedTask;
+        },
+        false,
+        "ClearTextSelection",
+        "defaults_clear-text-selection");
+    
+    public static readonly TextEditorCommand NewLineBelow = new(
+        textEditorCommandParameter =>
+        {
+            textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
+            
+            var lengthOfRow = textEditorCommandParameter.TextEditorBase.GetLengthOfRow(
+                textEditorCommandParameter
+                    .PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex);
+
+            var temporaryIndexCoordinates = textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
+            
+            textEditorCommandParameter
+                    .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                (temporaryIndexCoordinates.rowIndex, lengthOfRow);
+            
+            textEditorCommandParameter.TextEditorService.InsertText(
+                new InsertTextTextEditorBaseAction(
+                    textEditorCommandParameter.TextEditorBase.Key,
+                    TextEditorCursorSnapshot.TakeSnapshots(
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),
+                    "\n",
+                    CancellationToken.None));
+            
+            return Task.CompletedTask;
+        },
+        false,
+        "NewLineBelow",
+        "defaults_new-line-below");
+    
+    public static readonly TextEditorCommand NewLineAbove = new(
+        textEditorCommandParameter =>
+        {
+            textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
+            
+            var temporaryIndexCoordinates = textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
+            
+            textEditorCommandParameter
+                    .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                (temporaryIndexCoordinates.rowIndex, 0);
+            
+            textEditorCommandParameter.TextEditorService.InsertText(
+                new InsertTextTextEditorBaseAction(
+                    textEditorCommandParameter.TextEditorBase.Key,
+                    TextEditorCursorSnapshot.TakeSnapshots(
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),
+                    "\n",
+                    CancellationToken.None));
+            
+            temporaryIndexCoordinates = textEditorCommandParameter
+                .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
+
+            if (temporaryIndexCoordinates.rowIndex > 1)
+            {
+                textEditorCommandParameter
+                        .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                    (temporaryIndexCoordinates.rowIndex - 1, 0);
+            }
+            
+            return Task.CompletedTask;
+        },
+        false,
+        "NewLineBelow",
+        "defaults_new-line-below");
 }

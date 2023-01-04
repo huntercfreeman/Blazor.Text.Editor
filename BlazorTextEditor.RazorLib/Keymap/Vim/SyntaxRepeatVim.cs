@@ -3,11 +3,11 @@ using System.Text;
 using BlazorTextEditor.RazorLib.Commands;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
+namespace BlazorTextEditor.RazorLib.Keymap.Vim;
 
-public static class VimRepeatFacts
+public static class SyntaxRepeatVim
 {
-    public static bool TryConstructRepeatToken(
+    public static bool TryLex(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
         out VimGrammarToken? vimGrammarToken)
@@ -25,7 +25,7 @@ public static class VimRepeatFacts
         {
             vimGrammarToken = new VimGrammarToken(
                 VimGrammarKind.Repeat,
-                keyboardEventArgs.Key);
+                keyboardEventArgs);
 
             return true;
         }
@@ -34,7 +34,7 @@ public static class VimRepeatFacts
         return false;
     }
 
-    public static bool TryParseVimSentence(
+    public static bool TryParse(TextEditorKeymapVim textEditorKeymapVim,
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
@@ -51,38 +51,46 @@ public static class VimRepeatFacts
 
             if (currentToken.VimGrammarKind == VimGrammarKind.Repeat)
             {
-                numberBuilder.Append(currentToken.TextValue);
+                numberBuilder.Append(currentToken.KeyboardEventArgs.Key);
                 modifiedIndexInSentence++;
             }
         }
         
         var intValue = Int32.Parse(numberBuilder.ToString());
 
-        var success = VimSentence.TryParseMoveNext(
+        var success = VimSentence.TryParseNextToken(
+            textEditorKeymapVim,
             sentenceSnapshot,
             modifiedIndexInSentence,
             keyboardEventArgs,
             hasTextSelection,
             out var innerTextEditorCommand);
 
-        var textEditorCommandDisplayName = 
-            $"Vim::Repeat(count: {intValue}," +
-            $" arg: {innerTextEditorCommand.DisplayName})";
+        if (success && 
+            innerTextEditorCommand is not null)
+        {
+            var textEditorCommandDisplayName = 
+                $"Vim::Repeat(count: {intValue}," +
+                $" arg: {innerTextEditorCommand.DisplayName})";
         
-        // Repeat the inner TextEditorCommand using a for loop
-        textEditorCommand = new TextEditorCommand(
-            async textEditorCommandParameter =>
-            {
-                for (int index = 0; index < intValue; index++)
+            // Repeat the inner TextEditorCommand using a for loop
+            textEditorCommand = new TextEditorCommand(
+                async textEditorCommandParameter =>
                 {
-                    await innerTextEditorCommand.DoAsyncFunc
-                        .Invoke(textEditorCommandParameter);
-                }
-            },
-            true,
-            textEditorCommandDisplayName,
-            textEditorCommandDisplayName);
-        
+                    for (int index = 0; index < intValue; index++)
+                    {
+                        await innerTextEditorCommand.DoAsyncFunc
+                            .Invoke(textEditorCommandParameter);
+                    }
+                },
+                true,
+                textEditorCommandDisplayName,
+                textEditorCommandDisplayName);
+        }
+        else
+        {
+            textEditorCommand = null;
+        }
         
         return success;
     }

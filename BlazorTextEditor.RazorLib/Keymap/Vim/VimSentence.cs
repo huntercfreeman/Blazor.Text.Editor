@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
+using BlazorTextEditor.RazorLib.Commands.Vim;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Keymap.VimKeymapSpecifics;
+namespace BlazorTextEditor.RazorLib.Keymap.Vim;
 
 public class VimSentence
 {
@@ -11,14 +13,11 @@ public class VimSentence
     public ImmutableArray<VimGrammarToken> PendingSentence => _pendingSentence
         .ToImmutableArray();
 
-    /// <summary>
-    /// TODO: Remove the argument "List&gt;(VimSentence, TextEditorCommand)&lt; textEditorCommandHistoryTuples". Am using it while developing to easily see what is going on.
-    /// </summary>
     public bool TryLex(
-        List<(ImmutableArray<VimGrammarToken>, TextEditorCommand)> textEditorCommandHistoryTuples,
+        TextEditorKeymapVim textEditorKeymapVim,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
-        out TextEditorCommand textEditorCommand)
+        out TextEditorCommand? textEditorCommand)
     {
         bool sentenceIsSyntacticallyComplete;
 
@@ -26,7 +25,7 @@ public class VimSentence
 
         if (mostRecentToken is null)
         {
-            sentenceIsSyntacticallyComplete = ContinueSentenceFromStart(
+            sentenceIsSyntacticallyComplete = ContinueFromStart(
                 keyboardEventArgs,
                 hasTextSelection);
         }
@@ -36,7 +35,7 @@ public class VimSentence
             {
                 case VimGrammarKind.Verb:
                 {
-                    sentenceIsSyntacticallyComplete = ContinueSentenceFromVerb(
+                    sentenceIsSyntacticallyComplete = ContinueFromVerb(
                         keyboardEventArgs,
                         hasTextSelection);
                 
@@ -44,7 +43,7 @@ public class VimSentence
                 }
                 case VimGrammarKind.Modifier:
                 {
-                    sentenceIsSyntacticallyComplete = ContinueSentenceFromModifier(
+                    sentenceIsSyntacticallyComplete = ContinueFromModifier(
                         keyboardEventArgs,
                         hasTextSelection);
                 
@@ -52,7 +51,7 @@ public class VimSentence
                 }
                 case VimGrammarKind.TextObject:
                 {
-                    sentenceIsSyntacticallyComplete = ContinueSentenceFromTextObject(
+                    sentenceIsSyntacticallyComplete = ContinueFromTextObject(
                         keyboardEventArgs,
                         hasTextSelection);
                 
@@ -60,7 +59,7 @@ public class VimSentence
                 }
                 case VimGrammarKind.Repeat:
                 {
-                    sentenceIsSyntacticallyComplete = ContinueSentenceFromRepeat(
+                    sentenceIsSyntacticallyComplete = ContinueFromRepeat(
                         keyboardEventArgs,
                         hasTextSelection);
                 
@@ -80,29 +79,33 @@ public class VimSentence
             var sentenceSnapshot = PendingSentence;
             _pendingSentence.Clear();
             
-            return TryParseVimSentence(
-                textEditorCommandHistoryTuples,
+            return TryParseNextToken(
+                textEditorKeymapVim,
                 sentenceSnapshot,
+                0,
                 keyboardEventArgs,
                 hasTextSelection,
                 out textEditorCommand);
         }
 
-        textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
+        textEditorCommand = TextEditorCommandDefaultFacts.DoNothingDiscard;
         return true;
     }
 
-    private bool ContinueSentenceFromStart(
+    private bool ContinueFromStart(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimVerbFacts.TryConstructVerbToken( // Example: "d..." is valid albeit incomplete
+        _ = SyntaxVerbVim.TryLex(
+                // Example: "d..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "w" => move cursor forward until reaching the next word.
+            SyntaxTextObjectVim.TryLex(
+                // Example: "w" => move cursor forward until reaching the next word.
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeatToken( // Example: "3..." is valid albeit incomplete
+            SyntaxRepeatVim.TryLex(
+                // Example: "3..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -115,13 +118,26 @@ public class VimSentence
         {
             case VimGrammarKind.Verb:
             {
+                if (keyboardEventArgs.CtrlKey)
+                {
+                    // This if case relates to 'Ctrl + e' which does not get
+                    // double tapped instead it only takes one press of the keymap
+                    
+                    _pendingSentence.Clear();
+                    _pendingSentence.Add(vimGrammarToken);
+                    
+                    return true;
+                }
+                
+                if (hasTextSelection)
+                {
+                    _pendingSentence.Clear();
+                    _pendingSentence.Add(vimGrammarToken);
+                    
+                    return true;
+                }
+                
                 _pendingSentence.Add(vimGrammarToken);
-                return false;
-            }
-            case VimGrammarKind.Modifier:
-            {
-                // VimGrammarKind.Modifier is
-                // invalid here so ignore and keep VimGrammarKind.Start
                 return false;
             }
             case VimGrammarKind.TextObject:
@@ -139,17 +155,17 @@ public class VimSentence
         return false;
     }
     
-    private bool ContinueSentenceFromVerb(
+    private bool ContinueFromVerb(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimVerbFacts.TryConstructVerbToken( // Example: "dd" => delete line
+        _ = SyntaxVerbVim.TryLex( // Example: "dd" => delete line
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "dw" => delete word
+            SyntaxTextObjectVim.TryLex( // Example: "dw" => delete word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeatToken( // Example: "d3..." is valid albeit incomplete
+            SyntaxRepeatVim.TryLex( // Example: "d3..." is valid albeit incomplete
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -162,16 +178,27 @@ public class VimSentence
         {
             case VimGrammarKind.Verb:
             {
-                if (_pendingSentence.Last().TextValue == vimGrammarToken.TextValue)
+                if (_pendingSentence.Last().KeyboardEventArgs.Key == vimGrammarToken.KeyboardEventArgs.Key)
                 {
                     _pendingSentence.Add(vimGrammarToken);
+                    return true;
+                }
+
+                if (keyboardEventArgs.CtrlKey)
+                {
+                    // This if case relates to 'Ctrl + e' which does not get
+                    // double tapped instead it only takes one press of the keymap
+                    
+                    _pendingSentence.Clear();
+                    _pendingSentence.Add(vimGrammarToken);
+                    
                     return true;
                 }
 
                 // The verb was overriden so restart sentence
                 _pendingSentence.Clear();
                 
-                return ContinueSentenceFromStart(
+                return ContinueFromStart(
                     keyboardEventArgs,
                     hasTextSelection);
             }
@@ -195,13 +222,13 @@ public class VimSentence
         return false;
     }
     
-    private bool ContinueSentenceFromModifier(
+    private bool ContinueFromModifier(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimTextObjectFacts.TryConstructTextObjectToken( // Example: "diw" => delete inner word
+        _ = SyntaxTextObjectVim.TryLex( // Example: "diw" => delete inner word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -222,7 +249,7 @@ public class VimSentence
         return false;
     }
 
-    private bool ContinueSentenceFromTextObject(
+    private bool ContinueFromTextObject(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
@@ -231,17 +258,17 @@ public class VimSentence
         return false;
     }
     
-    private bool ContinueSentenceFromRepeat(
+    private bool ContinueFromRepeat(
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection)
     {
         VimGrammarToken? vimGrammarToken;
 
-        _ = VimVerbFacts.TryConstructVerbToken( // Example: "3dd" => 3 times do delete line
+        _ = SyntaxVerbVim.TryLex( // Example: "3dd" => 3 times do delete line
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimTextObjectFacts.TryConstructTextObjectToken( // Example: "3w" => 3 times do move cursor to the start of next word
+            SyntaxTextObjectVim.TryLex( // Example: "3w" => 3 times do move cursor to the start of next word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken) ||
-            VimRepeatFacts.TryConstructRepeatToken( // Example: "27w" => 27 times do move cursor to the start of next word
+            SyntaxRepeatVim.TryLex( // Example: "27w" => 27 times do move cursor to the start of next word
                 keyboardEventArgs, hasTextSelection, out vimGrammarToken);
 
         if (vimGrammarToken is null)
@@ -272,100 +299,88 @@ public class VimSentence
         return false;
     }
 
-    /// <summary>
-    /// It is expected that one will only invoke <see cref="TryParseVimSentence"/> when
-    /// the Lexed sentence is syntactically complete. This method will then
-    /// semantically interpret the sentence.
-    /// <br/><br/>
-    /// TODO: Remove the argument "List&gt;(VimSentence, TextEditorCommand)&lt; textEditorCommandHistoryTuples". Am using it while developing to easily see what is going on.
-    /// </summary>
-    /// <returns>
-    /// Returns true if a sentence was successfully parsed into a <see cref="TextEditorCommand"/>
-    /// <br/><br/>
-    /// Returns false if a sentence not able to be parsed.
-    /// </returns>
-    public bool TryParseVimSentence(
-        List<(ImmutableArray<VimGrammarToken>, TextEditorCommand)> textEditorCommandHistoryTuples,
-        ImmutableArray<VimGrammarToken> sentenceSnapshot,
-        KeyboardEventArgs keyboardEventArgs,
-        bool hasTextSelection,
-        out TextEditorCommand textEditorCommand)
-    {
-        var firstToken = sentenceSnapshot.FirstOrDefault();
-
-        var success = false;
-
-        if (firstToken is null)
-        {
-            textEditorCommand = TextEditorCommandFacts.DoNothingDiscard;
-        }
-        else
-        {
-            success = TryParseMoveNext(
-                sentenceSnapshot,
-                0,
-                keyboardEventArgs,
-                hasTextSelection,
-                out textEditorCommand);
-        }
-
-        textEditorCommandHistoryTuples.Add((sentenceSnapshot, textEditorCommand));
-        return success;
-    }
-
-    public static bool TryParseMoveNext(
+    public static bool TryParseNextToken(
+        TextEditorKeymapVim textEditorKeymapVim,
         ImmutableArray<VimGrammarToken> sentenceSnapshot,
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
-        out TextEditorCommand textEditorCommand)
+        out TextEditorCommand? textEditorCommand)
     {
+        if (indexInSentence >= sentenceSnapshot.Length)
+        {
+            textEditorCommand = null;
+            return false;
+        }
+
         var currentToken = sentenceSnapshot[indexInSentence];
+
+        var success = false;
         
         switch (currentToken.VimGrammarKind)
         {
             case VimGrammarKind.Verb:
-            {
-                return VimVerbFacts.TryParseVimSentence(
+                success = SyntaxVerbVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
-            }
+
+                break;
             case VimGrammarKind.Modifier:
-            {
-                return VimModifierFacts.TryParseVimSentence(
+                success = SyntaxModifierVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
-            }
+                
+                break;
             case VimGrammarKind.TextObject:
-            {
-                return VimTextObjectFacts.TryParseVimSentence(
+                success = SyntaxTextObjectVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
-            }
+                
+                break;
             case VimGrammarKind.Repeat:
-            {
-                return VimRepeatFacts.TryParseVimSentence(
+                success = SyntaxRepeatVim.TryParse(
+                    textEditorKeymapVim,
                     sentenceSnapshot,
                     indexInSentence,
                     keyboardEventArgs,
                     hasTextSelection,
                     out textEditorCommand);
-            }
+                
+                break;
             default:
-            {
                 throw new ApplicationException(
                     $"The {nameof(VimGrammarKind)}:" +
                     $" {sentenceSnapshot.Last().VimGrammarKind} was not recognized.");
+        }
+
+        if (success &&
+            textEditorCommand is not null)
+        {
+            if (textEditorKeymapVim.ActiveVimMode == VimMode.Visual)
+            {
+                textEditorCommand = TextEditorCommandVimFacts.Motions
+                    .GetVisual(textEditorCommand, textEditorCommand.DisplayName);
+            }
+            
+            if (textEditorKeymapVim.ActiveVimMode == VimMode.VisualLine)
+            {
+                textEditorCommand = TextEditorCommandVimFacts.Motions
+                    .GetVisualLine(textEditorCommand, textEditorCommand.DisplayName);
             }
         }
+
+        return success;
     }
 }

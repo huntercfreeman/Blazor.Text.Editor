@@ -45,9 +45,12 @@ public partial class BodySection : ComponentBase
         gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
-        var left = $"left: {gutterWidthInPixels}px;";
+        var gutterWidthInPixelsInvariantCulture = gutterWidthInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture); 
 
-        var width = $"width: calc(100% - {gutterWidthInPixels}px);";
+        var left = $"left: {gutterWidthInPixelsInvariantCulture}px;";
+
+        var width = $"width: calc(100% - {gutterWidthInPixelsInvariantCulture}px);";
 
         return $"{width} {left}";
     }

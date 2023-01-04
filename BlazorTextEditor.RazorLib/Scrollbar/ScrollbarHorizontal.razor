@@ -8,7 +8,8 @@
      @onclick:stopPropagation="true"
      @oncontextmenu:stopPropagation="true">
     
-     <div class="bte_scrollbar-slider"
-        style="bottom: 0; height: @(ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS)px; @GetSliderHorizontalStyleCss()">
-   </div>
+    <div class="bte_scrollbar-slider"
+         style="bottom: 0; height: @(ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS.ToString(System.Globalization.CultureInfo.InvariantCulture))px; @GetSliderHorizontalStyleCss()">
+        
+    </div>
 </div>

@@ -37,10 +37,18 @@ public partial class GutterSection : ComponentBase
 
     private string GetGutterStyleCss(int index)
     {
-        var top =
-            $"top: {index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+        var topInPixelsInvariantCulture =
+            (index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var top = $"top: {topInPixelsInvariantCulture}px;";
+        
+        var heightInPixelsInvariantCulture =
+            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
         var height =
-            $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+            $"height: {heightInPixelsInvariantCulture}px;";
 
         var mostDigitsInARowLineNumber = TextEditorBase.RowCount
             .ToString()
@@ -52,12 +60,19 @@ public partial class GutterSection : ComponentBase
         widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
-        var width = $"width: {widthInPixels}px;";
+        var widthInPixelsInvariantCulture = widthInPixels.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var width = $"width: {widthInPixelsInvariantCulture}px;";
 
-        var paddingLeft =
-            $"padding-left: {TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS}px;";
-        var paddingRight =
-            $"padding-right: {TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS}px;";
+        var paddingLeftInPixelsInvariantCulture = TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var paddingLeft = $"padding-left: {paddingLeftInPixelsInvariantCulture}px;";
+        
+        var paddingRightInPixelsInvariantCulture = TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var paddingRight = $"padding-right: {paddingRightInPixelsInvariantCulture}px;";
 
         return $"{width} {height} {top} {paddingLeft} {paddingRight}";
     }
@@ -73,8 +88,10 @@ public partial class GutterSection : ComponentBase
 
         widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
                          TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+        
+        var widthInPixelsInvariantCulture = widthInPixels.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        var width = $"width: {widthInPixels}px;";
+        var width = $"width: {widthInPixelsInvariantCulture}px;";
 
         return width;
     }

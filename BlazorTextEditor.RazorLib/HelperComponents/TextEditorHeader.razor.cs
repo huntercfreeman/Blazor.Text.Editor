@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
@@ -64,7 +65,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Copy;
+        var command = TextEditorCommandDefaultFacts.Copy;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -85,7 +86,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Cut;
+        var command = TextEditorCommandDefaultFacts.Cut;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -106,7 +107,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Paste;
+        var command = TextEditorCommandDefaultFacts.Paste;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -127,7 +128,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Redo;
+        var command = TextEditorCommandDefaultFacts.Redo;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -148,7 +149,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Save;
+        var command = TextEditorCommandDefaultFacts.Save;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -169,7 +170,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Undo;
+        var command = TextEditorCommandDefaultFacts.Undo;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -190,7 +191,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.SelectAll;
+        var command = TextEditorCommandDefaultFacts.SelectAll;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -211,7 +212,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Remeasure;
+        var command = TextEditorCommandDefaultFacts.Remeasure;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -232,7 +233,7 @@ public partial class TextEditorHeader : TextEditorView
             textEditor,
             textEditorViewModel);
 
-        var command = TextEditorCommandFacts.Remeasure;
+        var command = TextEditorCommandDefaultFacts.Remeasure;
         
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);

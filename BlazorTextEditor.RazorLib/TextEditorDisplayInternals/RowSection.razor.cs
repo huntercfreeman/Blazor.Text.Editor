@@ -42,12 +42,22 @@ public partial class RowSection : ComponentBase
 
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
-        var top =
-            $"top:{index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+        var topInPixelsInvariantCulture =
+            (index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var top = $"top: {topInPixelsInvariantCulture}px;";
 
-        var left = $"left: {virtualizedRowLeftInPixels}px;";
+        var heightInPixelsInvariantCulture =
+            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
+                .ToString(System.Globalization.CultureInfo.InvariantCulture); 
+        
+        var height = $"height: {heightInPixelsInvariantCulture}px;";
+
+        var virtualizedRowLeftInPixelsInvariantCulture = virtualizedRowLeftInPixels.GetValueOrDefault()
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var left = $"left: {virtualizedRowLeftInPixelsInvariantCulture}px;";
 
         return $"{top} {height} {left}";
     }

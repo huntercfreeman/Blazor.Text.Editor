@@ -46,10 +46,17 @@ public partial class TextSelectionGroup : ComponentBase
             fullWidthOfRowIsSelected = false;
         }
 
-        var top =
-            $"top: {rowIndex * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
-        var height =
-            $"height: {TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels}px;";
+        var topInPixelsInvariantCulture =
+            (rowIndex * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var top = $"top: {topInPixelsInvariantCulture}px;";
+
+        var heightInPixelsInvariantCulture =
+            (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var selectionStartInPixels =
             selectionStartingColumnIndex *
@@ -71,7 +78,10 @@ public partial class TextSelectionGroup : ComponentBase
                                       TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
-        var left = $"left: {selectionStartInPixels}px;";
+        var selectionStartInPixelsInvariantCulture = selectionStartInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var left = $"left: {selectionStartInPixelsInvariantCulture}px;";
 
         var selectionWidthInPixels =
             selectionEndingColumnIndex *
@@ -105,13 +115,19 @@ public partial class TextSelectionGroup : ComponentBase
             fullWidthValue = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
         }
         
+        var fullWidthValueInPixelsInvariantCulture = fullWidthValue
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var selectionWidthInPixelsInvariantCulture = selectionWidthInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
         if (fullWidthOfRowIsSelected)
-            widthCssStyleString += $"{fullWidthValue}px;";
+            widthCssStyleString += $"{fullWidthValueInPixelsInvariantCulture}px;";
         else if (selectionStartingColumnIndex != 0 &&
                  upperPositionIndexExclusive > endOfRowTuple.positionIndex - 1)
-            widthCssStyleString += $"calc({fullWidthValue}px - {selectionStartInPixels}px);";
+            widthCssStyleString += $"calc({fullWidthValueInPixelsInvariantCulture}px - {selectionStartInPixelsInvariantCulture}px);";
         else
-            widthCssStyleString += $"{selectionWidthInPixels}px;";
+            widthCssStyleString += $"{selectionWidthInPixelsInvariantCulture}px;";
 
         return $"{top} {height} {left} {widthCssStyleString}";
     }

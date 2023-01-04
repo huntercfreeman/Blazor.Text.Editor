@@ -49,7 +49,10 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         var scrollbarWidthInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width -
                                   ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
-        var width = $"width: {scrollbarWidthInPixels}px;";
+        var scrollbarWidthInPixelsInvariantCulture = scrollbarWidthInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        var width = $"width: {scrollbarWidthInPixelsInvariantCulture}px;";
 
         return width;
     }
@@ -63,8 +66,11 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         var sliderProportionalLeftInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollLeft *
                                              scrollbarWidthInPixels /
                                              TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
+        
+        var sliderProportionalLeftInPixelsInvariantCulture = sliderProportionalLeftInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        var left = $"left: {sliderProportionalLeftInPixels}px;";
+        var left = $"left: {sliderProportionalLeftInPixelsInvariantCulture}px;";
         
         // Proportional Width
         var pageWidth = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
@@ -72,8 +78,11 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         var sliderProportionalWidthInPixels = pageWidth *
                                               scrollbarWidthInPixels /
                                               TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
+        
+        var sliderProportionalWidthInPixelsInvariantCulture = sliderProportionalWidthInPixels
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        var width = $"width: {sliderProportionalWidthInPixels}px;";
+        var width = $"width: {sliderProportionalWidthInPixelsInvariantCulture}px;";
         
         return $"{left} {width}";
     }

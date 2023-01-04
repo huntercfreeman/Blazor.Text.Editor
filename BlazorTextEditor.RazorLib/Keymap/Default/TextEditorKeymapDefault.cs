@@ -1,11 +1,12 @@
 ﻿using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Keymap;
+namespace BlazorTextEditor.RazorLib.Keymap.Default;
 
 public class TextEditorKeymapDefault : ITextEditorKeymap
 {
@@ -47,11 +48,17 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
                 keyboardEventArgs,
                 hasTextSelection);
         }
+
+        if (keyboardEventArgs.ShiftKey &&
+            KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE == keyboardEventArgs.Code)
+        {
+            return TextEditorCommandDefaultFacts.NewLineBelow;
+        }
             
         return keyboardEventArgs.Key switch
         {
-            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.ScrollPageDown,
-            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.ScrollPageUp,
+            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandDefaultFacts.ScrollPageDown,
+            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandDefaultFacts.ScrollPageUp,
             _ => null,
         };
     }
@@ -65,18 +72,18 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
 
         var command = keyboardEventArgs.Key switch
         {
-            "x" => TextEditorCommandFacts.Cut,
-            "c" => TextEditorCommandFacts.Copy,
-            "v" => TextEditorCommandFacts.Paste,
-            "s" => TextEditorCommandFacts.Save,
-            "a" => TextEditorCommandFacts.SelectAll,
-            "z" => TextEditorCommandFacts.Undo,
-            "y" => TextEditorCommandFacts.Redo,
-            "d" => TextEditorCommandFacts.Duplicate,
-            KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandFacts.ScrollLineDown,
-            KeyboardKeyFacts.MovementKeys.ARROW_UP => TextEditorCommandFacts.ScrollLineUp,
-            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandFacts.CursorMovePageBottom,
-            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandFacts.CursorMovePageTop,
+            "x" => TextEditorCommandDefaultFacts.Cut,
+            "c" => TextEditorCommandDefaultFacts.Copy,
+            "v" => TextEditorCommandDefaultFacts.Paste,
+            "s" => TextEditorCommandDefaultFacts.Save,
+            "a" => TextEditorCommandDefaultFacts.SelectAll,
+            "z" => TextEditorCommandDefaultFacts.Undo,
+            "y" => TextEditorCommandDefaultFacts.Redo,
+            "d" => TextEditorCommandDefaultFacts.Duplicate,
+            KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandDefaultFacts.ScrollLineDown,
+            KeyboardKeyFacts.MovementKeys.ARROW_UP => TextEditorCommandDefaultFacts.ScrollLineUp,
+            KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandDefaultFacts.CursorMovePageBottom,
+            KeyboardKeyFacts.MetaKeys.PAGE_UP => TextEditorCommandDefaultFacts.CursorMovePageTop,
             _ => null,
         };
 
@@ -84,8 +91,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         {
             command = keyboardEventArgs.Code switch
             {
-                KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE => 
-                    TextEditorCommandFacts.DoNothingDiscard,
+                KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE => TextEditorCommandDefaultFacts.NewLineAbove,
                 _ => null,
             };
         }
@@ -118,9 +124,9 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
         if (keyboardEventArgs.Code == KeyboardKeyFacts.WhitespaceCodes.TAB_CODE)
         {
             if (keyboardEventArgs.ShiftKey)
-                return TextEditorCommandFacts.IndentLess;
+                return TextEditorCommandDefaultFacts.IndentLess;
             else
-                return TextEditorCommandFacts.IndentMore;
+                return TextEditorCommandDefaultFacts.IndentMore;
         }
         
         return null;

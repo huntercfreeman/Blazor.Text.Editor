@@ -1,0 +1,16 @@
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div class="bte_command-bar"
+     @onmousedown:stopPropagation="true"
+     @onmousemove:stopPropagation="true"
+     @ondblclick:stopPropagation="true"
+     @onclick:stopPropagation="true"
+     @oncontextmenu:stopPropagation="true"
+     @onkeydown:stopPropagation="true">
+    
+    <input class="bstudio_input bstudio_input-text bte_command-bar-input"
+           @bind="@TextEditorViewModel.CommandBarValue"
+           @bind:event="oninput"
+           @ref="_commandBarDisplayElementReference"
+           @onkeydown="HandleOnKeyDown"/>
+</div> 

@@ -22,7 +22,8 @@ public class TextEditorViewModelsCollectionReducer
             registerTextEditorViewModelAction.TextEditorKey,
             registerTextEditorViewModelAction.TextEditorService,
             VirtualizationResult<List<RichCharacter>>.GetEmptyRichCharacters(),
-            true);
+            true,
+            false);
 
         var nextViewModelsList = previousTextEditorViewModelsCollection.ViewModelsList
             .Add(viewModel);

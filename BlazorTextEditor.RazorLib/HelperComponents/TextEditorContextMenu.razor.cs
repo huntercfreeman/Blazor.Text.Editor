@@ -3,6 +3,7 @@ using BlazorALaCarte.Shared.Clipboard;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorALaCarte.Shared.Menu;
 using BlazorTextEditor.RazorLib.Commands;
+using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 using BlazorTextEditor.RazorLib.TextEditor;
@@ -126,7 +127,7 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
     {
         var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
-        var command = TextEditorCommandFacts.Cut;
+        var command = TextEditorCommandDefaultFacts.Cut;
     
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -136,7 +137,7 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
     {
         var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
-        var command = TextEditorCommandFacts.Copy;
+        var command = TextEditorCommandDefaultFacts.Copy;
     
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
@@ -146,7 +147,7 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
     {
         var textEditorCommandParameter = ConstructTextEditorCommandParameter();
 
-        var command = TextEditorCommandFacts.Paste;
+        var command = TextEditorCommandDefaultFacts.Paste;
     
         await command.DoAsyncFunc.Invoke(
             textEditorCommandParameter);
