@@ -107,6 +107,6 @@ div.top-row:not(.navbar) {
     height: fit-content;
 }
 
-.bte_demo-text-editor .bte_text-editor {
-    min-height: 200px;
+.bte_text-editor-input-cursor-size .bte_text-editor {
+    min-height: initial;
 }
