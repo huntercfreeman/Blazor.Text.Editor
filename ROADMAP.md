@@ -17,6 +17,9 @@
     - TypeScript
 
 ### 6.0.0 (2022-12-30)
+- Multiple views
+- These multiple views can be of the same underlying TextEditorBase.
+- Changes to the underlying TextEditorBase are to notify ALL Blazor components related to that TextEditorBase instance that they should re-render.
 - Changes the already existing "TextEditorBase" class to instead be a model of a "unique file" if one uses the file system as an example use case.
 - Added the class "TextEditorViewModel". This class acts contains any state one previously found on the Blazor Component: "TextEditorDisplay.razor". This allows one to maintain the TextEditorCursor position for example as its state is no longer tied to the lifecycle of the "TextEditorDisplay.razor" Blazor Component.
 - Rename "TextEditorDisplay.razor" to "TextEditorViewModelDisplay.razor" and change the Blazor Parameter from "TextEditorKey" to "TextEditorViewModelKey"
@@ -27,6 +30,10 @@
 ### 6.1.0 (2023-01-04)
 - Fix computed CSS style strings when dealing with localization and the locations decimal delimiter. (Example: An individual in Portugal did not have the text editor render correctly because the interpolated string did a .ToString() on a double with his local decimal delimiter. So the HTML element had a style attribute with value of "left: 5,33px" when it should be "left: 5.33px"
 - Add Vim Emulation
+
+### 6.2.0 (2023-01-20)
+- Diff Viewer (EDITABLE)
+- Diff Viewer (READONLY)
 
 ### ?.?.?
 - Autocomplete is to be finished
@@ -42,12 +49,6 @@
 ### ?.?.?
 - Notifications
 - Searching and replacing
-
-### ?.?.?
-- Multiple views
-- These multiple views can be of the same underlying TextEditorBase.
-- Changes to the underlying TextEditorBase are to notify ALL Blazor components related to that TextEditorBase instance that they should re-render.
-- Diff viewer
 
 ### ?.?.?
 - Proportional fonts
