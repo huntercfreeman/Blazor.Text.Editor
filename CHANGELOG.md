@@ -295,7 +295,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Details: The TextEditor's gutter and body have the css attribute `position: absolute`. Succinctly speaking to render the user interface correctly the `left: {WIDTH_OF_GUTTER}` had to be used on varying Blazor components.
 
 ### 6.1.0 2023-01-04
-- `Vim Emulation` starting point.
+- Fix computed CSS style strings when dealing with localization and the locations decimal delimiter. Example: An individual in Portugal did not have the text editor render correctly because the interpolated string did a .ToString() on a double with his local decimal delimiter. So the HTML element had a style attribute with value of "left: 5,33px" when it should be "left: 5.33px"
+- Add Vim Emulation
 - `JavaScript Intersection Observer` returns for:
     - Identifying if a `Virtualization Boundary` is intersecting.
     - Identifying if the `Text Editor Cursor` is intersecting. (more specifically in the case of the cursor we are looking to see if it is not intersecting -- then we can `scroll it into view`).
