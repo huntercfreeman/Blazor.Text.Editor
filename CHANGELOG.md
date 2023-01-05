@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2022-10-11 (Initial Release)
 
-### Added
+<details>
+  <summary>Click to show changes</summary>
+
+  ### Added
 
 - TextEditorDisplay Blazor Component
 - Keyboard Movements
@@ -59,25 +62,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   location of the editor.
 - IDecorationMapper API allows one to map a byte named 'DecorationByte' that exists on TextEditorTextSpan to a string
   that represents a CSS class to put on the rendered content.
+</details>
+
+---
 
 ## [3.2.0]
 
-### Bug Was Erroneously Added
+<details>
+  <summary>Click to show changes</summary>
+
+  ### Bug Was Erroneously Added
 
 - A bug was erroneously added where when user selected the last character of the document and then pressed ArrowRight.
   The cursor would move 1 character out of the document. Then you get an index out of bounds exception if you hit arrow
   right 1 more time.
+</details>
+
+---
 
 ## [4.1.0]
 
-### Bug Fix
+<details>
+  <summary>Click to show changes</summary>
+
+  ### Bug Fix
 
 - Exception was being thrown when user selected the last character of the document and then pressed ArrowRight.
     - This bug was occurring starting 3.2.0
+</details>
+
+---
 
 ## [5.0.0]
 
-### Added
+<details>
+  <summary>Click to show changes</summary>
+
+  ### Added
 
 - Razor Syntax Highlighting
 - Automatic LocalStorage integration (Optional)
@@ -168,42 +189,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bug fix: Pasting carriage return will now paste the LineEnding being used in the TextEditor instead of being treated as two separate newline characters.
 - Throttle syntax highlighting 1 second
 - 50 ms on mouse move throttle
+</details>
+
+---
 
 ## [5.1.0] - 2022-11-25 (Scrolling Changes)
 
-### Added
+<details>
+  <summary>Click to show changes</summary>
+
+  ### Added
 
 - Keymap
-    - PageDown
-        - Scroll vertically down at most the height of the view
-    - PageUp
-        - Scroll vertically up at most the height of the view
-    - Ctrl + PageDown
-        - Move cursor to the last viewable row given the current view.
-    - Ctrl + PageUp
-        - Move cursor to the first viewable row given the current view.
-    - Ctrl + ArrowDown
-        - Scroll the view down by the height of one line without moving the cursor.
-    - Ctrl + ArrowUp
-        - Scroll the view up by the height of one line without moving the cursor.
+    - PageDown: Scroll vertically down at most the height of the view
+    - PageUp: Scroll vertically up at most the height of the view
+    - Ctrl + PageDown: Move cursor to the last viewable row given the current view.
+    - Ctrl + PageUp: Move cursor to the first viewable row given the current view.
+    - Ctrl + ArrowDown: Scroll the view down by the height of one line without moving the cursor.
+    - Ctrl + ArrowUp: Scroll the view up by the height of one line without moving the cursor.
 - Scrollbar changes
     - The scrollbars are now custom made by way of overflow: hidden as opposed to the native scrollbars that were used by way of overflow: auto.
-    - Now will prevent propagation on all mouse events when interacting with the scrollbar.
-        - Explanation: previously clicking the native scrollbar would propagate that click event to the text editor causing a janky and mostly unusable scrolling behavior to occur.
+    - Now will prevent propagation on all mouse events when interacting with the scrollbar. Explanation: previously clicking the native scrollbar would propagate that click event to the text editor causing a janky and mostly unusable scrolling behavior to occur.
     - Scrolling the cursor into view if it is out of view is now done using C# as opposed to the way it was of a JavaScript intersection observer.
-    - A keyboard event which results in the cursor going out of view will automatically scroll the cursor into view.
-        - Explanation: previously a cursor going out of view would sometimes not scroll the cursor into view
+    - A keyboard event which results in the cursor going out of view will automatically scroll the cursor into view. Explanation: previously a cursor going out of view would sometimes not scroll the cursor into view
                     until the next keyboard event after having gone out of view.
     - The line numbers are no longer part of the horizontal scrollbar.
-    - Fixed cursor rendering erroneously within the gutter.
-        - Explanation: When scrolling horizontally beyond a scrollLeft of 0. It previously was the case that a keyboard event which brought the cursor to column 0 would display the cursor inside the gutter/margin because the scrollLeft was not accounting for the gutter width.
+    - Fixed cursor rendering erroneously within the gutter. Explanation: When scrolling horizontally beyond a scrollLeft of 0. It previously was the case that a keyboard event which brought the cursor to column 0 would display the cursor inside the gutter/margin because the scrollLeft was not accounting for the gutter width.
 - ILexer changes
-    - F# ILexer added
-        - Keywords are syntax highlighted
-    - JavaScript ILexer
-        - Keywords are syntax highlighted
-    - TypeScript ILexer
-        - Keywords are syntax highlighted
+    - F# ILexer added: Keywords are syntax highlighted
+    - JavaScript ILexer: Keywords are syntax highlighted
+    - TypeScript ILexer: Keywords are syntax highlighted
 - TextEditorLexerDefault rename
 - TextEditorDecorationMapperDefault rename
 
@@ -218,10 +233,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Something weird regarding carriage return line feed is happening here. 
     - I saw the length of the document go up by 1 for the CR. 
     - But then the LF which has a length of 1 added 2 length.
+</details>
+
+---
 
 ## [5.2.0] - 2022-12-07 (ILexer and Syntax Highlighting Changes)
 
-### Added
+<details>
+  <summary>Click to show changes</summary>
+
+  ### Added
 
 - Helper Components
     - TextEditorInputHeight.razor provides an input of type number to allow setting of text editor height to a pixel value.
@@ -284,18 +305,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FIXED: When doing horizontal virtualization it seems tab key width is not accounted for?
     - Seeing nothing when using tab key to put text horizontally out of view then horizontally scrolling that text into view.
     - Proceeding to put an enter key to split the line and all the text appears again.
+</details>
+
+---
 
 ### 6.0.0 2022-12-23
 
-- Instead of only having `TextEditorBase.cs` see the following child bullet points for all previous and new C# Classes that directly relate to a Text Editor.
+<details>
+  <summary>Click to show changes</summary>
+
+  - Instead of only having `TextEditorBase.cs` see the following child bullet points for all previous and new C# Classes that directly relate to a Text Editor.
     - `TextEditorBase.cs` maps to a unique file. Perhaps it might be a file on ones filesystem.
     - `TextEditorViewModel.cs` maps to the user interface state for a `TextEditorViewModelDisplay.razor`.
     - `TextEditorGroup.cs` maps to the tab state of a `TextEditorGroupDisplay.razor`.
 - FIXBUG: User's text editor cursor appearing in the gutter, and any other {blank in gutter erroneously} situation
     - Details: The TextEditor's gutter and body have the css attribute `position: absolute`. Succinctly speaking to render the user interface correctly the `left: {WIDTH_OF_GUTTER}` had to be used on varying Blazor components.
+</details>
+
+---
 
 ### 6.1.0 2023-01-04
-- Fix computed CSS style strings when dealing with localization and the locations decimal delimiter. Example: An individual in Portugal did not have the text editor render correctly because the interpolated string did a .ToString() on a double with his local decimal delimiter. So the HTML element had a style attribute with value of "left: 5,33px" when it should be "left: 5.33px"
+
+<details>
+  <summary>Click to show changes</summary>
+
+  - Fix computed CSS style strings when dealing with localization and the locations decimal delimiter. Example: An individual in Portugal did not have the text editor render correctly because the interpolated string did a .ToString() on a double with his local decimal delimiter. So the HTML element had a style attribute with value of "left: 5,33px" when it should be "left: 5.33px"
 - Add Vim Emulation
 - `JavaScript Intersection Observer` returns for:
     - Identifying if a `Virtualization Boundary` is intersecting.
@@ -308,3 +342,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed: `Default height` of a `TextEditorViewModelDisplay.razor`. Now the default is `height: 100%;`. So it will get the height of whatever its parent element is.
 - Changed: An underscore '\_' no longer counts as punctuation. 
     - Details: Private fields in C# have one of their conventions to be prepending the private field with an underscore '\_'. Therefore it used to be the case that expanding selection on a private field which followed this convention would either highlight only the underscore or only the text following the underscore depending on where one had double clicked.
+</details>
