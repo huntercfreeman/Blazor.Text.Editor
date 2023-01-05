@@ -309,7 +309,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### 6.0.0 2022-12-23
+### [6.0.0] 2022-12-23 (ViewModels)
 
 <details>
   <summary>Click to show changes</summary>
@@ -324,7 +324,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### 6.1.0 2023-01-04
+### [6.1.0] 2023-01-04 (Vim Emulator)
 
 <details>
   <summary>Click to show changes</summary>
