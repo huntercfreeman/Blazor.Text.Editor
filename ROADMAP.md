@@ -28,7 +28,7 @@
     - (the gutter and body are position: absolute and previous versions had bugs involving the body being displayed within the gutter do to incorrectly calculating the CSS 'left' attribute value.)
 
 ### 6.1.0 (2023-01-04)
-- Fix computed CSS style strings when dealing with localization and the locations decimal delimiter. (Example: An individual in Portugal did not have the text editor render correctly because the interpolated string did a .ToString() on a double with his local decimal delimiter. So the HTML element had a style attribute with value of "left: 5,33px" when it should be "left: 5.33px"
+- Fix computed CSS style strings when dealing with localization and the locations decimal delimiter. Example: An individual in Portugal did not have the text editor render correctly because the interpolated string did a .ToString() on a double with his local decimal delimiter. So the HTML element had a style attribute with value of "left: 5,33px" when it should be "left: 5.33px"
 - Add Vim Emulation
 
 ### 6.2.0 (2023-01-20)
