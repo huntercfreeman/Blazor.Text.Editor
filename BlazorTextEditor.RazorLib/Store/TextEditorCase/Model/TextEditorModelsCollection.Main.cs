@@ -7,12 +7,14 @@ using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 
+/// <summary>
+/// Keep the <see cref="TextEditorModelsCollection"/> as a class
+/// as to avoid record value comparisons when Fluxor checks
+/// if the <see cref="FeatureStateAttribute"/> has been replaced.
+/// </summary>
 [FeatureState]
 public partial class TextEditorModelsCollection
 {
-    public ImmutableList<TextEditorModel> TextEditorList { get; init; }
-    public TextEditorOptions GlobalTextEditorOptions { get; init; }
-    
     public TextEditorModelsCollection()
     {
         TextEditorList = ImmutableList<TextEditorModel>.Empty;
@@ -26,4 +28,7 @@ public partial class TextEditorModelsCollection
             2.5,
             KeymapFacts.DefaultKeymapDefinition);
     }
+    
+    public ImmutableList<TextEditorModel> TextEditorList { get; init; }
+    public TextEditorOptions GlobalTextEditorOptions { get; init; }
 }

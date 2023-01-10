@@ -7,7 +7,6 @@ using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -114,19 +113,19 @@ public partial class TextEditorModel
     }
 
     public TextEditorModel PerformEditTextEditorAction(
-        TextEditorModelsCollection.KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
+        TextEditorModelsCollection.KeyboardEventAction keyboardEventAction)
     {
-        if (KeyboardKeyFacts.IsMetaKey(keyboardEventTextEditorModelAction.KeyboardEventArgs))
+        if (KeyboardKeyFacts.IsMetaKey(keyboardEventAction.KeyboardEventArgs))
         {
-            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorModelAction.KeyboardEventArgs.Key ||
-                KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorModelAction.KeyboardEventArgs.Key)
-                PerformDeletions(keyboardEventTextEditorModelAction);
+            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventAction.KeyboardEventArgs.Key ||
+                KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventAction.KeyboardEventArgs.Key)
+                PerformDeletions(keyboardEventAction);
         }
         else
         {
             var cursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    keyboardEventTextEditorModelAction.CursorSnapshots
+                    keyboardEventAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
@@ -161,8 +160,8 @@ public partial class TextEditorModel
                     primaryCursorSnapshot
                         .ImmutableCursor.ImmutableTextEditorSelection))
             {
-                PerformDeletions(new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
-                    keyboardEventTextEditorModelAction.TextEditorModelKey,
+                PerformDeletions(new TextEditorModelsCollection.KeyboardEventAction(
+                    keyboardEventAction.TextEditorModelKey,
                     cursorSnapshots,
                     new KeyboardEventArgs
                     {
@@ -174,12 +173,12 @@ public partial class TextEditorModel
             
             var innerCursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    keyboardEventTextEditorModelAction.CursorSnapshots
+                    keyboardEventAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
             
-            PerformInsertions(keyboardEventTextEditorModelAction with
+            PerformInsertions(keyboardEventAction with
             {
                 CursorSnapshots = innerCursorSnapshots
             });
@@ -188,11 +187,11 @@ public partial class TextEditorModel
         return new TextEditorModel(this);
     }
 
-    public TextEditorModel PerformEditTextEditorAction(TextEditorModelsCollection.InsertTextTextEditorModelAction insertTextTextEditorModelAction)
+    public TextEditorModel PerformEditTextEditorAction(TextEditorModelsCollection.InsertTextAction insertTextAction)
     {
         var cursorSnapshots = TextEditorCursorSnapshot
             .TakeSnapshots(
-                insertTextTextEditorModelAction.CursorSnapshots
+                insertTextAction.CursorSnapshots
                     .Select(x => x.UserCursor)
                     .ToArray())
             .ToImmutableArray();
@@ -227,8 +226,8 @@ public partial class TextEditorModel
                 primaryCursorSnapshot
                     .ImmutableCursor.ImmutableTextEditorSelection))
         {
-            PerformDeletions(new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
-                insertTextTextEditorModelAction.TextEditorModelKey,
+            PerformDeletions(new TextEditorModelsCollection.KeyboardEventAction(
+                insertTextAction.TextEditorModelKey,
                 cursorSnapshots,
                 new KeyboardEventArgs
                 {
@@ -238,7 +237,7 @@ public partial class TextEditorModel
                 CancellationToken.None));
         }
         
-        var localContent = insertTextTextEditorModelAction.Content
+        var localContent = insertTextAction.Content
             .Replace("\r\n", "\n");
         
         foreach (var character in localContent)
@@ -250,7 +249,7 @@ public partial class TextEditorModel
             // cursor snapshots are updated
             var innerCursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    insertTextTextEditorModelAction.CursorSnapshots
+                    insertTextAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
@@ -265,8 +264,8 @@ public partial class TextEditorModel
             };
 
             var keyboardEventTextEditorModelAction =
-                new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
-                    insertTextTextEditorModelAction.TextEditorModelKey,
+                new TextEditorModelsCollection.KeyboardEventAction(
+                    insertTextAction.TextEditorModelKey,
                     innerCursorSnapshots,
                     new KeyboardEventArgs
                     {
@@ -282,9 +281,9 @@ public partial class TextEditorModel
     }
 
     public TextEditorModel PerformEditTextEditorAction(
-        TextEditorModelsCollection.DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction)
+        TextEditorModelsCollection.DeleteTextByMotionAction deleteTextByMotionAction)
     {
-        var keyboardEventArgs = deleteTextByMotionTextEditorModelAction.MotionKind switch
+        var keyboardEventArgs = deleteTextByMotionAction.MotionKind switch
         {
             MotionKind.Backspace => new KeyboardEventArgs
             {
@@ -296,14 +295,14 @@ public partial class TextEditorModel
             },
             _ => throw new ApplicationException(
                 $"The {nameof(MotionKind)}:" +
-                $" {deleteTextByMotionTextEditorModelAction.MotionKind}" +
+                $" {deleteTextByMotionAction.MotionKind}" +
                 " was not recognized.")
         };
 
         var keyboardEventTextEditorModelAction =
-            new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
-                deleteTextByMotionTextEditorModelAction.TextEditorModelKey,
-                deleteTextByMotionTextEditorModelAction.CursorSnapshots,
+            new TextEditorModelsCollection.KeyboardEventAction(
+                deleteTextByMotionAction.TextEditorModelKey,
+                deleteTextByMotionAction.CursorSnapshots,
                 keyboardEventArgs,
                 CancellationToken.None);
 
@@ -313,24 +312,24 @@ public partial class TextEditorModel
     }
 
     public TextEditorModel PerformEditTextEditorAction(
-        TextEditorModelsCollection.DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction)
+        TextEditorModelsCollection.DeleteTextByRangeAction deleteTextByRangeAction)
     {
         // TODO: This needs to be rewritten everything should be deleted at the same time not a foreach loop for each character
-        for (var i = 0; i < deleteTextByRangeTextEditorModelAction.Count; i++)
+        for (var i = 0; i < deleteTextByRangeAction.Count; i++)
         {
             // Need innerCursorSnapshots because need
             // after every loop of the foreach that the
             // cursor snapshots are updated
             var innerCursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    deleteTextByRangeTextEditorModelAction.CursorSnapshots
+                    deleteTextByRangeAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
 
             var keyboardEventTextEditorModelAction =
-                new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
-                    deleteTextByRangeTextEditorModelAction.TextEditorModelKey,
+                new TextEditorModelsCollection.KeyboardEventAction(
+                    deleteTextByRangeAction.TextEditorModelKey,
                     innerCursorSnapshots,
                     new KeyboardEventArgs
                     {

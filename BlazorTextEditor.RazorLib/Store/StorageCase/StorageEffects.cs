@@ -1,5 +1,4 @@
 using BlazorALaCarte.Shared.Storage;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;

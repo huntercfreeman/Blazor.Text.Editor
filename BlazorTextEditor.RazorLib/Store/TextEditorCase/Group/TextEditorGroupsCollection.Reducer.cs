@@ -1,5 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
-using BlazorTextEditor.RazorLib.ViewModel;
+﻿using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
@@ -10,18 +9,18 @@ public partial class TextEditorGroupsCollection
     {
         [ReducerMethod]
         public static TextEditorGroupsCollection ReduceRegisterTextEditorGroupAction(
-            TextEditorGroupsCollection previousTextEditorGroupsCollection,
+            TextEditorGroupsCollection inGroupsCollection,
             RegisterGroupAction registerGroupAction)
         {
-            var existingTextEditorGroup = previousTextEditorGroupsCollection.GroupsList
+            var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
                     x.TextEditorGroupKey ==
                     registerGroupAction.TextEditorGroup.TextEditorGroupKey);
 
             if (existingTextEditorGroup is not null)
-                return previousTextEditorGroupsCollection;
+                return inGroupsCollection;
 
-            var nextList = previousTextEditorGroupsCollection.GroupsList
+            var nextList = inGroupsCollection.GroupsList
                 .Add(registerGroupAction.TextEditorGroup);
 
             return new TextEditorGroupsCollection
@@ -32,21 +31,21 @@ public partial class TextEditorGroupsCollection
 
         [ReducerMethod]
         public static TextEditorGroupsCollection ReduceAddViewModelToGroupAction(
-            TextEditorGroupsCollection previousTextEditorGroupsCollection,
+            TextEditorGroupsCollection inGroupsCollection,
             AddViewModelToGroupAction addViewModelToGroupAction)
         {
-            var existingTextEditorGroup = previousTextEditorGroupsCollection.GroupsList
+            var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
                     x.TextEditorGroupKey ==
                     addViewModelToGroupAction.TextEditorGroupKey);
 
             if (existingTextEditorGroup is null)
-                return previousTextEditorGroupsCollection;
+                return inGroupsCollection;
 
             if (existingTextEditorGroup.ViewModelKeys.Contains(
                     addViewModelToGroupAction.TextEditorViewModelKey))
             {
-                return previousTextEditorGroupsCollection;
+                return inGroupsCollection;
             }
 
             var nextViewModelKeysList = existingTextEditorGroup.ViewModelKeys.Add(
@@ -65,7 +64,7 @@ public partial class TextEditorGroupsCollection
                 };
             }
 
-            var nextGroupList = previousTextEditorGroupsCollection.GroupsList.Replace(
+            var nextGroupList = inGroupsCollection.GroupsList.Replace(
                 existingTextEditorGroup,
                 nextGroup);
 
@@ -77,23 +76,23 @@ public partial class TextEditorGroupsCollection
 
         [ReducerMethod]
         public static TextEditorGroupsCollection ReduceRemoveViewModelFromGroupAction(
-            TextEditorGroupsCollection previousTextEditorGroupsCollection,
+            TextEditorGroupsCollection inGroupsCollection,
             RemoveViewModelFromGroupAction removeViewModelFromGroupAction)
         {
-            var existingTextEditorGroup = previousTextEditorGroupsCollection.GroupsList
+            var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
                     x.TextEditorGroupKey ==
                     removeViewModelFromGroupAction.TextEditorGroupKey);
 
             if (existingTextEditorGroup is null)
-                return previousTextEditorGroupsCollection;
+                return inGroupsCollection;
 
             var indexOfViewModelKeyToRemove = existingTextEditorGroup.ViewModelKeys.FindIndex(
                 x =>
                     x == removeViewModelFromGroupAction.TextEditorViewModelKey);
 
             if (indexOfViewModelKeyToRemove == -1)
-                return previousTextEditorGroupsCollection;
+                return inGroupsCollection;
 
             var nextViewModelKeysList = existingTextEditorGroup.ViewModelKeys.Remove(
                 removeViewModelFromGroupAction.TextEditorViewModelKey);
@@ -127,7 +126,7 @@ public partial class TextEditorGroupsCollection
                 ActiveTextEditorViewModelKey = nextActiveTextEditorKey
             };
 
-            var nextGroupList = previousTextEditorGroupsCollection.GroupsList.Replace(
+            var nextGroupList = inGroupsCollection.GroupsList.Replace(
                 existingTextEditorGroup,
                 nextGroup);
 
@@ -139,23 +138,23 @@ public partial class TextEditorGroupsCollection
 
         [ReducerMethod]
         public static TextEditorGroupsCollection ReduceSetActiveViewModelOfGroupAction(
-            TextEditorGroupsCollection previousTextEditorGroupsCollection,
+            TextEditorGroupsCollection inGroupsCollection,
             SetActiveViewModelOfGroupAction setActiveViewModelOfGroupAction)
         {
-            var existingTextEditorGroup = previousTextEditorGroupsCollection.GroupsList
+            var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
                     x.TextEditorGroupKey ==
                     setActiveViewModelOfGroupAction.TextEditorGroupKey);
 
             if (existingTextEditorGroup is null)
-                return previousTextEditorGroupsCollection;
+                return inGroupsCollection;
 
             var nextGroup = existingTextEditorGroup with
             {
                 ActiveTextEditorViewModelKey = setActiveViewModelOfGroupAction.TextEditorViewModelKey
             };
 
-            var nextGroupList = previousTextEditorGroupsCollection.GroupsList.Replace(
+            var nextGroupList = inGroupsCollection.GroupsList.Replace(
                 existingTextEditorGroup,
                 nextGroup);
 

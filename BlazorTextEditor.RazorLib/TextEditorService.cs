@@ -26,8 +26,6 @@ using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
@@ -520,7 +518,7 @@ public class TextEditorService : ITextEditorService
         TextEditorViewModelKey textEditorViewModelKey,
         TextEditorModelKey textEditorModelKey)
     {
-        _dispatcher.Dispatch(new TextEditorViewModelsCollection.RegisterTextEditorViewModelAction(
+        _dispatcher.Dispatch(new TextEditorViewModelsCollection.RegisterAction(
             textEditorViewModelKey,
             textEditorModelKey, 
             this));

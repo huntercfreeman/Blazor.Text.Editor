@@ -4,6 +4,11 @@ using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 
+/// <summary>
+/// Keep the <see cref="TextEditorViewModelsCollection"/> as a class
+/// as to avoid record value comparisons when Fluxor checks
+/// if the <see cref="FeatureStateAttribute"/> has been replaced.
+/// </summary>
 [FeatureState]
 public partial class TextEditorViewModelsCollection
 {
@@ -11,11 +16,6 @@ public partial class TextEditorViewModelsCollection
     {
     }
 
-    /// <summary>
-    /// Keep the <see cref="TextEditorViewModelsCollection"/> as a class
-    /// as to avoid record value comparisons when Fluxor checks
-    /// if the <see cref="FeatureStateAttribute"/> has been replaced.
-    /// </summary>
     public ImmutableList<TextEditorViewModel> ViewModelsList { get; init; } = 
         ImmutableList<TextEditorViewModel>.Empty;
 }

@@ -3,7 +3,6 @@ using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using Microsoft.AspNetCore.Components.Web;
 

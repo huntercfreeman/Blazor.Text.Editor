@@ -1,7 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Keymap.Vim;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
 namespace BlazorTextEditor.RazorLib.Commands.Vim;
 

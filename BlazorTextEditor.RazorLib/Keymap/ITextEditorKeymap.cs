@@ -1,6 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components.Web;
