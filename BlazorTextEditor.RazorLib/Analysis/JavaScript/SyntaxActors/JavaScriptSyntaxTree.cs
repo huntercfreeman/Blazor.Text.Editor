@@ -108,7 +108,7 @@ public class JavaScriptSyntaxTree
     /// currentCharacterIn:<br/>
     /// -<see cref="JavaScriptFacts.COMMENT_SINGLE_LINE_START"/>
     /// </summary>
-    private static JavaScriptStringSyntax ReadCommentSingleLine(
+    private static JavaScriptCommentSyntax ReadCommentSingleLine(
         StringWalker stringWalker,
         TextEditorDiagnosticBag diagnosticBag)
     {
@@ -136,7 +136,7 @@ public class JavaScriptSyntaxTree
             stringWalker.PositionIndex,
             (byte)JavaScriptDecorationKind.Comment);
         
-        return new JavaScriptStringSyntax(
+        return new JavaScriptCommentSyntax(
             commentTextEditorTextSpan);
     }
     
@@ -144,7 +144,7 @@ public class JavaScriptSyntaxTree
     /// currentCharacterIn:<br/>
     /// -<see cref="JavaScriptFacts.COMMENT_MULTI_LINE_START"/>
     /// </summary>
-    private static JavaScriptStringSyntax ReadCommentMultiLine(
+    private static JavaScriptCommentSyntax ReadCommentMultiLine(
         StringWalker stringWalker,
         TextEditorDiagnosticBag diagnosticBag)
     {
@@ -172,7 +172,7 @@ public class JavaScriptSyntaxTree
             stringWalker.PositionIndex + JavaScriptFacts.COMMENT_MULTI_LINE_END.Length,
             (byte)JavaScriptDecorationKind.Comment);
         
-        return new JavaScriptStringSyntax(
+        return new JavaScriptCommentSyntax(
             commentTextEditorTextSpan);
     }
     

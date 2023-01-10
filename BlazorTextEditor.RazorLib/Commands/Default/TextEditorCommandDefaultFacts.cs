@@ -257,26 +257,27 @@ public static class TextEditorCommandDefaultFacts
         "Scroll Page Up",
         "defaults_scroll-page-up");
     
-    public static readonly TextEditorCommand CursorMovePageBottom = new(async textEditorCommandParameter =>
+    public static readonly TextEditorCommand CursorMovePageBottom = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorViewModel
                 .CursorMovePageBottom();
+            return Task.CompletedTask;
         },
         false,
         "Move Cursor to Bottom of the Page",
         "defaults_cursor-move-page-bottom");
     
-    public static readonly TextEditorCommand CursorMovePageTop = new(async textEditorCommandParameter =>
+    public static readonly TextEditorCommand CursorMovePageTop = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorViewModel
                 .CursorMovePageTop();
+            return Task.CompletedTask;
         },
         false,
         "Move Cursor to Top of the Page",
         "defaults_cursor-move-page-top");
     
-    public static readonly TextEditorCommand Duplicate = new(
-        async textEditorCommandParameter =>
+    public static readonly TextEditorCommand Duplicate = new(textEditorCommandParameter =>
         {
             var selectedText = TextEditorSelectionHelper
                 .GetSelectedText(
@@ -318,13 +319,13 @@ public static class TextEditorCommandDefaultFacts
             textEditorCommandParameter
                 .TextEditorService
                 .InsertText(insertTextTextEditorModelAction);
+            return Task.CompletedTask;
         },
         false,
         "Duplicate",
         "defaults_duplicate");
     
-    public static readonly TextEditorCommand IndentMore = new(
-        async textEditorCommandParameter =>
+    public static readonly TextEditorCommand IndentMore = new(textEditorCommandParameter =>
         {
             var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
                 .GetSelectionBounds(
@@ -384,13 +385,13 @@ public static class TextEditorCommandDefaultFacts
             
             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (userCursorIndexCoordinates.rowIndex, userCursorIndexCoordinates.columnIndex + 1);
+            return Task.CompletedTask;
         },
         false,
         "Indent More",
         "defaults_indent-more");
     
-    public static readonly TextEditorCommand IndentLess = new(
-        async textEditorCommandParameter =>
+    public static readonly TextEditorCommand IndentLess = new(textEditorCommandParameter =>
         {
             var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
                 .GetSelectionBounds(
@@ -516,6 +517,8 @@ public static class TextEditorCommandDefaultFacts
                         (userCursorIndexCoordinates.rowIndex, Math.Max(0, nextColumnIndex));
                 }
             }
+
+            return Task.CompletedTask;
         },
         false,
         "Indent Less",

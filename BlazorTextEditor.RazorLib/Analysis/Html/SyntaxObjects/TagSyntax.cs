@@ -24,10 +24,10 @@ public class TagSyntax : IHtmlSyntax
     public TagNameSyntax? OpenTagNameSyntax { get; }
     public TagNameSyntax? CloseTagNameSyntax { get; }
     public ImmutableArray<AttributeSyntax> AttributeSyntaxes { get; }
-    public ImmutableArray<IHtmlSyntax> ChildHtmlSyntaxes { get; }
     public TagKind TagKind { get; }
     public bool HasSpecialHtmlCharacter { get; }
     
+    public virtual ImmutableArray<IHtmlSyntax> ChildHtmlSyntaxes { get; }
     public virtual HtmlSyntaxKind HtmlSyntaxKind => HtmlSyntaxKind.Tag;
 
     public class TagSyntaxBuilder

@@ -6,6 +6,12 @@ namespace BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxObjects;
 
 public class JavaScriptCommentSyntax : IJavaScriptSyntax
 {
+    public JavaScriptCommentSyntax(
+        TextEditorTextSpan textEditorTextSpan)
+    {
+        TextEditorTextSpan = textEditorTextSpan;
+    }
+    
     public TextEditorTextSpan TextEditorTextSpan { get; }
     public ImmutableArray<IJavaScriptSyntax> Children => ImmutableArray<IJavaScriptSyntax>.Empty;
     public JavaScriptSyntaxKind JavaScriptSyntaxKind => JavaScriptSyntaxKind.Comment;

@@ -8,8 +8,7 @@ public static partial class TextEditorCommandVimFacts
 {
     public static class Motions
     {
-        public static readonly TextEditorCommand Word = new(
-            async textEditorCommandParameter =>
+        public static readonly TextEditorCommand Word = new(textEditorCommandParameter =>
             {
                 var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
                 var textEditorModel = textEditorCommandParameter.TextEditorModel;
@@ -58,6 +57,7 @@ public static partial class TextEditorCommandVimFacts
                 }
                 
                 textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
+                return Task.CompletedTask;
             },
             true,
             "Vim::Word()",
@@ -167,8 +167,7 @@ public static partial class TextEditorCommandVimFacts
             }
         }
 
-        public static readonly TextEditorCommand Back = new(
-            async textEditorCommandParameter =>
+        public static readonly TextEditorCommand Back = new(textEditorCommandParameter =>
             {
                 var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
                 var textEditorModel = textEditorCommandParameter.TextEditorModel;
@@ -218,6 +217,8 @@ public static partial class TextEditorCommandVimFacts
                     textEditorCursor.TextEditorSelection.EndingPositionIndex =
                         textEditorModel.GetCursorPositionIndex(textEditorCursor);
                 }
+
+                return Task.CompletedTask;
             },
             true,
             "Vim::Back()",

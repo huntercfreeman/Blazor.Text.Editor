@@ -27,8 +27,6 @@ public class RazorSyntaxTree
         // current character is '@'
         _ = stringWalker.ReadCharacter();
 
-        string? matchedOn = null;
-
         if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
         {
             textEditorHtmlDiagnosticBag.Report(

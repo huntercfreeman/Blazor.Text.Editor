@@ -4,7 +4,7 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxObjects;
 
-public class CommentSyntax : TagSyntax, IHtmlSyntax
+public class CommentSyntax : TagSyntax
 {
     public CommentSyntax(
         TextEditorTextSpan textEditorTextSpan) 
@@ -20,6 +20,6 @@ public class CommentSyntax : TagSyntax, IHtmlSyntax
 
     public TextEditorTextSpan TextEditorTextSpan { get; }
     
-    public HtmlSyntaxKind HtmlSyntaxKind => HtmlSyntaxKind.Comment;
-    public ImmutableArray<IHtmlSyntax> ChildHtmlSyntaxes { get; } = ImmutableArray<IHtmlSyntax>.Empty;
+    public override HtmlSyntaxKind HtmlSyntaxKind => HtmlSyntaxKind.Comment;
+    public override ImmutableArray<IHtmlSyntax> ChildHtmlSyntaxes => ImmutableArray<IHtmlSyntax>.Empty;
 }

@@ -29,8 +29,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private IJSRuntime JsRuntime { get; set; } = null!;
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
-    [Inject]
-    private ITextEditorService TextEditorService { get; set; } = null!;
 
     [Parameter]
     public string WrapperStyleCssString { get; set; } = string.Empty;
@@ -688,10 +686,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 {
                     // The TextEditorModel may have been changed by the time this logic is ran and
                     // thus the local variable must be updated accordingly.
-                    textEditor = MutableReferenceToTextEditor;
+                    var temporaryTextEditor = MutableReferenceToTextEditor;
 
-                    if (textEditor is not null)
+                    if (temporaryTextEditor is not null)
                     {
+                        textEditor = temporaryTextEditor;
+
                         await textEditor.ApplySyntaxHighlightingAsync();
 
                         await InvokeAsync(StateHasChanged);
