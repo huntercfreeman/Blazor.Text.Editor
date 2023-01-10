@@ -2,6 +2,7 @@
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Group;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -24,15 +25,17 @@ public partial class JsonExamples : ComponentBase
     {
         TextEditorService.RegisterGroup(JsonTextEditorGroupKey);
         
-        TextEditorService.RegisterJsonTextEditorModel(
+        TextEditorService.RegisterTemplatedTextEditorModel(
             TextEditorFacts.Json.JsonLaunchSettingsTextEditorModelKey,
+            WellKnownModelKind.Json,
             nameof(JsonExamples) + "_1",
             DateTime.UtcNow,
             "JSON",
             TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
         
-        TextEditorService.RegisterJsonTextEditorModel(
+        TextEditorService.RegisterTemplatedTextEditorModel(
             TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorModelKey,
+            WellKnownModelKind.Json,
             nameof(JsonExamples) + "_2",
             DateTime.UtcNow,
             "JSON",

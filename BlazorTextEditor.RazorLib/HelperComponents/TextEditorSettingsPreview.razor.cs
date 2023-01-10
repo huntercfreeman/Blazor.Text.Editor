@@ -32,8 +32,9 @@ public partial class TextEditorSettingsPreview : FluxorComponent
 
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterPlainTextEditorModel(
+        TextEditorService.RegisterTemplatedTextEditorModel(
             SettingsPreviewTextEditorModelKey,
+            WellKnownModelKind.Plain,
             "SettingsPreviewTextEditorModelKey",
             DateTime.UtcNow,
             "Settings Preview",

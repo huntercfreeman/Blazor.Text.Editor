@@ -54,137 +54,26 @@ public interface ITextEditorService : IDisposable
     public event Action? TextEditorModelsCollectionChanged;
 
     /// <summary>
-    /// It is recommended to use the other Register methods as they will internally reference the <see cref="ILexer"/> and
-    /// <see cref="IDecorationMapper"/> that correspond to the desired text editor.<br/><br/>
-    /// For example: invoke <see cref="RegisterCSharpTextEditorModel"/> to register a TextEditorModel for use with C# source code.
+    /// It is recommended to use the <see cref="RegisterTemplatedTextEditorModel"/> method
+    /// as it will internally reference the <see cref="ILexer"/> and
+    /// <see cref="IDecorationMapper"/> that correspond to the desired text editor.
     /// </summary>
     public void RegisterCustomTextEditorModel(TextEditorModel textEditorModel);
     /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorCSharpLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorCSharpDecorationMapper"/>
+    /// As an example, for a C# Text Editor one would pass in a <see cref="WellKnownModelKind"/>
+    /// of <see cref="WellKnownModelKind.CSharp"/>.
+    /// <br/><br/>
+    /// For a Plain Text Editor one would pass in a <see cref="WellKnownModelKind"/>
+    /// of <see cref="WellKnownModelKind.Plain"/>.
     /// </summary>
-    public void RegisterCSharpTextEditorModel(
+    public void RegisterTemplatedTextEditorModel(
         TextEditorModelKey textEditorModelKey,
+        WellKnownModelKind wellKnownModelKind,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorHtmlLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
-    /// </summary>
-    public void RegisterHtmlTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorCssLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorCssDecorationMapper"/>
-    /// </summary>
-    public void RegisterCssTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorJsonLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJsonDecorationMapper"/>
-    /// </summary>
-    public void RegisterJsonTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorFSharpLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorFSharpDecorationMapper"/>
-    /// </summary>
-    public void RegisterFSharpTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorRazorLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
-    /// </summary>
-    public void RegisterRazorTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorJavaScriptLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJavaScriptDecorationMapper"/>
-    /// </summary>
-    public void RegisterJavaScriptTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorTypeScriptLexer"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorTypeScriptDecorationMapper"/>
-    /// </summary>
-    public void RegisterTypeScriptTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
-    /// <summary>
-    /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
-    /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
-    /// that one would prefer leaving it null as this will result in the default keymap being used.<br/><br/>
-    /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
-    /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
-    /// </summary>
-    public void RegisterPlainTextEditorModel(
-        TextEditorModelKey textEditorModelKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null);
+        string initialContent);
+    
     public string? GetAllText(TextEditorModelKey textEditorModelKey);
     public string? GetAllText(TextEditorViewModelKey textEditorViewModelKey);
     public void InsertText(TextEditorModelsCollection.InsertTextAction insertTextAction);

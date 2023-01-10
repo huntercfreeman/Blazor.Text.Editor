@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 
@@ -15,8 +16,9 @@ public partial class CssExamples : ComponentBase
 
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterCssTextEditorModel(
+        TextEditorService.RegisterTemplatedTextEditorModel(
             TextEditorFacts.Css.CssTextEditorModelKey,
+            WellKnownModelKind.Css,
             nameof(CssExamples),
             DateTime.UtcNow,
             "CSS",
