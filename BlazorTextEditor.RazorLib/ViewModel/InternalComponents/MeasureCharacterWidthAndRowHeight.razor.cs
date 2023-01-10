@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
+namespace BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
 
 public partial class MeasureCharacterWidthAndRowHeight : ComponentBase
 {

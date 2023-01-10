@@ -42,4 +42,8 @@
       <ProjectReference Include="..\..\BlazorALaCarte\BlazorALaCarte.TreeView\BlazorALaCarte.TreeView\BlazorALaCarte.TreeView.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="TextEditorDisplayInternals" />
+    </ItemGroup>
+
 </Project>

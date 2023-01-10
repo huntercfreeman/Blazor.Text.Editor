@@ -1,29 +1,23 @@
 ﻿using System.Collections.Immutable;
-using System.Text;
 using BlazorALaCarte.Shared.Clipboard;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Autocomplete;
-using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
-using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
-using BlazorTextEditor.RazorLib.ViewModel;
-using BlazorTextEditor.RazorLib.Virtualization;
+using BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
-namespace BlazorTextEditor.RazorLib;
+namespace BlazorTextEditor.RazorLib.ViewModel;
 
 public partial class TextEditorViewModelDisplay : TextEditorView
 {
