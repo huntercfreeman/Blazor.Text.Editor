@@ -74,7 +74,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private int? _previousGlobalFontSizeInPixels;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
 
-    private TextEditorModelKey? _previousTextEditorKey;
+    private TextEditorModelKey? _previousTextEditorModelKey;
     private TextEditorViewModelKey? _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
     private ElementReference _textEditorDisplayElementReference;
     

@@ -34,7 +34,7 @@ public partial class TextEditorModel
     /// </summary>
     private readonly List<int> _tabKeyPositions = new();
 
-    public TextEditorModelKey ModelKey { get; } = TextEditorModelKey.NewTextEditorKey();
+    public TextEditorModelKey ModelKey { get; } = TextEditorModelKey.NewTextEditorModelKey();
     public int RowCount => _rowEndingPositions.Count;
     public int DocumentLength => _content.Count;
 

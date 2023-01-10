@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.Demo.RazorLib.Pages;
@@ -14,8 +15,8 @@ public partial class RazorExamples : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterRazorTextEditor(
-            TextEditorFacts.Razor.RazorTextEditorKey,
+        TextEditorService.RegisterRazorTextEditorModel(
+            TextEditorFacts.Razor.RazorTextEditorModelKey,
             nameof(RazorExamples),
             DateTime.UtcNow,
             "Razor",
@@ -23,7 +24,7 @@ public partial class RazorExamples : ComponentBase
         
         TextEditorService.RegisterViewModel(
             RazorTextEditorViewModelKey,
-            TextEditorFacts.Razor.RazorTextEditorKey);
+            TextEditorFacts.Razor.RazorTextEditorModelKey);
         
         base.OnInitialized();
     }

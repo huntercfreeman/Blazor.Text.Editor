@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.Demo.RazorLib.Pages;
@@ -14,8 +15,8 @@ public partial class HtmlExamples : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterHtmlTextEditor(
-            TextEditorFacts.Html.HtmlTextEditorKey,
+        TextEditorService.RegisterHtmlTextEditorModel(
+            TextEditorFacts.Html.HtmlTextEditorModelKey,
             nameof(HtmlExamples),
             DateTime.UtcNow,
             "HTML",
@@ -23,7 +24,7 @@ public partial class HtmlExamples : ComponentBase
         
         TextEditorService.RegisterViewModel(
             HtmlTextEditorViewModelKey,
-            TextEditorFacts.Html.HtmlTextEditorKey);
+            TextEditorFacts.Html.HtmlTextEditorModelKey);
         
         base.OnInitialized();
     }

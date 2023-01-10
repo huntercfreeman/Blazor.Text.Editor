@@ -81,14 +81,14 @@ public class TextEditorService : ITextEditorService
 
     public event Action? TextEditorModelsCollectionChanged;
     
-    public void RegisterCustomTextEditor(
+    public void RegisterCustomTextEditorModel(
         TextEditorModel textEditorModel)
     {
         _dispatcher.Dispatch(
             new RegisterTextEditorModelAction(textEditorModel));
     }
 
-    public void RegisterCSharpTextEditor(
+    public void RegisterCSharpTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -115,7 +115,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
     
-    public void RegisterHtmlTextEditor(
+    public void RegisterHtmlTextEditorModel(
         TextEditorModelKey textEditorModelKey, 
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -142,7 +142,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
 
-    public void RegisterCssTextEditor(
+    public void RegisterCssTextEditorModel(
         TextEditorModelKey textEditorModelKey, 
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -169,7 +169,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
     
-    public void RegisterJsonTextEditor(
+    public void RegisterJsonTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -196,7 +196,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
 
-    public void RegisterFSharpTextEditor(
+    public void RegisterFSharpTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -223,7 +223,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
 
-    public void RegisterRazorTextEditor(
+    public void RegisterRazorTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -250,7 +250,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
 
-    public void RegisterJavaScriptTextEditor(
+    public void RegisterJavaScriptTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -277,7 +277,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
     
-    public void RegisterTypeScriptTextEditor(
+    public void RegisterTypeScriptTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -304,7 +304,7 @@ public class TextEditorService : ITextEditorService
             new RegisterTextEditorModelAction(textEditorModel));
     }
     
-    public void RegisterPlainTextEditor(
+    public void RegisterPlainTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -364,14 +364,14 @@ public class TextEditorService : ITextEditorService
     
     public void RedoEdit(TextEditorModelKey textEditorModelKey)
     {
-        var redoEditAction = new RedoEditAction(textEditorModelKey);
+        var redoEditAction = new TextEditorModelsCollection.RedoEditAction(textEditorModelKey);
         
         _dispatcher.Dispatch(redoEditAction);
     }
     
     public void UndoEdit(TextEditorModelKey textEditorModelKey)
     {
-        var undoEditAction = new UndoEditAction(textEditorModelKey);
+        var undoEditAction = new TextEditorModelsCollection.UndoEditAction(textEditorModelKey);
         
         _dispatcher.Dispatch(undoEditAction);
     }

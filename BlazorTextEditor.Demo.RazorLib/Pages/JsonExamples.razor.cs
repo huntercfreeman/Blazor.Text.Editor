@@ -1,6 +1,8 @@
 ﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.Group;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -22,15 +24,15 @@ public partial class JsonExamples : ComponentBase
     {
         TextEditorService.RegisterGroup(JsonTextEditorGroupKey);
         
-        TextEditorService.RegisterJsonTextEditor(
-            TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey,
+        TextEditorService.RegisterJsonTextEditorModel(
+            TextEditorFacts.Json.JsonLaunchSettingsTextEditorModelKey,
             nameof(JsonExamples) + "_1",
             DateTime.UtcNow,
             "JSON",
             TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
         
-        TextEditorService.RegisterJsonTextEditor(
-            TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey,
+        TextEditorService.RegisterJsonTextEditorModel(
+            TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorModelKey,
             nameof(JsonExamples) + "_2",
             DateTime.UtcNow,
             "JSON",
@@ -38,11 +40,11 @@ public partial class JsonExamples : ComponentBase
         
         TextEditorService.RegisterViewModel(
             JsonTextEditorViewModelKeyOne,
-            TextEditorFacts.Json.JsonLaunchSettingsTextEditorKey);
+            TextEditorFacts.Json.JsonLaunchSettingsTextEditorModelKey);
         
         TextEditorService.RegisterViewModel(
             JsonTextEditorViewModelKeyTwo,
-            TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorKey);
+            TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorModelKey);
         
         TextEditorService.AddViewModelToGroup(
             JsonTextEditorGroupKey,

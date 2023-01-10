@@ -7,7 +7,7 @@ public record TextEditorModelKey(Guid Guid)
     /// </summary>
     public static TextEditorModelKey Empty { get; } = new(Guid.Empty);
 
-    public static TextEditorModelKey NewTextEditorKey()
+    public static TextEditorModelKey NewTextEditorModelKey()
     {
         return new TextEditorModelKey(Guid.NewGuid());
     }

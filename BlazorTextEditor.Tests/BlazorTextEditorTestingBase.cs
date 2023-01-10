@@ -14,7 +14,7 @@ public class BlazorTextEditorTestingBase
 {
     protected readonly ServiceProvider ServiceProvider;
     protected readonly ITextEditorService TextEditorService;
-    protected readonly TextEditorModelKey TextEditorModelKey = TextEditorModelKey.NewTextEditorKey();
+    protected readonly TextEditorModelKey TextEditorModelKey = TextEditorModelKey.NewTextEditorModelKey();
 
     protected TextEditorModel TextEditorModel => TextEditorService
         .GetTextEditorModelOrDefault(TextEditorModelKey)
@@ -63,6 +63,6 @@ public class BlazorTextEditorTestingBase
             null,
             TextEditorModelKey);
         
-        TextEditorService.RegisterCustomTextEditor(textEditor);
+        TextEditorService.RegisterCustomTextEditorModel(textEditor);
     }
 }

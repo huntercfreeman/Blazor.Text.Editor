@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.Demo.RazorLib.Pages;
@@ -14,8 +15,8 @@ public partial class JavaScriptExamples : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterJavaScriptTextEditor(
-            TextEditorFacts.JavaScript.JavaScriptTextEditorKey,
+        TextEditorService.RegisterJavaScriptTextEditorModel(
+            TextEditorFacts.JavaScript.JavaScriptTextEditorModelKey,
             nameof(JavaScriptExamples),
             DateTime.UtcNow,
             "JavaScript",
@@ -23,7 +24,7 @@ public partial class JavaScriptExamples : ComponentBase
         
         TextEditorService.RegisterViewModel(
             JavaScriptTextEditorViewModelKey,
-            TextEditorFacts.JavaScript.JavaScriptTextEditorKey);
+            TextEditorFacts.JavaScript.JavaScriptTextEditorModelKey);
         
         base.OnInitialized();
     }

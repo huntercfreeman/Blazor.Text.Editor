@@ -112,18 +112,18 @@ public partial class TextEditorGroupsCollection
                 activeViewModelKeyIndex++;
             }
 
-            TextEditorViewModelKey nextActiveTextEditorKey;
+            TextEditorViewModelKey nextActiveTextEditorModelKey;
 
             // If removing the active will result in empty list set the active as an Empty TextEditorViewModelKey
             if (existingTextEditorGroup.ViewModelKeys.Count - 1 == 0)
-                nextActiveTextEditorKey = TextEditorViewModelKey.Empty;
+                nextActiveTextEditorModelKey = TextEditorViewModelKey.Empty;
             else
-                nextActiveTextEditorKey = existingTextEditorGroup.ViewModelKeys[activeViewModelKeyIndex];
+                nextActiveTextEditorModelKey = existingTextEditorGroup.ViewModelKeys[activeViewModelKeyIndex];
 
             var nextGroup = existingTextEditorGroup with
             {
                 ViewModelKeys = nextViewModelKeysList,
-                ActiveTextEditorViewModelKey = nextActiveTextEditorKey
+                ActiveTextEditorViewModelKey = nextActiveTextEditorModelKey
             };
 
             var nextGroupList = inGroupsCollection.GroupsList.Replace(

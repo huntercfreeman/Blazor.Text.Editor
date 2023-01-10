@@ -29,7 +29,7 @@ namespace BlazorTextEditor.RazorLib;
 
 /// <summary>
 /// <see cref="TextEditorModelKey"/> is the unique identifier for the text editor that will be registered.<br/><br/>
-/// (An example of one of the registration methods is <see cref="RegisterCSharpTextEditor"/>)<br/><br/>
+/// (An example of one of the registration methods is <see cref="RegisterCSharpTextEditorModel"/>)<br/><br/>
 /// The invoker of any registration method is highly likely to want to have a way to reference to the registered text editor.
 /// <br/><br/> Therefore, the invoker must provide a <see cref="TextEditorModelKey"/> so they can perform invocations of other
 /// methods on <see cref="ITextEditorService"/> using the <see cref="TextEditorModelKey"/> as an identifying parameter.
@@ -54,9 +54,9 @@ public interface ITextEditorService : IDisposable
     /// <summary>
     /// It is recommended to use the other Register methods as they will internally reference the <see cref="ILexer"/> and
     /// <see cref="IDecorationMapper"/> that correspond to the desired text editor.<br/><br/>
-    /// For example: invoke <see cref="RegisterCSharpTextEditor"/> to register a TextEditorModel for use with C# source code.
+    /// For example: invoke <see cref="RegisterCSharpTextEditorModel"/> to register a TextEditorModel for use with C# source code.
     /// </summary>
-    public void RegisterCustomTextEditor(TextEditorModel textEditorModel);
+    public void RegisterCustomTextEditorModel(TextEditorModel textEditorModel);
     /// <summary>
     /// Constructs a new <see cref="TextEditorModel"/> using the <see cref="TextEditorModelKey"/> provided. The text editor will
     /// render with the <see cref="initialContent"/> provided. <see cref="ITextEditorKeymap"/> is optional and it is likely
@@ -64,7 +64,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorCSharpLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorCSharpDecorationMapper"/>
     /// </summary>
-    public void RegisterCSharpTextEditor(
+    public void RegisterCSharpTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -78,7 +78,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorHtmlLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
     /// </summary>
-    public void RegisterHtmlTextEditor(
+    public void RegisterHtmlTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -92,7 +92,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorCssLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorCssDecorationMapper"/>
     /// </summary>
-    public void RegisterCssTextEditor(
+    public void RegisterCssTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -106,7 +106,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorJsonLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJsonDecorationMapper"/>
     /// </summary>
-    public void RegisterJsonTextEditor(
+    public void RegisterJsonTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -120,7 +120,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorFSharpLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorFSharpDecorationMapper"/>
     /// </summary>
-    public void RegisterFSharpTextEditor(
+    public void RegisterFSharpTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -134,7 +134,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorRazorLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorHtmlDecorationMapper"/>
     /// </summary>
-    public void RegisterRazorTextEditor(
+    public void RegisterRazorTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -148,7 +148,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorJavaScriptLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorJavaScriptDecorationMapper"/>
     /// </summary>
-    public void RegisterJavaScriptTextEditor(
+    public void RegisterJavaScriptTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -162,7 +162,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorTypeScriptLexer"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorTypeScriptDecorationMapper"/>
     /// </summary>
-    public void RegisterTypeScriptTextEditor(
+    public void RegisterTypeScriptTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
@@ -176,7 +176,7 @@ public interface ITextEditorService : IDisposable
     /// Used <see cref="ILexer"/>: <see cref="TextEditorLexerDefault"/><br/>
     /// Used <see cref="IDecorationMapper"/>: <see cref="TextEditorDecorationMapperDefault"/>
     /// </summary>
-    public void RegisterPlainTextEditor(
+    public void RegisterPlainTextEditorModel(
         TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
