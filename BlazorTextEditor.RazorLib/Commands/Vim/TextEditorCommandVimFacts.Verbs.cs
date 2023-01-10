@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Keymap.Vim;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 
 namespace BlazorTextEditor.RazorLib.Commands.Vim;
 
@@ -62,7 +63,7 @@ public static partial class TextEditorCommandVimFacts
                         motionResult.LowerPositionIndexImmutableCursor.ColumnIndex),
                     true);
 
-                var deleteTextTextEditorModelAction = new DeleteTextByRangeTextEditorModelAction(
+                var deleteTextTextEditorModelAction = new TextEditorModelsCollection.DeleteTextByRangeAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
                     motionResult.PositionIndexDisplacement,

@@ -9,8 +9,11 @@ public partial class TextEditorGroupsCollection
         TextEditorGroupKey TextEditorGroupKey,
         TextEditorViewModelKey TextEditorViewModelKey);
 
-    public record RegisterGroupAction(
+    public record RegisterAction(
         TextEditorGroup TextEditorGroup);
+    
+    public record DisposeAction(
+        TextEditorGroupKey TextEditorGroupKey);
 
     public record RemoveViewModelFromGroupAction(
         TextEditorGroupKey TextEditorGroupKey,

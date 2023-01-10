@@ -11,8 +11,8 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
@@ -35,6 +35,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private IJSRuntime JsRuntime { get; set; } = null!;
     [Inject]
     private IClipboardProvider ClipboardProvider { get; set; } = null!;
+    [Inject]
+    private ITextEditorService TextEditorService { get; set; } = null!;
 
     [Parameter]
     public string WrapperStyleCssString { get; set; } = string.Empty;
@@ -108,8 +110,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         var currentGlobalFontSizeInPixels = TextEditorService
-            .TextEditorModelsCollection
-            .GlobalTextEditorOptions
+            .TextEditorGlobalOptions
+            .Options
             .FontSizeInPixels!
             .Value;
 
@@ -252,7 +254,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 .HasSelectedText(
                     primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
-        var command = TextEditorModelsCollectionWrap.Value.GlobalTextEditorOptions.KeymapDefinition!.Keymap.Map(
+        var command = TextEditorService.TextEditorGlobalOptions.Options.KeymapDefinition!.Keymap.Map(
             keyboardEventArgs,
             hasSelection);
         
@@ -313,7 +315,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 }
 
                 Dispatcher.Dispatch(
-                    new KeyboardEventTextEditorModelAction(
+                    new TextEditorModelsCollection.KeyboardEventAction(
                         safeTextEditorViewModel.TextEditorModelKey,
                         cursorSnapshots,
                         keyboardEventArgs,
@@ -777,8 +779,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private string GetGlobalHeightInPixelsStyling()
     {
         var heightInPixels = TextEditorService
-            .TextEditorModelsCollection
-            .GlobalTextEditorOptions
+            .TextEditorGlobalOptions
+            .Options
             .HeightInPixels;
 
         if (heightInPixels is null)

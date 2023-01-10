@@ -22,6 +22,7 @@ using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
 
@@ -39,6 +40,7 @@ public interface ITextEditorService : IDisposable
     public const string LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY = "bte_text-editor-options";
 
     public TextEditorModelsCollection TextEditorModelsCollection { get; }
+    public TextEditorGlobalOptions TextEditorGlobalOptions { get; }
     public ThemeRecord? GlobalThemeValue { get; }
     public string GlobalThemeCssClassString { get; }
     public string GlobalFontSizeInPixelsStyling { get; }
@@ -185,10 +187,10 @@ public interface ITextEditorService : IDisposable
         ITextEditorKeymap? textEditorKeymapOverride = null);
     public string? GetAllText(TextEditorModelKey textEditorModelKey);
     public string? GetAllText(TextEditorViewModelKey textEditorViewModelKey);
-    public void InsertText(InsertTextTextEditorModelAction insertTextTextEditorModelAction);
-    public void HandleKeyboardEvent(KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction);
-    public void DeleteTextByMotion(DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction);
-    public void DeleteTextByRange(DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction);
+    public void InsertText(TextEditorModelsCollection.InsertTextAction insertTextAction);
+    public void HandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction);
+    public void DeleteTextByMotion(TextEditorModelsCollection.DeleteTextByMotionAction deleteTextByMotionAction);
+    public void DeleteTextByRange(TextEditorModelsCollection.DeleteTextByRangeAction deleteTextByRangeAction);
     public void RedoEdit(TextEditorModelKey textEditorModelKey);
     public void UndoEdit(TextEditorModelKey textEditorModelKey);
     public void DisposeTextEditor(TextEditorModelKey textEditorModelKey);

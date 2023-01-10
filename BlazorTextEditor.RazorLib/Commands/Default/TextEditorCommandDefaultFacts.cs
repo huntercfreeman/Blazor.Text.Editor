@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Commands.Default;
@@ -90,7 +91,7 @@ public static class TextEditorCommandDefaultFacts
             await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
             
             textEditorCommandParameter.TextEditorService
-                .HandleKeyboardEvent(new KeyboardEventTextEditorModelAction(
+                .HandleKeyboardEvent(new TextEditorModelsCollection.KeyboardEventAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     textEditorCursorSnapshots,
                     new KeyboardEventArgs
@@ -111,7 +112,7 @@ public static class TextEditorCommandDefaultFacts
                 .ReadClipboard();
 
             textEditorCommandParameter.TextEditorService.InsertText(
-                new InsertTextTextEditorModelAction(
+                new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     new[]
                     {
@@ -308,7 +309,7 @@ public static class TextEditorCommandDefaultFacts
                     textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
             }
             
-            var insertTextTextEditorModelAction = new InsertTextTextEditorModelAction(
+            var insertTextTextEditorModelAction = new TextEditorModelsCollection.InsertTextAction(
                 textEditorCommandParameter.TextEditorModel.ModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
                 selectedText,
@@ -345,7 +346,7 @@ public static class TextEditorCommandDefaultFacts
                     (i, 0),
                     true);
                 
-                var insertTextTextEditorModelAction = new InsertTextTextEditorModelAction(
+                var insertTextTextEditorModelAction = new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
                     KeyboardKeyFacts.WhitespaceCharacters.TAB.ToString(),
@@ -434,7 +435,7 @@ public static class TextEditorCommandDefaultFacts
                         (i, 0),
                         true);
                     
-                    var deleteTextTextEditorModelAction = new DeleteTextByRangeTextEditorModelAction(
+                    var deleteTextTextEditorModelAction = new TextEditorModelsCollection.DeleteTextByRangeAction(
                         textEditorCommandParameter.TextEditorModel.ModelKey,
                         TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
                         removeCharacterCount, // Delete a single "Tab" character
@@ -460,7 +461,7 @@ public static class TextEditorCommandDefaultFacts
 
                     removeCharacterCount = contiguousSpaceCount;
                     
-                    var deleteTextTextEditorModelAction = new DeleteTextByRangeTextEditorModelAction(
+                    var deleteTextTextEditorModelAction = new TextEditorModelsCollection.DeleteTextByRangeAction(
                         textEditorCommandParameter.TextEditorModel.ModelKey,
                         TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
                         removeCharacterCount,
@@ -550,7 +551,7 @@ public static class TextEditorCommandDefaultFacts
                 (temporaryIndexCoordinates.rowIndex, lengthOfRow);
             
             textEditorCommandParameter.TextEditorService.InsertText(
-                new InsertTextTextEditorModelAction(
+                new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
                         textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),
@@ -577,7 +578,7 @@ public static class TextEditorCommandDefaultFacts
                 (temporaryIndexCoordinates.rowIndex, 0);
             
             textEditorCommandParameter.TextEditorService.InsertText(
-                new InsertTextTextEditorModelAction(
+                new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
                         textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),

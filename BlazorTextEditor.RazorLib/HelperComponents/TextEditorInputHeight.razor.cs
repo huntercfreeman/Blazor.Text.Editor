@@ -29,7 +29,7 @@ public partial class TextEditorInputHeight : FluxorComponent
     
     private int TextEditorHeight
     {
-        get => TextEditorModelsCollectionWrap.Value.GlobalTextEditorOptions.HeightInPixels 
+        get => TextEditorService.TextEditorGlobalOptions.Options.HeightInPixels 
                ?? MINIMUM_HEIGHT_IN_PIXELS;
         set
         {

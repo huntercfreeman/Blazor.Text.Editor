@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.Tests.TestDataFolder;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -17,7 +18,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
         };
         
         TextEditorService.HandleKeyboardEvent(
-            new KeyboardEventTextEditorBaseAction(
+            new TextEditorModelsCollection.KeyboardEventAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 keyboardEventArgs,
@@ -36,7 +37,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
         var content = TestData.CSharp.EXAMPLE_TEXT_173_LINES;
         
         TextEditorService.InsertText(
-            new InsertTextTextEditorBaseAction(
+            new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 content,
@@ -64,7 +65,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
         var content = "A";
         
         TextEditorService.InsertText(
-            new InsertTextTextEditorBaseAction(
+            new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 content,
@@ -75,7 +76,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
             TextEditorModel.GetAllText());
         
         TextEditorService.DeleteTextByRange(
-            new DeleteTextByRangeTextEditorBaseAction(
+            new TextEditorModelsCollection.DeleteTextByRangeAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 1,
@@ -99,7 +100,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
         var content = "Abcdefg";
         
         TextEditorService.InsertText(
-            new InsertTextTextEditorBaseAction(
+            new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 content,
@@ -112,7 +113,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
         cursor.IndexCoordinates = (0, startingPositionIndex);
 
         TextEditorService.DeleteTextByRange(
-            new DeleteTextByRangeTextEditorBaseAction(
+            new TextEditorModelsCollection.DeleteTextByRangeAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 count,

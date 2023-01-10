@@ -10,18 +10,18 @@ public partial class TextEditorGroupsCollection
         [ReducerMethod]
         public static TextEditorGroupsCollection ReduceRegisterTextEditorGroupAction(
             TextEditorGroupsCollection inGroupsCollection,
-            RegisterGroupAction registerGroupAction)
+            RegisterAction registerAction)
         {
             var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
                     x.TextEditorGroupKey ==
-                    registerGroupAction.TextEditorGroup.TextEditorGroupKey);
+                    registerAction.TextEditorGroup.TextEditorGroupKey);
 
             if (existingTextEditorGroup is not null)
                 return inGroupsCollection;
 
             var nextList = inGroupsCollection.GroupsList
-                .Add(registerGroupAction.TextEditorGroup);
+                .Add(registerAction.TextEditorGroup);
 
             return new TextEditorGroupsCollection
             {

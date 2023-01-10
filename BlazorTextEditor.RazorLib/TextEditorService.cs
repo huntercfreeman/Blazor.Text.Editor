@@ -26,6 +26,7 @@ using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
@@ -39,9 +40,10 @@ namespace BlazorTextEditor.RazorLib;
 public class TextEditorService : ITextEditorService
 {
     private readonly IState<TextEditorModelsCollection> _textEditorModelsCollectionWrap;
-    private readonly IState<ThemeState> _themeStateWrap;
     private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollectionWrap;
     private readonly IState<TextEditorGroupsCollection> _textEditorGroupsCollectionWrap;
+    private readonly IState<ThemeState> _themeStateWrap;
+    private readonly IState<TextEditorGlobalOptions> _textEditorGlobalOptionsWrap;
     private readonly IDispatcher _dispatcher;
     private readonly IStorageProvider _storageProvider;
     
@@ -50,17 +52,19 @@ public class TextEditorService : ITextEditorService
 
     public TextEditorService(
         IState<TextEditorModelsCollection> textEditorModelsCollectionWrap,
-        IState<ThemeState> themeStateWrap,
         IState<TextEditorViewModelsCollection> textEditorViewModelsCollectionWrap,
         IState<TextEditorGroupsCollection> textEditorGroupsCollectionWrap,
+        IState<ThemeState> themeStateWrap,
+        IState<TextEditorGlobalOptions> textEditorGlobalOptionsWrap,
         IDispatcher dispatcher,
         IStorageProvider storageProvider,
         IJSRuntime jsRuntime)
     {
         _textEditorModelsCollectionWrap = textEditorModelsCollectionWrap;
-        _themeStateWrap = themeStateWrap;
         _textEditorViewModelsCollectionWrap = textEditorViewModelsCollectionWrap;
         _textEditorGroupsCollectionWrap = textEditorGroupsCollectionWrap;
+        _themeStateWrap = themeStateWrap;
+        _textEditorGlobalOptionsWrap = textEditorGlobalOptionsWrap;
         _dispatcher = dispatcher;
         _storageProvider = storageProvider;
         _jsRuntime = jsRuntime;
@@ -69,15 +73,16 @@ public class TextEditorService : ITextEditorService
     }
 
     public TextEditorModelsCollection TextEditorModelsCollection => _textEditorModelsCollectionWrap.Value;
-    public ThemeRecord? GlobalThemeValue => TextEditorModelsCollection.GlobalTextEditorOptions.Theme;
-    public string GlobalThemeCssClassString => TextEditorModelsCollection.GlobalTextEditorOptions.Theme?.CssClassString ?? string.Empty;
-    public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorModelsCollection.GlobalTextEditorOptions.FontSizeInPixels!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;";
-    public bool GlobalShowNewlines => TextEditorModelsCollection.GlobalTextEditorOptions.ShowNewlines!.Value;
-    public bool GlobalShowWhitespace => TextEditorModelsCollection.GlobalTextEditorOptions.ShowWhitespace!.Value;
-    public int GlobalFontSizeInPixelsValue => TextEditorModelsCollection.GlobalTextEditorOptions.FontSizeInPixels!.Value;
-    public double GlobalCursorWidthInPixelsValue => TextEditorModelsCollection.GlobalTextEditorOptions.CursorWidthInPixels!.Value;
-    public KeymapDefinition GlobalKeymapDefinition => TextEditorModelsCollection.GlobalTextEditorOptions.KeymapDefinition!;
-    public int? GlobalHeightInPixelsValue => TextEditorModelsCollection.GlobalTextEditorOptions.HeightInPixels;
+    public TextEditorGlobalOptions TextEditorGlobalOptions => _textEditorGlobalOptionsWrap.Value;
+    public ThemeRecord? GlobalThemeValue => _textEditorGlobalOptionsWrap.Value.Options.Theme;
+    public string GlobalThemeCssClassString => _textEditorGlobalOptionsWrap.Value.Options.Theme?.CssClassString ?? string.Empty;
+    public string GlobalFontSizeInPixelsStyling => $"font-size: {_textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;";
+    public bool GlobalShowNewlines => _textEditorGlobalOptionsWrap.Value.Options.ShowNewlines!.Value;
+    public bool GlobalShowWhitespace => _textEditorGlobalOptionsWrap.Value.Options.ShowWhitespace!.Value;
+    public int GlobalFontSizeInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value;
+    public double GlobalCursorWidthInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.CursorWidthInPixels!.Value;
+    public KeymapDefinition GlobalKeymapDefinition => _textEditorGlobalOptionsWrap.Value.Options.KeymapDefinition!;
+    public int? GlobalHeightInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.HeightInPixels;
 
     public event Action? TextEditorModelsCollectionChanged;
     
@@ -85,7 +90,8 @@ public class TextEditorService : ITextEditorService
         TextEditorModel textEditorModel)
     {
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
 
     public void RegisterCSharpTextEditorModel(
@@ -112,7 +118,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
     
     public void RegisterHtmlTextEditorModel(
@@ -139,7 +146,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
 
     public void RegisterCssTextEditorModel(
@@ -166,7 +174,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
     
     public void RegisterJsonTextEditorModel(
@@ -193,7 +202,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
 
     public void RegisterFSharpTextEditorModel(
@@ -220,7 +230,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
 
     public void RegisterRazorTextEditorModel(
@@ -247,7 +258,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
 
     public void RegisterJavaScriptTextEditorModel(
@@ -274,7 +286,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
     
     public void RegisterTypeScriptTextEditorModel(
@@ -301,7 +314,8 @@ public class TextEditorService : ITextEditorService
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
     
     public void RegisterPlainTextEditorModel(
@@ -323,7 +337,8 @@ public class TextEditorService : ITextEditorService
             textEditorModelKey);
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorModelAction(textEditorModel));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
 
     public string? GetAllText(TextEditorModelKey textEditorModelKey)
@@ -342,24 +357,24 @@ public class TextEditorService : ITextEditorService
             : GetAllText(textEditorModel.ModelKey);
     }
 
-    public void InsertText(InsertTextTextEditorModelAction insertTextTextEditorModelAction)
+    public void InsertText(TextEditorModelsCollection.InsertTextAction insertTextAction)
     {
-        _dispatcher.Dispatch(insertTextTextEditorModelAction);
+        _dispatcher.Dispatch(insertTextAction);
     }
 
-    public void HandleKeyboardEvent(KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
+    public void HandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction)
     {
-        _dispatcher.Dispatch(keyboardEventTextEditorModelAction);
+        _dispatcher.Dispatch(keyboardEventAction);
     }
     
-    public void DeleteTextByMotion(DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction)
+    public void DeleteTextByMotion(TextEditorModelsCollection.DeleteTextByMotionAction deleteTextByMotionAction)
     {
-        _dispatcher.Dispatch(deleteTextByMotionTextEditorModelAction);
+        _dispatcher.Dispatch(deleteTextByMotionAction);
     }
     
-    public void DeleteTextByRange(DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction)
+    public void DeleteTextByRange(TextEditorModelsCollection.DeleteTextByRangeAction deleteTextByRangeAction)
     {
-        _dispatcher.Dispatch(deleteTextByRangeTextEditorModelAction);
+        _dispatcher.Dispatch(deleteTextByRangeAction);
     }
     
     public void RedoEdit(TextEditorModelKey textEditorModelKey)
@@ -379,13 +394,15 @@ public class TextEditorService : ITextEditorService
     public void DisposeTextEditor(TextEditorModelKey textEditorModelKey)
     {
         _dispatcher.Dispatch(
-            new DisposeTextEditorModelAction(textEditorModelKey));
+            new TextEditorModelsCollection.DisposeAction(
+                textEditorModelKey));
     }
 
     public void SetFontSize(int fontSizeInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetFontSizeAction(fontSizeInPixels));
+            new TextEditorGlobalOptions.SetFontSizeAction(
+                fontSizeInPixels));
         
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
@@ -393,7 +410,8 @@ public class TextEditorService : ITextEditorService
     public void SetCursorWidth(double cursorWidthInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetCursorWidthAction(cursorWidthInPixels));
+            new TextEditorGlobalOptions.SetCursorWidthAction(
+                cursorWidthInPixels));
         
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
@@ -401,7 +419,8 @@ public class TextEditorService : ITextEditorService
     public void SetHeight(int? heightInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetHeightAction(heightInPixels));
+            new TextEditorGlobalOptions.SetHeightAction(
+                heightInPixels));
         
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
@@ -409,7 +428,8 @@ public class TextEditorService : ITextEditorService
     public void SetTheme(ThemeRecord theme)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetThemeAction(theme));
+            new TextEditorGlobalOptions.SetThemeAction(
+                theme));
         
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
@@ -417,7 +437,8 @@ public class TextEditorService : ITextEditorService
     public void SetKeymap(KeymapDefinition foundKeymap)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetKeymapAction(foundKeymap));
+            new TextEditorGlobalOptions.SetKeymapAction(
+                foundKeymap));
         
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
@@ -425,7 +446,8 @@ public class TextEditorService : ITextEditorService
     public void SetShowWhitespace(bool showWhitespace)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetShowWhitespaceAction(showWhitespace));
+            new TextEditorGlobalOptions.SetShowWhitespaceAction(
+                showWhitespace));
         
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
@@ -433,7 +455,8 @@ public class TextEditorService : ITextEditorService
     public void SetShowNewlines(bool showNewlines)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetShowNewlinesAction(showNewlines));
+            new TextEditorGlobalOptions.SetShowNewlinesAction(
+                showNewlines));
 
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
@@ -441,7 +464,9 @@ public class TextEditorService : ITextEditorService
     public void SetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetUsingRowEndingKindAction(textEditorModelKey, rowEndingKind));
+            new TextEditorModelsCollection.SetUsingRowEndingKindAction(
+                textEditorModelKey, 
+                rowEndingKind));
     }
     
     public void SetResourceData(
@@ -450,7 +475,7 @@ public class TextEditorService : ITextEditorService
         DateTime resourceLastWriteTime)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetResourceDataAction(
+            new TextEditorModelsCollection.SetResourceDataAction(
                 textEditorModelKey,
                 resourceUri,
                 resourceLastWriteTime));
@@ -484,50 +509,57 @@ public class TextEditorService : ITextEditorService
             TextEditorViewModelKey.Empty,
             ImmutableList<TextEditorViewModelKey>.Empty);
         
-        _dispatcher.Dispatch(new RegisterTextEditorGroupAction(textEditorGroup));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.RegisterAction(
+                textEditorGroup));
     }
 
     public void AddViewModelToGroup(
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new TextEditorGroupsCollection.AddViewModelToGroupAction(
-            textEditorGroupKey,
-            textEditorViewModelKey));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.AddViewModelToGroupAction(
+                textEditorGroupKey,
+                textEditorViewModelKey));
     }
     
     public void RemoveViewModelFromGroup(
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new TextEditorGroupsCollection.RemoveViewModelFromGroupAction(
-            textEditorGroupKey,
-            textEditorViewModelKey));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.RemoveViewModelFromGroupAction(
+                textEditorGroupKey,
+                textEditorViewModelKey));
     }
     
     public void SetActiveViewModelOfGroup(
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new TextEditorGroupsCollection.SetActiveViewModelOfGroupAction(
-            textEditorGroupKey,
-            textEditorViewModelKey));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.SetActiveViewModelOfGroupAction(
+                textEditorGroupKey,
+                textEditorViewModelKey));
     }
 
     public void RegisterViewModel(
         TextEditorViewModelKey textEditorViewModelKey,
         TextEditorModelKey textEditorModelKey)
     {
-        _dispatcher.Dispatch(new TextEditorViewModelsCollection.RegisterAction(
-            textEditorViewModelKey,
-            textEditorModelKey, 
-            this));
+        _dispatcher.Dispatch(
+            new TextEditorViewModelsCollection.RegisterAction(
+                textEditorViewModelKey,
+                textEditorModelKey, 
+                this));
     }
 
     public ImmutableArray<TextEditorViewModel> GetViewModelsForModel(TextEditorModelKey textEditorModelKey)
     {
         return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
-            .Where(x => x.TextEditorModelKey == textEditorModelKey)
+            .Where(x => 
+                x.TextEditorModelKey == textEditorModelKey)
             .ToImmutableArray();
     }
 
@@ -549,9 +581,10 @@ public class TextEditorService : ITextEditorService
         TextEditorViewModelKey textEditorViewModelKey,
         Func<TextEditorViewModel, TextEditorViewModel> withFunc)
     {
-        _dispatcher.Dispatch(new TextEditorViewModelsCollection.SetViewModelWithAction(
-            textEditorViewModelKey,
-            withFunc));
+        _dispatcher.Dispatch(
+            new TextEditorViewModelsCollection.SetViewModelWithAction(
+                textEditorViewModelKey,
+                withFunc));
     }
 
     public async Task SetGutterScrollTopAsync(string gutterElementId, double scrollTop)
@@ -629,7 +662,8 @@ public class TextEditorService : ITextEditorService
     public TextEditorModel? GetTextEditorModelOrDefaultByResourceUri(string resourceUri)
     {
         return TextEditorModelsCollection.TextEditorList
-            .FirstOrDefault(x => x.ResourceUri == resourceUri);
+            .FirstOrDefault(x =>
+                x.ResourceUri == resourceUri);
     }
     
     public void ReloadTextEditorModel(
@@ -637,7 +671,7 @@ public class TextEditorService : ITextEditorService
         string content)
     {
         _dispatcher.Dispatch(
-            new ReloadTextEditorModelAction(
+            new TextEditorModelsCollection.ReloadAction(
                 textEditorModelKey,
                 content));
     }
@@ -645,7 +679,8 @@ public class TextEditorService : ITextEditorService
     public TextEditorModel? GetTextEditorModelOrDefault(TextEditorModelKey textEditorModelKey)
     {
         return TextEditorModelsCollection.TextEditorList
-            .FirstOrDefault(x => x.ModelKey == textEditorModelKey);
+            .FirstOrDefault(x =>
+                x.ModelKey == textEditorModelKey);
     }
     
     public TextEditorViewModel? GetTextEditorViewModelOrDefault(TextEditorViewModelKey textEditorViewModelKey)
@@ -722,7 +757,7 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(
             new StorageEffects.WriteGlobalTextEditorOptionsToLocalStorageAction(
-                TextEditorModelsCollection.GlobalTextEditorOptions));
+                _textEditorGlobalOptionsWrap.Value.Options));
     }
     
     public void Dispose()

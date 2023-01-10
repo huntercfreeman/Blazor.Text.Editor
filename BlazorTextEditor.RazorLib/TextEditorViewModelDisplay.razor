@@ -14,7 +14,7 @@
 @{
     var textEditorModel = MutableReferenceToTextEditor;
     var textEditorViewModel = ReplaceableTextEditorViewModel;
-    var globalTextEditorOptions = TextEditorModelsCollectionWrap.Value.GlobalTextEditorOptions;
+    var globalTextEditorOptions = TextEditorService.TextEditorGlobalOptions;
 }
 
 <div style="@TextEditorService.GlobalFontSizeInPixelsStyling @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"

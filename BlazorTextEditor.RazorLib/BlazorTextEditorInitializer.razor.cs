@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -13,7 +13,7 @@ public partial class BlazorTextEditorInitializer : ComponentBase
 
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new TextEditorSetThemeAction(
+        Dispatcher.Dispatch(new TextEditorGlobalOptions.SetThemeAction(
             TextEditorServiceOptions.InitialTheme));
         
         base.OnInitialized();

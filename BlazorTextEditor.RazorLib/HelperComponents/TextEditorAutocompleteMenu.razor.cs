@@ -4,7 +4,7 @@ using BlazorALaCarte.Shared.Menu;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.ViewModel;
@@ -127,7 +127,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
         string option,
         TextEditorViewModel textEditorViewModel)
     {
-        var insertTextTextEditorModelAction = new InsertTextTextEditorModelAction(
+        var insertTextTextEditorModelAction = new TextEditorModelsCollection.InsertTextAction(
             textEditorViewModel.TextEditorModelKey,
             TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             option.Substring(word.Length),
