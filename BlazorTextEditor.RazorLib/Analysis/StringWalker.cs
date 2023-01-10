@@ -11,7 +11,7 @@ namespace BlazorTextEditor.RazorLib.Analysis;
 ///     <see cref="ParserFacts.END_OF_FILE" />.
 ///     <br /><br />
 ///     Provides common API that can be used when implementing an <see cref="ILexer" />
-///     for the <see cref="TextEditorBase" />.
+///     for the <see cref="TextEditorModel" />.
 ///     <br /><br />
 ///     Additionally one can write a parser that takes in a string in order to handle
 ///     contextual lexing. The <see cref="ILexer" /> can then traverse the parsed result

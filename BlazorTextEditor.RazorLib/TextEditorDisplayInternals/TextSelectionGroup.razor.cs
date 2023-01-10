@@ -9,7 +9,7 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class TextSelectionGroup : ComponentBase
 {
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
@@ -18,11 +18,11 @@ public partial class TextSelectionGroup : ComponentBase
     
     private string GetTextSelectionStyleCss(int lowerPositionIndexInclusive, int upperPositionIndexExclusive, int rowIndex)
     {
-        if (rowIndex >= TextEditorBase.RowEndingPositions.Length)
+        if (rowIndex >= TextEditorModel.RowEndingPositions.Length)
             return string.Empty;
 
-        var startOfRowTuple = TextEditorBase.GetStartOfRowTuple(rowIndex);
-        var endOfRowTuple = TextEditorBase.RowEndingPositions[rowIndex];
+        var startOfRowTuple = TextEditorModel.GetStartOfRowTuple(rowIndex);
+        var endOfRowTuple = TextEditorModel.RowEndingPositions[rowIndex];
 
         var selectionStartingColumnIndex = 0;
         var selectionEndingColumnIndex =
@@ -64,14 +64,14 @@ public partial class TextSelectionGroup : ComponentBase
 
         // selectionStartInPixels offset from Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditorBase
+            var tabsOnSameRowBeforeCursor = TextEditorModel
                 .GetTabsCountOnSameRowBeforeCursor(
                     rowIndex,
                     selectionStartingColumnIndex);
 
             // 1 of the character width is already accounted for
 
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+            var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
             selectionStartInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
@@ -90,14 +90,14 @@ public partial class TextSelectionGroup : ComponentBase
 
         // Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditorBase
+            var tabsOnSameRowBeforeCursor = TextEditorModel
                 .GetTabsCountOnSameRowBeforeCursor(
                     rowIndex,
                     selectionEndingColumnIndex);
 
             // 1 of the character width is already accounted for
 
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+            var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
             selectionWidthInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *

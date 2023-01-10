@@ -2,4 +2,4 @@
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
-public record UndoEditAction(TextEditorKey TextEditorKey);
+public record UndoEditAction(TextEditorModelKey TextEditorModelKey);

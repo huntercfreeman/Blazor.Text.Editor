@@ -5,9 +5,9 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
-public partial class TextEditorBase
+public partial class TextEditorModel
 {
-    public TextEditorBase(
+    public TextEditorModel(
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
@@ -26,7 +26,7 @@ public partial class TextEditorBase
         SetContent(content);
     }
 
-    public TextEditorBase(
+    public TextEditorModel(
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
@@ -34,7 +34,7 @@ public partial class TextEditorBase
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
         ITextEditorKeymap? textEditorKeymap,
-        TextEditorKey key)
+        TextEditorModelKey modelKey)
         : this(
             resourceUri,
             resourceLastWriteTime,
@@ -44,18 +44,18 @@ public partial class TextEditorBase
             decorationMapper,
             textEditorKeymap)
     {
-        Key = key;
+        ModelKey = modelKey;
     }
 
     /// <summary>
-    /// Clone the TextEditorBase using shallow copy
+    /// Clone the TextEditorModel using shallow copy
     /// so that Fluxor will notify all the <see cref="TextEditorView"/>
-    /// of the <see cref="TextEditorBase"/> having been replaced
+    /// of the <see cref="TextEditorModel"/> having been replaced
     /// <br/><br/>
     /// Do not use a record would that do a deep value comparison
     /// and be incredibly slow? (i.e.) compare every RichCharacter in the list.
     /// </summary>
-    public TextEditorBase(TextEditorBase original)
+    public TextEditorModel(TextEditorModel original)
     {
         ResourceUri = original.ResourceUri;
         ResourceLastWriteTime = original.ResourceLastWriteTime;
@@ -65,7 +65,7 @@ public partial class TextEditorBase
         _rowEndingKindCounts = original._rowEndingKindCounts;
         _rowEndingPositions = original._rowEndingPositions;
         _tabKeyPositions = original._tabKeyPositions;
-        Key = original.Key;
+        ModelKey = original.ModelKey;
 
         OnlyRowEndingKind = original.OnlyRowEndingKind;
         UsingRowEndingKind = original.UsingRowEndingKind;

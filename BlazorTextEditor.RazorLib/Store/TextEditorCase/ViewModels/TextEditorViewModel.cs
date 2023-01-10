@@ -10,7 +10,7 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 
 public record TextEditorViewModel(
     TextEditorViewModelKey TextEditorViewModelKey,
-    TextEditorKey TextEditorKey,
+    TextEditorModelKey TextEditorModelKey,
     ITextEditorService TextEditorService,
     VirtualizationResult<List<RichCharacter>> VirtualizationResult,
     bool ShouldMeasureDimensions,
@@ -21,8 +21,8 @@ public record TextEditorViewModel(
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
-    public Action<TextEditorBase>? OnSaveRequested { get; init; }
-    public Func<TextEditorBase, string>? GetTabDisplayNameFunc { get; init; }
+    public Action<TextEditorModel>? OnSaveRequested { get; init; }
+    public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }
 
     public string CommandBarValue { get; set; } = string.Empty;
     
@@ -45,7 +45,7 @@ public record TextEditorViewModel(
     public void CursorMovePageBottom()
     {
         var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
-        var textEditor = TextEditorService.GetTextEditorBaseFromViewModelKey(
+        var textEditor = TextEditorService.GetTextEditorModelFromViewModelKey(
             TextEditorViewModelKey);
 
         if (textEditor is not null &&
@@ -115,7 +115,7 @@ public record TextEditorViewModel(
         
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
-        var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
+        var textEditorModel = TextEditorService.GetTextEditorModelFromViewModelKey(TextEditorViewModelKey);
 
         if (bodyMeasurementsInPixels is null)
         {
@@ -130,7 +130,7 @@ public record TextEditorViewModel(
             MeasurementsExpiredCancellationToken = cancellationToken 
         };
         
-        if (textEditorBase is null ||
+        if (textEditorModel is null ||
             bodyMeasurementsInPixels.MeasurementsExpiredCancellationToken.IsCancellationRequested)
         {
             return;
@@ -155,9 +155,9 @@ public record TextEditorViewModel(
             
             
             if (verticalStartingIndex + verticalTake >
-                textEditorBase.RowEndingPositions.Length)
+                textEditorModel.RowEndingPositions.Length)
             {
-                verticalTake = textEditorBase.RowEndingPositions.Length -
+                verticalTake = textEditorModel.RowEndingPositions.Length -
                                verticalStartingIndex;
             }
             
@@ -172,7 +172,7 @@ public record TextEditorViewModel(
             bodyMeasurementsInPixels.Width /
             localCharacterWidthAndRowHeight.CharacterWidthInPixels);
 
-        var virtualizedEntries = textEditorBase
+        var virtualizedEntries = textEditorModel
             .GetRows(verticalStartingIndex, verticalTake)
             .Select((row, index) =>
             {
@@ -190,13 +190,13 @@ public record TextEditorViewModel(
                             ? maxValidColumnIndex
                             : localHorizontalStartingIndex;
 
-                    var tabsOnSameRowBeforeCursor = textEditorBase
+                    var tabsOnSameRowBeforeCursor = textEditorModel
                         .GetTabsCountOnSameRowBeforeCursor(
                             index,
                             parameterForGetTabsCountOnSameRowBeforeCursor);
 
                     // 1 of the character width is already accounted for
-                    var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+                    var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
                     localHorizontalStartingIndex -= extraWidthPerTabKey * tabsOnSameRowBeforeCursor;
                 }
@@ -234,11 +234,11 @@ public record TextEditorViewModel(
             }).ToImmutableArray();
 
         var totalWidth =
-            textEditorBase.MostCharactersOnASingleRowTuple.rowLength *
+            textEditorModel.MostCharactersOnASingleRowTuple.rowLength *
             localCharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var totalHeight =
-            textEditorBase.RowEndingPositions.Length *
+            textEditorModel.RowEndingPositions.Length *
             localCharacterWidthAndRowHeight.RowHeightInPixels;
         
         // Add vertical margin so the user can scroll beyond the final row of content

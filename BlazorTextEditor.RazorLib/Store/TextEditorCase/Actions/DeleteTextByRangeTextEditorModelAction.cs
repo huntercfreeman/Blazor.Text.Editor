@@ -4,8 +4,8 @@ using BlazorTextEditor.RazorLib.TextEditor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
-public record DeleteTextByMotionTextEditorBaseAction(
-    TextEditorKey TextEditorKey,
+public record DeleteTextByRangeTextEditorModelAction(
+    TextEditorModelKey TextEditorModelKey,
     ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots,
-    MotionKind MotionKind,
+    int Count,
     CancellationToken CancellationToken);

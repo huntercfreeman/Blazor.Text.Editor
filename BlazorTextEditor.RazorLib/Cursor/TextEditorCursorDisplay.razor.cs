@@ -13,7 +13,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private IJSRuntime JsRuntime { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter]
@@ -93,7 +93,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             }
         }
         
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
         
         var rowIndex = TextEditorCursor.IndexCoordinates.rowIndex;
 
@@ -138,7 +138,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     private string GetCursorStyleCss()
     {
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
 
         var leftInPixels = 0d;
 
@@ -151,7 +151,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
             // 1 of the character width is already accounted for
 
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+            var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * 
                             tabsOnSameRowBeforeCursor * 
@@ -184,7 +184,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var keymapStyling = GlobalTextEditorOptions.KeymapDefinition!.Keymap
             .GetCursorCssStyleString(
-                TextEditorBase,
+                TextEditorModel,
                 TextEditorViewModel,
                 GlobalTextEditorOptions);
         
@@ -193,7 +193,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     private string GetCaretRowStyleCss()
     {
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
 
         var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
                                  TextEditorCursor.IndexCoordinates.rowIndex)
@@ -219,7 +219,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     private string GetMenuStyleCss()
     {
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
         
         var leftInPixels = 0d;
 
@@ -232,7 +232,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
             // 1 of the character width is already accounted for
 
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+            var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
                             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;

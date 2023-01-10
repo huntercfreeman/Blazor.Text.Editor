@@ -20,11 +20,11 @@ public partial class TextEditorHeader : TextEditorView
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
 
     private TextEditorCommandParameter ConstructTextEditorCommandParameter(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         TextEditorViewModel textEditorViewModel)
     {
         return new TextEditorCommandParameter(
-            textEditorBase,
+            textEditorModel,
             TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             ClipboardProvider,
             TextEditorService,
@@ -46,7 +46,7 @@ public partial class TextEditorHeader : TextEditorView
 
         if (Enum.TryParse<RowEndingKind>(rowEndingKindString, out var rowEndingKind))
             TextEditorService.SetUsingRowEndingKind(
-                localTextEditorViewModel.TextEditorKey,
+                localTextEditorViewModel.TextEditorModelKey,
                 rowEndingKind);
     }
 

@@ -4,5 +4,5 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
 
 public record RegisterTextEditorViewModelAction(
     TextEditorViewModelKey TextEditorViewModelKey, 
-    TextEditorKey TextEditorKey,
+    TextEditorModelKey TextEditorModelKey,
     ITextEditorService TextEditorService);

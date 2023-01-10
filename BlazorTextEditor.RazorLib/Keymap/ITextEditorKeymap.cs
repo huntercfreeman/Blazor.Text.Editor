@@ -14,7 +14,7 @@ public interface ITextEditorKeymap
     public string GetCursorCssClassString();
 
     public string GetCursorCssStyleString(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         TextEditorViewModel textEditorViewModel,
         TextEditorOptions textEditorOptions);
 }

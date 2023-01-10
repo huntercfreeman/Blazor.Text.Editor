@@ -19,7 +19,7 @@ public class AutocompleteIndexer : IAutocompleteIndexer
     public ImmutableArray<string> IndexedStrings => _indexedStrings
         .ToImmutableArray();
     
-    public Task IndexTextEditorAsync(TextEditorBase textEditorBase)
+    public Task IndexTextEditorAsync(TextEditorModel textEditorModel)
     {
         return Task.CompletedTask;
     }

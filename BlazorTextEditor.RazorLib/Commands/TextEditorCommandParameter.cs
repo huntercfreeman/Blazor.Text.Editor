@@ -9,20 +9,20 @@ namespace BlazorTextEditor.RazorLib.Commands;
 public class TextEditorCommandParameter : ITextEditorCommandParameter
 {
     public TextEditorCommandParameter(
-        TextEditorBase textEditor,
+        TextEditorModel textEditor,
         ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots,
         IClipboardProvider clipboardProvider,
         ITextEditorService textEditorService,
         TextEditorViewModel textEditorViewModel)
     {
-        TextEditorBase = textEditor;
+        TextEditorModel = textEditor;
         CursorSnapshots = cursorSnapshots;
         ClipboardProvider = clipboardProvider;
         TextEditorService = textEditorService;
         TextEditorViewModel = textEditorViewModel;
     }
 
-    public TextEditorBase TextEditorBase { get; }
+    public TextEditorModel TextEditorModel { get; }
 
     public TextEditorCursorSnapshot PrimaryCursorSnapshot => CursorSnapshots
         .First(x => x.UserCursor.IsPrimaryCursor);

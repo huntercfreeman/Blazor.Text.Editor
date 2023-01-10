@@ -31,7 +31,7 @@ public class TextEditorCursor
     public static void MoveCursor(
         KeyboardEventArgs keyboardEventArgs,
         TextEditorCursor textEditorCursor,
-        TextEditorBase textEditorBase)
+        TextEditorModel textEditorModel)
     {
         var localIndexCoordinates = textEditorCursor.IndexCoordinates;
         var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
@@ -54,7 +54,7 @@ public class TextEditorCursor
                 textEditorCursor.TextEditorSelection.EndingPositionIndex ==
                 textEditorCursor.TextEditorSelection.AnchorPositionIndex)
             {
-                var positionIndex = textEditorBase.GetPositionIndex(
+                var positionIndex = textEditorModel.GetPositionIndex(
                     localIndexCoordinates.rowIndex,
                     localIndexCoordinates.columnIndex);
 
@@ -74,7 +74,7 @@ public class TextEditorCursor
                     var selectionBounds = TextEditorSelectionHelper
                         .GetSelectionBounds(rememberTextEditorSelection);
 
-                    var lowerRowMetaData = textEditorBase
+                    var lowerRowMetaData = textEditorModel
                         .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                             selectionBounds.lowerPositionIndexInclusive);
 
@@ -92,7 +92,7 @@ public class TextEditorCursor
                         {
                             localIndexCoordinates.rowIndex--;
 
-                            var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+                            var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                             MutateIndexCoordinatesAndPreferredColumnIndex(lengthOfRow);
                         }
@@ -101,7 +101,7 @@ public class TextEditorCursor
                     {
                         if (keyboardEventArgs.CtrlKey)
                         {
-                            var columnIndexOfCharacterWithDifferingKind = textEditorBase
+                            var columnIndexOfCharacterWithDifferingKind = textEditorModel
                                 .GetColumnIndexOfCharacterWithDifferingKind(
                                     localIndexCoordinates.rowIndex,
                                     localIndexCoordinates.columnIndex,
@@ -124,11 +124,11 @@ public class TextEditorCursor
             }
             case KeyboardKeyFacts.MovementKeys.ARROW_DOWN:
             {
-                if (localIndexCoordinates.rowIndex < textEditorBase.RowCount - 1)
+                if (localIndexCoordinates.rowIndex < textEditorModel.RowCount - 1)
                 {
                     localIndexCoordinates.rowIndex++;
 
-                    var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+                    var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                     localIndexCoordinates.columnIndex = lengthOfRow < localPreferredColumnIndex
                         ? lengthOfRow
@@ -143,7 +143,7 @@ public class TextEditorCursor
                 {
                     localIndexCoordinates.rowIndex--;
 
-                    var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+                    var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                     localIndexCoordinates.columnIndex = lengthOfRow < localPreferredColumnIndex
                         ? lengthOfRow
@@ -162,18 +162,18 @@ public class TextEditorCursor
                         .GetSelectionBounds(rememberTextEditorSelection);
 
                     var upperRowMetaData =
-                        textEditorBase
+                        textEditorModel
                             .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                                 selectionBounds.upperPositionIndexExclusive);
 
                     localIndexCoordinates.rowIndex =
                         upperRowMetaData.rowIndex;
 
-                    if (localIndexCoordinates.rowIndex >= textEditorBase.RowCount)
+                    if (localIndexCoordinates.rowIndex >= textEditorModel.RowCount)
                     {
-                        localIndexCoordinates.rowIndex = textEditorBase.RowCount - 1;
+                        localIndexCoordinates.rowIndex = textEditorModel.RowCount - 1;
 
-                        var upperRowLength = textEditorBase
+                        var upperRowLength = textEditorModel
                             .GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                         localIndexCoordinates.columnIndex = upperRowLength;
@@ -187,10 +187,10 @@ public class TextEditorCursor
                 }
                 else
                 {
-                    var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+                    var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                     if (localIndexCoordinates.columnIndex == lengthOfRow &&
-                        localIndexCoordinates.rowIndex < textEditorBase.RowCount - 1)
+                        localIndexCoordinates.rowIndex < textEditorModel.RowCount - 1)
                     {
                         MutateIndexCoordinatesAndPreferredColumnIndex(0);
                         localIndexCoordinates.rowIndex++;
@@ -199,7 +199,7 @@ public class TextEditorCursor
                     {
                         if (keyboardEventArgs.CtrlKey)
                         {
-                            var columnIndexOfCharacterWithDifferingKind = textEditorBase
+                            var columnIndexOfCharacterWithDifferingKind = textEditorModel
                                 .GetColumnIndexOfCharacterWithDifferingKind(
                                     localIndexCoordinates.rowIndex,
                                     localIndexCoordinates.columnIndex,
@@ -232,9 +232,9 @@ public class TextEditorCursor
             case KeyboardKeyFacts.MovementKeys.END:
             {
                 if (keyboardEventArgs.CtrlKey)
-                    localIndexCoordinates.rowIndex = textEditorBase.RowCount - 1;
+                    localIndexCoordinates.rowIndex = textEditorModel.RowCount - 1;
 
-                var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+                var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                 MutateIndexCoordinatesAndPreferredColumnIndex(lengthOfRow);
 
@@ -247,7 +247,7 @@ public class TextEditorCursor
 
         if (keyboardEventArgs.ShiftKey)
         {
-            var positionIndex = textEditorBase.GetPositionIndex(
+            var positionIndex = textEditorModel.GetPositionIndex(
                 localIndexCoordinates.rowIndex,
                 localIndexCoordinates.columnIndex);
 

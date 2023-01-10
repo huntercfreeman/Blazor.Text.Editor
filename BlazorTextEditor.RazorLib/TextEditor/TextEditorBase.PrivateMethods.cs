@@ -9,7 +9,7 @@ using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
-public partial class TextEditorBase
+public partial class TextEditorModel
 {
     private void EnsureUndoPoint(
         TextEditKind textEditKind,
@@ -52,16 +52,16 @@ public partial class TextEditorBase
         }
     }
 
-    private void PerformInsertions(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+    private void PerformInsertions(KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
     {
         EnsureUndoPoint(TextEditKind.Insertion);
 
-        foreach (var cursorSnapshot in keyboardEventTextEditorBaseAction.CursorSnapshots)
+        foreach (var cursorSnapshot in keyboardEventTextEditorModelAction.CursorSnapshots)
         {
             if (TextEditorSelectionHelper.HasSelectedText(
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
             {
-                PerformDeletions(keyboardEventTextEditorBaseAction);
+                PerformDeletions(keyboardEventTextEditorModelAction);
 
                 var selectionBounds = TextEditorSelectionHelper.GetSelectionBounds(
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
@@ -77,7 +77,7 @@ public partial class TextEditorBase
                 cursorSnapshot.UserCursor.IndexCoordinates = 
                     (lowerRowData.rowIndex, lowerColumnIndex);
                 
-                var nextEdit = keyboardEventTextEditorBaseAction with
+                var nextEdit = keyboardEventTextEditorModelAction with
                 {
                     CursorSnapshots = new []
                     {
@@ -105,19 +105,19 @@ public partial class TextEditorBase
             var wasTabCode = false;
             var wasEnterCode = false;
 
-            var characterValueToInsert = keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key
+            var characterValueToInsert = keyboardEventTextEditorModelAction.KeyboardEventArgs.Key
                 .First();
 
-            if (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code))
+            if (KeyboardKeyFacts.IsWhitespaceCode(keyboardEventTextEditorModelAction.KeyboardEventArgs.Code))
             {
                 characterValueToInsert =
-                    KeyboardKeyFacts.ConvertWhitespaceCodeToCharacter(keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code);
+                    KeyboardKeyFacts.ConvertWhitespaceCodeToCharacter(keyboardEventTextEditorModelAction.KeyboardEventArgs.Code);
 
                 wasTabCode = KeyboardKeyFacts.WhitespaceCodes.TAB_CODE ==
-                             keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code;
+                             keyboardEventTextEditorModelAction.KeyboardEventArgs.Code;
 
                 wasEnterCode = KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE ==
-                               keyboardEventTextEditorBaseAction.KeyboardEventArgs.Code;
+                               keyboardEventTextEditorModelAction.KeyboardEventArgs.Code;
             }
 
             var characterCountInserted = 1;
@@ -233,11 +233,11 @@ public partial class TextEditorBase
         }
     }
 
-    private void PerformDeletions(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+    private void PerformDeletions(KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
     {
         EnsureUndoPoint(TextEditKind.Deletion);
 
-        foreach (var cursorSnapshot in keyboardEventTextEditorBaseAction.CursorSnapshots)
+        foreach (var cursorSnapshot in keyboardEventTextEditorModelAction.CursorSnapshots)
         {
             var startOfRowPositionIndex =
                 GetStartOfRowTuple(cursorSnapshot.ImmutableCursor.RowIndex)
@@ -296,11 +296,11 @@ public partial class TextEditorBase
 
                 cursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             }
-            else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
+            else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorModelAction.KeyboardEventArgs.Key)
             {
                 moveBackwards = true;
 
-                if (keyboardEventTextEditorBaseAction.KeyboardEventArgs.CtrlKey)
+                if (keyboardEventTextEditorModelAction.KeyboardEventArgs.CtrlKey)
                 {
                     var columnIndexOfCharacterWithDifferingKind = GetColumnIndexOfCharacterWithDifferingKind(
                         cursorSnapshot.ImmutableCursor.RowIndex,
@@ -327,11 +327,11 @@ public partial class TextEditorBase
                 
                 startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
             }
-            else if (KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
+            else if (KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorModelAction.KeyboardEventArgs.Key)
             {
                 moveBackwards = false;
                 
-                if (keyboardEventTextEditorBaseAction.KeyboardEventArgs.CtrlKey)
+                if (keyboardEventTextEditorModelAction.KeyboardEventArgs.CtrlKey)
                 {
                     var columnIndexOfCharacterWithDifferingKind = GetColumnIndexOfCharacterWithDifferingKind(
                         cursorSnapshot.ImmutableCursor.RowIndex,
@@ -361,7 +361,7 @@ public partial class TextEditorBase
             else
             {
                 throw new ApplicationException(
-                    $"The keyboard key: {keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key} was not recognized");
+                    $"The keyboard key: {keyboardEventTextEditorModelAction.KeyboardEventArgs.Key} was not recognized");
             }
 
             var charactersRemovedCount = 0;

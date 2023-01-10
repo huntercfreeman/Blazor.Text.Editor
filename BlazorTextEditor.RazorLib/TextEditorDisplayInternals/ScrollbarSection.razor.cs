@@ -10,7 +10,7 @@ namespace BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
 public partial class ScrollbarSection : ComponentBase
 {
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 }

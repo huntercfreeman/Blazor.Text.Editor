@@ -19,7 +19,7 @@ public record VimMotionResult(
         
         var beforeMotionImmutableCursor = textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor;
         
-        var beforeMotionPositionIndex = textEditorCommandParameter.TextEditorBase
+        var beforeMotionPositionIndex = textEditorCommandParameter.TextEditorModel
             .GetPositionIndex(
                 beforeMotionImmutableCursor.RowIndex,
                 beforeMotionImmutableCursor.ColumnIndex);
@@ -27,7 +27,7 @@ public record VimMotionResult(
         var afterMotionImmutableCursor = new ImmutableTextEditorCursor(
             textEditorCursorForMotion);
         
-        var afterMotionPositionIndex = textEditorCommandParameter.TextEditorBase
+        var afterMotionPositionIndex = textEditorCommandParameter.TextEditorModel
             .GetPositionIndex(
                 afterMotionImmutableCursor.RowIndex,
                 afterMotionImmutableCursor.ColumnIndex);

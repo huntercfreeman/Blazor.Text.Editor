@@ -15,7 +15,7 @@ public partial class RowSection : ComponentBase
     private ITextEditorService TextEditorService { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
@@ -64,7 +64,7 @@ public partial class RowSection : ComponentBase
     
     private string GetCssClass(byte decorationByte)
     {
-        return TextEditorBase.DecorationMapper.Map(decorationByte);
+        return TextEditorModel.DecorationMapper.Map(decorationByte);
     }
     
     private void AppendTextEscaped(

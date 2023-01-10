@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
-public partial class TextEditorBase
+public partial class TextEditorModel
 {
     /// <summary>
     /// The cursor is a separate element
@@ -107,25 +107,25 @@ public partial class TextEditorBase
         return tabs.Count();
     }
 
-    public TextEditorBase PerformForceRerenderAction(ForceRerenderAction forceRerenderAction)
+    public TextEditorModel PerformForceRerenderAction(ForceRerenderAction forceRerenderAction)
     {
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
-    public TextEditorBase PerformEditTextEditorAction(
-        KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+    public TextEditorModel PerformEditTextEditorAction(
+        KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
     {
-        if (KeyboardKeyFacts.IsMetaKey(keyboardEventTextEditorBaseAction.KeyboardEventArgs))
+        if (KeyboardKeyFacts.IsMetaKey(keyboardEventTextEditorModelAction.KeyboardEventArgs))
         {
-            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key ||
-                KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorBaseAction.KeyboardEventArgs.Key)
-                PerformDeletions(keyboardEventTextEditorBaseAction);
+            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventTextEditorModelAction.KeyboardEventArgs.Key ||
+                KeyboardKeyFacts.MetaKeys.DELETE == keyboardEventTextEditorModelAction.KeyboardEventArgs.Key)
+                PerformDeletions(keyboardEventTextEditorModelAction);
         }
         else
         {
             var cursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    keyboardEventTextEditorBaseAction.CursorSnapshots
+                    keyboardEventTextEditorModelAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
@@ -135,7 +135,7 @@ public partial class TextEditorBase
                     x.UserCursor.IsPrimaryCursor);
 
             if (primaryCursorSnapshot is null)
-                return new TextEditorBase(this);
+                return new TextEditorModel(this);
 
             /*
              * TODO: 2022-11-18 one must not use the UserCursor while
@@ -160,8 +160,8 @@ public partial class TextEditorBase
                     primaryCursorSnapshot
                         .ImmutableCursor.ImmutableTextEditorSelection))
             {
-                PerformDeletions(new KeyboardEventTextEditorBaseAction(
-                    keyboardEventTextEditorBaseAction.TextEditorKey,
+                PerformDeletions(new KeyboardEventTextEditorModelAction(
+                    keyboardEventTextEditorModelAction.TextEditorModelKey,
                     cursorSnapshots,
                     new KeyboardEventArgs
                     {
@@ -173,25 +173,25 @@ public partial class TextEditorBase
             
             var innerCursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    keyboardEventTextEditorBaseAction.CursorSnapshots
+                    keyboardEventTextEditorModelAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
             
-            PerformInsertions(keyboardEventTextEditorBaseAction with
+            PerformInsertions(keyboardEventTextEditorModelAction with
             {
                 CursorSnapshots = innerCursorSnapshots
             });
         }
 
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
-    public TextEditorBase PerformEditTextEditorAction(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
+    public TextEditorModel PerformEditTextEditorAction(InsertTextTextEditorModelAction insertTextTextEditorModelAction)
     {
         var cursorSnapshots = TextEditorCursorSnapshot
             .TakeSnapshots(
-                insertTextTextEditorBaseAction.CursorSnapshots
+                insertTextTextEditorModelAction.CursorSnapshots
                     .Select(x => x.UserCursor)
                     .ToArray())
             .ToImmutableArray();
@@ -201,7 +201,7 @@ public partial class TextEditorBase
                 x.UserCursor.IsPrimaryCursor);
 
         if (primaryCursorSnapshot is null)
-            return new TextEditorBase(this);
+            return new TextEditorModel(this);
 
         /*
          * TODO: 2022-11-18 one must not use the UserCursor while
@@ -226,8 +226,8 @@ public partial class TextEditorBase
                 primaryCursorSnapshot
                     .ImmutableCursor.ImmutableTextEditorSelection))
         {
-            PerformDeletions(new KeyboardEventTextEditorBaseAction(
-                insertTextTextEditorBaseAction.TextEditorKey,
+            PerformDeletions(new KeyboardEventTextEditorModelAction(
+                insertTextTextEditorModelAction.TextEditorModelKey,
                 cursorSnapshots,
                 new KeyboardEventArgs
                 {
@@ -237,7 +237,7 @@ public partial class TextEditorBase
                 CancellationToken.None));
         }
         
-        var localContent = insertTextTextEditorBaseAction.Content
+        var localContent = insertTextTextEditorModelAction.Content
             .Replace("\r\n", "\n");
         
         foreach (var character in localContent)
@@ -249,7 +249,7 @@ public partial class TextEditorBase
             // cursor snapshots are updated
             var innerCursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    insertTextTextEditorBaseAction.CursorSnapshots
+                    insertTextTextEditorModelAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
@@ -263,9 +263,9 @@ public partial class TextEditorBase
                 _ => character.ToString(),
             };
 
-            var keyboardEventTextEditorBaseAction =
-                new KeyboardEventTextEditorBaseAction(
-                    insertTextTextEditorBaseAction.TextEditorKey,
+            var keyboardEventTextEditorModelAction =
+                new KeyboardEventTextEditorModelAction(
+                    insertTextTextEditorModelAction.TextEditorModelKey,
                     innerCursorSnapshots,
                     new KeyboardEventArgs
                     {
@@ -274,16 +274,16 @@ public partial class TextEditorBase
                     },
                     CancellationToken.None);
 
-            PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+            PerformEditTextEditorAction(keyboardEventTextEditorModelAction);
         }
 
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
-    public TextEditorBase PerformEditTextEditorAction(
-        DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+    public TextEditorModel PerformEditTextEditorAction(
+        DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction)
     {
-        var keyboardEventArgs = deleteTextByMotionTextEditorBaseAction.MotionKind switch
+        var keyboardEventArgs = deleteTextByMotionTextEditorModelAction.MotionKind switch
         {
             MotionKind.Backspace => new KeyboardEventArgs
             {
@@ -295,41 +295,41 @@ public partial class TextEditorBase
             },
             _ => throw new ApplicationException(
                 $"The {nameof(MotionKind)}:" +
-                $" {deleteTextByMotionTextEditorBaseAction.MotionKind}" +
+                $" {deleteTextByMotionTextEditorModelAction.MotionKind}" +
                 " was not recognized.")
         };
 
-        var keyboardEventTextEditorBaseAction =
-            new KeyboardEventTextEditorBaseAction(
-                deleteTextByMotionTextEditorBaseAction.TextEditorKey,
-                deleteTextByMotionTextEditorBaseAction.CursorSnapshots,
+        var keyboardEventTextEditorModelAction =
+            new KeyboardEventTextEditorModelAction(
+                deleteTextByMotionTextEditorModelAction.TextEditorModelKey,
+                deleteTextByMotionTextEditorModelAction.CursorSnapshots,
                 keyboardEventArgs,
                 CancellationToken.None);
 
-        PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+        PerformEditTextEditorAction(keyboardEventTextEditorModelAction);
 
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
-    public TextEditorBase PerformEditTextEditorAction(
-        DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+    public TextEditorModel PerformEditTextEditorAction(
+        DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction)
     {
         // TODO: This needs to be rewritten everything should be deleted at the same time not a foreach loop for each character
-        for (var i = 0; i < deleteTextByRangeTextEditorBaseAction.Count; i++)
+        for (var i = 0; i < deleteTextByRangeTextEditorModelAction.Count; i++)
         {
             // Need innerCursorSnapshots because need
             // after every loop of the foreach that the
             // cursor snapshots are updated
             var innerCursorSnapshots = TextEditorCursorSnapshot
                 .TakeSnapshots(
-                    deleteTextByRangeTextEditorBaseAction.CursorSnapshots
+                    deleteTextByRangeTextEditorModelAction.CursorSnapshots
                         .Select(x => x.UserCursor)
                         .ToArray())
                 .ToImmutableArray();
 
-            var keyboardEventTextEditorBaseAction =
-                new KeyboardEventTextEditorBaseAction(
-                    deleteTextByRangeTextEditorBaseAction.TextEditorKey,
+            var keyboardEventTextEditorModelAction =
+                new KeyboardEventTextEditorModelAction(
+                    deleteTextByRangeTextEditorModelAction.TextEditorModelKey,
                     innerCursorSnapshots,
                     new KeyboardEventArgs
                     {
@@ -338,10 +338,10 @@ public partial class TextEditorBase
                     },
                     CancellationToken.None);
 
-            PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+            PerformEditTextEditorAction(keyboardEventTextEditorModelAction);
         }
 
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
     /// <summary>
@@ -523,11 +523,11 @@ public partial class TextEditorBase
         // TODO: Invoke an event to reapply the CSS classes?
     }
     
-    public TextEditorBase SetResourceData(
+    public TextEditorModel SetResourceData(
         string resourceUri,
         DateTime resourceLastWriteTime)
     {
-        var nextTextEditor = new TextEditorBase(this);
+        var nextTextEditor = new TextEditorModel(this);
 
         nextTextEditor.ResourceUri = resourceUri;
         nextTextEditor.ResourceLastWriteTime = resourceLastWriteTime;
@@ -535,10 +535,10 @@ public partial class TextEditorBase
         return nextTextEditor;
     }
 
-    public TextEditorBase SetUsingRowEndingKind(RowEndingKind rowEndingKind)
+    public TextEditorModel SetUsingRowEndingKind(RowEndingKind rowEndingKind)
     {
         UsingRowEndingKind = rowEndingKind;
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
     public ImmutableArray<RichCharacter> GetAllRichCharacters()
@@ -573,7 +573,7 @@ public partial class TextEditorBase
     /// For complete clarity, this comment refers to one possibly expecting
     /// to see "if (EditBlockIndex == _editBlocksPersisted.Count - 1)"
     /// </summary>
-    public TextEditorBase UndoEdit()
+    public TextEditorModel UndoEdit()
     {
         if (!CanUndoEdit())
             return this;
@@ -593,10 +593,10 @@ public partial class TextEditorBase
 
         SetContent(restoreEditBlock.ContentSnapshot);
 
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
-    public TextEditorBase RedoEdit()
+    public TextEditorModel RedoEdit()
     {
         if (!CanRedoEdit())
             return this;
@@ -607,7 +607,7 @@ public partial class TextEditorBase
 
         SetContent(restoreEditBlock.ContentSnapshot);
 
-        return new TextEditorBase(this);
+        return new TextEditorModel(this);
     }
 
     public CharacterKind GetCharacterKindAt(int positionIndex)

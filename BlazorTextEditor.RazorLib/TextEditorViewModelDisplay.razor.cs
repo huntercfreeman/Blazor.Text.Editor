@@ -51,7 +51,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
     /// <summary>If left null, the default <see cref="HandleAfterOnKeyDownAsync"/> will be used.</summary>
     [Parameter]
-    public Func<TextEditorBase, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs, Func<TextEditorMenuKind, bool, Task>, Task>? AfterOnKeyDownAsync { get; set; }
+    public Func<TextEditorModel, ImmutableArray<TextEditorCursorSnapshot>, KeyboardEventArgs, Func<TextEditorMenuKind, bool, Task>, Task>? AfterOnKeyDownAsync { get; set; }
     /// <summary>If set to false the <see cref="TextEditorHeader"/> will NOT render above the text editor.</summary>
     [Parameter]
     public bool IncludeHeaderHelperComponent { get; set; } = true;
@@ -72,7 +72,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private int? _previousGlobalFontSizeInPixels;
     private TextEditorOptions? _previousGlobalTextEditorOptions;
 
-    private TextEditorKey? _previousTextEditorKey;
+    private TextEditorModelKey? _previousTextEditorKey;
     private TextEditorViewModelKey? _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
     private ElementReference _textEditorDisplayElementReference;
     
@@ -85,7 +85,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
-    private CancellationTokenSource _textEditorBaseChangedCancellationTokenSource = new();
+    private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
     private int _rerenderCount;
     private bool _disposed;
 
@@ -206,19 +206,19 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         await base.OnAfterRenderAsync(firstRender);
     }
     
-    // TODO: When the underlying "TextEditorBase" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
+    // TODO: When the underlying "TextEditorModel" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
     private async void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
     {
         var viewModel = ReplaceableTextEditorViewModel;
 
         if (viewModel is not null)
         {
-            _textEditorBaseChangedCancellationTokenSource.Cancel();
-            _textEditorBaseChangedCancellationTokenSource = new CancellationTokenSource();
+            _textEditorModelChangedCancellationTokenSource.Cancel();
+            _textEditorModelChangedCancellationTokenSource = new CancellationTokenSource();
             
             await viewModel.CalculateVirtualizationResultAsync(
                 viewModel.VirtualizationResult.ElementMeasurementsInPixels,
-                _textEditorBaseChangedCancellationTokenSource.Token);
+                _textEditorModelChangedCancellationTokenSource.Token);
         }
     }
     
@@ -311,8 +311,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 }
 
                 Dispatcher.Dispatch(
-                    new KeyboardEventTextEditorBaseAction(
-                        safeTextEditorViewModel.TextEditorKey,
+                    new KeyboardEventTextEditorModelAction(
+                        safeTextEditorViewModel.TextEditorModelKey,
                         cursorSnapshots,
                         keyboardEventArgs,
                         CancellationToken.None));
@@ -612,7 +612,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     parameterForGetTabsCountOnSameRowBeforeCursor);
 
             // 1 of the character width is already accounted for
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+            var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
             columnIndexInt -= extraWidthPerTabKey * tabsOnSameRowBeforeCursor;
         }
@@ -639,7 +639,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// BlazorTextEditor services using <see cref="TextEditorServiceOptions.AutocompleteServiceFactory"/>
     /// </summary>
     public async Task HandleAfterOnKeyDownAsync(
-        TextEditorBase textEditor,
+        TextEditorModel textEditor,
         ImmutableArray<TextEditorCursorSnapshot> cursorSnapshots,
         KeyboardEventArgs keyboardEventArgs,
         Func<TextEditorMenuKind, bool, Task> setTextEditorMenuKind)
@@ -688,7 +688,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             {
                 do
                 {
-                    // The TextEditorBase may have been changed by the time this logic is ran and
+                    // The TextEditorModel may have been changed by the time this logic is ran and
                     // thus the local variable must be updated accordingly.
                     textEditor = MutableReferenceToTextEditor;
 
@@ -798,7 +798,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (disposing)
         {
             TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
-            _textEditorBaseChangedCancellationTokenSource.Cancel();
+            _textEditorModelChangedCancellationTokenSource.Cancel();
         }
     
         _disposed = true;

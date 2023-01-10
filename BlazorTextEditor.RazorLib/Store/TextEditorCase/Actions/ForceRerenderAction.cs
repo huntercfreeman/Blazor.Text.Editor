@@ -2,4 +2,4 @@
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
-public record ForceRerenderAction(TextEditorKey TextEditorKey);
+public record ForceRerenderAction(TextEditorModelKey TextEditorModelKey);

@@ -19,7 +19,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
     private IAutocompleteService AutocompleteService { get; set; } = null!;
 
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter(Name="SetShouldDisplayMenuAsync")]
@@ -66,7 +66,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
 
         if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
         {
-            var word = TextEditorBase.ReadPreviousWordOrDefault(
+            var word = TextEditorModel.ReadPreviousWordOrDefault(
                 primaryCursorSnapshot.ImmutableCursor.RowIndex,
                 primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
@@ -125,12 +125,12 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
         string option,
         TextEditorViewModel textEditorViewModel)
     {
-        var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
-            textEditorViewModel.TextEditorKey,
+        var insertTextTextEditorModelAction = new InsertTextTextEditorModelAction(
+            textEditorViewModel.TextEditorModelKey,
             TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             option.Substring(word.Length),
             CancellationToken.None);
 
-        TextEditorService.InsertText(insertTextTextEditorBaseAction);
+        TextEditorService.InsertText(insertTextTextEditorModelAction);
     }
 }

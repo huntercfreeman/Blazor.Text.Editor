@@ -30,28 +30,28 @@ public static class TextEditorSelectionHelper
 
     public static string? GetSelectedText(
         TextEditorSelection textEditorSelection,
-        TextEditorBase textEditorBase)
+        TextEditorModel textEditorModel)
     {
         return GetSelectedText(
             textEditorSelection.AnchorPositionIndex,
             textEditorSelection.EndingPositionIndex,
-            textEditorBase);
+            textEditorModel);
     }
 
     public static string? GetSelectedText(
         ImmutableTextEditorSelection immutableTextEditorSelection,
-        TextEditorBase textEditorBase)
+        TextEditorModel textEditorModel)
     {
         return GetSelectedText(
             immutableTextEditorSelection.AnchorPositionIndex,
             immutableTextEditorSelection.EndingPositionIndex,
-            textEditorBase);
+            textEditorModel);
     }
 
     public static string? GetSelectedText(
         int? anchorPositionIndex,
         int endingPositionIndex,
-        TextEditorBase textEditorBase)
+        TextEditorModel textEditorModel)
     {
         if (HasSelectedText(
                 anchorPositionIndex,
@@ -61,7 +61,7 @@ public static class TextEditorSelectionHelper
                 anchorPositionIndex,
                 endingPositionIndex);
 
-            var result = textEditorBase.GetTextRange(selectionBounds.lowerPositionIndexInclusive,
+            var result = textEditorModel.GetTextRange(selectionBounds.lowerPositionIndexInclusive,
                 selectionBounds.upperPositionIndexExclusive - selectionBounds.lowerPositionIndexInclusive);
 
             return result.Length != 0
@@ -73,17 +73,17 @@ public static class TextEditorSelectionHelper
     }
 
     public static TextEditorCursor SelectLinesRange(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         int startingRowIndex, 
         int count)
     {
-        var startingPositionIndexInclusive = textEditorBase.GetPositionIndex(
+        var startingPositionIndexInclusive = textEditorModel.GetPositionIndex(
             startingRowIndex,
             0);
 
         var lastRowIndexExclusive = startingRowIndex + count;
         
-        var endingPositionIndexExclusive = textEditorBase.GetPositionIndex(
+        var endingPositionIndexExclusive = textEditorModel.GetPositionIndex(
             lastRowIndexExclusive,
             0);
 
@@ -134,16 +134,16 @@ public static class TextEditorSelectionHelper
     }
     
     public static (int lowerRowIndexInclusive, int upperRowIndexExclusive) ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         (int lowerPositionIndexInclusive, int upperPositionIndexExclusive) positionIndexBounds)
     {
         var firstRowToSelectDataInclusive =
-            textEditorBase
+            textEditorModel
                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                     positionIndexBounds.lowerPositionIndexInclusive).rowIndex;
 
         var lastRowToSelectDataExclusive =
-            textEditorBase
+            textEditorModel
                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                     positionIndexBounds.upperPositionIndexExclusive).rowIndex +
             1;

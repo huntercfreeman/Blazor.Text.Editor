@@ -26,11 +26,11 @@ public static class TextEditorCommandDefaultFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditorBase);
+                    textEditorCommandParameter.TextEditorModel);
 
             if (selectedText is null)
             {
-                selectedText = textEditorCommandParameter.TextEditorBase.GetLinesRange(
+                selectedText = textEditorCommandParameter.TextEditorModel.GetLinesRange(
                     textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                     1);
             }
@@ -55,14 +55,14 @@ public static class TextEditorCommandDefaultFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditorBase);
+                    textEditorCommandParameter.TextEditorModel);
 
             var textEditorCursorSnapshots = textEditorCommandParameter.CursorSnapshots;
             
             if (selectedText is null)
             {
                 var textEditorCursor = TextEditorSelectionHelper.SelectLinesRange(
-                    textEditorCommandParameter.TextEditorBase,
+                    textEditorCommandParameter.TextEditorModel,
                     textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                     1);
 
@@ -77,7 +77,7 @@ public static class TextEditorCommandDefaultFacts
                 selectedText = TextEditorSelectionHelper
                     .GetSelectedText(
                         primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection,
-                        textEditorCommandParameter.TextEditorBase);
+                        textEditorCommandParameter.TextEditorModel);
             }
 
             if (selectedText is null)
@@ -91,8 +91,8 @@ public static class TextEditorCommandDefaultFacts
             await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
             
             textEditorCommandParameter.TextEditorService
-                .HandleKeyboardEvent(new KeyboardEventTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditorBase.Key,
+                .HandleKeyboardEvent(new KeyboardEventTextEditorModelAction(
+                    textEditorCommandParameter.TextEditorModel.ModelKey,
                     textEditorCursorSnapshots,
                     new KeyboardEventArgs
                     {
@@ -112,8 +112,8 @@ public static class TextEditorCommandDefaultFacts
                 .ReadClipboard();
 
             textEditorCommandParameter.TextEditorService.InsertText(
-                new InsertTextTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditorBase.Key,
+                new InsertTextTextEditorModelAction(
+                    textEditorCommandParameter.TextEditorModel.ModelKey,
                     new[]
                     {
                         textEditorCommandParameter.PrimaryCursorSnapshot,
@@ -136,7 +136,7 @@ public static class TextEditorCommandDefaultFacts
             if (onSaveRequestedFunc is not null)
             {
                 onSaveRequestedFunc
-                    .Invoke(textEditorCommandParameter.TextEditorBase);
+                    .Invoke(textEditorCommandParameter.TextEditorModel);
                 
                 textEditorCommandParameter.TextEditorService.SetViewModelWith(
                     textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
@@ -161,7 +161,7 @@ public static class TextEditorCommandDefaultFacts
                 0;
 
             primaryCursor.TextEditorSelection.EndingPositionIndex =
-                textEditorCommandParameter.TextEditorBase.DocumentLength;
+                textEditorCommandParameter.TextEditorModel.DocumentLength;
             
             textEditorCommandParameter.TextEditorService.SetViewModelWith(
                 textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
@@ -179,7 +179,7 @@ public static class TextEditorCommandDefaultFacts
     public static readonly TextEditorCommand Undo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .UndoEdit(textEditorCommandParameter.TextEditorBase.Key);
+                .UndoEdit(textEditorCommandParameter.TextEditorModel.ModelKey);
             
             return Task.CompletedTask;
         },
@@ -190,7 +190,7 @@ public static class TextEditorCommandDefaultFacts
     public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .RedoEdit(textEditorCommandParameter.TextEditorBase.Key);
+                .RedoEdit(textEditorCommandParameter.TextEditorModel.ModelKey);
 
             return Task.CompletedTask;
         },
@@ -284,13 +284,13 @@ public static class TextEditorCommandDefaultFacts
                         .PrimaryCursorSnapshot
                         .ImmutableCursor
                         .ImmutableTextEditorSelection,
-                    textEditorCommandParameter.TextEditorBase);
+                    textEditorCommandParameter.TextEditorModel);
 
             TextEditorCursor cursorForInsertion;
 
             if (selectedText is null)
             {
-                selectedText = textEditorCommandParameter.TextEditorBase.GetLinesRange(
+                selectedText = textEditorCommandParameter.TextEditorModel.GetLinesRange(
                         textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                         1);
                 
@@ -309,15 +309,15 @@ public static class TextEditorCommandDefaultFacts
                     textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
             }
             
-            var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
-                textEditorCommandParameter.TextEditorBase.Key,
+            var insertTextTextEditorModelAction = new InsertTextTextEditorModelAction(
+                textEditorCommandParameter.TextEditorModel.ModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
                 selectedText,
                 CancellationToken.None);
                 
             textEditorCommandParameter
                 .TextEditorService
-                .InsertText(insertTextTextEditorBaseAction);
+                .InsertText(insertTextTextEditorModelAction);
         },
         false,
         "Duplicate",
@@ -335,7 +335,7 @@ public static class TextEditorCommandDefaultFacts
 
             var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
                 .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
-                    textEditorCommandParameter.TextEditorBase,
+                    textEditorCommandParameter.TextEditorModel,
                     selectionBoundsInPositionIndexUnits);
 
             for (var i = selectionBoundsInRowIndexUnits.lowerRowIndexInclusive;
@@ -346,15 +346,15 @@ public static class TextEditorCommandDefaultFacts
                     (i, 0),
                     true);
                 
-                var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditorBase.Key,
+                var insertTextTextEditorModelAction = new InsertTextTextEditorModelAction(
+                    textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(cursorForInsertion),
                     KeyboardKeyFacts.WhitespaceCharacters.TAB.ToString(),
                     CancellationToken.None);
                 
                 textEditorCommandParameter
                     .TextEditorService
-                    .InsertText(insertTextTextEditorBaseAction);
+                    .InsertText(insertTextTextEditorModelAction);
             }
 
             var lowerBoundPositionIndexChange = 1;
@@ -401,7 +401,7 @@ public static class TextEditorCommandDefaultFacts
 
             var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
                 .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(
-                    textEditorCommandParameter.TextEditorBase,
+                    textEditorCommandParameter.TextEditorModel,
                     selectionBoundsInPositionIndexUnits);
 
             bool isFirstLoop = true;
@@ -410,19 +410,19 @@ public static class TextEditorCommandDefaultFacts
                  i < selectionBoundsInRowIndexUnits.upperRowIndexExclusive;
                  i++)
             {
-                var rowPositionIndex = textEditorCommandParameter.TextEditorBase
+                var rowPositionIndex = textEditorCommandParameter.TextEditorModel
                     .GetPositionIndex(
                         i,
                         0);
 
-                var characterReadCount = TextEditorBase.TAB_WIDTH;
+                var characterReadCount = TextEditorModel.TAB_WIDTH;
 
-                var lengthOfRow = textEditorCommandParameter.TextEditorBase.GetLengthOfRow(i);
+                var lengthOfRow = textEditorCommandParameter.TextEditorModel.GetLengthOfRow(i);
 
                 characterReadCount = Math.Min(lengthOfRow, characterReadCount);
 
                 var readResult =
-                    textEditorCommandParameter.TextEditorBase
+                    textEditorCommandParameter.TextEditorModel
                         .GetTextRange(rowPositionIndex, characterReadCount);
 
                 int removeCharacterCount = 0;
@@ -435,15 +435,15 @@ public static class TextEditorCommandDefaultFacts
                         (i, 0),
                         true);
                     
-                    var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
-                        textEditorCommandParameter.TextEditorBase.Key,
+                    var deleteTextTextEditorModelAction = new DeleteTextByRangeTextEditorModelAction(
+                        textEditorCommandParameter.TextEditorModel.ModelKey,
                         TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
                         removeCharacterCount, // Delete a single "Tab" character
                         CancellationToken.None);
                 
                     textEditorCommandParameter
                         .TextEditorService
-                        .DeleteTextByRange(deleteTextTextEditorBaseAction);
+                        .DeleteTextByRange(deleteTextTextEditorModelAction);
                 }
                 else if (readResult.StartsWith(KeyboardKeyFacts.WhitespaceCharacters.SPACE))
                 {
@@ -461,15 +461,15 @@ public static class TextEditorCommandDefaultFacts
 
                     removeCharacterCount = contiguousSpaceCount;
                     
-                    var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
-                        textEditorCommandParameter.TextEditorBase.Key,
+                    var deleteTextTextEditorModelAction = new DeleteTextByRangeTextEditorModelAction(
+                        textEditorCommandParameter.TextEditorModel.ModelKey,
                         TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
                         removeCharacterCount,
                         CancellationToken.None);
                 
                     textEditorCommandParameter
                         .TextEditorService
-                        .DeleteTextByRange(deleteTextTextEditorBaseAction);
+                        .DeleteTextByRange(deleteTextTextEditorModelAction);
                 }
 
                 // Modify the lower bound of user's text selection
@@ -539,7 +539,7 @@ public static class TextEditorCommandDefaultFacts
             textEditorCommandParameter
                 .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
             
-            var lengthOfRow = textEditorCommandParameter.TextEditorBase.GetLengthOfRow(
+            var lengthOfRow = textEditorCommandParameter.TextEditorModel.GetLengthOfRow(
                 textEditorCommandParameter
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex);
 
@@ -551,8 +551,8 @@ public static class TextEditorCommandDefaultFacts
                 (temporaryIndexCoordinates.rowIndex, lengthOfRow);
             
             textEditorCommandParameter.TextEditorService.InsertText(
-                new InsertTextTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditorBase.Key,
+                new InsertTextTextEditorModelAction(
+                    textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
                         textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),
                     "\n",
@@ -578,8 +578,8 @@ public static class TextEditorCommandDefaultFacts
                 (temporaryIndexCoordinates.rowIndex, 0);
             
             textEditorCommandParameter.TextEditorService.InsertText(
-                new InsertTextTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditorBase.Key,
+                new InsertTextTextEditorModelAction(
+                    textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
                         textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),
                     "\n",

@@ -21,7 +21,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     private IJSRuntime JsRuntime { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     

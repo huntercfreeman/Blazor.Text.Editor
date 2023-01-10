@@ -14,7 +14,7 @@ public partial class BodySection : ComponentBase
     private ITextEditorService TextEditorService { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
@@ -35,15 +35,15 @@ public partial class BodySection : ComponentBase
 
     private string GetBodyStyleCss()
     {
-        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
+        var mostDigitsInARowLineNumber = TextEditorModel.RowCount
             .ToString()
             .Length;
 
         var gutterWidthInPixels = mostDigitsInARowLineNumber *
                                   TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
-        gutterWidthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+        gutterWidthInPixels += TextEditorModel.GUTTER_PADDING_LEFT_IN_PIXELS +
+                         TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
         var gutterWidthInPixelsInvariantCulture = gutterWidthInPixels
             .ToString(System.Globalization.CultureInfo.InvariantCulture); 

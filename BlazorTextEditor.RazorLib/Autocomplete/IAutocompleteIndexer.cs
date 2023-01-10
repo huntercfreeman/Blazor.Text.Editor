@@ -7,6 +7,6 @@ public interface IAutocompleteIndexer : IDisposable
 {
     public ImmutableArray<string> IndexedStrings { get; }
     
-    public Task IndexTextEditorAsync(TextEditorBase textEditorBase);
+    public Task IndexTextEditorAsync(TextEditorModel textEditorModel);
     public Task IndexWordAsync(string word);
 }

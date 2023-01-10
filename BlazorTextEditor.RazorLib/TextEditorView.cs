@@ -11,14 +11,14 @@ namespace BlazorTextEditor.RazorLib;
 /// <summary>
 /// <see cref="TextEditorView"/> is the
 /// message broker abstraction between a
-/// Blazor component and a <see cref="TextEditorBase"/>
+/// Blazor component and a <see cref="TextEditorModel"/>
 /// </summary>
 public class TextEditorView : FluxorComponent
 {
     // TODO: Do not rerender so much too many things are touched by the [Inject] in this file
     //
     // [Inject]
-    // protected IStateSelection<TextEditorStates, TextEditorBase?> TextEditorStatesSelection { get; set; } = null!;
+    // protected IStateSelection<TextEditorStates, TextEditorModel?> TextEditorStatesSelection { get; set; } = null!;
     [Inject]
     protected IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
     [Inject]
@@ -29,8 +29,8 @@ public class TextEditorView : FluxorComponent
     [Parameter, EditorRequired]
     public TextEditorViewModelKey TextEditorViewModelKey { get; set; } = null!;
     
-    public TextEditorBase? MutableReferenceToTextEditor => TextEditorService
-        .GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey);
+    public TextEditorModel? MutableReferenceToTextEditor => TextEditorService
+        .GetTextEditorModelFromViewModelKey(TextEditorViewModelKey);
     
     public TextEditorViewModel? ReplaceableTextEditorViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
         .FirstOrDefault(x => 

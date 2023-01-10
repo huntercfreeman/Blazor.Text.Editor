@@ -2,4 +2,4 @@
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
-public record DisposeTextEditorBaseAction(TextEditorKey TextEditorKey);
+public record DisposeTextEditorModelAction(TextEditorModelKey TextEditorModelKey);

@@ -15,16 +15,16 @@
         {
             var textEditorStatesWrap = TextEditorStatesWrap.Value;
 
-            var textEditorBase = textEditorStatesWrap.TextEditorList
-                .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+            var textEditorModel = textEditorStatesWrap.TextEditorList
+                .FirstOrDefault(x => x.ModelKey == viewModel.TextEditorModelKey);
 
-            if (textEditorBase is null)
+            if (textEditorModel is null)
             {
-                <div>textEditorBase was null</div>
+                <div>textEditorModel was null</div>
             }
             else
             {
-                <text>@(viewModel.GetTabDisplayNameFunc?.Invoke(textEditorBase) ?? textEditorBase.ResourceUri)</text>
+                <text>@(viewModel.GetTabDisplayNameFunc?.Invoke(textEditorModel) ?? textEditorModel.ResourceUri)</text>
             }
         }
     }

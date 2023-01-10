@@ -57,20 +57,20 @@
             }
 
             @if (GlobalShowNewlines &&
-                 virtualizedRow.Index < TextEditorBase.RowCount - 1)
+                 virtualizedRow.Index < TextEditorModel.RowCount - 1)
             {
                 var amountOfLeftInCharacterWidthUnits =
                     virtualizedRow.LeftInPixels /
                     TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
-                var lengthOfRow = TextEditorBase
+                var lengthOfRow = TextEditorModel
                     .GetLengthOfRow(
                         virtualizedRow.Index,
                         true);
 
                 if (amountOfLeftInCharacterWidthUnits < lengthOfRow)
                 {
-                    var rowEndingTuple = TextEditorBase
+                    var rowEndingTuple = TextEditorModel
                         .RowEndingPositions[virtualizedRow.Index];
 
                     <span class="bte_newline">

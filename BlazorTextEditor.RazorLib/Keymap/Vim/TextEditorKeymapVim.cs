@@ -35,7 +35,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     }
     
     public string GetCursorCssStyleString(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         TextEditorViewModel textEditorViewModel,
         TextEditorOptions textEditorOptions)
     {
@@ -94,7 +94,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                         TextEditorCursor.MoveCursor(
                             keyboardEventArgs,
                             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                            textEditorCommandParameter.TextEditorBase);
+                            textEditorCommandParameter.TextEditorModel);
 
                         return Task.CompletedTask;
                     },
@@ -231,7 +231,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     textEditorCommandParameter =>
                     {
                         var positionIndex =
-                            textEditorCommandParameter.TextEditorBase.GetPositionIndex(
+                            textEditorCommandParameter.TextEditorModel.GetPositionIndex(
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
@@ -266,14 +266,14 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     textEditorCommandParameter =>
                     {
                         var startOfRowPositionIndexInclusive =
-                            textEditorCommandParameter.TextEditorBase.GetPositionIndex(
+                            textEditorCommandParameter.TextEditorModel.GetPositionIndex(
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                                 0);
 
                         textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
                             startOfRowPositionIndexInclusive;
 
-                        var endOfRowPositionIndexExclusive = textEditorCommandParameter.TextEditorBase.RowEndingPositions[
+                        var endOfRowPositionIndexExclusive = textEditorCommandParameter.TextEditorModel.RowEndingPositions[
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex]
                             .positionIndex;
                         
@@ -313,9 +313,9 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     async textEditorCommandParameter =>
                     {
                         textEditorCommandParameter.TextEditorService.UndoEdit(
-                            textEditorCommandParameter.TextEditorBase.Key);
+                            textEditorCommandParameter.TextEditorModel.ModelKey);
 
-                        await textEditorCommandParameter.TextEditorBase
+                        await textEditorCommandParameter.TextEditorModel
                             .ApplySyntaxHighlightingAsync();
                     },
                     false,
@@ -332,9 +332,9 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                         async textEditorCommandParameter =>
                         {
                             textEditorCommandParameter.TextEditorService.RedoEdit(
-                                textEditorCommandParameter.TextEditorBase.Key);
+                                textEditorCommandParameter.TextEditorModel.ModelKey);
                             
-                            await textEditorCommandParameter.TextEditorBase
+                            await textEditorCommandParameter.TextEditorModel
                                 .ApplySyntaxHighlightingAsync();
                         },
                         false,

@@ -2,4 +2,4 @@
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
-public record RedoEditAction(TextEditorKey TextEditorKey);
+public record RedoEditAction(TextEditorModelKey TextEditorModelKey);

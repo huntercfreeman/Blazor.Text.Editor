@@ -9,7 +9,7 @@ using BlazorTextEditor.RazorLib.Row;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
-public partial class TextEditorBase
+public partial class TextEditorModel
 {
     public const int TAB_WIDTH = 4;
     public const int GUTTER_PADDING_LEFT_IN_PIXELS = 5;
@@ -33,7 +33,7 @@ public partial class TextEditorBase
     /// </summary>
     private readonly List<int> _tabKeyPositions = new();
 
-    public TextEditorKey Key { get; } = TextEditorKey.NewTextEditorKey();
+    public TextEditorModelKey ModelKey { get; } = TextEditorModelKey.NewTextEditorKey();
     public int RowCount => _rowEndingPositions.Count;
     public int DocumentLength => _content.Count;
 

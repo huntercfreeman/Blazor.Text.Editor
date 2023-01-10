@@ -2,4 +2,4 @@
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
-public record ReloadTextEditorBaseAction(TextEditorKey TextEditorKey, string Content);
+public record ReloadTextEditorModelAction(TextEditorModelKey TextEditorModelKey, string Content);

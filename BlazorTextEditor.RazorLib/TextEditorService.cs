@@ -36,9 +36,10 @@ namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
-    private readonly IState<TextEditorStates> _textEditorStates;
-    private readonly IState<ThemeState> _themeState;
-    private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollection;
+    private readonly IState<TextEditorStates> _textEditorStatesWrap;
+    private readonly IState<ThemeState> _themeStateWrap;
+    private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollectionWrap;
+    private readonly IState<TextEditorGroupsCollection> _textEditorGroupsCollectionWrap;
     private readonly IDispatcher _dispatcher;
     private readonly IStorageProvider _storageProvider;
     
@@ -46,24 +47,26 @@ public class TextEditorService : ITextEditorService
     private readonly IJSRuntime _jsRuntime;
 
     public TextEditorService(
-        IState<TextEditorStates> textEditorStates,
-        IState<ThemeState> themeState,
-        IState<TextEditorViewModelsCollection> textEditorViewModelsCollection,
+        IState<TextEditorStates> textEditorStatesWrap,
+        IState<ThemeState> themeStateWrap,
+        IState<TextEditorViewModelsCollection> textEditorViewModelsCollectionWrap,
+        IState<TextEditorGroupsCollection> textEditorGroupsCollectionWrap,
         IDispatcher dispatcher,
         IStorageProvider storageProvider,
         IJSRuntime jsRuntime)
     {
-        _textEditorStates = textEditorStates;
-        _themeState = themeState;
-        _textEditorViewModelsCollection = textEditorViewModelsCollection;
+        _textEditorStatesWrap = textEditorStatesWrap;
+        _themeStateWrap = themeStateWrap;
+        _textEditorViewModelsCollectionWrap = textEditorViewModelsCollectionWrap;
+        _textEditorGroupsCollectionWrap = textEditorGroupsCollectionWrap;
         _dispatcher = dispatcher;
         _storageProvider = storageProvider;
         _jsRuntime = jsRuntime;
 
-        _textEditorStates.StateChanged += TextEditorStatesOnStateChanged;
+        _textEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateWrapChanged;
     }
 
-    public TextEditorStates TextEditorStates => _textEditorStates.Value;
+    public TextEditorStates TextEditorStates => _textEditorStatesWrap.Value;
     public ThemeRecord? GlobalThemeValue => TextEditorStates.GlobalTextEditorOptions.Theme;
     public string GlobalThemeCssClassString => TextEditorStates.GlobalTextEditorOptions.Theme?.CssClassString ?? string.Empty;
     public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;";
@@ -77,21 +80,21 @@ public class TextEditorService : ITextEditorService
     public event Action? OnTextEditorStatesChanged;
     
     public void RegisterCustomTextEditor(
-        TextEditorBase textEditorBase)
+        TextEditorModel textEditorModel)
     {
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
 
     public void RegisterCSharpTextEditor(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -99,26 +102,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorCSharpLexer(),
             new TextEditorCSharpDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
 
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
     
     public void RegisterHtmlTextEditor(
-        TextEditorKey textEditorKey, 
+        TextEditorModelKey textEditorModelKey, 
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -126,26 +129,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorHtmlLexer(),
             new TextEditorHtmlDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
 
     public void RegisterCssTextEditor(
-        TextEditorKey textEditorKey, 
+        TextEditorModelKey textEditorModelKey, 
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -153,26 +156,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorCssLexer(),
             new TextEditorCssDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
     
     public void RegisterJsonTextEditor(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -180,26 +183,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorJsonLexer(),
             new TextEditorJsonDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
 
     public void RegisterFSharpTextEditor(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -207,26 +210,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorFSharpLexer(),
             new TextEditorFSharpDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
 
     public void RegisterRazorTextEditor(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -234,26 +237,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorRazorLexer(),
             new TextEditorHtmlDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
 
     public void RegisterJavaScriptTextEditor(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -261,26 +264,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorJavaScriptLexer(),
             new TextEditorJavaScriptDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
     
     public void RegisterTypeScriptTextEditor(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -288,26 +291,26 @@ public class TextEditorService : ITextEditorService
             new TextEditorTypeScriptLexer(),
             new TextEditorTypeScriptDecorationMapper(),
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
     
     public void RegisterPlainTextEditor(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
         string initialContent,
         ITextEditorKeymap? textEditorKeymapOverride = null)
     {
-        var textEditorBase = new TextEditorBase(
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
@@ -315,50 +318,66 @@ public class TextEditorService : ITextEditorService
             null,
             null,
             null,
-            textEditorKey);
+            textEditorModelKey);
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new RegisterTextEditorModelAction(textEditorModel));
     }
 
-    public void InsertText(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
+    public string? GetAllText(TextEditorModelKey textEditorModelKey)
     {
-        _dispatcher.Dispatch(insertTextTextEditorBaseAction);
+        return TextEditorStates.TextEditorList
+            .FirstOrDefault(x => x.ModelKey == textEditorModelKey)
+            ?.GetAllText();
+    }
+    
+    public string? GetAllText(TextEditorViewModelKey textEditorViewModelKey)
+    {
+        var textEditorModel = GetTextEditorModelFromViewModelKey(textEditorViewModelKey);
+
+        return textEditorModel is null 
+            ? null 
+            : GetAllText(textEditorModel.ModelKey);
     }
 
-    public void HandleKeyboardEvent(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+    public void InsertText(InsertTextTextEditorModelAction insertTextTextEditorModelAction)
     {
-        _dispatcher.Dispatch(keyboardEventTextEditorBaseAction);
+        _dispatcher.Dispatch(insertTextTextEditorModelAction);
+    }
+
+    public void HandleKeyboardEvent(KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
+    {
+        _dispatcher.Dispatch(keyboardEventTextEditorModelAction);
     }
     
-    public void DeleteTextByMotion(DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+    public void DeleteTextByMotion(DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction)
     {
-        _dispatcher.Dispatch(deleteTextByMotionTextEditorBaseAction);
+        _dispatcher.Dispatch(deleteTextByMotionTextEditorModelAction);
     }
     
-    public void DeleteTextByRange(DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+    public void DeleteTextByRange(DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction)
     {
-        _dispatcher.Dispatch(deleteTextByRangeTextEditorBaseAction);
+        _dispatcher.Dispatch(deleteTextByRangeTextEditorModelAction);
     }
     
-    public void RedoEdit(TextEditorKey textEditorKey)
+    public void RedoEdit(TextEditorModelKey textEditorModelKey)
     {
-        var redoEditAction = new RedoEditAction(textEditorKey);
+        var redoEditAction = new RedoEditAction(textEditorModelKey);
         
         _dispatcher.Dispatch(redoEditAction);
     }
     
-    public void UndoEdit(TextEditorKey textEditorKey)
+    public void UndoEdit(TextEditorModelKey textEditorModelKey)
     {
-        var undoEditAction = new UndoEditAction(textEditorKey);
+        var undoEditAction = new UndoEditAction(textEditorModelKey);
         
         _dispatcher.Dispatch(undoEditAction);
     }
 
-    public void DisposeTextEditor(TextEditorKey textEditorKey)
+    public void DisposeTextEditor(TextEditorModelKey textEditorModelKey)
     {
         _dispatcher.Dispatch(
-            new DisposeTextEditorBaseAction(textEditorKey));
+            new DisposeTextEditorModelAction(textEditorModelKey));
     }
 
     public void SetFontSize(int fontSizeInPixels)
@@ -417,20 +436,20 @@ public class TextEditorService : ITextEditorService
         WriteGlobalTextEditorOptionsToLocalStorage();
     }
 
-    public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind)
+    public void SetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetUsingRowEndingKindAction(textEditorKey, rowEndingKind));
+            new TextEditorSetUsingRowEndingKindAction(textEditorModelKey, rowEndingKind));
     }
     
     public void SetResourceData(
-        TextEditorKey textEditorKey,
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime)
     {
         _dispatcher.Dispatch(
             new TextEditorSetResourceDataAction(
-                textEditorKey,
+                textEditorModelKey,
                 resourceUri,
                 resourceLastWriteTime));
     }
@@ -451,7 +470,7 @@ public class TextEditorService : ITextEditorService
                 settingsDialog));
     }
     
-    private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
+    private void TextEditorStatesWrapOnStateWrapChanged(object? sender, EventArgs e)
     {
         OnTextEditorStatesChanged?.Invoke();
     }
@@ -495,24 +514,24 @@ public class TextEditorService : ITextEditorService
 
     public void RegisterViewModel(
         TextEditorViewModelKey textEditorViewModelKey,
-        TextEditorKey textEditorKey)
+        TextEditorModelKey textEditorModelKey)
     {
         _dispatcher.Dispatch(new RegisterTextEditorViewModelAction(
             textEditorViewModelKey,
-            textEditorKey, 
+            textEditorModelKey, 
             this));
     }
 
-    public ImmutableArray<TextEditorViewModel> GetViewModelsForTextEditorBase(TextEditorKey textEditorKey)
+    public ImmutableArray<TextEditorViewModel> GetViewModelsForModel(TextEditorModelKey textEditorModelKey)
     {
-        return _textEditorViewModelsCollection.Value.ViewModelsList
-            .Where(x => x.TextEditorKey == textEditorKey)
+        return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
+            .Where(x => x.TextEditorModelKey == textEditorModelKey)
             .ToImmutableArray();
     }
 
-    public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey)
+    public TextEditorModel? GetTextEditorModelFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey)
     {
-        var textEditorViewModelsCollection = _textEditorViewModelsCollection.Value;
+        var textEditorViewModelsCollection = _textEditorViewModelsCollectionWrap.Value;
         
         var viewModel = textEditorViewModelsCollection.ViewModelsList
             .FirstOrDefault(x => 
@@ -521,10 +540,7 @@ public class TextEditorService : ITextEditorService
         if (viewModel is null)
             return null;
         
-        var localTextEditorStates = TextEditorStates;
-
-        return localTextEditorStates.TextEditorList
-            .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+        return GetTextEditorModelOrDefault(viewModel.TextEditorModelKey);
     }
 
     public void SetViewModelWith(
@@ -608,20 +624,40 @@ public class TextEditorService : ITextEditorService
             elementId);
     }
     
-    public TextEditorBase? GetTextEditorBaseOrDefaultByResourceUri(string resourceUri)
+    public TextEditorModel? GetTextEditorModelOrDefaultByResourceUri(string resourceUri)
     {
         return TextEditorStates.TextEditorList
             .FirstOrDefault(x => x.ResourceUri == resourceUri);
     }
     
-    public void ReloadTextEditorBase(
-        TextEditorKey textEditorKey,
+    public void ReloadTextEditorModel(
+        TextEditorModelKey textEditorModelKey,
         string content)
     {
         _dispatcher.Dispatch(
-            new ReloadTextEditorBaseAction(
-                textEditorKey,
+            new ReloadTextEditorModelAction(
+                textEditorModelKey,
                 content));
+    }
+    
+    public TextEditorModel? GetTextEditorModelOrDefault(TextEditorModelKey textEditorModelKey)
+    {
+        return TextEditorStates.TextEditorList
+            .FirstOrDefault(x => x.ModelKey == textEditorModelKey);
+    }
+    
+    public TextEditorViewModel? GetTextEditorViewModelOrDefault(TextEditorViewModelKey textEditorViewModelKey)
+    {
+        return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
+            .FirstOrDefault(x => 
+                x.TextEditorViewModelKey == textEditorViewModelKey);
+    }
+    
+    public TextEditorGroup? GetTextEditorGroupOrDefault(TextEditorGroupKey textEditorGroupKey)
+    {
+        return _textEditorGroupsCollectionWrap.Value.GroupsList
+            .FirstOrDefault(x => 
+                x.TextEditorGroupKey == textEditorGroupKey);
     }
     
     public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)
@@ -648,7 +684,7 @@ public class TextEditorService : ITextEditorService
         
         if (options.Theme is not null)
         {
-            var matchedTheme = _themeState.Value.ThemeRecordsList
+            var matchedTheme = _themeStateWrap.Value.ThemeRecordsList
                 .FirstOrDefault(x =>
                     x.ThemeKey == options.Theme.ThemeKey);
 
@@ -689,6 +725,6 @@ public class TextEditorService : ITextEditorService
     
     public void Dispose()
     {
-        _textEditorStates.StateChanged -= TextEditorStatesOnStateChanged;
+        _textEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateWrapChanged;
     }
 }

@@ -12,7 +12,7 @@ public static partial class TextEditorCommandVimFacts
             async textEditorCommandParameter =>
             {
                 var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
-                var textEditorBase = textEditorCommandParameter.TextEditorBase;
+                var textEditorModel = textEditorCommandParameter.TextEditorModel;
 
                 var localIndexCoordinates = textEditorCursor.IndexCoordinates;
                 var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
@@ -23,17 +23,17 @@ public static partial class TextEditorCommandVimFacts
                     localPreferredColumnIndex = columnIndex;
                 }
 
-                var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+                var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                 if (localIndexCoordinates.columnIndex == lengthOfRow &&
-                    localIndexCoordinates.rowIndex < textEditorBase.RowCount - 1)
+                    localIndexCoordinates.rowIndex < textEditorModel.RowCount - 1)
                 {
                     MutateIndexCoordinatesAndPreferredColumnIndex(0);
                     localIndexCoordinates.rowIndex++;
                 }
                 else if (localIndexCoordinates.columnIndex != lengthOfRow)
                 {
-                    var columnIndexOfCharacterWithDifferingKind = textEditorBase
+                    var columnIndexOfCharacterWithDifferingKind = textEditorModel
                         .GetColumnIndexOfCharacterWithDifferingKind(
                             localIndexCoordinates.rowIndex,
                             localIndexCoordinates.columnIndex,
@@ -54,7 +54,7 @@ public static partial class TextEditorCommandVimFacts
                 if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
                 {
                     textEditorCursor.TextEditorSelection.EndingPositionIndex =
-                        textEditorBase.GetCursorPositionIndex(textEditorCursor);
+                        textEditorModel.GetCursorPositionIndex(textEditorCursor);
                 }
                 
                 textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
@@ -75,7 +75,7 @@ public static partial class TextEditorCommandVimFacts
             bool isRecursiveCall = false)
         {
             var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
-            var textEditorBase = textEditorCommandParameter.TextEditorBase;
+            var textEditorModel = textEditorCommandParameter.TextEditorModel;
 
             var localIndexCoordinates = textEditorCursor.IndexCoordinates;
             var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
@@ -86,17 +86,17 @@ public static partial class TextEditorCommandVimFacts
                 localPreferredColumnIndex = columnIndex;
             }
 
-            var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+            var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
             if (localIndexCoordinates.columnIndex == lengthOfRow &&
-                localIndexCoordinates.rowIndex < textEditorBase.RowCount - 1)
+                localIndexCoordinates.rowIndex < textEditorModel.RowCount - 1)
             {
                 MutateIndexCoordinatesAndPreferredColumnIndex(0);
                 localIndexCoordinates.rowIndex++;
             }
             else if (localIndexCoordinates.columnIndex != lengthOfRow)
             {
-                var columnIndexOfCharacterWithDifferingKind = textEditorBase
+                var columnIndexOfCharacterWithDifferingKind = textEditorModel
                     .GetColumnIndexOfCharacterWithDifferingKind(
                         localIndexCoordinates.rowIndex,
                         localIndexCoordinates.columnIndex,
@@ -126,13 +126,13 @@ public static partial class TextEditorCommandVimFacts
                         textEditorCursor.IndexCoordinates = localIndexCoordinates;
                         textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
 
-                        var positionIndex = textEditorBase
+                        var positionIndex = textEditorModel
                             .GetCursorPositionIndex(textEditorCursor);
 
-                        var currentCharacterKind = textEditorBase
+                        var currentCharacterKind = textEditorModel
                             .GetCharacterKindAt(positionIndex);
 
-                        var nextCharacterKind = textEditorBase
+                        var nextCharacterKind = textEditorModel
                             .GetCharacterKindAt(positionIndex + 1);
 
                         if (nextCharacterKind != CharacterKind.Bad &&
@@ -163,7 +163,7 @@ public static partial class TextEditorCommandVimFacts
             if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
             {
                 textEditorCursor.TextEditorSelection.EndingPositionIndex =
-                    textEditorBase.GetCursorPositionIndex(textEditorCursor);
+                    textEditorModel.GetCursorPositionIndex(textEditorCursor);
             }
         }
 
@@ -171,7 +171,7 @@ public static partial class TextEditorCommandVimFacts
             async textEditorCommandParameter =>
             {
                 var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
-                var textEditorBase = textEditorCommandParameter.TextEditorBase;
+                var textEditorModel = textEditorCommandParameter.TextEditorModel;
 
                 var localIndexCoordinates = textEditorCursor.IndexCoordinates;
                 var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
@@ -188,14 +188,14 @@ public static partial class TextEditorCommandVimFacts
                     {
                         localIndexCoordinates.rowIndex--;
 
-                        var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
+                        var lengthOfRow = textEditorModel.GetLengthOfRow(localIndexCoordinates.rowIndex);
 
                         MutateIndexCoordinatesAndPreferredColumnIndex(lengthOfRow);
                     }
                 }
                 else
                 {
-                    var columnIndexOfCharacterWithDifferingKind = textEditorBase
+                    var columnIndexOfCharacterWithDifferingKind = textEditorModel
                         .GetColumnIndexOfCharacterWithDifferingKind(
                             localIndexCoordinates.rowIndex,
                             localIndexCoordinates.columnIndex,
@@ -216,7 +216,7 @@ public static partial class TextEditorCommandVimFacts
                 if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
                 {
                     textEditorCursor.TextEditorSelection.EndingPositionIndex =
-                        textEditorBase.GetCursorPositionIndex(textEditorCursor);
+                        textEditorModel.GetCursorPositionIndex(textEditorCursor);
                 }
             },
             true,
@@ -304,18 +304,18 @@ public static partial class TextEditorCommandVimFacts
                         {
                             // Anchor went from being the lower bound to the upper bound.
 
-                            var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorBase
+                            var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorModel
                                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                                     previousAnchorPositionIndex.Value);
 
                             textEditorCommandParameter
                                     .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
                                 textEditorCommandParameter
-                                    .TextEditorBase.RowEndingPositions[rowDataAnchorIsOn.rowIndex]
+                                    .TextEditorModel.RowEndingPositions[rowDataAnchorIsOn.rowIndex]
                                     .positionIndex;
                         }
 
-                        var startingPositionOfRow = textEditorCommandParameter.TextEditorBase
+                        var startingPositionOfRow = textEditorCommandParameter.TextEditorModel
                             .GetStartOfRowTuple(textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor
                                 .IndexCoordinates.rowIndex)
                             .positionIndex;
@@ -330,19 +330,19 @@ public static partial class TextEditorCommandVimFacts
                         {
                             // Anchor went from being the upper bound to the lower bound.
 
-                            var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorBase
+                            var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorModel
                                 .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
                                     previousAnchorPositionIndex.Value);
 
                             textEditorCommandParameter
                                     .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
-                                textEditorCommandParameter.TextEditorBase.GetStartOfRowTuple(
+                                textEditorCommandParameter.TextEditorModel.GetStartOfRowTuple(
                                         rowDataAnchorIsOn.rowIndex - 1)
                                     .positionIndex;
                         }
 
                         var endingPositionOfRow = textEditorCommandParameter
-                            .TextEditorBase.RowEndingPositions[
+                            .TextEditorModel.RowEndingPositions[
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex]
                             .positionIndex;
 

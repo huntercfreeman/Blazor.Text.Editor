@@ -7,20 +7,20 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
 public class TextEditorStatesReducer
 {
     [ReducerMethod]
-    public static TextEditorStates ReduceRegisterTextEditorBaseAction(
+    public static TextEditorStates ReduceRegisterTextEditorModelAction(
         TextEditorStates previousTextEditorStates,
-        RegisterTextEditorBaseAction registerTextEditorBaseAction)
+        RegisterTextEditorModelAction registerTextEditorModelAction)
     {
         if (previousTextEditorStates.TextEditorList
             .Any(x => 
-                x.Key == registerTextEditorBaseAction.TextEditorBase.Key ||
-                x.ResourceUri == registerTextEditorBaseAction.TextEditorBase.ResourceUri))
+                x.ModelKey == registerTextEditorModelAction.TextEditorModel.ModelKey ||
+                x.ResourceUri == registerTextEditorModelAction.TextEditorModel.ResourceUri))
         {
             return previousTextEditorStates;
         }
 
         var nextList = previousTextEditorStates.TextEditorList
-            .Add(registerTextEditorBaseAction.TextEditorBase);
+            .Add(registerTextEditorModelAction.TextEditorModel);
 
         return previousTextEditorStates with
         {
@@ -34,7 +34,7 @@ public class TextEditorStatesReducer
         ForceRerenderAction forceRerenderAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == forceRerenderAction.TextEditorKey);
+            .Single(x => x.ModelKey == forceRerenderAction.TextEditorModelKey);
 
         var nextTextEditor = textEditor.PerformForceRerenderAction(forceRerenderAction);
 
@@ -48,14 +48,14 @@ public class TextEditorStatesReducer
     }
 
     [ReducerMethod]
-    public static TextEditorStates ReduceInsertTextTextEditorBaseAction(
+    public static TextEditorStates ReduceInsertTextTextEditorModelAction(
         TextEditorStates previousTextEditorStates,
-        InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
+        InsertTextTextEditorModelAction insertTextTextEditorModelAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == insertTextTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.ModelKey == insertTextTextEditorModelAction.TextEditorModelKey);
 
-        var nextTextEditor = textEditor.PerformEditTextEditorAction(insertTextTextEditorBaseAction);
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(insertTextTextEditorModelAction);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);
@@ -67,14 +67,14 @@ public class TextEditorStatesReducer
     }
     
     [ReducerMethod]
-    public static TextEditorStates ReduceKeyboardEventTextEditorBaseAction(
+    public static TextEditorStates ReduceKeyboardEventTextEditorModelAction(
         TextEditorStates previousTextEditorStates,
-        KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
+        KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == keyboardEventTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.ModelKey == keyboardEventTextEditorModelAction.TextEditorModelKey);
 
-        var nextTextEditor = textEditor.PerformEditTextEditorAction(keyboardEventTextEditorBaseAction);
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(keyboardEventTextEditorModelAction);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);
@@ -86,14 +86,14 @@ public class TextEditorStatesReducer
     }
     
     [ReducerMethod]
-    public static TextEditorStates ReduceDeleteTextByMotionTextEditorBaseAction(
+    public static TextEditorStates ReduceDeleteTextByMotionTextEditorModelAction(
         TextEditorStates previousTextEditorStates,
-        DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+        DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == deleteTextByMotionTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.ModelKey == deleteTextByMotionTextEditorModelAction.TextEditorModelKey);
 
-        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByMotionTextEditorBaseAction);
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByMotionTextEditorModelAction);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);
@@ -105,14 +105,14 @@ public class TextEditorStatesReducer
     }
     
     [ReducerMethod]
-    public static TextEditorStates ReduceDeleteTextByRangeTextEditorBaseAction(
+    public static TextEditorStates ReduceDeleteTextByRangeTextEditorModelAction(
         TextEditorStates previousTextEditorStates,
-        DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
+        DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == deleteTextByRangeTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.ModelKey == deleteTextByRangeTextEditorModelAction.TextEditorModelKey);
 
-        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByRangeTextEditorBaseAction);
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByRangeTextEditorModelAction);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);
@@ -124,12 +124,12 @@ public class TextEditorStatesReducer
     }
     
     [ReducerMethod]
-    public static TextEditorStates ReduceEditTextEditorBaseAction(
+    public static TextEditorStates ReduceUndoEditAction(
         TextEditorStates previousTextEditorStates,
         UndoEditAction undoEditAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == undoEditAction.TextEditorKey);
+            .Single(x => x.ModelKey == undoEditAction.TextEditorModelKey);
 
         var nextTextEditor = textEditor.UndoEdit();
 
@@ -143,12 +143,12 @@ public class TextEditorStatesReducer
     }
     
     [ReducerMethod]
-    public static TextEditorStates ReduceEditTextEditorBaseAction(
+    public static TextEditorStates ReduceRedoEditAction(
         TextEditorStates previousTextEditorStates,
         RedoEditAction redoEditAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == redoEditAction.TextEditorKey);
+            .Single(x => x.ModelKey == redoEditAction.TextEditorModelKey);
 
         var nextTextEditor = textEditor.RedoEdit();
 
@@ -162,15 +162,15 @@ public class TextEditorStatesReducer
     }
     
     [ReducerMethod]
-    public static TextEditorStates ReduceReloadTextEditorBaseAction(
+    public static TextEditorStates ReduceReloadTextEditorModelAction(
         TextEditorStates previousTextEditorStates,
-        ReloadTextEditorBaseAction reloadTextEditorBaseAction)
+        ReloadTextEditorModelAction reloadTextEditorModelAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == reloadTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.ModelKey == reloadTextEditorModelAction.TextEditorModelKey);
 
-        var nextTextEditor = new TextEditorBase(textEditor);
-        nextTextEditor.SetContent(reloadTextEditorBaseAction.Content);
+        var nextTextEditor = new TextEditorModel(textEditor);
+        nextTextEditor.SetContent(reloadTextEditorModelAction.Content);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Replace(textEditor, nextTextEditor);
@@ -187,7 +187,7 @@ public class TextEditorStatesReducer
         TextEditorSetResourceDataAction textEditorSetResourceDataAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == textEditorSetResourceDataAction.TextEditorKey);
+            .Single(x => x.ModelKey == textEditorSetResourceDataAction.TextEditorModelKey);
 
         var nextTextEditor = textEditor.SetResourceData(
             textEditorSetResourceDataAction.ResourceUri,
@@ -203,12 +203,12 @@ public class TextEditorStatesReducer
     }
 
     [ReducerMethod]
-    public static TextEditorStates ReduceDisposeTextEditorBaseAction(
+    public static TextEditorStates ReduceDisposeTextEditorModelAction(
         TextEditorStates previousTextEditorStates,
-        DisposeTextEditorBaseAction disposeTextEditorBaseAction)
+        DisposeTextEditorModelAction disposeTextEditorModelAction)
     {
         var textEditor = previousTextEditorStates.TextEditorList
-            .Single(x => x.Key == disposeTextEditorBaseAction.TextEditorKey);
+            .Single(x => x.ModelKey == disposeTextEditorModelAction.TextEditorModelKey);
 
         var nextList = previousTextEditorStates.TextEditorList
             .Remove(textEditor);
@@ -345,7 +345,7 @@ public class TextEditorStatesReducer
     {
         var textEditor = previousTextEditorStates.TextEditorList
             .Single(x =>
-                x.Key == textEditorSetUsingRowEndingKindAction.TextEditorKey);
+                x.ModelKey == textEditorSetUsingRowEndingKindAction.TextEditorModelKey);
 
         var nextTextEditor = textEditor
             .SetUsingRowEndingKind(textEditorSetUsingRowEndingKindAction.RowEndingKind);

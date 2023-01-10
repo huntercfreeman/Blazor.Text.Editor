@@ -15,12 +15,12 @@
         </div>
         <div class="bte_text-editor-group-active-view-model">
             @{
-                var textEditorBase = TextEditorService.GetTextEditorBaseFromViewModelKey(
+                var textEditorModel = TextEditorService.GetTextEditorModelFromViewModelKey(
                     textEditorGroup.ActiveTextEditorViewModelKey);
         
-                if (textEditorBase is null)
+                if (textEditorModel is null)
                 {
-                    <text>textEditorBase was null</text>
+                    <text>textEditorModel was null</text>
                 }
                 else
                 {

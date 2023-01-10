@@ -8,11 +8,11 @@ namespace BlazorTextEditor.RazorLib.Store.TextEditorCase;
 
 [FeatureState]
 public record TextEditorStates(
-    ImmutableList<TextEditorBase> TextEditorList,
+    ImmutableList<TextEditorModel> TextEditorList,
     TextEditorOptions GlobalTextEditorOptions)
 {
     public TextEditorStates()
-        : this(ImmutableList<TextEditorBase>.Empty, new TextEditorOptions(
+        : this(ImmutableList<TextEditorModel>.Empty, new TextEditorOptions(
             20,
             ThemeFacts.VisualStudioDarkThemeClone,
             false,

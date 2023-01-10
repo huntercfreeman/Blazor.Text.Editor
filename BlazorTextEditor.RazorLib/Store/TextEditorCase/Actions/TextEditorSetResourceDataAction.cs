@@ -3,6 +3,6 @@
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 
 public record TextEditorSetResourceDataAction(
-    TextEditorKey TextEditorKey,
+    TextEditorModelKey TextEditorModelKey,
     string ResourceUri,
     DateTime ResourceLastWriteTime);

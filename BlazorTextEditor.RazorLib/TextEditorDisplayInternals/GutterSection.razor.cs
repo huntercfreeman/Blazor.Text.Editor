@@ -14,7 +14,7 @@ public partial class GutterSection : ComponentBase
     private ITextEditorService TextEditorService { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 
@@ -50,26 +50,26 @@ public partial class GutterSection : ComponentBase
         var height =
             $"height: {heightInPixelsInvariantCulture}px;";
 
-        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
+        var mostDigitsInARowLineNumber = TextEditorModel.RowCount
             .ToString()
             .Length;
 
         var widthInPixels = mostDigitsInARowLineNumber *
                             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
-        widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+        widthInPixels += TextEditorModel.GUTTER_PADDING_LEFT_IN_PIXELS +
+                         TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
         var widthInPixelsInvariantCulture = widthInPixels.ToString(System.Globalization.CultureInfo.InvariantCulture);
         
         var width = $"width: {widthInPixelsInvariantCulture}px;";
 
-        var paddingLeftInPixelsInvariantCulture = TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS
+        var paddingLeftInPixelsInvariantCulture = TextEditorModel.GUTTER_PADDING_LEFT_IN_PIXELS
             .ToString(System.Globalization.CultureInfo.InvariantCulture);
         
         var paddingLeft = $"padding-left: {paddingLeftInPixelsInvariantCulture}px;";
         
-        var paddingRightInPixelsInvariantCulture = TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS
+        var paddingRightInPixelsInvariantCulture = TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS
             .ToString(System.Globalization.CultureInfo.InvariantCulture);
         
         var paddingRight = $"padding-right: {paddingRightInPixelsInvariantCulture}px;";
@@ -79,15 +79,15 @@ public partial class GutterSection : ComponentBase
     
     private string GetGutterSectionStyleCss()
     {
-        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
+        var mostDigitsInARowLineNumber = TextEditorModel.RowCount
             .ToString()
             .Length;
 
         var widthInPixels = mostDigitsInARowLineNumber *
                             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
-        widthInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+        widthInPixels += TextEditorModel.GUTTER_PADDING_LEFT_IN_PIXELS +
+                         TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS;
         
         var widthInPixelsInvariantCulture = widthInPixels.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
@@ -98,15 +98,15 @@ public partial class GutterSection : ComponentBase
 
     private IVirtualizationResultWithoutTypeMask GetVirtualizationResult()
     {
-        var mostDigitsInARowLineNumber = TextEditorBase.RowCount
+        var mostDigitsInARowLineNumber = TextEditorModel.RowCount
             .ToString()
             .Length;
 
         var widthOfGutterInPixels = mostDigitsInARowLineNumber *
                             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
-        widthOfGutterInPixels += TextEditorBase.GUTTER_PADDING_LEFT_IN_PIXELS +
-                         TextEditorBase.GUTTER_PADDING_RIGHT_IN_PIXELS;
+        widthOfGutterInPixels += TextEditorModel.GUTTER_PADDING_LEFT_IN_PIXELS +
+                         TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
         var topBoundaryNarrow = TextEditorViewModel.VirtualizationResult.TopVirtualizationBoundary with
         {

@@ -19,7 +19,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
     }
     
     public string GetCursorCssStyleString(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         TextEditorViewModel textEditorViewModel,
         TextEditorOptions textEditorOptions)
     {

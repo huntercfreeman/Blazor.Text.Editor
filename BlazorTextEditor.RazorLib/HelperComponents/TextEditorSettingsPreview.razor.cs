@@ -24,13 +24,13 @@ public partial class TextEditorSettingsPreview : FluxorComponent
     [Parameter]
     public string PreviewElementCssClassString { get; set; } = string.Empty;
 
-    public static readonly TextEditorKey SettingsPreviewTextEditorKey = TextEditorKey.NewTextEditorKey();
+    public static readonly TextEditorModelKey SettingsPreviewTextEditorModelKey = TextEditorModelKey.NewTextEditorKey();
     public static readonly TextEditorViewModelKey SettingsPreviewTextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
 
     protected override void OnInitialized()
     {
         TextEditorService.RegisterPlainTextEditor(
-            SettingsPreviewTextEditorKey,
+            SettingsPreviewTextEditorModelKey,
             "SettingsPreviewTextEditorKey",
             DateTime.UtcNow,
             "Settings Preview",
@@ -38,7 +38,7 @@ public partial class TextEditorSettingsPreview : FluxorComponent
         
         TextEditorService.RegisterViewModel(
             SettingsPreviewTextEditorViewModelKey,
-            SettingsPreviewTextEditorKey);
+            SettingsPreviewTextEditorModelKey);
         
         base.OnInitialized();
     }
