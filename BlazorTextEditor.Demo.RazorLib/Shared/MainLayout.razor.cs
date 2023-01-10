@@ -10,7 +10,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
 
     protected override void OnInitialized()
     {
-        TextEditorService.OnTextEditorStatesChanged += TextEditorServiceOnOnTextEditorStatesChanged;
+        TextEditorService.TextEditorModelsCollectionChanged += TextEditorServiceOnTextEditorModelsCollectionChanged;
         
         base.OnInitialized();
     }
@@ -25,13 +25,13 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void TextEditorServiceOnOnTextEditorStatesChanged()
+    private void TextEditorServiceOnTextEditorModelsCollectionChanged()
     {
         InvokeAsync(StateHasChanged);
     }
     
     public void Dispose()
     {
-        TextEditorService.OnTextEditorStatesChanged -= TextEditorServiceOnOnTextEditorStatesChanged;
+        TextEditorService.TextEditorModelsCollectionChanged -= TextEditorServiceOnTextEditorModelsCollectionChanged;
     }
 }

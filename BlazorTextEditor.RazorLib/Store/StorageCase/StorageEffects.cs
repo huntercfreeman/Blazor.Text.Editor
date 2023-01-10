@@ -1,5 +1,6 @@
 using BlazorALaCarte.Shared.Storage;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 
@@ -7,15 +8,15 @@ namespace BlazorTextEditor.RazorLib.Store.StorageCase;
 
 public class StorageEffects
 {
-    private readonly IState<TextEditorStates> _textEditorStatesWrap;
+    private readonly IState<TextEditorModelsCollection> _textEditorModelsCollectionWrap;
     private readonly IStorageProvider _storageProvider;
 
     public StorageEffects(
         ITextEditorServiceOptions textEditorServiceOptions,
-        IState<TextEditorStates> textEditorStatesWrap,
+        IState<TextEditorModelsCollection> textEditorModelsCollectionWrap,
         IStorageProvider storageProvider)
     {
-        _textEditorStatesWrap = textEditorStatesWrap;
+        _textEditorModelsCollectionWrap = textEditorModelsCollectionWrap;
         _storageProvider = storageProvider;
     }
 

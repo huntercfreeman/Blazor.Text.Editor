@@ -1,4 +1,4 @@
-﻿namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+﻿namespace BlazorTextEditor.RazorLib.ViewModel;
 
 /// <summary>
 /// <see cref="TextEditorViewModelKey"/> is used to uniquely 

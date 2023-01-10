@@ -2,11 +2,11 @@
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
-using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.Virtualization;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+namespace BlazorTextEditor.RazorLib.ViewModel;
 
 public record TextEditorViewModel(
     TextEditorViewModelKey TextEditorViewModelKey,

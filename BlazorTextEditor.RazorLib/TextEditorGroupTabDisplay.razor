@@ -13,9 +13,9 @@
         }
         else
         {
-            var textEditorStatesWrap = TextEditorStatesWrap.Value;
+            var textEditorModelsCollectionWrap = TextEditorModelsCollectionWrap.Value;
 
-            var textEditorModel = textEditorStatesWrap.TextEditorList
+            var textEditorModel = textEditorModelsCollectionWrap.TextEditorList
                 .FirstOrDefault(x => x.ModelKey == viewModel.TextEditorModelKey);
 
             if (textEditorModel is null)

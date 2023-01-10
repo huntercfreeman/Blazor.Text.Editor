@@ -3,7 +3,7 @@ using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Keymap.Default;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.Model;
 
 public partial class TextEditorModel
 {

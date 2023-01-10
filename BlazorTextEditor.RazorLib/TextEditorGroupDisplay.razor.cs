@@ -1,7 +1,9 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+﻿using BlazorTextEditor.RazorLib.Group;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -14,7 +16,7 @@ public partial class TextEditorGroupDisplay : IDisposable
     [Inject]
     private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
     [Inject]
-    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
+    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]

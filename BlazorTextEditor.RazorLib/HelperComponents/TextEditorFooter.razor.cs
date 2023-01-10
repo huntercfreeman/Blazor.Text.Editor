@@ -11,7 +11,7 @@ public partial class TextEditorFooter : TextEditorView
 {
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
-        var textEditor = TextEditorStatesWrap.Value;
+        var textEditor = TextEditorModelsCollectionWrap.Value;
         var localTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         if (textEditor is null ||

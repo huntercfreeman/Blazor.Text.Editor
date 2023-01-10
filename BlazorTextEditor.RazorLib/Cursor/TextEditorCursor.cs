@@ -1,5 +1,5 @@
 using BlazorALaCarte.Shared.Keyboard;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Model;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Cursor;

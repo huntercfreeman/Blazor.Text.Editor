@@ -9,12 +9,14 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.TextEditorDisplayInternals;
+using BlazorTextEditor.RazorLib.ViewModel;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -106,7 +108,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         var currentGlobalFontSizeInPixels = TextEditorService
-            .TextEditorStates
+            .TextEditorModelsCollection
             .GlobalTextEditorOptions
             .FontSizeInPixels!
             .Value;
@@ -148,7 +150,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     protected override void OnInitialized()
     {
-        TextEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateChanged;
+        TextEditorModelsCollectionWrap.StateChanged += TextEditorModelsCollectionWrapOnStateChanged;
         
         base.OnInitialized();
     }
@@ -207,7 +209,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     }
     
     // TODO: When the underlying "TextEditorModel" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
-    private async void TextEditorStatesWrapOnStateChanged(object? sender, EventArgs e)
+    private async void TextEditorModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
         var viewModel = ReplaceableTextEditorViewModel;
 
@@ -250,7 +252,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 .HasSelectedText(
                     primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
-        var command = TextEditorStatesWrap.Value.GlobalTextEditorOptions.KeymapDefinition!.Keymap.Map(
+        var command = TextEditorModelsCollectionWrap.Value.GlobalTextEditorOptions.KeymapDefinition!.Keymap.Map(
             keyboardEventArgs,
             hasSelection);
         
@@ -775,7 +777,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private string GetGlobalHeightInPixelsStyling()
     {
         var heightInPixels = TextEditorService
-            .TextEditorStates
+            .TextEditorModelsCollection
             .GlobalTextEditorOptions
             .HeightInPixels;
 
@@ -797,7 +799,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     
         if (disposing)
         {
-            TextEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateChanged;
+            TextEditorModelsCollectionWrap.StateChanged -= TextEditorModelsCollectionWrapOnStateChanged;
             _textEditorModelChangedCancellationTokenSource.Cancel();
         }
     

@@ -1,7 +1,9 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+﻿using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -18,9 +20,9 @@ public class TextEditorView : FluxorComponent
     // TODO: Do not rerender so much too many things are touched by the [Inject] in this file
     //
     // [Inject]
-    // protected IStateSelection<TextEditorStates, TextEditorModel?> TextEditorStatesSelection { get; set; } = null!;
+    // protected IStateSelection<TextEditorModelsCollection, TextEditorModel?> TextEditorModelsCollectionSelection { get; set; } = null!;
     [Inject]
-    protected IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
+    protected IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     protected IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
     [Inject]

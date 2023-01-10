@@ -19,16 +19,20 @@ using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
+using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Microsoft.JSInterop;
 
@@ -36,7 +40,7 @@ namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
-    private readonly IState<TextEditorStates> _textEditorStatesWrap;
+    private readonly IState<TextEditorModelsCollection> _textEditorModelsCollectionWrap;
     private readonly IState<ThemeState> _themeStateWrap;
     private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollectionWrap;
     private readonly IState<TextEditorGroupsCollection> _textEditorGroupsCollectionWrap;
@@ -47,7 +51,7 @@ public class TextEditorService : ITextEditorService
     private readonly IJSRuntime _jsRuntime;
 
     public TextEditorService(
-        IState<TextEditorStates> textEditorStatesWrap,
+        IState<TextEditorModelsCollection> textEditorModelsCollectionWrap,
         IState<ThemeState> themeStateWrap,
         IState<TextEditorViewModelsCollection> textEditorViewModelsCollectionWrap,
         IState<TextEditorGroupsCollection> textEditorGroupsCollectionWrap,
@@ -55,7 +59,7 @@ public class TextEditorService : ITextEditorService
         IStorageProvider storageProvider,
         IJSRuntime jsRuntime)
     {
-        _textEditorStatesWrap = textEditorStatesWrap;
+        _textEditorModelsCollectionWrap = textEditorModelsCollectionWrap;
         _themeStateWrap = themeStateWrap;
         _textEditorViewModelsCollectionWrap = textEditorViewModelsCollectionWrap;
         _textEditorGroupsCollectionWrap = textEditorGroupsCollectionWrap;
@@ -63,21 +67,21 @@ public class TextEditorService : ITextEditorService
         _storageProvider = storageProvider;
         _jsRuntime = jsRuntime;
 
-        _textEditorStatesWrap.StateChanged += TextEditorStatesWrapOnStateWrapChanged;
+        _textEditorModelsCollectionWrap.StateChanged += TextEditorModelsCollectionWrapOnModelsCollectionWrapChanged;
     }
 
-    public TextEditorStates TextEditorStates => _textEditorStatesWrap.Value;
-    public ThemeRecord? GlobalThemeValue => TextEditorStates.GlobalTextEditorOptions.Theme;
-    public string GlobalThemeCssClassString => TextEditorStates.GlobalTextEditorOptions.Theme?.CssClassString ?? string.Empty;
-    public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;";
-    public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
-    public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
-    public int GlobalFontSizeInPixelsValue => TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value;
-    public double GlobalCursorWidthInPixelsValue => TextEditorStates.GlobalTextEditorOptions.CursorWidthInPixels!.Value;
-    public KeymapDefinition GlobalKeymapDefinition => TextEditorStates.GlobalTextEditorOptions.KeymapDefinition!;
-    public int? GlobalHeightInPixelsValue => TextEditorStates.GlobalTextEditorOptions.HeightInPixels;
+    public TextEditorModelsCollection TextEditorModelsCollection => _textEditorModelsCollectionWrap.Value;
+    public ThemeRecord? GlobalThemeValue => TextEditorModelsCollection.GlobalTextEditorOptions.Theme;
+    public string GlobalThemeCssClassString => TextEditorModelsCollection.GlobalTextEditorOptions.Theme?.CssClassString ?? string.Empty;
+    public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorModelsCollection.GlobalTextEditorOptions.FontSizeInPixels!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;";
+    public bool GlobalShowNewlines => TextEditorModelsCollection.GlobalTextEditorOptions.ShowNewlines!.Value;
+    public bool GlobalShowWhitespace => TextEditorModelsCollection.GlobalTextEditorOptions.ShowWhitespace!.Value;
+    public int GlobalFontSizeInPixelsValue => TextEditorModelsCollection.GlobalTextEditorOptions.FontSizeInPixels!.Value;
+    public double GlobalCursorWidthInPixelsValue => TextEditorModelsCollection.GlobalTextEditorOptions.CursorWidthInPixels!.Value;
+    public KeymapDefinition GlobalKeymapDefinition => TextEditorModelsCollection.GlobalTextEditorOptions.KeymapDefinition!;
+    public int? GlobalHeightInPixelsValue => TextEditorModelsCollection.GlobalTextEditorOptions.HeightInPixels;
 
-    public event Action? OnTextEditorStatesChanged;
+    public event Action? TextEditorModelsCollectionChanged;
     
     public void RegisterCustomTextEditor(
         TextEditorModel textEditorModel)
@@ -326,7 +330,7 @@ public class TextEditorService : ITextEditorService
 
     public string? GetAllText(TextEditorModelKey textEditorModelKey)
     {
-        return TextEditorStates.TextEditorList
+        return TextEditorModelsCollection.TextEditorList
             .FirstOrDefault(x => x.ModelKey == textEditorModelKey)
             ?.GetAllText();
     }
@@ -470,9 +474,9 @@ public class TextEditorService : ITextEditorService
                 settingsDialog));
     }
     
-    private void TextEditorStatesWrapOnStateWrapChanged(object? sender, EventArgs e)
+    private void TextEditorModelsCollectionWrapOnModelsCollectionWrapChanged(object? sender, EventArgs e)
     {
-        OnTextEditorStatesChanged?.Invoke();
+        TextEditorModelsCollectionChanged?.Invoke();
     }
 
     public void RegisterGroup(TextEditorGroupKey textEditorGroupKey)
@@ -489,7 +493,7 @@ public class TextEditorService : ITextEditorService
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new AddViewModelToGroupAction(
+        _dispatcher.Dispatch(new TextEditorGroupsCollection.AddViewModelToGroupAction(
             textEditorGroupKey,
             textEditorViewModelKey));
     }
@@ -498,7 +502,7 @@ public class TextEditorService : ITextEditorService
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new RemoveViewModelFromGroupAction(
+        _dispatcher.Dispatch(new TextEditorGroupsCollection.RemoveViewModelFromGroupAction(
             textEditorGroupKey,
             textEditorViewModelKey));
     }
@@ -507,7 +511,7 @@ public class TextEditorService : ITextEditorService
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new SetActiveViewModelOfGroupAction(
+        _dispatcher.Dispatch(new TextEditorGroupsCollection.SetActiveViewModelOfGroupAction(
             textEditorGroupKey,
             textEditorViewModelKey));
     }
@@ -516,7 +520,7 @@ public class TextEditorService : ITextEditorService
         TextEditorViewModelKey textEditorViewModelKey,
         TextEditorModelKey textEditorModelKey)
     {
-        _dispatcher.Dispatch(new RegisterTextEditorViewModelAction(
+        _dispatcher.Dispatch(new TextEditorViewModelsCollection.RegisterTextEditorViewModelAction(
             textEditorViewModelKey,
             textEditorModelKey, 
             this));
@@ -547,7 +551,7 @@ public class TextEditorService : ITextEditorService
         TextEditorViewModelKey textEditorViewModelKey,
         Func<TextEditorViewModel, TextEditorViewModel> withFunc)
     {
-        _dispatcher.Dispatch(new SetViewModelWithAction(
+        _dispatcher.Dispatch(new TextEditorViewModelsCollection.SetViewModelWithAction(
             textEditorViewModelKey,
             withFunc));
     }
@@ -626,7 +630,7 @@ public class TextEditorService : ITextEditorService
     
     public TextEditorModel? GetTextEditorModelOrDefaultByResourceUri(string resourceUri)
     {
-        return TextEditorStates.TextEditorList
+        return TextEditorModelsCollection.TextEditorList
             .FirstOrDefault(x => x.ResourceUri == resourceUri);
     }
     
@@ -642,7 +646,7 @@ public class TextEditorService : ITextEditorService
     
     public TextEditorModel? GetTextEditorModelOrDefault(TextEditorModelKey textEditorModelKey)
     {
-        return TextEditorStates.TextEditorList
+        return TextEditorModelsCollection.TextEditorList
             .FirstOrDefault(x => x.ModelKey == textEditorModelKey);
     }
     
@@ -720,11 +724,11 @@ public class TextEditorService : ITextEditorService
     {
         _dispatcher.Dispatch(
             new StorageEffects.WriteGlobalTextEditorOptionsToLocalStorageAction(
-                TextEditorStates.GlobalTextEditorOptions));
+                TextEditorModelsCollection.GlobalTextEditorOptions));
     }
     
     public void Dispose()
     {
-        _textEditorStatesWrap.StateChanged -= TextEditorStatesWrapOnStateWrapChanged;
+        _textEditorModelsCollectionWrap.StateChanged -= TextEditorModelsCollectionWrapOnModelsCollectionWrapChanged;
     }
 }

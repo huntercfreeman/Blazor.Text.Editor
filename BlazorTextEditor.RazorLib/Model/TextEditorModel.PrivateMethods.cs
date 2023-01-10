@@ -6,8 +6,9 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.Model;
 
 public partial class TextEditorModel
 {
@@ -52,7 +53,7 @@ public partial class TextEditorModel
         }
     }
 
-    private void PerformInsertions(KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
+    private void PerformInsertions(TextEditorModelsCollection.KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
     {
         EnsureUndoPoint(TextEditKind.Insertion);
 
@@ -233,7 +234,7 @@ public partial class TextEditorModel
         }
     }
 
-    private void PerformDeletions(KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
+    private void PerformDeletions(TextEditorModelsCollection.KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
     {
         EnsureUndoPoint(TextEditKind.Deletion);
 

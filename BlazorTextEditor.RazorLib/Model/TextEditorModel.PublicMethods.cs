@@ -8,9 +8,10 @@ using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.TextEditor;
+namespace BlazorTextEditor.RazorLib.Model;
 
 public partial class TextEditorModel
 {
@@ -107,13 +108,13 @@ public partial class TextEditorModel
         return tabs.Count();
     }
 
-    public TextEditorModel PerformForceRerenderAction(ForceRerenderAction forceRerenderAction)
+    public TextEditorModel PerformForceRerenderAction(TextEditorModelsCollection.ForceRerenderAction forceRerenderAction)
     {
         return new TextEditorModel(this);
     }
 
     public TextEditorModel PerformEditTextEditorAction(
-        KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
+        TextEditorModelsCollection.KeyboardEventTextEditorModelAction keyboardEventTextEditorModelAction)
     {
         if (KeyboardKeyFacts.IsMetaKey(keyboardEventTextEditorModelAction.KeyboardEventArgs))
         {
@@ -160,7 +161,7 @@ public partial class TextEditorModel
                     primaryCursorSnapshot
                         .ImmutableCursor.ImmutableTextEditorSelection))
             {
-                PerformDeletions(new KeyboardEventTextEditorModelAction(
+                PerformDeletions(new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
                     keyboardEventTextEditorModelAction.TextEditorModelKey,
                     cursorSnapshots,
                     new KeyboardEventArgs
@@ -187,7 +188,7 @@ public partial class TextEditorModel
         return new TextEditorModel(this);
     }
 
-    public TextEditorModel PerformEditTextEditorAction(InsertTextTextEditorModelAction insertTextTextEditorModelAction)
+    public TextEditorModel PerformEditTextEditorAction(TextEditorModelsCollection.InsertTextTextEditorModelAction insertTextTextEditorModelAction)
     {
         var cursorSnapshots = TextEditorCursorSnapshot
             .TakeSnapshots(
@@ -226,7 +227,7 @@ public partial class TextEditorModel
                 primaryCursorSnapshot
                     .ImmutableCursor.ImmutableTextEditorSelection))
         {
-            PerformDeletions(new KeyboardEventTextEditorModelAction(
+            PerformDeletions(new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
                 insertTextTextEditorModelAction.TextEditorModelKey,
                 cursorSnapshots,
                 new KeyboardEventArgs
@@ -264,7 +265,7 @@ public partial class TextEditorModel
             };
 
             var keyboardEventTextEditorModelAction =
-                new KeyboardEventTextEditorModelAction(
+                new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
                     insertTextTextEditorModelAction.TextEditorModelKey,
                     innerCursorSnapshots,
                     new KeyboardEventArgs
@@ -281,7 +282,7 @@ public partial class TextEditorModel
     }
 
     public TextEditorModel PerformEditTextEditorAction(
-        DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction)
+        TextEditorModelsCollection.DeleteTextByMotionTextEditorModelAction deleteTextByMotionTextEditorModelAction)
     {
         var keyboardEventArgs = deleteTextByMotionTextEditorModelAction.MotionKind switch
         {
@@ -300,7 +301,7 @@ public partial class TextEditorModel
         };
 
         var keyboardEventTextEditorModelAction =
-            new KeyboardEventTextEditorModelAction(
+            new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
                 deleteTextByMotionTextEditorModelAction.TextEditorModelKey,
                 deleteTextByMotionTextEditorModelAction.CursorSnapshots,
                 keyboardEventArgs,
@@ -312,7 +313,7 @@ public partial class TextEditorModel
     }
 
     public TextEditorModel PerformEditTextEditorAction(
-        DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction)
+        TextEditorModelsCollection.DeleteTextByRangeTextEditorModelAction deleteTextByRangeTextEditorModelAction)
     {
         // TODO: This needs to be rewritten everything should be deleted at the same time not a foreach loop for each character
         for (var i = 0; i < deleteTextByRangeTextEditorModelAction.Count; i++)
@@ -328,7 +329,7 @@ public partial class TextEditorModel
                 .ToImmutableArray();
 
             var keyboardEventTextEditorModelAction =
-                new KeyboardEventTextEditorModelAction(
+                new TextEditorModelsCollection.KeyboardEventTextEditorModelAction(
                     deleteTextByRangeTextEditorModelAction.TextEditorModelKey,
                     innerCursorSnapshots,
                     new KeyboardEventArgs

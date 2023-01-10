@@ -1,7 +1,7 @@
 ﻿using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
-using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,10 +14,14 @@ public class BlazorTextEditorTestingBase
 {
     protected readonly ServiceProvider ServiceProvider;
     protected readonly ITextEditorService TextEditorService;
-    protected readonly TextEditorKey TextEditorKey = TextEditorKey.NewTextEditorKey();
+    protected readonly TextEditorModelKey TextEditorModelKey = TextEditorModelKey.NewTextEditorKey();
 
-    protected TextEditorBase TextEditor => TextEditorService.TextEditorStates.TextEditorList
-        .First(x => x.Key == TextEditorKey);
+    protected TextEditorModel TextEditorModel => TextEditorService
+        .GetTextEditorModelOrDefault(TextEditorModelKey)
+            ?? throw new ApplicationException(
+                $"{nameof(TextEditorService)}" +
+                $".{nameof(TextEditorService.GetTextEditorModelOrDefault)}" +
+                " returned null.");
 
     public BlazorTextEditorTestingBase()
     {
@@ -49,7 +53,7 @@ public class BlazorTextEditorTestingBase
         TextEditorService = ServiceProvider
             .GetRequiredService<ITextEditorService>();
 
-        var textEditor = new TextEditorBase(
+        var textEditor = new TextEditorModel(
             nameof(BlazorTextEditorTestingBase),
             DateTime.UtcNow,
             "UnitTests",
@@ -57,7 +61,7 @@ public class BlazorTextEditorTestingBase
             null,
             null,
             null,
-            TextEditorKey);
+            TextEditorModelKey);
         
         TextEditorService.RegisterCustomTextEditor(textEditor);
     }

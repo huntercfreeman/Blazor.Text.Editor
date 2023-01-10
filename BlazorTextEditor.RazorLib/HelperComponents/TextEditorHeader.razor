@@ -1,13 +1,13 @@
 ﻿@using BlazorTextEditor.RazorLib.Row
 @using System.Collections.Immutable
-@using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels
+@using BlazorTextEditor.RazorLib.Model
 @using BlazorTextEditor.RazorLib.TextEditor
 
 @inherits TextEditorView
 
 <div class="bte_text-editor-header @TextEditorService.GlobalThemeCssClassString">
     @{
-        var textEditor = TextEditorStatesWrap.Value;
+        var textEditor = TextEditorModelsCollectionWrap.Value;
         
         if (textEditor is not null)
         {

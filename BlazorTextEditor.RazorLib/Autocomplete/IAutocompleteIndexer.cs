@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Model;
 
 namespace BlazorTextEditor.RazorLib.Autocomplete;
 

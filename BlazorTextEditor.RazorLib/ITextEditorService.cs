@@ -16,15 +16,18 @@ using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -39,7 +42,7 @@ public interface ITextEditorService : IDisposable
 {
     public const string LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY = "bte_text-editor-options";
 
-    public TextEditorStates TextEditorStates { get; }
+    public TextEditorModelsCollection TextEditorModelsCollection { get; }
     public ThemeRecord? GlobalThemeValue { get; }
     public string GlobalThemeCssClassString { get; }
     public string GlobalFontSizeInPixelsStyling { get; }
@@ -50,7 +53,7 @@ public interface ITextEditorService : IDisposable
     public KeymapDefinition GlobalKeymapDefinition { get; }
     public int? GlobalHeightInPixelsValue { get; }
 
-    public event Action? OnTextEditorStatesChanged;
+    public event Action? TextEditorModelsCollectionChanged;
 
     /// <summary>
     /// It is recommended to use the other Register methods as they will internally reference the <see cref="ILexer"/> and

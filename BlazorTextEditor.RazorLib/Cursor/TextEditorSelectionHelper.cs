@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.TextEditor;
+﻿using BlazorTextEditor.RazorLib.Model;
 
 namespace BlazorTextEditor.RazorLib.Cursor;
 

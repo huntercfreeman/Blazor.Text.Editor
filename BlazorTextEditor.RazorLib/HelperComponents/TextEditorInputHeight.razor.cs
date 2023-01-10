@@ -1,4 +1,5 @@
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -8,7 +9,7 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 public partial class TextEditorInputHeight : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
+    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
@@ -28,7 +29,7 @@ public partial class TextEditorInputHeight : FluxorComponent
     
     private int TextEditorHeight
     {
-        get => TextEditorStatesWrap.Value.GlobalTextEditorOptions.HeightInPixels 
+        get => TextEditorModelsCollectionWrap.Value.GlobalTextEditorOptions.HeightInPixels 
                ?? MINIMUM_HEIGHT_IN_PIXELS;
         set
         {

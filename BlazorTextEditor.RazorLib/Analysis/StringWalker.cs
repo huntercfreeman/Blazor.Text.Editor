@@ -2,7 +2,7 @@
 using System.Text;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Model;
 
 namespace BlazorTextEditor.RazorLib.Analysis;
 
