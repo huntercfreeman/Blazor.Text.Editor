@@ -1,5 +1,6 @@
 ﻿using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Store;
+using BlazorALaCarte.Shared.Store.ThemeCase;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;

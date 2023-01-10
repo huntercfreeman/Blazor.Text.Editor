@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.DialogNotification.Dialog;
+using BlazorALaCarte.DialogNotification.Store.DialogCase;
 using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Storage;
 using BlazorALaCarte.Shared.Store;
+using BlazorALaCarte.Shared.Store.ThemeCase;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
@@ -315,7 +317,7 @@ public class TextEditorService : ITextEditorService
         };
         
         _dispatcher.Dispatch(
-            new DialogsState.RegisterDialogRecordAction(
+            new DialogRecordsCollection.RegisterAction(
                 settingsDialog));
     }
     

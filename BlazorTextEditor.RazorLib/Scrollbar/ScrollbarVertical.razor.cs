@@ -1,5 +1,6 @@
 ﻿using BlazorALaCarte.Shared.Drag;
 using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorALaCarte.Shared.Store.DragCase;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
@@ -112,7 +113,7 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
     public void SubscribeToDragEventForScrolling()
     {
         _dragEventHandler = DragEventHandlerScrollAsync;
-        Dispatcher.Dispatch(new SetDragStateAction(true, null));
+        Dispatcher.Dispatch(new DragState.SetDragStateAction(true, null));
     }
     
     private async Task DragEventHandlerScrollAsync(
