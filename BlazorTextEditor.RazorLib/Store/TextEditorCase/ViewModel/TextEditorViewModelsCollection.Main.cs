@@ -14,8 +14,8 @@ public partial class TextEditorViewModelsCollection
 {
     public TextEditorViewModelsCollection()
     {
+        ViewModelsList = ImmutableList<TextEditorViewModel>.Empty;
     }
 
-    public ImmutableList<TextEditorViewModel> ViewModelsList { get; init; } = 
-        ImmutableList<TextEditorViewModel>.Empty;
+    public ImmutableList<TextEditorViewModel> ViewModelsList { get; init; } 
 }

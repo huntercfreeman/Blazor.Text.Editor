@@ -11,15 +11,12 @@ public partial class TextEditorGlobalOptions
             TextEditorGlobalOptions inGlobalOptions,
             SetFontSizeAction setFontSizeAction)
         {
-            var nextTextEditorOptions = inGlobalOptions
-                    .GlobalTextEditorOptions with
-                {
-                    FontSizeInPixels = setFontSizeAction.FontSizeInPixels,
-                };
-
-            return inGlobalOptions with
+            return new TextEditorGlobalOptions
             {
-                GlobalTextEditorOptions = nextTextEditorOptions,
+                Options = inGlobalOptions.Options with
+                {
+                    FontSizeInPixels = setFontSizeAction.FontSizeInPixels
+                },
             };
         }
 
@@ -28,15 +25,12 @@ public partial class TextEditorGlobalOptions
             TextEditorGlobalOptions inGlobalOptions,
             SetCursorWidthAction setCursorWidthAction)
         {
-            var nextTextEditorOptions = inGlobalOptions
-                    .GlobalTextEditorOptions with
-                {
-                    CursorWidthInPixels = setCursorWidthAction.CursorWidthInPixels,
-                };
-
-            return inGlobalOptions with
+            return new TextEditorGlobalOptions
             {
-                GlobalTextEditorOptions = nextTextEditorOptions,
+                Options = inGlobalOptions.Options with
+                {
+                    CursorWidthInPixels = setCursorWidthAction.CursorWidthInPixels
+                },
             };
         }
 
@@ -45,15 +39,12 @@ public partial class TextEditorGlobalOptions
             TextEditorGlobalOptions inGlobalOptions,
             SetHeightAction setHeightAction)
         {
-            var nextTextEditorOptions = inGlobalOptions
-                    .GlobalTextEditorOptions with
-                {
-                    HeightInPixels = setHeightAction.HeightInPixels,
-                };
-
-            return inGlobalOptions with
+            return new TextEditorGlobalOptions
             {
-                GlobalTextEditorOptions = nextTextEditorOptions,
+                Options = inGlobalOptions.Options with
+                {
+                    HeightInPixels = setHeightAction.HeightInPixels
+                },
             };
         }
 
@@ -62,15 +53,12 @@ public partial class TextEditorGlobalOptions
             TextEditorGlobalOptions inGlobalOptions,
             SetThemeAction setThemeAction)
         {
-            var nextTextEditorOptions = inGlobalOptions
-                    .GlobalTextEditorOptions with
-                {
-                    Theme = textEditorSetThemeAction.Theme,
-                };
-
-            return inGlobalOptions with
+            return new TextEditorGlobalOptions
             {
-                GlobalTextEditorOptions = nextTextEditorOptions,
+                Options = inGlobalOptions.Options with
+                {
+                    Theme = setThemeAction.Theme
+                },
             };
         }
 
@@ -79,15 +67,12 @@ public partial class TextEditorGlobalOptions
             TextEditorGlobalOptions inGlobalOptions,
             SetKeymapAction setKeymapAction)
         {
-            var nextTextEditorOptions = inGlobalOptions
-                    .GlobalTextEditorOptions with
-                {
-                    KeymapDefinition = textEditorSetKeymapAction.KeymapDefinition,
-                };
-
-            return inGlobalOptions with
+            return new TextEditorGlobalOptions
             {
-                GlobalTextEditorOptions = nextTextEditorOptions,
+                Options = inGlobalOptions.Options with
+                {
+                    KeymapDefinition = setKeymapAction.KeymapDefinition
+                },
             };
         }
 
@@ -96,15 +81,12 @@ public partial class TextEditorGlobalOptions
             TextEditorGlobalOptions inGlobalOptions,
             SetShowWhitespaceAction setShowWhitespaceAction)
         {
-            var nextTextEditorOptions = inGlobalOptions
-                    .GlobalTextEditorOptions with
-                {
-                    ShowWhitespace = textEditorSetShowWhitespaceAction.ShowWhitespace,
-                };
-
-            return inGlobalOptions with
+            return new TextEditorGlobalOptions
             {
-                GlobalTextEditorOptions = nextTextEditorOptions,
+                Options = inGlobalOptions.Options with
+                {
+                    ShowWhitespace = setShowWhitespaceAction.ShowWhitespace
+                },
             };
         }
 
@@ -113,15 +95,12 @@ public partial class TextEditorGlobalOptions
             TextEditorGlobalOptions inGlobalOptions,
             SetShowNewlinesAction setShowNewlinesAction)
         {
-            var nextTextEditorOptions = inGlobalOptions
-                    .GlobalTextEditorOptions with
-                {
-                    ShowNewlines = textEditorSetShowNewlinesAction.ShowNewlines,
-                };
-
-            return inGlobalOptions with
+            return new TextEditorGlobalOptions
             {
-                GlobalTextEditorOptions = nextTextEditorOptions,
+                Options = inGlobalOptions.Options with
+                {
+                    ShowWhitespace = setShowNewlinesAction.ShowNewlines
+                },
             };
         }
     }

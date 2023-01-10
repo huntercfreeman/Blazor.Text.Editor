@@ -14,8 +14,8 @@ public partial class TextEditorGroupsCollection
 {
     public TextEditorGroupsCollection()
     {
+        GroupsList = ImmutableList<TextEditorGroup>.Empty; 
     }
 
-    public ImmutableList<TextEditorGroup> GroupsList { get; init; } =
-        ImmutableList<TextEditorGroup>.Empty;
+    public ImmutableList<TextEditorGroup> GroupsList { get; init; }
 }

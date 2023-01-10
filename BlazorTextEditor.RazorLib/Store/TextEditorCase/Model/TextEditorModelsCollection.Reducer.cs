@@ -8,7 +8,7 @@ public partial class TextEditorModelsCollection
     private class Reducer
     {
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceRegisterTextEditorModelAction(
+        public static TextEditorModelsCollection ReduceRegisterAction(
             TextEditorModelsCollection inModelsCollection,
             RegisterAction registerAction)
         {
@@ -23,9 +23,9 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Add(registerAction.TextEditorModel);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
@@ -42,14 +42,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceInsertTextTextEditorModelAction(
+        public static TextEditorModelsCollection ReduceInsertTextAction(
             TextEditorModelsCollection inModelsCollection,
             InsertTextAction insertTextAction)
         {
@@ -61,14 +61,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceKeyboardEventTextEditorModelAction(
+        public static TextEditorModelsCollection ReduceKeyboardEventAction(
             TextEditorModelsCollection inModelsCollection,
             KeyboardEventAction keyboardEventAction)
         {
@@ -80,14 +80,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceDeleteTextByMotionTextEditorModelAction(
+        public static TextEditorModelsCollection ReduceDeleteTextByMotionAction(
             TextEditorModelsCollection inModelsCollection,
             DeleteTextByMotionAction deleteTextByMotionAction)
         {
@@ -99,14 +99,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceDeleteTextByRangeTextEditorModelAction(
+        public static TextEditorModelsCollection ReduceDeleteTextByRangeAction(
             TextEditorModelsCollection inModelsCollection,
             DeleteTextByRangeAction deleteTextByRangeAction)
         {
@@ -118,9 +118,9 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
@@ -137,9 +137,9 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
@@ -156,14 +156,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceReloadTextEditorModelAction(
+        public static TextEditorModelsCollection ReduceReloadAction(
             TextEditorModelsCollection inModelsCollection,
             ReloadAction reloadAction)
         {
@@ -176,14 +176,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceTextEditorSetResourceDataAction(
+        public static TextEditorModelsCollection ReduceSetResourceDataAction(
             TextEditorModelsCollection inModelsCollection,
             SetResourceDataAction setResourceDataAction)
         {
@@ -197,14 +197,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceDisposeTextEditorModelAction(
+        public static TextEditorModelsCollection ReduceDisposeAction(
             TextEditorModelsCollection inModelsCollection,
             DisposeAction disposeAction)
         {
@@ -214,14 +214,14 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Remove(textEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
 
         [ReducerMethod]
-        public static TextEditorModelsCollection ReduceTextEditorSetUsingRowEndingKindAction(
+        public static TextEditorModelsCollection ReduceSetUsingRowEndingKindAction(
             TextEditorModelsCollection inModelsCollection,
             SetUsingRowEndingKindAction setUsingRowEndingKindAction)
         {
@@ -235,9 +235,9 @@ public partial class TextEditorModelsCollection
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);
 
-            return inModelsCollection with
+            return new TextEditorModelsCollection
             {
-                TextEditorList = nextList,
+                TextEditorList = nextList
             };
         }
     }
