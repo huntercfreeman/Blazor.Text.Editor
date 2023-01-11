@@ -66,10 +66,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
 
     private int? _previousGlobalFontSizeInPixels;
-    private TextEditorOptions? _previousGlobalTextEditorOptions;
 
-    private TextEditorModelKey? _previousTextEditorModelKey;
-    private TextEditorViewModelKey? _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
+    private TextEditorViewModelKey _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
     private ElementReference _textEditorDisplayElementReference;
     
     /// <summary>
@@ -79,7 +77,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private bool _thinksLeftMouseButtonIsDown;
 
     private Guid _componentHtmlElementId = Guid.NewGuid();
-    private WidthAndHeightOfTextEditor? _widthAndHeightOfTextEditorEntirety;
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
     private int _rerenderCount;

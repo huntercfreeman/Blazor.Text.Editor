@@ -41,13 +41,11 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     
     private CancellationTokenSource _checkCursorIsInViewCancellationTokenSource = new();
     private SemaphoreSlim _checkCursorIsInViewSemaphoreSlim = new(1, 1);
-    private int _skippedCheckCursorIsInViewCount;
     private readonly TimeSpan _checkCursorIsInViewDelay = TimeSpan.FromMilliseconds(25);
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
     private int _textEditorMenuShouldGetFocusRequestCount;
-    private bool _disposedValue;
 
     private string _previouslyObservedTextEditorCursorDisplayId = string.Empty;
 

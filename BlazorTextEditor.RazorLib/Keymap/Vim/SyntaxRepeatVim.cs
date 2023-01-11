@@ -39,7 +39,7 @@ public static class SyntaxRepeatVim
         int indexInSentence,
         KeyboardEventArgs keyboardEventArgs,
         bool hasTextSelection,
-        out TextEditorCommand textEditorCommand)
+        out TextEditorCommand? textEditorCommand)
     {
         int modifiedIndexInSentence = indexInSentence;
         

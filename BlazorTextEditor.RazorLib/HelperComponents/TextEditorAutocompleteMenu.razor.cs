@@ -122,7 +122,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
         });
     }
 
-    private async Task InsertAutocompleteMenuOption(
+    private Task InsertAutocompleteMenuOption(
         string word,
         string option,
         TextEditorViewModel textEditorViewModel)
@@ -134,5 +134,6 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
             CancellationToken.None);
 
         TextEditorService.InsertText(insertTextTextEditorModelAction);
+        return Task.CompletedTask;
     }
 }

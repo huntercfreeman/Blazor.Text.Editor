@@ -292,8 +292,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             case ":":
             {
-                command = new TextEditorCommand(
-                    async textEditorCommandParameter =>
+                command = new TextEditorCommand(textEditorCommandParameter =>
                     {
                         textEditorCommandParameter.TextEditorService.SetViewModelWith(
                             textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
@@ -301,6 +300,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                             {
                                 DisplayCommandBar = true
                             });
+                        return Task.CompletedTask;
                     },
                     false,
                     "Command Mode",
