@@ -9,29 +9,29 @@ clones provide a more familiar environment for people that use the Library.
 */
 
 .balc_dark-theme {
-    --bte_primary-font-color: #DCDCDC;
+    --bte_primary-font-color: #D2D2D2;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
-    --bte_text-selection-background-color: #245B82;
+    --bte_text-selection-background-color: #1E557D;
     --bte_body-background-color: #1E1E1E;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #977400;
     --bte_newline-foreground-color: #4e9a41;
     --bte_newline-background-color: #424242;
-    --bte_method-foreground-color: #D7D778;
-    --bte_type-foreground-color: #4EC9B0;
-    --bte_parameter-foreground-color: #9CDCFE;
-    --bte_string-literal-foreground-color: #D69D85;
-    --bte_keyword-foreground-color: #569CD6;
-    --bte_comment-foreground-color: #57A64A;
-    --bte_tag-name-foreground-color: #E8BF6A;
-    --bte_injected-language-fragment-color: #d466ce;
-    --bte_css-property-name-color: #b692e2;
-    --bte_css-property-value-color: #D69D85;
-    --bte_css-identifier-color: #30a7e6;
-    --bte_attribute-name-color: #b692e2;
-    --bte_attribute-value-color : #D69D85;
-    --bte_json-property-key-color : #b692e2;
-    --bte_json-property-value-color : #D69D85;
+    --bte_method-foreground-color: #5AC85A;
+    --bte_type-foreground-color: #64B5E6;
+    --bte_parameter-foreground-color: #B4A0DD;
+    --bte_string-literal-foreground-color: #E06C75;
+    --bte_keyword-foreground-color: #E09C6C;
+    --bte_comment-foreground-color: #96968C;
+    --bte_tag-name-foreground-color: #E09C6C;
+    --bte_injected-language-fragment-color: #E06CC5;
+    --bte_css-property-name-color: #C8C864;
+    --bte_css-property-value-color: #E06C75;
+    --bte_css-identifier-color: #E09C6C;
+    --bte_attribute-name-color: #C8C864;
+    --bte_attribute-value-color : #E06C75;
+    --bte_json-property-key-color : #C8C864;
+    --bte_json-property-value-color : #E06C75;
     --bte_text-editor-gutter-border-color: #273840;
     --bte_text-editor-gutter-background-color: #1f2229;
     --bte_secondary-font-color: #d1d2ca;
