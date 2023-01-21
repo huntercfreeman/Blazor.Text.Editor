@@ -1,33 +1,37 @@
 /*
 This color theme is for the TextEditor specifically.
 
-The default colors are a clone of the Light Theme found in Visual Studio.
+This color theme is used within BlazorStudio:
+https://github.com/huntercfreeman/BlazorStudio
+
+The Library's README makes no mention of this theme. The Visual Studio color themes
+clones provide a more familiar environment for people that use the Library.
 */
 
-.balc_visual-studio-light-theme-clone {
-    --bte_primary-font-color: #000000;
+.balc_light-theme {
+    --bte_primary-font-color: #0A0A0A;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
-    --bte_body-background-color: #fdfdfd;
+    --bte_body-background-color: #FCFCFC;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;
     --bte_newline-foreground-color: #007F00;
     --bte_newline-background-color: #faeee2;
-    --bte_method-foreground-color: #C86E00;
-    --bte_type-foreground-color: #2B91AF;
-    --bte_parameter-foreground-color: #751FA3;
-    --bte_string-literal-foreground-color: #A31515;
-    --bte_keyword-foreground-color: #0000FF;
-    --bte_comment-foreground-color: #007F00;
-    --bte_tag-name-foreground-color: #0000FF;
-    --bte_injected-language-fragment-color: #C800BE;
-    --bte_css-property-name-color: #0000FF;
-    --bte_css-property-value-color: #A31515;
-    --bte_css-identifier-color: #ad01d0;
-    --bte_attribute-name-color: #009678;
-    --bte_attribute-value-color : #A31515;
-    --bte_json-property-key-color : #ad01d0;
-    --bte_json-property-value-color : #A31515;
+    --bte_method-foreground-color: #0CA500;
+    --bte_type-foreground-color: #2397D5;
+    --bte_parameter-foreground-color: #7400BC;
+    --bte_string-literal-foreground-color: #AA0F0F;
+    --bte_keyword-foreground-color: #E66400;
+    --bte_comment-foreground-color: #7E7C7C;
+    --bte_tag-name-foreground-color: #E66400;
+    --bte_injected-language-fragment-color: #E001D9;
+    --bte_css-property-name-color: #006E91;
+    --bte_css-property-value-color: #AA0F0F;
+    --bte_css-identifier-color: #E66400;
+    --bte_attribute-name-color: #006E91;
+    --bte_attribute-value-color : #AA0F0F;
+    --bte_json-property-key-color : #E001D9;
+    --bte_json-property-value-color : #AA0F0F;
     --bte_text-editor-gutter-border-color: #28ae0c;
     --bte_text-editor-gutter-background-color: #F8F8EE;
     --bte_secondary-font-color: var(--bte_primary-font-color);

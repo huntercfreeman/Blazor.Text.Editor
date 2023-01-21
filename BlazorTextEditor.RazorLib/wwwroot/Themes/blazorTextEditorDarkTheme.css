@@ -1,10 +1,14 @@
 /*
 This color theme is for the TextEditor specifically.
 
-The default colors are a clone of the Dark Theme found in Visual Studio.
+This color theme is used within BlazorStudio:
+https://github.com/huntercfreeman/BlazorStudio
+
+The Library's README makes no mention of this theme. The Visual Studio color themes
+clones provide a more familiar environment for people that use the Library.
 */
 
-:root {
+.balc_dark-theme {
     --bte_primary-font-color: #DCDCDC;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
     --bte_text-selection-background-color: #245B82;

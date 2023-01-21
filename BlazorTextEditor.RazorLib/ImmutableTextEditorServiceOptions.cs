@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.Shared.Theme;
+﻿using System.Collections.Immutable;
+using BlazorALaCarte.Shared.Theme;
 
 namespace BlazorTextEditor.RazorLib;
 
@@ -8,9 +9,13 @@ public class ImmutableTextEditorServiceOptions : ITextEditorServiceOptions
         TextEditorServiceOptions textEditorServiceOptions)
     {
         InitializeFluxor = textEditorServiceOptions.InitializeFluxor;
+        InitialThemeKey = textEditorServiceOptions.InitialThemeKey;
+        InitialThemeRecords = textEditorServiceOptions.InitialThemeRecords;
         InitialTheme = textEditorServiceOptions.InitialTheme;
     }
 
     public bool InitializeFluxor { get; }
-    public ThemeRecord InitialTheme { get; set; }
+    public ThemeKey? InitialThemeKey { get; }
+    public ImmutableArray<ThemeRecord>? InitialThemeRecords { get; }
+    public ThemeRecord InitialTheme { get; }
 }

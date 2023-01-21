@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.Shared.Clipboard;
+﻿using System.Collections.Immutable;
+using BlazorALaCarte.Shared.Clipboard;
 using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Storage;
 using BlazorALaCarte.Shared.Theme;
@@ -10,6 +11,8 @@ namespace BlazorTextEditor.RazorLib;
 public class TextEditorServiceOptions : ITextEditorServiceOptions
 {
     public bool InitializeFluxor { get; set; } = true;
+    public ThemeKey? InitialThemeKey { get; set; }
+    public ImmutableArray<ThemeRecord>? InitialThemeRecords { get; set; }
     public ThemeRecord InitialTheme { get; set; } = ThemeFacts.VisualStudioDarkThemeClone;
     /// <summary>
     /// Default value if left null is: <see cref="JavaScriptInteropClipboardProvider"/>

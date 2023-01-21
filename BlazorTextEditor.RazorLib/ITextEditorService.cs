@@ -71,6 +71,13 @@ public interface ITextEditorService : IDisposable
     public void SetFontSize(int fontSizeInPixels);
     public void SetCursorWidth(double cursorWidthInPixels);
     public void SetHeight(int? heightInPixels);
+    /// <summary>
+    /// This is setting the TextEditor's theme specifically.
+    /// This is not to be confused with the "BlazorALaCarte.Shared" Themes which
+    /// get applied at an application level.
+    /// <br/><br/>
+    /// This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"
+    /// </summary>
     public void SetTheme(ThemeRecord theme);
     public void SetKeymap(KeymapDefinition foundKeymap);
     public void SetShowWhitespace(bool showWhitespace);
