@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.Shared.Drag;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorALaCarte.Shared.Drag;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorALaCarte.Shared.Store.DragCase;
 using BlazorTextEditor.RazorLib.Character;
@@ -58,7 +59,7 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
                                             TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
         
         var sliderProportionalTopInPixelsInvariantCulture = sliderProportionalTopInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
               
         var top = $"top: {sliderProportionalTopInPixelsInvariantCulture}px;";
         
@@ -70,7 +71,7 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
                                                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
         
         var sliderProportionalHeightInPixelsInvariantCulture = sliderProportionalHeightInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
 
         var height = $"height: {sliderProportionalHeightInPixelsInvariantCulture}px;";
         

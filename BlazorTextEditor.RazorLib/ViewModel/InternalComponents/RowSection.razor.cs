@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BlazorALaCarte.Shared.Dimensions;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
@@ -42,18 +43,18 @@ public partial class RowSection : ComponentBase
     {
         var topInPixelsInvariantCulture =
             (index * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var top = $"top: {topInPixelsInvariantCulture}px;";
 
         var heightInPixelsInvariantCulture =
             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
-                .ToString(System.Globalization.CultureInfo.InvariantCulture); 
+                .ToCssValue(); 
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var virtualizedRowLeftInPixelsInvariantCulture = virtualizedRowLeftInPixels.GetValueOrDefault()
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var left = $"left: {virtualizedRowLeftInPixelsInvariantCulture}px;";
 

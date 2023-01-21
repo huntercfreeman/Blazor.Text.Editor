@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Cursor;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using Microsoft.AspNetCore.Components;
 
@@ -46,13 +47,13 @@ public partial class TextSelectionGroup : ComponentBase
 
         var topInPixelsInvariantCulture =
             (rowIndex * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var top = $"top: {topInPixelsInvariantCulture}px;";
 
         var heightInPixelsInvariantCulture =
             (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
@@ -77,7 +78,7 @@ public partial class TextSelectionGroup : ComponentBase
         }
 
         var selectionStartInPixelsInvariantCulture = selectionStartInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var left = $"left: {selectionStartInPixelsInvariantCulture}px;";
 
@@ -114,10 +115,10 @@ public partial class TextSelectionGroup : ComponentBase
         }
         
         var fullWidthValueInPixelsInvariantCulture = fullWidthValue
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var selectionWidthInPixelsInvariantCulture = selectionWidthInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         if (fullWidthOfRowIsSelected)
             widthCssStyleString += $"{fullWidthValueInPixelsInvariantCulture}px;";

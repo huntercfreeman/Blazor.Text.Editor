@@ -1,3 +1,4 @@
+using BlazorALaCarte.Shared.Dimensions;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
@@ -161,24 +162,24 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
                         TextEditorCursor.IndexCoordinates.columnIndex;
 
-        var leftInPixelsInvariantCulture = leftInPixels.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var leftInPixelsInvariantCulture = leftInPixels.ToCssValue();
         
         var left = $"left: {leftInPixelsInvariantCulture}px;";
 
         var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
                                  TextEditorCursor.IndexCoordinates.rowIndex)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var top =
             $"top: {topInPixelsInvariantCulture}px;";
         
         var heightInPixelsInvariantCulture = TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var widthInPixelsInvariantCulture = GlobalTextEditorOptions.CursorWidthInPixels!.Value
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var width = $"width: {widthInPixelsInvariantCulture}px;";
 
@@ -197,20 +198,20 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
                                  TextEditorCursor.IndexCoordinates.rowIndex)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var top = $"top: {topInPixelsInvariantCulture}px;";
 
         var heightInPixelsInvariantCulture =
             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
-                .ToString(System.Globalization.CultureInfo.InvariantCulture); 
+                .ToCssValue(); 
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var widthOfBodyInPixelsInvariantCulture = (textEditor.MostCharactersOnASingleRowTuple.rowLength *
                                          TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight
                                              .CharacterWidthInPixels)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var width = $"width: {widthOfBodyInPixelsInvariantCulture}px;";
 
@@ -242,13 +243,13 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                         TextEditorCursor.IndexCoordinates.columnIndex;
 
         var leftInPixelsInvariantCulture = leftInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var left = $"left: {leftInPixelsInvariantCulture}px;";
 
         var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
                                  (TextEditorCursor.IndexCoordinates.rowIndex + 1))
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         // Top is 1 row further than the cursor so it does not cover text at cursor position.
         var top =
@@ -256,13 +257,13 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var minWidthInPixelsInvariantCulture =
             (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * 16)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var minWidth = $"min-Width: {minWidthInPixelsInvariantCulture}px;";
         
         var minHeightInPixelsInvariantCulture =
             (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * 4)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var minHeight = $"min-height: {minHeightInPixelsInvariantCulture}px;";
 

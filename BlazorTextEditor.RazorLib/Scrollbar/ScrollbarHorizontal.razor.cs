@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.Shared.Drag;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorALaCarte.Shared.Drag;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorALaCarte.Shared.Store.DragCase;
 using BlazorTextEditor.RazorLib.Character;
@@ -53,7 +54,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                                   ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         var scrollbarWidthInPixelsInvariantCulture = scrollbarWidthInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var width = $"width: {scrollbarWidthInPixelsInvariantCulture}px;";
 
@@ -71,7 +72,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                                              TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
         
         var sliderProportionalLeftInPixelsInvariantCulture = sliderProportionalLeftInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
 
         var left = $"left: {sliderProportionalLeftInPixelsInvariantCulture}px;";
         
@@ -83,7 +84,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                                               TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
         
         var sliderProportionalWidthInPixelsInvariantCulture = sliderProportionalWidthInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
 
         var width = $"width: {sliderProportionalWidthInPixelsInvariantCulture}px;";
         

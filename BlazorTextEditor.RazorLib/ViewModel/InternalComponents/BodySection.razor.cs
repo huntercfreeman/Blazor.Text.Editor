@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Cursor;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using Microsoft.AspNetCore.Components;
 
@@ -42,7 +43,7 @@ public partial class BodySection : ComponentBase
                          TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS;
 
         var gutterWidthInPixelsInvariantCulture = gutterWidthInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture); 
+            .ToCssValue(); 
 
         var left = $"left: {gutterWidthInPixelsInvariantCulture}px;";
 

@@ -1,4 +1,5 @@
-﻿<div class="bte_scrollbar bte_scrollbar-horizontal"
+﻿@using BlazorALaCarte.Shared.Dimensions
+<div class="bte_scrollbar bte_scrollbar-horizontal"
      id="@ScrollbarElementId"
      style="@GetScrollbarHorizontalStyleCss()"
      @onmousedown:stopPropagation="true"
@@ -9,7 +10,7 @@
      @oncontextmenu:stopPropagation="true">
     
     <div class="bte_scrollbar-slider"
-         style="bottom: 0; height: @(ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS.ToString(System.Globalization.CultureInfo.InvariantCulture))px; @GetSliderHorizontalStyleCss()">
+         style="bottom: 0; height: @(ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS.ToCssValue())px; @GetSliderHorizontalStyleCss()">
         
     </div>
 </div>

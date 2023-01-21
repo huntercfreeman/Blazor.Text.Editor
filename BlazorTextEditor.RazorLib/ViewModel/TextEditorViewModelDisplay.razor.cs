@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Dimensions;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Autocomplete;
@@ -778,7 +779,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             return string.Empty;
 
         var heightInPixelsInvariantCulture = heightInPixels.Value
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         return $"height: {heightInPixelsInvariantCulture}px;";
     }

@@ -1,5 +1,6 @@
 ﻿@using BlazorTextEditor.RazorLib.Virtualization
 @using BlazorTextEditor.RazorLib.Scrollbar
+@using BlazorALaCarte.Shared.Dimensions
 
 <div class="bte_gutter-section"
      style="@GetGutterSectionStyleCss()"
@@ -41,7 +42,7 @@
                 ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
             
             var remainingHeightToFillInvariantCulture = remainingHeightToFill
-                .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                .ToCssValue();
 
             var imaginaryNextIndex = 
                 (localTextEditorViewModel.VirtualizationResult.Entries

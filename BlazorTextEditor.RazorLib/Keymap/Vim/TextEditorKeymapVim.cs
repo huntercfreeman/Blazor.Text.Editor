@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.Shared.Keyboard;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Commands.Vim;
@@ -49,7 +50,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             case VimMode.VisualLine:
             {
                 var characterWidthInPixelsInvariantCulture = characterWidthInPixels
-                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    .ToCssValue();
                 
                 return $"width: {characterWidthInPixelsInvariantCulture}px;";
             }
