@@ -5,9 +5,9 @@ using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.Demo.RazorLib.Pages;
+namespace BlazorTextEditor.Demo.RazorLib.TextEditorDemos;
 
-public partial class JavaScriptExamples : ComponentBase
+public partial class JavaScriptDemo : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
@@ -19,7 +19,7 @@ public partial class JavaScriptExamples : ComponentBase
         TextEditorService.RegisterTemplatedTextEditorModel(
             TextEditorFacts.JavaScript.JavaScriptTextEditorModelKey,
             WellKnownModelKind.JavaScript,
-            nameof(JavaScriptExamples),
+            nameof(JavaScriptDemo),
             DateTime.UtcNow,
             "JavaScript",
             TestData.JavaScript.EXAMPLE_TEXT);

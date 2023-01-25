@@ -7,9 +7,9 @@ using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorTextEditor.Demo.RazorLib.Pages;
+namespace BlazorTextEditor.Demo.RazorLib.TextEditorDemos;
 
-public partial class JsonExamples : ComponentBase
+public partial class JsonDemo : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
@@ -28,7 +28,7 @@ public partial class JsonExamples : ComponentBase
         TextEditorService.RegisterTemplatedTextEditorModel(
             TextEditorFacts.Json.JsonLaunchSettingsTextEditorModelKey,
             WellKnownModelKind.Json,
-            nameof(JsonExamples) + "_1",
+            nameof(JsonDemo) + "_1",
             DateTime.UtcNow,
             "JSON",
             TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
@@ -36,7 +36,7 @@ public partial class JsonExamples : ComponentBase
         TextEditorService.RegisterTemplatedTextEditorModel(
             TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorModelKey,
             WellKnownModelKind.Json,
-            nameof(JsonExamples) + "_2",
+            nameof(JsonDemo) + "_2",
             DateTime.UtcNow,
             "JSON",
             TestData.Json.EXAMPLE_TEXT_ARRAY_AS_TOP_LEVEL);

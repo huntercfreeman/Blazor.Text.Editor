@@ -5,28 +5,28 @@ using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.Demo.RazorLib.Pages;
+namespace BlazorTextEditor.Demo.RazorLib.TextEditorDemos;
 
-public partial class FSharpExamples : ComponentBase
+public partial class CSharpDemo : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
-    
-    private static readonly TextEditorViewModelKey FSharpTextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
 
+    private static readonly TextEditorViewModelKey CSharpTextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
+    
     protected override void OnInitialized()
     {
         TextEditorService.RegisterTemplatedTextEditorModel(
-            TextEditorFacts.FSharp.FSharpTextEditorModelKey,
-            WellKnownModelKind.FSharp,
-            nameof(FSharpExamples),
+            TextEditorFacts.CSharp.CSharpTextEditorModelKey,
+            WellKnownModelKind.CSharp,
+            nameof(CSharpDemo),
             DateTime.UtcNow,
-            "F#",
-            TestData.FSharp.EXAMPLE_TEXT_21_LINES);
+            "C#",
+            TestData.CSharp.EXAMPLE_TEXT_173_LINES);
         
         TextEditorService.RegisterViewModel(
-            FSharpTextEditorViewModelKey,
-            TextEditorFacts.FSharp.FSharpTextEditorModelKey);
+            CSharpTextEditorViewModelKey,
+            TextEditorFacts.CSharp.CSharpTextEditorModelKey);
         
         base.OnInitialized();
     }
