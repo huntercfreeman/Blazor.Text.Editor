@@ -1,6 +1,7 @@
 ﻿@using BlazorTextEditor.RazorLib.ViewModel
 
-<div class="bte_text-editor-group">
+<div class="bte_text-editor-group @CssClassString"
+     style="@CssStyleString">
     @{
         var textEditorGroup = TextEditorGroupWrap.Value.GroupsList
             .FirstOrDefault();

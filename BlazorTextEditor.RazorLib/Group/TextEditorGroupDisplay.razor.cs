@@ -30,6 +30,10 @@ public partial class TextEditorGroupDisplay : IDisposable
     /// </summary>
     [Parameter, EditorRequired]
     public TextEditorGroupKey TextEditorGroupKey { get; set; } = null!;
+    [Parameter]
+    public string CssStyleString { get; set; } = string.Empty;
+    [Parameter]
+    public string CssClassString { get; set; } = string.Empty;
     /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;
