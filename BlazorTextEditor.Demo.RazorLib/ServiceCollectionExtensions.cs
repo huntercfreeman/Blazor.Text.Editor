@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddBlazorTextEditor()
-            .AddBlazorTextEditorDemoClassLibServices();
+            .AddBlazorTextEditorDemoClassLibServices()
+            .AddSingleton<IDemoStateContainer, DemoStateContainer>();
     }
 }
