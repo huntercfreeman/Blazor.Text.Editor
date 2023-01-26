@@ -94,4 +94,92 @@ public partial class TextEditorPage : ComponentBase
 
         DemoStateContainer.SelectedWellKnownModelKind = selectedWellKnownModelKind;
     }
+
+    private void CreateNewFileOnClick()
+    {
+        var selectedWellKnownModelKind = DemoStateContainer.SelectedWellKnownModelKind;
+        var inputResourceUri = DemoStateContainer.InputResourceUri;
+        var inputInitializeWithText = DemoStateContainer.InputInitializeWithText;
+
+        var initialContent = string.Empty;
+        
+        if (inputInitializeWithText)
+        {
+            initialContent = selectedWellKnownModelKind switch
+            {
+                WellKnownModelKind.CSharp => TestData.CSharp.EXAMPLE_TEXT_8_LINES,
+                WellKnownModelKind.Html => TestData.Html.EXAMPLE_TEXT,
+                WellKnownModelKind.Css => TestData.Css.EXAMPLE_TEXT_21_LINES,
+                WellKnownModelKind.Json => TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS,
+                WellKnownModelKind.FSharp => TestData.FSharp.EXAMPLE_TEXT_21_LINES,
+                WellKnownModelKind.Razor => TestData.Razor.EXAMPLE_TEXT,
+                WellKnownModelKind.JavaScript => TestData.JavaScript.EXAMPLE_TEXT,
+                WellKnownModelKind.TypeScript => TestData.TypeScript.EXAMPLE_TEXT,
+                WellKnownModelKind.Plain => TestData.Plain.EXAMPLE_TEXT_25_LINES,
+                _ => string.Empty
+            };
+        }
+
+        var existingTextEditorModel = TextEditorService.GetTextEditorModelOrDefaultByResourceUri(
+            inputResourceUri);
+
+        if (existingTextEditorModel is not null)
+        {
+            HandleExistingTextEditorModel(existingTextEditorModel);
+            return;
+        }
+        
+        var newFileModelKey = TextEditorModelKey.NewTextEditorModelKey();
+
+        TextEditorService.RegisterTemplatedTextEditorModel(
+            newFileModelKey,
+            selectedWellKnownModelKind,
+            inputResourceUri,
+            DateTime.UtcNow,
+            selectedWellKnownModelKind.ToString(),
+            initialContent);
+
+        var newFileViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
+        
+        TextEditorService.RegisterViewModel(
+            newFileViewModelKey,
+            newFileModelKey);
+
+        TextEditorService.AddViewModelToGroup(
+            TextEditorDemoGroupKey,
+            newFileViewModelKey);
+        
+        TextEditorService.SetActiveViewModelOfGroup(
+            TextEditorDemoGroupKey,
+            newFileViewModelKey);
+    }
+
+    private void HandleExistingTextEditorModel(TextEditorModel textEditorModel)
+    {
+        var listForExistingTextEditorViewModels = TextEditorService
+            .GetViewModelsForModel(textEditorModel.ModelKey);
+
+        var viewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
+
+        if (listForExistingTextEditorViewModels.Any())
+        {
+            var existingTextEditorViewModel = listForExistingTextEditorViewModels.First();
+            
+            viewModelKey = existingTextEditorViewModel.ViewModelKey;
+        }
+        else
+        {
+            TextEditorService.RegisterViewModel(
+                viewModelKey,
+                textEditorModel.ModelKey);
+        }
+        
+        TextEditorService.AddViewModelToGroup(
+            TextEditorDemoGroupKey,
+            viewModelKey);
+        
+        TextEditorService.SetActiveViewModelOfGroup(
+            TextEditorDemoGroupKey,
+            viewModelKey);
+    }
 }

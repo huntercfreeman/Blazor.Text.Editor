@@ -306,7 +306,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
                 Dispatcher.Dispatch(
                     new TextEditorModelsCollection.KeyboardEventAction(
-                        safeTextEditorViewModel.TextEditorModelKey,
+                        safeTextEditorViewModel.ModelKey,
                         cursorSnapshots,
                         keyboardEventArgs,
                         CancellationToken.None));

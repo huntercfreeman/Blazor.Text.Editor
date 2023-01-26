@@ -15,7 +15,7 @@ public partial class TextEditorViewModelsCollection
             RegisterAction registerAction)
         {
             var textEditorViewModel = inViewModelsCollection.ViewModelsList.FirstOrDefault(x =>
-                x.TextEditorViewModelKey == registerAction.TextEditorViewModelKey);
+                x.ViewModelKey == registerAction.TextEditorViewModelKey);
 
             if (textEditorViewModel is not null)
                 return inViewModelsCollection;
@@ -43,7 +43,7 @@ public partial class TextEditorViewModelsCollection
             DisposeAction disposeAction)
         {
             var foundViewModel = inViewModelsCollection.ViewModelsList.FirstOrDefault(x =>
-                x.TextEditorViewModelKey == disposeAction.TextEditorViewModelKey);
+                x.ViewModelKey == disposeAction.TextEditorViewModelKey);
 
             if (foundViewModel is null)
                 return inViewModelsCollection;
@@ -63,7 +63,7 @@ public partial class TextEditorViewModelsCollection
             SetViewModelWithAction setViewModelWithAction)
         {
             var textEditorViewModel = inViewModelsCollection.ViewModelsList.FirstOrDefault(x =>
-                x.TextEditorViewModelKey == setViewModelWithAction.TextEditorViewModelKey);
+                x.ViewModelKey == setViewModelWithAction.TextEditorViewModelKey);
 
             if (textEditorViewModel is null)
                 return inViewModelsCollection;

@@ -14,8 +14,8 @@ public partial class TextEditorGroupsCollection
         {
             var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
-                    x.TextEditorGroupKey ==
-                    registerAction.TextEditorGroup.TextEditorGroupKey);
+                    x.GroupKey ==
+                    registerAction.TextEditorGroup.GroupKey);
 
             if (existingTextEditorGroup is not null)
                 return inGroupsCollection;
@@ -36,7 +36,7 @@ public partial class TextEditorGroupsCollection
         {
             var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
-                    x.TextEditorGroupKey ==
+                    x.GroupKey ==
                     addViewModelToGroupAction.TextEditorGroupKey);
 
             if (existingTextEditorGroup is null)
@@ -60,7 +60,7 @@ public partial class TextEditorGroupsCollection
             {
                 nextGroup = nextGroup with
                 {
-                    ActiveTextEditorViewModelKey = addViewModelToGroupAction.TextEditorViewModelKey
+                    ActiveViewModelKey = addViewModelToGroupAction.TextEditorViewModelKey
                 };
             }
 
@@ -81,7 +81,7 @@ public partial class TextEditorGroupsCollection
         {
             var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
-                    x.TextEditorGroupKey ==
+                    x.GroupKey ==
                     removeViewModelFromGroupAction.TextEditorGroupKey);
 
             if (existingTextEditorGroup is null)
@@ -123,7 +123,7 @@ public partial class TextEditorGroupsCollection
             var nextGroup = existingTextEditorGroup with
             {
                 ViewModelKeys = nextViewModelKeysList,
-                ActiveTextEditorViewModelKey = nextActiveTextEditorModelKey
+                ActiveViewModelKey = nextActiveTextEditorModelKey
             };
 
             var nextGroupList = inGroupsCollection.GroupsList.Replace(
@@ -143,7 +143,7 @@ public partial class TextEditorGroupsCollection
         {
             var existingTextEditorGroup = inGroupsCollection.GroupsList
                 .FirstOrDefault(x =>
-                    x.TextEditorGroupKey ==
+                    x.GroupKey ==
                     setActiveViewModelOfGroupAction.TextEditorGroupKey);
 
             if (existingTextEditorGroup is null)
@@ -151,7 +151,7 @@ public partial class TextEditorGroupsCollection
 
             var nextGroup = existingTextEditorGroup with
             {
-                ActiveTextEditorViewModelKey = setActiveViewModelOfGroupAction.TextEditorViewModelKey
+                ActiveViewModelKey = setActiveViewModelOfGroupAction.TextEditorViewModelKey
             };
 
             var nextGroupList = inGroupsCollection.GroupsList.Replace(

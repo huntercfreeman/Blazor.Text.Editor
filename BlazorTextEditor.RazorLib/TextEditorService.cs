@@ -408,7 +408,7 @@ public class TextEditorService : ITextEditorService
     {
         return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
             .Where(x => 
-                x.TextEditorModelKey == textEditorModelKey)
+                x.ModelKey == textEditorModelKey)
             .ToImmutableArray();
     }
 
@@ -418,12 +418,12 @@ public class TextEditorService : ITextEditorService
         
         var viewModel = textEditorViewModelsCollection.ViewModelsList
             .FirstOrDefault(x => 
-                x.TextEditorViewModelKey == textEditorViewModelKey);
+                x.ViewModelKey == textEditorViewModelKey);
         
         if (viewModel is null)
             return null;
         
-        return GetTextEditorModelOrDefault(viewModel.TextEditorModelKey);
+        return GetTextEditorModelOrDefault(viewModel.ModelKey);
     }
 
     public void SetViewModelWith(
@@ -536,14 +536,14 @@ public class TextEditorService : ITextEditorService
     {
         return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
             .FirstOrDefault(x => 
-                x.TextEditorViewModelKey == textEditorViewModelKey);
+                x.ViewModelKey == textEditorViewModelKey);
     }
     
     public TextEditorGroup? GetTextEditorGroupOrDefault(TextEditorGroupKey textEditorGroupKey)
     {
         return _textEditorGroupsCollectionWrap.Value.GroupsList
             .FirstOrDefault(x => 
-                x.TextEditorGroupKey == textEditorGroupKey);
+                x.GroupKey == textEditorGroupKey);
     }
     
     public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)

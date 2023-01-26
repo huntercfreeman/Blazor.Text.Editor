@@ -139,7 +139,7 @@ public static class TextEditorCommandDefaultFacts
                     .Invoke(textEditorCommandParameter.TextEditorModel);
                 
                 textEditorCommandParameter.TextEditorService.SetViewModelWith(
-                    textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                    textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
                         TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
@@ -164,7 +164,7 @@ public static class TextEditorCommandDefaultFacts
                 textEditorCommandParameter.TextEditorModel.DocumentLength;
             
             textEditorCommandParameter.TextEditorService.SetViewModelWith(
-                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
                     TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
@@ -201,7 +201,7 @@ public static class TextEditorCommandDefaultFacts
     public static readonly TextEditorCommand Remeasure = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService.SetViewModelWith(
-                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
                     ShouldMeasureDimensions = true,
@@ -209,7 +209,7 @@ public static class TextEditorCommandDefaultFacts
                 });
             
             textEditorCommandParameter.TextEditorService.SetViewModelWith(
-                textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
                     TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()

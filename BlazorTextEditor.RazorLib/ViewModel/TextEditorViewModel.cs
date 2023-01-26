@@ -9,8 +9,8 @@ using BlazorTextEditor.RazorLib.Virtualization;
 namespace BlazorTextEditor.RazorLib.ViewModel;
 
 public record TextEditorViewModel(
-    TextEditorViewModelKey TextEditorViewModelKey,
-    TextEditorModelKey TextEditorModelKey,
+    TextEditorViewModelKey ViewModelKey,
+    TextEditorModelKey ModelKey,
     ITextEditorService TextEditorService,
     VirtualizationResult<List<RichCharacter>> VirtualizationResult,
     bool ShouldMeasureDimensions,
@@ -26,9 +26,9 @@ public record TextEditorViewModel(
 
     public string CommandBarValue { get; set; } = string.Empty;
     
-    public string BodyElementId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}";
-    public string PrimaryCursorContentId => $"bte_text-editor-content_{TextEditorViewModelKey.Guid}_primary-cursor";
-    public string GutterElementId => $"bte_text-editor-gutter_{TextEditorViewModelKey.Guid}";
+    public string BodyElementId => $"bte_text-editor-content_{ViewModelKey.Guid}";
+    public string PrimaryCursorContentId => $"bte_text-editor-content_{ViewModelKey.Guid}_primary-cursor";
+    public string GutterElementId => $"bte_text-editor-gutter_{ViewModelKey.Guid}";
     
     public void CursorMovePageTop()
     {
@@ -46,7 +46,7 @@ public record TextEditorViewModel(
     {
         var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
         var textEditor = TextEditorService.GetTextEditorModelFromViewModelKey(
-            TextEditorViewModelKey);
+            ViewModelKey);
 
         if (textEditor is not null &&
             (localMostRecentlyRenderedVirtualizationResult?.Entries.Any() ?? false))
@@ -115,7 +115,7 @@ public record TextEditorViewModel(
         
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
-        var textEditorModel = TextEditorService.GetTextEditorModelFromViewModelKey(TextEditorViewModelKey);
+        var textEditorModel = TextEditorService.GetTextEditorModelFromViewModelKey(ViewModelKey);
 
         if (bodyMeasurementsInPixels is null)
         {
@@ -317,7 +317,7 @@ public record TextEditorViewModel(
             localCharacterWidthAndRowHeight);
         
         TextEditorService.SetViewModelWith(
-                TextEditorViewModelKey,
+                ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
                     VirtualizationResult = virtualizationResult,

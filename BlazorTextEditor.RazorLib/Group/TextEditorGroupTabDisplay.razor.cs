@@ -20,21 +20,21 @@ public partial class TextEditorGroupTabDisplay : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorGroup TextEditorGroup { get; set; } = null!;
 
-    private string IsActiveCssClass => TextEditorGroup.ActiveTextEditorViewModelKey == TextEditorViewModelKey
+    private string IsActiveCssClass => TextEditorGroup.ActiveViewModelKey == TextEditorViewModelKey
         ? "balc_active"
         : string.Empty;
 
     private void OnClickSetActiveTextEditorViewModel()
     {
         TextEditorService.SetActiveViewModelOfGroup(
-            TextEditorGroup.TextEditorGroupKey,
+            TextEditorGroup.GroupKey,
             TextEditorViewModelKey);
     }
 
     private void CloseTabOnClick()
     {
         TextEditorService.RemoveViewModelFromGroup(
-            TextEditorGroup.TextEditorGroupKey,
+            TextEditorGroup.GroupKey,
             TextEditorViewModelKey);
     }
 }

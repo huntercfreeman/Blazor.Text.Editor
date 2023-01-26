@@ -5,7 +5,7 @@
         var textEditorViewModelsCollection = TextEditorViewModelsCollectionWrap.Value;
 
         var viewModel = textEditorViewModelsCollection.ViewModelsList
-            .FirstOrDefault(x => x.TextEditorViewModelKey == TextEditorViewModelKey);
+            .FirstOrDefault(x => x.ViewModelKey == TextEditorViewModelKey);
         
         if (viewModel is null)
         {
@@ -16,7 +16,7 @@
             var textEditorModelsCollectionWrap = TextEditorModelsCollectionWrap.Value;
 
             var textEditorModel = textEditorModelsCollectionWrap.TextEditorList
-                .FirstOrDefault(x => x.ModelKey == viewModel.TextEditorModelKey);
+                .FirstOrDefault(x => x.ModelKey == viewModel.ModelKey);
 
             if (textEditorModel is null)
             {

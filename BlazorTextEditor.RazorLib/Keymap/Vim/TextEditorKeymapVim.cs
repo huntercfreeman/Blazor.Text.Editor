@@ -296,7 +296,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 command = new TextEditorCommand(textEditorCommandParameter =>
                     {
                         textEditorCommandParameter.TextEditorService.SetViewModelWith(
-                            textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                            textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                             previousViewModel => previousViewModel with
                             {
                                 DisplayCommandBar = true

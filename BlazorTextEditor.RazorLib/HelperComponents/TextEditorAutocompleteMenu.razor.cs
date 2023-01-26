@@ -128,7 +128,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
         TextEditorViewModel textEditorViewModel)
     {
         var insertTextTextEditorModelAction = new TextEditorModelsCollection.InsertTextAction(
-            textEditorViewModel.TextEditorModelKey,
+            textEditorViewModel.ModelKey,
             TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             option.Substring(word.Length),
             CancellationToken.None);
