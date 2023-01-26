@@ -15,7 +15,7 @@ namespace BlazorTextEditor.RazorLib;
 
 /// <summary>
 /// <see cref="TextEditorModelKey"/> is the unique identifier for the text editor that will be registered.<br/><br/>
-/// (An example of one of the registration methods is <see cref="RegisterCSharpTextEditorModel"/>)<br/><br/>
+/// (An example of one of the registration methods is <see cref="RegisterTemplatedTextEditorModel"/>)<br/><br/>
 /// The invoker of any registration method is highly likely to want to have a way to reference to the registered text editor.
 /// <br/><br/> Therefore, the invoker must provide a <see cref="TextEditorModelKey"/> so they can perform invocations of other
 /// methods on <see cref="ITextEditorService"/> using the <see cref="TextEditorModelKey"/> as an identifying parameter.

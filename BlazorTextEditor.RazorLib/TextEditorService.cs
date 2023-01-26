@@ -158,6 +158,10 @@ public class TextEditorService : ITextEditorService
         _ = Task.Run(async () =>
         {
             await textEditorModel.ApplySyntaxHighlightingAsync();
+            
+            _dispatcher.Dispatch(
+                new TextEditorModelsCollection.ForceRerenderAction(
+                    textEditorModel.ModelKey));
         });
         
         _dispatcher.Dispatch(

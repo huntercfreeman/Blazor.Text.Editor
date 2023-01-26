@@ -19,8 +19,7 @@ public interface ITextEditorServiceOptions
     /// <summary>
     /// <see cref="ThemeFacts"/> contains themes to choose from.
     /// <br/><br/>
-    /// The default theme is <see cref="ThemeFacts.Unset"/>.
-    /// The <see cref="ThemeFacts.Unset"/> theme is equivalent to <see cref="ThemeFacts.VisualStudioDarkClone"/>
+    /// The default theme is <see cref="ThemeFacts.VisualStudioDarkThemeClone"/>.
     /// </summary>
     public ThemeKey InitialThemeKey { get; }
     public ImmutableArray<ThemeRecord>? InitialThemeRecords { get; }
