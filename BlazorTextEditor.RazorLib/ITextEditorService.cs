@@ -36,7 +36,10 @@ public interface ITextEditorService : IDisposable
     public KeymapDefinition GlobalKeymapDefinition { get; }
     public int? GlobalHeightInPixelsValue { get; }
 
-    public event Action? TextEditorModelsCollectionChanged;
+    public event Action? ModelsCollectionChanged;
+    public event Action? ViewModelsCollectionChanged;
+    public event Action? GroupsCollectionChanged;
+    public event Action? GlobalOptionsChanged;
 
     /// <summary>
     /// It is recommended to use the <see cref="RegisterTemplatedTextEditorModel"/> method

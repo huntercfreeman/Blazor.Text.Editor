@@ -73,7 +73,10 @@ public class TextEditorService : ITextEditorService
         _storageProvider = storageProvider;
         _jsRuntime = jsRuntime;
 
-        _textEditorModelsCollectionWrap.StateChanged += TextEditorModelsCollectionWrapOnModelsCollectionWrapChanged;
+        _textEditorModelsCollectionWrap.StateChanged += ModelsCollectionWrapOnModelsCollectionWrapChanged;
+        _textEditorViewModelsCollectionWrap.StateChanged += ViewModelsCollectionWrapOnStateChanged;
+        _textEditorGroupsCollectionWrap.StateChanged += GroupsCollectionWrapOnStateChanged;
+        _textEditorGlobalOptionsWrap.StateChanged += GlobalOptionsWrapOnStateChanged;
     }
 
     public TextEditorModelsCollection TextEditorModelsCollection => _textEditorModelsCollectionWrap.Value;
@@ -88,8 +91,11 @@ public class TextEditorService : ITextEditorService
     public KeymapDefinition GlobalKeymapDefinition => _textEditorGlobalOptionsWrap.Value.Options.KeymapDefinition!;
     public int? GlobalHeightInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.HeightInPixels;
 
-    public event Action? TextEditorModelsCollectionChanged;
-    
+    public event Action? ModelsCollectionChanged;
+    public event Action? ViewModelsCollectionChanged;
+    public event Action? GroupsCollectionChanged;
+    public event Action? GlobalOptionsChanged;
+        
     public void RegisterCustomTextEditorModel(
         TextEditorModel textEditorModel)
     {
@@ -325,9 +331,24 @@ public class TextEditorService : ITextEditorService
                 settingsDialog));
     }
     
-    private void TextEditorModelsCollectionWrapOnModelsCollectionWrapChanged(object? sender, EventArgs e)
+    private void ModelsCollectionWrapOnModelsCollectionWrapChanged(object? sender, EventArgs e)
     {
-        TextEditorModelsCollectionChanged?.Invoke();
+        ModelsCollectionChanged?.Invoke();
+    }
+    
+    private void ViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        ViewModelsCollectionChanged?.Invoke();
+    }
+
+    private void GroupsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        GroupsCollectionChanged?.Invoke();
+    }
+
+    private void GlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        GlobalOptionsChanged?.Invoke();
     }
 
     public void RegisterGroup(TextEditorGroupKey textEditorGroupKey)
@@ -590,6 +611,9 @@ public class TextEditorService : ITextEditorService
     
     public void Dispose()
     {
-        _textEditorModelsCollectionWrap.StateChanged -= TextEditorModelsCollectionWrapOnModelsCollectionWrapChanged;
+        _textEditorModelsCollectionWrap.StateChanged -= ModelsCollectionWrapOnModelsCollectionWrapChanged;
+        _textEditorViewModelsCollectionWrap.StateChanged -= ViewModelsCollectionWrapOnStateChanged;
+        _textEditorGroupsCollectionWrap.StateChanged -= GroupsCollectionWrapOnStateChanged;
+        _textEditorGlobalOptionsWrap.StateChanged -= GlobalOptionsWrapOnStateChanged;
     }
 }

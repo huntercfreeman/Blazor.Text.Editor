@@ -13,7 +13,7 @@ public class AutocompleteIndexer : IAutocompleteIndexer
     {
         _textEditorService = textEditorService;
         
-        _textEditorService.TextEditorModelsCollectionChanged += TextEditorServiceTextEditorModelsCollectionChanged;
+        _textEditorService.ModelsCollectionChanged += TextEditorServiceTextEditorModelsCollectionChanged;
     }
 
     public ImmutableArray<string> IndexedStrings => _indexedStrings
@@ -41,6 +41,6 @@ public class AutocompleteIndexer : IAutocompleteIndexer
     
     public void Dispose()
     {
-        _textEditorService.TextEditorModelsCollectionChanged -= TextEditorServiceTextEditorModelsCollectionChanged;
+        _textEditorService.ModelsCollectionChanged -= TextEditorServiceTextEditorModelsCollectionChanged;
     }
 }
