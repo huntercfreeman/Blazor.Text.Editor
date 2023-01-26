@@ -111,6 +111,6 @@ div.top-row:not(.navbar) {
     min-height: initial;
 }
 
-.bted_feature-root {
+.bted_emphasize {
     color: var(--balc_primary-emphasis-foreground-color);
 }
