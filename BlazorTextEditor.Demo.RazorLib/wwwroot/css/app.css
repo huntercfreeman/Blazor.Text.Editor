@@ -110,3 +110,7 @@ div.top-row:not(.navbar) {
 .bte_text-editor-input-cursor-size .bte_text-editor {
     min-height: initial;
 }
+
+.bted_feature-root {
+    color: var(--balc_primary-emphasis-foreground-color);
+}
