@@ -19,5 +19,94 @@
         <li class="bted_feature">
             Command Mode
         </li>
+        <li class="bted_feature">
+            Modifiers:
+
+            <ul class="balc_indent-child-content">
+                <li class="bted_feature">
+                    TODO
+                </li>
+            </ul>
+        </li>
+        <li class="bted_feature">
+            Repeats:
+
+            <ul class="balc_indent-child-content">
+                <li class="bted_feature">
+                    The digits 1 to 9 can be used for repeating.
+                </li>
+                <li class="bted_feature">
+                    TODO: Fix 0 so it is lexed more contextually as it is used as well to go to home.
+                    This results in one being unable to repeat something say, 10 times.
+                    The input of "10" instead will perform the "0" motion 1 times.
+                </li>
+                <li class="bted_feature">
+                    Example input: "37w" -> perform the word motion 37 times
+                </li>
+            </ul>
+        </li>
+        <li class="bted_feature">
+            TextObjects:
+
+            <ul class="balc_indent-child-content">
+                <li class="bted_feature">
+                    w => Move to the next first character of a word
+                </li>
+                <li class="bted_feature">
+                    e => Move to the next last character of a word
+                </li>
+                <li class="bted_feature">
+                    b => Move to the previous first character of a word
+                </li>
+                <li class="bted_feature">
+                    h => Decrement the column position by one. This wraps to the previous line.
+                </li>
+                <li class="bted_feature">
+                    j => Increment the row position by one.
+                </li>
+                <li class="bted_feature">
+                    k => Decrement the row position by one.
+                </li>
+                <li class="bted_feature">
+                    l => Increment the column position by one. This wraps to the previous line.
+                </li>
+                <li class="bted_feature">
+                    $ => Move to the end of the current row.
+                </li>
+                <li class="bted_feature">
+                    0 => Move to the start of the current row.
+                </li>
+            </ul>
+        </li>
+        <li class="bted_feature">
+            Verbs:
+
+            <ul class="balc_indent-child-content">
+                <li class="bted_feature">
+                    d => Delete
+                </li>
+                <li class="bted_feature">
+                    c => Change
+                </li>
+                <li class="bted_feature">
+                    p => Paste
+                </li>
+                <li class="bted_feature">
+                    &lt; => Less indentation
+                </li>
+                <li class="bted_feature">
+                    &gt; => More indentation
+                </li>
+                <li class="bted_feature">
+                    o => Insert new line
+                </li>
+                <li class="bted_feature">
+                    e => Scroll by the height of one row down (Ctrl Key must be held for this verb to be performed)
+                </li>
+                <li class="bted_feature">
+                    y => => Scroll by the height of one row up (Ctrl Key must be held for this verb to be performed)
+                </li>
+            </ul>
+        </li>
     </ul>
 </div>
