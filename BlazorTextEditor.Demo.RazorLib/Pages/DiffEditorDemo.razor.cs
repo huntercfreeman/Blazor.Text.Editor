@@ -1,6 +1,5 @@
 ﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
-using BlazorTextEditor.Demo.RazorLib.TextEditorDemos;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Diff;
 using BlazorTextEditor.RazorLib.Model;

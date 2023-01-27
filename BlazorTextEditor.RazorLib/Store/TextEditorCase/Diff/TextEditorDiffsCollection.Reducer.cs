@@ -1,5 +1,4 @@
 ﻿using BlazorTextEditor.RazorLib.Diff;
-using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
