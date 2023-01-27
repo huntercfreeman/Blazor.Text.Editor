@@ -1,0 +1,41 @@
+﻿@page "/diffEditor"
+
+@using BlazorTextEditor.RazorLib.Diff
+@using BlazorTextEditor.Demo.ClassLib.TestDataFolder
+
+<div class="bte_text-editor-diff-header">
+   Development In Progress to implement the
+   
+   &nbsp;
+   
+   <span class="bted_emphasize">
+      "An O(ND) Difference Algorithm"
+   </span>
+</div>
+
+<hr/>
+
+<div class="bted_diff-matrix-debug">
+   @{
+      var diffMatrix = DiffService.CalculateDiff(
+         TestData.Diff.BEFORE_TEXT,
+         TestData.Diff.AFTER_TEXT);
+   }
+   
+   @for (var rowIndex = 0; rowIndex < diffMatrix.GetLength(0); rowIndex += 1) 
+   {
+      <div class="bted_diff-matrix-debug-row">
+         @for (var columnIndex = 0; columnIndex < diffMatrix.GetLength(1); columnIndex += 1) 
+         {
+            <div class="bted_diff-matrix-debug-column">
+               @diffMatrix[rowIndex, columnIndex].Weight
+            </div>
+         }
+      </div>
+   }
+</div>
+
+<hr/>
+
+<TextEditorDiffDisplay TextEditorDiffKey="DiffDemoDiffKey"
+                       CssStyleString="@GetTextEditorDiffDisplayCssStyleString(diffMatrix.GetLength(0))"/>

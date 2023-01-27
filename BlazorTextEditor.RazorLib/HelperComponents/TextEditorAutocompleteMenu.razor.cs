@@ -3,9 +3,11 @@ using BlazorALaCarte.Shared.Keyboard;
 using BlazorALaCarte.Shared.Menu;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -19,7 +21,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
     private IAutocompleteService AutocompleteService { get; set; } = null!;
 
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter(Name="SetShouldDisplayMenuAsync")]
@@ -66,7 +68,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
 
         if (primaryCursorSnapshot.ImmutableCursor.ColumnIndex > 0)
         {
-            var word = TextEditorBase.ReadPreviousWordOrDefault(
+            var word = TextEditorModel.ReadPreviousWordOrDefault(
                 primaryCursorSnapshot.ImmutableCursor.RowIndex,
                 primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
@@ -120,17 +122,18 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
         });
     }
 
-    private async Task InsertAutocompleteMenuOption(
+    private Task InsertAutocompleteMenuOption(
         string word,
         string option,
         TextEditorViewModel textEditorViewModel)
     {
-        var insertTextTextEditorBaseAction = new InsertTextTextEditorBaseAction(
-            textEditorViewModel.TextEditorKey,
+        var insertTextTextEditorModelAction = new TextEditorModelsCollection.InsertTextAction(
+            textEditorViewModel.ModelKey,
             TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             option.Substring(word.Length),
             CancellationToken.None);
 
-        TextEditorService.InsertText(insertTextTextEditorBaseAction);
+        TextEditorService.ModelInsertText(insertTextTextEditorModelAction);
+        return Task.CompletedTask;
     }
 }

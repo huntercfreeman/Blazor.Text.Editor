@@ -1,7 +1,10 @@
+using BlazorALaCarte.Shared.Dimensions;
 using BlazorALaCarte.Shared.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.HelperComponents;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -13,7 +16,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private IJSRuntime JsRuntime { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter]
@@ -39,13 +42,11 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     
     private CancellationTokenSource _checkCursorIsInViewCancellationTokenSource = new();
     private SemaphoreSlim _checkCursorIsInViewSemaphoreSlim = new(1, 1);
-    private int _skippedCheckCursorIsInViewCount;
     private readonly TimeSpan _checkCursorIsInViewDelay = TimeSpan.FromMilliseconds(25);
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
     private int _textEditorMenuShouldGetFocusRequestCount;
-    private bool _disposedValue;
 
     private string _previouslyObservedTextEditorCursorDisplayId = string.Empty;
 
@@ -93,7 +94,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             }
         }
         
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
         
         var rowIndex = TextEditorCursor.IndexCoordinates.rowIndex;
 
@@ -138,7 +139,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     private string GetCursorStyleCss()
     {
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
 
         var leftInPixels = 0d;
 
@@ -151,7 +152,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
             // 1 of the character width is already accounted for
 
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+            var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * 
                             tabsOnSameRowBeforeCursor * 
@@ -161,30 +162,30 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         leftInPixels += TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels *
                         TextEditorCursor.IndexCoordinates.columnIndex;
 
-        var leftInPixelsInvariantCulture = leftInPixels.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var leftInPixelsInvariantCulture = leftInPixels.ToCssValue();
         
         var left = $"left: {leftInPixelsInvariantCulture}px;";
 
         var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
                                  TextEditorCursor.IndexCoordinates.rowIndex)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var top =
             $"top: {topInPixelsInvariantCulture}px;";
         
         var heightInPixelsInvariantCulture = TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var widthInPixelsInvariantCulture = GlobalTextEditorOptions.CursorWidthInPixels!.Value
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var width = $"width: {widthInPixelsInvariantCulture}px;";
 
         var keymapStyling = GlobalTextEditorOptions.KeymapDefinition!.Keymap
             .GetCursorCssStyleString(
-                TextEditorBase,
+                TextEditorModel,
                 TextEditorViewModel,
                 GlobalTextEditorOptions);
         
@@ -193,24 +194,24 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     private string GetCaretRowStyleCss()
     {
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
 
         var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
                                  TextEditorCursor.IndexCoordinates.rowIndex)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var top = $"top: {topInPixelsInvariantCulture}px;";
 
         var heightInPixelsInvariantCulture =
             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels
-                .ToString(System.Globalization.CultureInfo.InvariantCulture); 
+                .ToCssValue(); 
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var widthOfBodyInPixelsInvariantCulture = (textEditor.MostCharactersOnASingleRowTuple.rowLength *
                                          TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight
                                              .CharacterWidthInPixels)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var width = $"width: {widthOfBodyInPixelsInvariantCulture}px;";
 
@@ -219,7 +220,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     private string GetMenuStyleCss()
     {
-        var textEditor = TextEditorBase;
+        var textEditor = TextEditorModel;
         
         var leftInPixels = 0d;
 
@@ -232,7 +233,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
             // 1 of the character width is already accounted for
 
-            var extraWidthPerTabKey = TextEditorBase.TAB_WIDTH - 1;
+            var extraWidthPerTabKey = TextEditorModel.TAB_WIDTH - 1;
 
             leftInPixels += extraWidthPerTabKey * tabsOnSameRowBeforeCursor *
                             TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
@@ -242,13 +243,13 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                         TextEditorCursor.IndexCoordinates.columnIndex;
 
         var leftInPixelsInvariantCulture = leftInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var left = $"left: {leftInPixelsInvariantCulture}px;";
 
         var topInPixelsInvariantCulture = (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels *
                                  (TextEditorCursor.IndexCoordinates.rowIndex + 1))
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         // Top is 1 row further than the cursor so it does not cover text at cursor position.
         var top =
@@ -256,13 +257,13 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var minWidthInPixelsInvariantCulture =
             (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels * 16)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var minWidth = $"min-Width: {minWidthInPixelsInvariantCulture}px;";
         
         var minHeightInPixelsInvariantCulture =
             (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels * 4)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var minHeight = $"min-height: {minHeightInPixelsInvariantCulture}px;";
 

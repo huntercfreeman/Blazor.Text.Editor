@@ -5,8 +5,10 @@ using BlazorALaCarte.Shared.Menu;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -21,7 +23,7 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
     private ITextEditorService TextEditorService { get; set; } = null!;
 
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter(Name = "SetShouldDisplayMenuAsync")]
@@ -55,7 +57,7 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
     private TextEditorCommandParameter ConstructTextEditorCommandParameter()
     {
         return new TextEditorCommandParameter(
-            TextEditorBase,
+            TextEditorModel,
             TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
             ClipboardProvider,
             TextEditorService,

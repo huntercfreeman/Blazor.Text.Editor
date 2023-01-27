@@ -106,7 +106,7 @@ public class FSharpSyntaxTree
     /// currentCharacterIn:<br/>
     /// -<see cref="FSharpFacts.COMMENT_SINGLE_LINE_START"/>
     /// </summary>
-    private static FSharpStringSyntax ReadCommentSingleLine(
+    private static FSharpCommentSyntax ReadCommentSingleLine(
         StringWalker stringWalker,
         TextEditorDiagnosticBag diagnosticBag)
     {
@@ -134,7 +134,7 @@ public class FSharpSyntaxTree
             stringWalker.PositionIndex,
             (byte)FSharpDecorationKind.Comment);
         
-        return new FSharpStringSyntax(
+        return new FSharpCommentSyntax(
             commentTextEditorTextSpan);
     }
     
@@ -142,7 +142,7 @@ public class FSharpSyntaxTree
     /// currentCharacterIn:<br/>
     /// -<see cref="FSharpFacts.COMMENT_MULTI_LINE_START"/>
     /// </summary>
-    private static FSharpStringSyntax ReadCommentMultiLine(
+    private static FSharpCommentSyntax ReadCommentMultiLine(
         StringWalker stringWalker,
         TextEditorDiagnosticBag diagnosticBag)
     {
@@ -170,7 +170,7 @@ public class FSharpSyntaxTree
             stringWalker.PositionIndex + FSharpFacts.COMMENT_MULTI_LINE_END.Length,
             (byte)FSharpDecorationKind.Comment);
         
-        return new FSharpStringSyntax(
+        return new FSharpCommentSyntax(
             commentTextEditorTextSpan);
     }
     

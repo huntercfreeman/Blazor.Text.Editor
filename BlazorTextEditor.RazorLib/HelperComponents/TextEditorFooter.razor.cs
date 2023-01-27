@@ -11,7 +11,7 @@ public partial class TextEditorFooter : TextEditorView
 {
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
-        var textEditor = TextEditorStatesWrap.Value;
+        var textEditor = TextEditorModelsCollectionWrap.Value;
         var localTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         if (textEditor is null ||
@@ -21,6 +21,6 @@ public partial class TextEditorFooter : TextEditorView
         var rowEndingKindString = (string)(changeEventArgs.Value ?? string.Empty);
 
         if (Enum.TryParse<RowEndingKind>(rowEndingKindString, out var rowEndingKind))
-            TextEditorService.SetUsingRowEndingKind(localTextEditorViewModel.TextEditorKey, rowEndingKind);
+            TextEditorService.ModelSetUsingRowEndingKind(localTextEditorViewModel.ModelKey, rowEndingKind);
     }
 }

@@ -19,6 +19,6 @@ public partial class NavMenu : ComponentBase
     
     private void OpenTextEditorSettingsDialogOnClick()
     {
-        TextEditorService.ShowSettingsDialog(true);
+        TextEditorService.GlobalOptionsShowSettingsDialog(true);
     }
 }

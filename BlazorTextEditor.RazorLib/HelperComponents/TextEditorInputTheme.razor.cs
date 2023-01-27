@@ -1,7 +1,9 @@
 ﻿using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Store;
+using BlazorALaCarte.Shared.Store.ThemeCase;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -13,7 +15,7 @@ public partial class TextEditorInputTheme : FluxorComponent
     [Inject]
     private IState<ThemeState> ThemeStatesWrap { get; set; } = null!;
     [Inject]
-    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
+    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
@@ -38,11 +40,11 @@ public partial class TextEditorInputTheme : FluxorComponent
             var foundTheme = themes.FirstOrDefault(x => x.ThemeKey == chosenThemeKey);
             
             if (foundTheme is not null)
-                TextEditorService.SetTheme(foundTheme);
+                TextEditorService.GlobalOptionsSetTheme(foundTheme);
         }
         else
         {
-            TextEditorService.SetTheme(ThemeFacts.VisualStudioDarkThemeClone);
+            TextEditorService.GlobalOptionsSetTheme(ThemeFacts.VisualStudioDarkThemeClone);
         }
     }
 }

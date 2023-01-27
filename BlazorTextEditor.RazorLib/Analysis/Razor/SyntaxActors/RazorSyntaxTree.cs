@@ -17,7 +17,7 @@ public class RazorSyntaxTree
 {
     /// <summary>
     /// currentCharacterIn:<br/>
-    /// - <see cref="RazorInjectedLanguageFacts.RazorInjectedLanguageDefinition.TransitionSubstring"/><br/>
+    /// - <see cref="InjectedLanguageDefinition.TransitionSubstring"/><br/>
     /// </summary>
     public static List<TagSyntax> ParseInjectedLanguageFragment(
         StringWalker stringWalker,
@@ -26,8 +26,6 @@ public class RazorSyntaxTree
     {
         // current character is '@'
         _ = stringWalker.ReadCharacter();
-
-        string? matchedOn = null;
 
         if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
         {
@@ -117,14 +115,12 @@ public class RazorSyntaxTree
             injectedLanguageDefinition);
     }
 
-    /// <param name="isClassLevelCodeBlock">
+    /// <summary>
     /// The @code{...} section must be wrapped in an adhoc class definition
     /// so that Roslyn can syntax highlight methods.
     /// <br/><br/>
     /// The @{...} code blocks must be wrapped in an adhoc method.
-    /// <br/><br/>
-    /// TODO: Is this true?
-    /// </param>
+    /// </summary>
     private static List<TagSyntax> ReadCodeBlock(
         StringWalker stringWalker,
         TextEditorHtmlDiagnosticBag textEditorHtmlDiagnosticBag,

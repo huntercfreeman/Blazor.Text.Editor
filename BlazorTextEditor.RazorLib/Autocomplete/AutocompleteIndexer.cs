@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Model;
 
 namespace BlazorTextEditor.RazorLib.Autocomplete;
 
@@ -13,13 +13,13 @@ public class AutocompleteIndexer : IAutocompleteIndexer
     {
         _textEditorService = textEditorService;
         
-        _textEditorService.OnTextEditorStatesChanged += TextEditorServiceOnOnTextEditorStatesChanged;
+        _textEditorService.ModelsCollectionChanged += TextEditorServiceTextEditorModelsCollectionChanged;
     }
 
     public ImmutableArray<string> IndexedStrings => _indexedStrings
         .ToImmutableArray();
     
-    public Task IndexTextEditorAsync(TextEditorBase textEditorBase)
+    public Task IndexTextEditorAsync(TextEditorModel textEditorModel)
     {
         return Task.CompletedTask;
     }
@@ -34,13 +34,13 @@ public class AutocompleteIndexer : IAutocompleteIndexer
         return Task.CompletedTask;
     }
 
-    private void TextEditorServiceOnOnTextEditorStatesChanged()
+    private void TextEditorServiceTextEditorModelsCollectionChanged()
     {
         // TODO: When should the indexer re-index or incrementally do so
     }
     
     public void Dispose()
     {
-        _textEditorService.OnTextEditorStatesChanged -= TextEditorServiceOnOnTextEditorStatesChanged;
+        _textEditorService.ModelsCollectionChanged -= TextEditorServiceTextEditorModelsCollectionChanged;
     }
 }

@@ -3,9 +3,11 @@ using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -20,11 +22,11 @@ public partial class TextEditorHeader : TextEditorView
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
 
     private TextEditorCommandParameter ConstructTextEditorCommandParameter(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         TextEditorViewModel textEditorViewModel)
     {
         return new TextEditorCommandParameter(
-            textEditorBase,
+            textEditorModel,
             TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
             ClipboardProvider,
             TextEditorService,
@@ -45,8 +47,8 @@ public partial class TextEditorHeader : TextEditorView
         var rowEndingKindString = (string)(changeEventArgs.Value ?? string.Empty);
 
         if (Enum.TryParse<RowEndingKind>(rowEndingKindString, out var rowEndingKind))
-            TextEditorService.SetUsingRowEndingKind(
-                localTextEditorViewModel.TextEditorKey,
+            TextEditorService.ModelSetUsingRowEndingKind(
+                localTextEditorViewModel.ModelKey,
                 rowEndingKind);
     }
 

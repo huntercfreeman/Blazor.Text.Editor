@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.DialogNotification.Dialog;
+using BlazorALaCarte.DialogNotification.Store.DialogCase;
+using BlazorALaCarte.Shared.Dimensions;
 using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Storage;
-using BlazorALaCarte.Shared.Store;
+using BlazorALaCarte.Shared.Store.ThemeCase;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
@@ -19,16 +21,23 @@ using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
+using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Diff;
+using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
+using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Microsoft.JSInterop;
 
@@ -36,9 +45,12 @@ namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
-    private readonly IState<TextEditorStates> _textEditorStates;
-    private readonly IState<ThemeState> _themeState;
-    private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollection;
+    private readonly IState<TextEditorModelsCollection> _textEditorModelsCollectionWrap;
+    private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollectionWrap;
+    private readonly IState<TextEditorGroupsCollection> _textEditorGroupsCollectionWrap;
+    private readonly IState<TextEditorDiffsCollection> _textEditorDiffsCollectionWrap;
+    private readonly IState<ThemeState> _themeStateWrap;
+    private readonly IState<TextEditorGlobalOptions> _textEditorGlobalOptionsWrap;
     private readonly IDispatcher _dispatcher;
     private readonly IStorageProvider _storageProvider;
     
@@ -46,396 +58,275 @@ public class TextEditorService : ITextEditorService
     private readonly IJSRuntime _jsRuntime;
 
     public TextEditorService(
-        IState<TextEditorStates> textEditorStates,
-        IState<ThemeState> themeState,
-        IState<TextEditorViewModelsCollection> textEditorViewModelsCollection,
+        IState<TextEditorModelsCollection> textEditorModelsCollectionWrap,
+        IState<TextEditorViewModelsCollection> textEditorViewModelsCollectionWrap,
+        IState<TextEditorGroupsCollection> textEditorGroupsCollectionWrap,
+        IState<TextEditorDiffsCollection> textEditorDiffsCollectionWrap,
+        IState<ThemeState> themeStateWrap,
+        IState<TextEditorGlobalOptions> textEditorGlobalOptionsWrap,
         IDispatcher dispatcher,
         IStorageProvider storageProvider,
         IJSRuntime jsRuntime)
     {
-        _textEditorStates = textEditorStates;
-        _themeState = themeState;
-        _textEditorViewModelsCollection = textEditorViewModelsCollection;
+        _textEditorModelsCollectionWrap = textEditorModelsCollectionWrap;
+        _textEditorViewModelsCollectionWrap = textEditorViewModelsCollectionWrap;
+        _textEditorGroupsCollectionWrap = textEditorGroupsCollectionWrap;
+        _textEditorDiffsCollectionWrap = textEditorDiffsCollectionWrap;
+        _themeStateWrap = themeStateWrap;
+        _textEditorGlobalOptionsWrap = textEditorGlobalOptionsWrap;
         _dispatcher = dispatcher;
         _storageProvider = storageProvider;
         _jsRuntime = jsRuntime;
 
-        _textEditorStates.StateChanged += TextEditorStatesOnStateChanged;
+        _textEditorModelsCollectionWrap.StateChanged += ModelsCollectionWrapOnModelsCollectionWrapChanged;
+        _textEditorViewModelsCollectionWrap.StateChanged += ViewModelsCollectionWrapOnStateChanged;
+        _textEditorGroupsCollectionWrap.StateChanged += GroupsCollectionWrapOnStateChanged;
+        _textEditorDiffsCollectionWrap.StateChanged += TextEditorDiffsCollectionWrapOnStateChanged;
+        _textEditorGlobalOptionsWrap.StateChanged += GlobalOptionsWrapOnStateChanged;
     }
 
-    public TextEditorStates TextEditorStates => _textEditorStates.Value;
-    public ThemeRecord? GlobalThemeValue => TextEditorStates.GlobalTextEditorOptions.Theme;
-    public string GlobalThemeCssClassString => TextEditorStates.GlobalTextEditorOptions.Theme?.CssClassString ?? string.Empty;
-    public string GlobalFontSizeInPixelsStyling => $"font-size: {TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}px;";
-    public bool GlobalShowNewlines => TextEditorStates.GlobalTextEditorOptions.ShowNewlines!.Value;
-    public bool GlobalShowWhitespace => TextEditorStates.GlobalTextEditorOptions.ShowWhitespace!.Value;
-    public int GlobalFontSizeInPixelsValue => TextEditorStates.GlobalTextEditorOptions.FontSizeInPixels!.Value;
-    public double GlobalCursorWidthInPixelsValue => TextEditorStates.GlobalTextEditorOptions.CursorWidthInPixels!.Value;
-    public KeymapDefinition GlobalKeymapDefinition => TextEditorStates.GlobalTextEditorOptions.KeymapDefinition!;
-    public int? GlobalHeightInPixelsValue => TextEditorStates.GlobalTextEditorOptions.HeightInPixels;
-
-    public event Action? OnTextEditorStatesChanged;
+    public TextEditorModelsCollection ModelsCollection => _textEditorModelsCollectionWrap.Value;
+    public TextEditorViewModelsCollection ViewModelsCollection => _textEditorViewModelsCollectionWrap.Value;
+    public TextEditorGroupsCollection GroupsCollection => _textEditorGroupsCollectionWrap.Value;
+    public TextEditorDiffsCollection DiffsCollection => _textEditorDiffsCollectionWrap.Value;
+    public TextEditorGlobalOptions GlobalOptions => _textEditorGlobalOptionsWrap.Value;
     
-    public void RegisterCustomTextEditor(
-        TextEditorBase textEditorBase)
+    public ThemeRecord? GlobalTheme => _textEditorGlobalOptionsWrap.Value.Options.Theme;
+    public string GlobalThemeCssClassString => _textEditorGlobalOptionsWrap.Value.Options.Theme?.CssClassString ?? string.Empty;
+    public string GlobalFontSizeInPixelsStyling => $"font-size: {_textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value.ToCssValue()}px;";
+    public bool GlobalShowNewlines => _textEditorGlobalOptionsWrap.Value.Options.ShowNewlines!.Value;
+    public bool GlobalShowWhitespace => _textEditorGlobalOptionsWrap.Value.Options.ShowWhitespace!.Value;
+    public int GlobalFontSizeInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value;
+    public double GlobalCursorWidthInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.CursorWidthInPixels!.Value;
+    public KeymapDefinition GlobalKeymapDefinition => _textEditorGlobalOptionsWrap.Value.Options.KeymapDefinition!;
+    public int? GlobalHeightInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.HeightInPixels;
+
+    public event Action? ModelsCollectionChanged;
+    public event Action? ViewModelsCollectionChanged;
+    public event Action? GroupsCollectionChanged;
+    public event Action? DiffsCollectionChanged;
+    public event Action? GlobalOptionsChanged;
+        
+    public void ModelRegisterCustomModel(
+        TextEditorModel model)
     {
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new TextEditorModelsCollection.RegisterAction(
+                model));
     }
 
-    public void RegisterCSharpTextEditor(
-        TextEditorKey textEditorKey,
+    public void ModelRegisterTemplatedModel(
+        TextEditorModelKey textEditorModelKey,
+        WellKnownModelKind wellKnownModelKind,
         string resourceUri,
         DateTime resourceLastWriteTime,
         string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
+        string initialContent)
     {
-        var textEditorBase = new TextEditorBase(
+        ILexer? lexer = null;
+        IDecorationMapper? decorationMapper = null;
+        
+        switch (wellKnownModelKind)
+        {
+            case WellKnownModelKind.CSharp:
+                lexer = new TextEditorCSharpLexer();
+                decorationMapper = new TextEditorCSharpDecorationMapper();
+                break;
+            case WellKnownModelKind.Html:
+                lexer = new TextEditorHtmlLexer();
+                decorationMapper = new TextEditorHtmlDecorationMapper();
+                break;
+            case WellKnownModelKind.Css:
+                lexer = new TextEditorCssLexer();
+                decorationMapper = new TextEditorCssDecorationMapper();
+                break;
+            case WellKnownModelKind.Json:
+                lexer = new TextEditorJsonLexer();
+                decorationMapper = new TextEditorJsonDecorationMapper();
+                break;
+            case WellKnownModelKind.FSharp:
+                lexer = new TextEditorFSharpLexer();
+                decorationMapper = new TextEditorFSharpDecorationMapper();
+                break;
+            case WellKnownModelKind.Razor:
+                lexer = new TextEditorRazorLexer();
+                decorationMapper = new TextEditorHtmlDecorationMapper();
+                break;
+            case WellKnownModelKind.JavaScript:
+                lexer = new TextEditorJavaScriptLexer();
+                decorationMapper = new TextEditorJavaScriptDecorationMapper();
+                break;
+            case WellKnownModelKind.TypeScript:
+                lexer = new TextEditorTypeScriptLexer();
+                decorationMapper = new TextEditorTypeScriptDecorationMapper();
+                break;
+        }
+        
+        var textEditorModel = new TextEditorModel(
             resourceUri,
             resourceLastWriteTime,
             fileExtension,
             initialContent,
-            new TextEditorCSharpLexer(),
-            new TextEditorCSharpDecorationMapper(),
+            lexer,
+            decorationMapper,
             null,
-            textEditorKey);
+            textEditorModelKey);
 
         _ = Task.Run(async () =>
         {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
+            await textEditorModel.ApplySyntaxHighlightingAsync();
+            
+            _dispatcher.Dispatch(
+                new TextEditorModelsCollection.ForceRerenderAction(
+                    textEditorModel.ModelKey));
         });
         
         _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
-    }
-    
-    public void RegisterHtmlTextEditor(
-        TextEditorKey textEditorKey, 
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
-    {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            new TextEditorHtmlLexer(),
-            new TextEditorHtmlDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+            new TextEditorModelsCollection.RegisterAction(
+                textEditorModel));
     }
 
-    public void RegisterCssTextEditor(
-        TextEditorKey textEditorKey, 
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
+    public string? ModelGetAllText(TextEditorModelKey textEditorModelKey)
     {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            new TextEditorCssLexer(),
-            new TextEditorCssDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+        return ModelsCollection.TextEditorList
+            .FirstOrDefault(x => x.ModelKey == textEditorModelKey)
+            ?.GetAllText();
     }
     
-    public void RegisterJsonTextEditor(
-        TextEditorKey textEditorKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
+    public string? ViewModelGetAllText(TextEditorViewModelKey textEditorViewModelKey)
     {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            new TextEditorJsonLexer(),
-            new TextEditorJsonDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+        var textEditorModel = ViewModelGetModelOrDefault(textEditorViewModelKey);
+
+        return textEditorModel is null 
+            ? null 
+            : ModelGetAllText(textEditorModel.ModelKey);
     }
 
-    public void RegisterFSharpTextEditor(
-        TextEditorKey textEditorKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
+    public void ModelInsertText(TextEditorModelsCollection.InsertTextAction insertTextAction)
     {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            new TextEditorFSharpLexer(),
-            new TextEditorFSharpDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+        _dispatcher.Dispatch(insertTextAction);
     }
 
-    public void RegisterRazorTextEditor(
-        TextEditorKey textEditorKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
+    public void ModelHandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction)
     {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            new TextEditorRazorLexer(),
-            new TextEditorHtmlDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
-    }
-
-    public void RegisterJavaScriptTextEditor(
-        TextEditorKey textEditorKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
-    {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            new TextEditorJavaScriptLexer(),
-            new TextEditorJavaScriptDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+        _dispatcher.Dispatch(keyboardEventAction);
     }
     
-    public void RegisterTypeScriptTextEditor(
-        TextEditorKey textEditorKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
+    public void ModelDeleteTextByMotion(TextEditorModelsCollection.DeleteTextByMotionAction deleteTextByMotionAction)
     {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            new TextEditorTypeScriptLexer(),
-            new TextEditorTypeScriptDecorationMapper(),
-            null,
-            textEditorKey);
-        
-        _ = Task.Run(async () =>
-        {
-            await textEditorBase.ApplySyntaxHighlightingAsync();
-        });
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
+        _dispatcher.Dispatch(deleteTextByMotionAction);
     }
     
-    public void RegisterPlainTextEditor(
-        TextEditorKey textEditorKey,
-        string resourceUri,
-        DateTime resourceLastWriteTime,
-        string fileExtension,
-        string initialContent,
-        ITextEditorKeymap? textEditorKeymapOverride = null)
+    public void ModelDeleteTextByRange(TextEditorModelsCollection.DeleteTextByRangeAction deleteTextByRangeAction)
     {
-        var textEditorBase = new TextEditorBase(
-            resourceUri,
-            resourceLastWriteTime,
-            fileExtension,
-            initialContent,
-            null,
-            null,
-            null,
-            textEditorKey);
-        
-        _dispatcher.Dispatch(
-            new RegisterTextEditorBaseAction(textEditorBase));
-    }
-
-    public void InsertText(InsertTextTextEditorBaseAction insertTextTextEditorBaseAction)
-    {
-        _dispatcher.Dispatch(insertTextTextEditorBaseAction);
-    }
-
-    public void HandleKeyboardEvent(KeyboardEventTextEditorBaseAction keyboardEventTextEditorBaseAction)
-    {
-        _dispatcher.Dispatch(keyboardEventTextEditorBaseAction);
+        _dispatcher.Dispatch(deleteTextByRangeAction);
     }
     
-    public void DeleteTextByMotion(DeleteTextByMotionTextEditorBaseAction deleteTextByMotionTextEditorBaseAction)
+    public void ModelRedoEdit(TextEditorModelKey textEditorModelKey)
     {
-        _dispatcher.Dispatch(deleteTextByMotionTextEditorBaseAction);
-    }
-    
-    public void DeleteTextByRange(DeleteTextByRangeTextEditorBaseAction deleteTextByRangeTextEditorBaseAction)
-    {
-        _dispatcher.Dispatch(deleteTextByRangeTextEditorBaseAction);
-    }
-    
-    public void RedoEdit(TextEditorKey textEditorKey)
-    {
-        var redoEditAction = new RedoEditAction(textEditorKey);
+        var redoEditAction = new TextEditorModelsCollection.RedoEditAction(textEditorModelKey);
         
         _dispatcher.Dispatch(redoEditAction);
     }
     
-    public void UndoEdit(TextEditorKey textEditorKey)
+    public void ModelUndoEdit(TextEditorModelKey textEditorModelKey)
     {
-        var undoEditAction = new UndoEditAction(textEditorKey);
+        var undoEditAction = new TextEditorModelsCollection.UndoEditAction(textEditorModelKey);
         
         _dispatcher.Dispatch(undoEditAction);
     }
 
-    public void DisposeTextEditor(TextEditorKey textEditorKey)
+    public void ModelDispose(TextEditorModelKey textEditorModelKey)
     {
         _dispatcher.Dispatch(
-            new DisposeTextEditorBaseAction(textEditorKey));
+            new TextEditorModelsCollection.DisposeAction(
+                textEditorModelKey));
     }
 
-    public void SetFontSize(int fontSizeInPixels)
+    public void GlobalOptionsSetFontSize(int fontSizeInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetFontSizeAction(fontSizeInPixels));
+            new TextEditorGlobalOptions.SetFontSizeAction(
+                fontSizeInPixels));
         
-        WriteGlobalTextEditorOptionsToLocalStorage();
+        GlobalOptionsWriteToLocalStorage();
     }
     
-    public void SetCursorWidth(double cursorWidthInPixels)
+    public void GlobalOptionsSetCursorWidth(double cursorWidthInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetCursorWidthAction(cursorWidthInPixels));
+            new TextEditorGlobalOptions.SetCursorWidthAction(
+                cursorWidthInPixels));
         
-        WriteGlobalTextEditorOptionsToLocalStorage();
+        GlobalOptionsWriteToLocalStorage();
     }
     
-    public void SetHeight(int? heightInPixels)
+    public void GlobalOptionsSetHeight(int? heightInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetHeightAction(heightInPixels));
+            new TextEditorGlobalOptions.SetHeightAction(
+                heightInPixels));
         
-        WriteGlobalTextEditorOptionsToLocalStorage();
+        GlobalOptionsWriteToLocalStorage();
     }
 
-    public void SetTheme(ThemeRecord theme)
+    public void GlobalOptionsSetTheme(ThemeRecord theme)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetThemeAction(theme));
+            new TextEditorGlobalOptions.SetThemeAction(
+                theme));
         
-        WriteGlobalTextEditorOptionsToLocalStorage();
+        GlobalOptionsWriteToLocalStorage();
     }
     
-    public void SetKeymap(KeymapDefinition foundKeymap)
+    public void GlobalOptionsSetKeymap(KeymapDefinition foundKeymap)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetKeymapAction(foundKeymap));
+            new TextEditorGlobalOptions.SetKeymapAction(
+                foundKeymap));
         
-        WriteGlobalTextEditorOptionsToLocalStorage();
+        GlobalOptionsWriteToLocalStorage();
     }
 
-    public void SetShowWhitespace(bool showWhitespace)
+    public void GlobalOptionsSetShowWhitespace(bool showWhitespace)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetShowWhitespaceAction(showWhitespace));
+            new TextEditorGlobalOptions.SetShowWhitespaceAction(
+                showWhitespace));
         
-        WriteGlobalTextEditorOptionsToLocalStorage();
+        GlobalOptionsWriteToLocalStorage();
     }
 
-    public void SetShowNewlines(bool showNewlines)
+    public void GlobalOptionsSetShowNewlines(bool showNewlines)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetShowNewlinesAction(showNewlines));
+            new TextEditorGlobalOptions.SetShowNewlinesAction(
+                showNewlines));
 
-        WriteGlobalTextEditorOptionsToLocalStorage();
+        GlobalOptionsWriteToLocalStorage();
     }
 
-    public void SetUsingRowEndingKind(TextEditorKey textEditorKey, RowEndingKind rowEndingKind)
+    public void ModelSetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetUsingRowEndingKindAction(textEditorKey, rowEndingKind));
+            new TextEditorModelsCollection.SetUsingRowEndingKindAction(
+                textEditorModelKey, 
+                rowEndingKind));
     }
     
-    public void SetResourceData(
-        TextEditorKey textEditorKey,
+    public void ModelSetResourceData(
+        TextEditorModelKey textEditorModelKey,
         string resourceUri,
         DateTime resourceLastWriteTime)
     {
         _dispatcher.Dispatch(
-            new TextEditorSetResourceDataAction(
-                textEditorKey,
+            new TextEditorModelsCollection.SetResourceDataAction(
+                textEditorModelKey,
                 resourceUri,
                 resourceLastWriteTime));
     }
 
-    public void ShowSettingsDialog(bool isResizable = false)
+    public void GlobalOptionsShowSettingsDialog(bool isResizable = false)
     {
         var settingsDialog = new DialogRecord(
             DialogKey.NewDialogKey(), 
@@ -447,108 +338,152 @@ public class TextEditorService : ITextEditorService
         };
         
         _dispatcher.Dispatch(
-            new DialogsState.RegisterDialogRecordAction(
+            new DialogRecordsCollection.RegisterAction(
                 settingsDialog));
     }
     
-    private void TextEditorStatesOnStateChanged(object? sender, EventArgs e)
+    private void ModelsCollectionWrapOnModelsCollectionWrapChanged(object? sender, EventArgs e)
     {
-        OnTextEditorStatesChanged?.Invoke();
+        ModelsCollectionChanged?.Invoke();
+    }
+    
+    private void ViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        ViewModelsCollectionChanged?.Invoke();
     }
 
-    public void RegisterGroup(TextEditorGroupKey textEditorGroupKey)
+    private void GroupsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        GroupsCollectionChanged?.Invoke();
+    }
+    
+    private void TextEditorDiffsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        DiffsCollectionChanged?.Invoke();
+    }
+
+    private void GlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        GlobalOptionsChanged?.Invoke();
+    }
+
+    public void GroupRegister(TextEditorGroupKey textEditorGroupKey)
     {
         var textEditorGroup = new TextEditorGroup(
             textEditorGroupKey,
             TextEditorViewModelKey.Empty,
             ImmutableList<TextEditorViewModelKey>.Empty);
         
-        _dispatcher.Dispatch(new RegisterTextEditorGroupAction(textEditorGroup));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.RegisterAction(
+                textEditorGroup));
     }
 
-    public void AddViewModelToGroup(
+    public void GroupAddViewModel(
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new AddViewModelToGroupAction(
-            textEditorGroupKey,
-            textEditorViewModelKey));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.AddViewModelToGroupAction(
+                textEditorGroupKey,
+                textEditorViewModelKey));
     }
     
-    public void RemoveViewModelFromGroup(
+    public void GroupRemoveViewModel(
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new RemoveViewModelFromGroupAction(
-            textEditorGroupKey,
-            textEditorViewModelKey));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.RemoveViewModelFromGroupAction(
+                textEditorGroupKey,
+                textEditorViewModelKey));
     }
     
-    public void SetActiveViewModelOfGroup(
+    public void GroupSetActiveViewModel(
         TextEditorGroupKey textEditorGroupKey,
         TextEditorViewModelKey textEditorViewModelKey)
     {
-        _dispatcher.Dispatch(new SetActiveViewModelOfGroupAction(
-            textEditorGroupKey,
-            textEditorViewModelKey));
+        _dispatcher.Dispatch(
+            new TextEditorGroupsCollection.SetActiveViewModelOfGroupAction(
+                textEditorGroupKey,
+                textEditorViewModelKey));
     }
 
-    public void RegisterViewModel(
+    public void ViewModelRegister(
         TextEditorViewModelKey textEditorViewModelKey,
-        TextEditorKey textEditorKey)
+        TextEditorModelKey textEditorModelKey)
     {
-        _dispatcher.Dispatch(new RegisterTextEditorViewModelAction(
-            textEditorViewModelKey,
-            textEditorKey, 
-            this));
+        _dispatcher.Dispatch(
+            new TextEditorViewModelsCollection.RegisterAction(
+                textEditorViewModelKey,
+                textEditorModelKey, 
+                this));
     }
 
-    public ImmutableArray<TextEditorViewModel> GetViewModelsForTextEditorBase(TextEditorKey textEditorKey)
+    public ImmutableArray<TextEditorViewModel> ModelGetViewModelsOrEmpty(TextEditorModelKey textEditorModelKey)
     {
-        return _textEditorViewModelsCollection.Value.ViewModelsList
-            .Where(x => x.TextEditorKey == textEditorKey)
+        return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
+            .Where(x => 
+                x.ModelKey == textEditorModelKey)
             .ToImmutableArray();
     }
 
-    public TextEditorBase? GetTextEditorBaseFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey)
+    public TextEditorModel? ViewModelGetModelOrDefault(TextEditorViewModelKey textEditorViewModelKey)
     {
-        var textEditorViewModelsCollection = _textEditorViewModelsCollection.Value;
+        var textEditorViewModelsCollection = _textEditorViewModelsCollectionWrap.Value;
         
         var viewModel = textEditorViewModelsCollection.ViewModelsList
             .FirstOrDefault(x => 
-                x.TextEditorViewModelKey == textEditorViewModelKey);
+                x.ViewModelKey == textEditorViewModelKey);
         
         if (viewModel is null)
             return null;
         
-        var localTextEditorStates = TextEditorStates;
-
-        return localTextEditorStates.TextEditorList
-            .FirstOrDefault(x => x.Key == viewModel.TextEditorKey);
+        return ModelFindOrDefault(viewModel.ModelKey);
     }
 
-    public void SetViewModelWith(
+    public void ViewModelWith(
         TextEditorViewModelKey textEditorViewModelKey,
         Func<TextEditorViewModel, TextEditorViewModel> withFunc)
     {
-        _dispatcher.Dispatch(new SetViewModelWithAction(
-            textEditorViewModelKey,
-            withFunc));
+        _dispatcher.Dispatch(
+            new TextEditorViewModelsCollection.SetViewModelWithAction(
+                textEditorViewModelKey,
+                withFunc));
     }
-
-    public async Task SetGutterScrollTopAsync(string gutterElementId, double scrollTop)
+    
+    public void DiffRegister(
+        TextEditorDiffKey diffKey,
+        TextEditorViewModelKey beforeViewModelKey,
+        TextEditorViewModelKey afterViewModelKey)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorDiffsCollection.RegisterAction(
+                diffKey,
+                beforeViewModelKey,
+                afterViewModelKey));
+    }
+    
+    public void DiffDispose(TextEditorDiffKey textEditorDiffKey)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorDiffsCollection.DisposeAction(
+                textEditorDiffKey));
+    }
+    
+    public async Task ViewModelSetGutterScrollTopAsync(string gutterElementId, double scrollTopInPixels)
     {
         await _jsRuntime.InvokeVoidAsync(
             "blazorTextEditor.setGutterScrollTop",
             gutterElementId,
-            scrollTop);
+            scrollTopInPixels);
         
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
     }
 
-    public async Task MutateScrollHorizontalPositionByPixelsAsync(
+    public async Task ViewModelMutateScrollHorizontalPositionAsync(
         string bodyElementId,
         string gutterElementId,
         double pixels)
@@ -564,7 +499,7 @@ public class TextEditorService : ITextEditorService
         await Task.Yield();
     }
     
-    public async Task MutateScrollVerticalPositionByPixelsAsync(
+    public async Task ViewModelMutateScrollVerticalPositionAsync(
         string bodyElementId,
         string gutterElementId,
         double pixels)
@@ -583,55 +518,77 @@ public class TextEditorService : ITextEditorService
     /// <summary>
     /// If a parameter is null the JavaScript will not modify that value
     /// </summary>
-    public async Task SetScrollPositionAsync(
+    public async Task ViewModelSetScrollPositionAsync(
         string bodyElementId,
         string gutterElementId,
-        double? scrollLeft,
-        double? scrollTop)
+        double? scrollLeftInPixels,
+        double? scrollTopInPixels)
     {
         await _jsRuntime.InvokeVoidAsync(
             "blazorTextEditor.setScrollPosition",
             bodyElementId,
             gutterElementId,
-            scrollLeft,
-            scrollTop);
+            scrollLeftInPixels,
+            scrollTopInPixels);
         
         // Blazor WebAssembly as of this comment is single threaded and
         // the UI freezes without this await Task.Yield
         await Task.Yield();
     }
 
-    public async Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId)
+    public async Task<ElementMeasurementsInPixels> ElementMeasurementsInPixelsAsync(string elementId)
     {
         return await _jsRuntime.InvokeAsync<ElementMeasurementsInPixels>(
             "blazorTextEditor.getElementMeasurementsInPixelsById",
             elementId);
     }
     
-    public TextEditorBase? GetTextEditorBaseOrDefaultByResourceUri(string resourceUri)
+    public TextEditorModel? ResourceUriGetModelOrDefault(string resourceUri)
     {
-        return TextEditorStates.TextEditorList
-            .FirstOrDefault(x => x.ResourceUri == resourceUri);
+        return ModelsCollection.TextEditorList
+            .FirstOrDefault(x =>
+                x.ResourceUri == resourceUri);
     }
     
-    public void ReloadTextEditorBase(
-        TextEditorKey textEditorKey,
+    public void ModelReload(
+        TextEditorModelKey textEditorModelKey,
         string content)
     {
         _dispatcher.Dispatch(
-            new ReloadTextEditorBaseAction(
-                textEditorKey,
+            new TextEditorModelsCollection.ReloadAction(
+                textEditorModelKey,
                 content));
     }
     
-    public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)
+    public TextEditorModel? ModelFindOrDefault(TextEditorModelKey textEditorModelKey)
+    {
+        return ModelsCollection.TextEditorList
+            .FirstOrDefault(x =>
+                x.ModelKey == textEditorModelKey);
+    }
+    
+    public TextEditorViewModel? ViewModelFindOrDefault(TextEditorViewModelKey textEditorViewModelKey)
+    {
+        return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
+            .FirstOrDefault(x => 
+                x.ViewModelKey == textEditorViewModelKey);
+    }
+    
+    public TextEditorGroup? GroupFindOrDefault(TextEditorGroupKey textEditorGroupKey)
+    {
+        return _textEditorGroupsCollectionWrap.Value.GroupsList
+            .FirstOrDefault(x => 
+                x.GroupKey == textEditorGroupKey);
+    }
+    
+    public async Task CursorPrimaryFocusAsync(string primaryCursorContentId)
     {
         await _jsRuntime.InvokeVoidAsync(
             "blazorTextEditor.focusHtmlElementById",
             primaryCursorContentId);
     }
     
-    public async Task SetTextEditorOptionsFromLocalStorageAsync()
+    public async Task GlobalOptionsSetFromLocalStorageAsync()
     {
         var optionsJsonString = (await _storageProvider
             .GetValue(ITextEditorService.LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY))
@@ -648,11 +605,11 @@ public class TextEditorService : ITextEditorService
         
         if (options.Theme is not null)
         {
-            var matchedTheme = _themeState.Value.ThemeRecordsList
+            var matchedTheme = _themeStateWrap.Value.ThemeRecordsList
                 .FirstOrDefault(x =>
                     x.ThemeKey == options.Theme.ThemeKey);
 
-            SetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
+            GlobalOptionsSetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
         }
         
         if (options.KeymapDefinition is not null)
@@ -661,34 +618,38 @@ public class TextEditorService : ITextEditorService
                 .FirstOrDefault(x =>
                     x.KeymapKey == options.KeymapDefinition.KeymapKey);
             
-            SetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
+            GlobalOptionsSetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
         }
         
         if (options.FontSizeInPixels is not null)
-            SetFontSize(options.FontSizeInPixels.Value);
+            GlobalOptionsSetFontSize(options.FontSizeInPixels.Value);
         
         if (options.CursorWidthInPixels is not null)
-            SetCursorWidth(options.CursorWidthInPixels.Value);
+            GlobalOptionsSetCursorWidth(options.CursorWidthInPixels.Value);
         
         if (options.HeightInPixels is not null)
-            SetHeight(options.HeightInPixels.Value);
+            GlobalOptionsSetHeight(options.HeightInPixels.Value);
         
         if (options.ShowNewlines is not null)
-            SetShowNewlines(options.ShowNewlines.Value);
+            GlobalOptionsSetShowNewlines(options.ShowNewlines.Value);
         
         if (options.ShowWhitespace is not null)
-            SetShowWhitespace(options.ShowWhitespace.Value);
+            GlobalOptionsSetShowWhitespace(options.ShowWhitespace.Value);
     }
     
-    public void WriteGlobalTextEditorOptionsToLocalStorage()
+    public void GlobalOptionsWriteToLocalStorage()
     {
         _dispatcher.Dispatch(
             new StorageEffects.WriteGlobalTextEditorOptionsToLocalStorageAction(
-                TextEditorStates.GlobalTextEditorOptions));
+                _textEditorGlobalOptionsWrap.Value.Options));
     }
     
     public void Dispose()
     {
-        _textEditorStates.StateChanged -= TextEditorStatesOnStateChanged;
+        _textEditorModelsCollectionWrap.StateChanged -= ModelsCollectionWrapOnModelsCollectionWrapChanged;
+        _textEditorViewModelsCollectionWrap.StateChanged -= ViewModelsCollectionWrapOnStateChanged;
+        _textEditorGroupsCollectionWrap.StateChanged -= GroupsCollectionWrapOnStateChanged;
+        _textEditorDiffsCollectionWrap.StateChanged -= TextEditorDiffsCollectionWrapOnStateChanged;
+        _textEditorGlobalOptionsWrap.StateChanged -= GlobalOptionsWrapOnStateChanged;
     }
 }

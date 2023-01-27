@@ -1,5 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.Tests.TestDataFolder;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -17,16 +17,16 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
             Key = "A"
         };
         
-        TextEditorService.HandleKeyboardEvent(
-            new KeyboardEventTextEditorBaseAction(
-                TextEditorKey,
+        TextEditorService.ModelHandleKeyboardEvent(
+            new TextEditorModelsCollection.KeyboardEventAction(
+                TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 keyboardEventArgs,
                 CancellationToken.None));
         
         Assert.Equal(
             keyboardEventArgs.Key, 
-            TextEditor.GetAllText());
+            TextEditorModel.GetAllText());
     }
     
     [Fact]
@@ -36,16 +36,16 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
 
         var content = TestData.CSharp.EXAMPLE_TEXT_173_LINES;
         
-        TextEditorService.InsertText(
-            new InsertTextTextEditorBaseAction(
-                TextEditorKey,
+        TextEditorService.ModelInsertText(
+            new TextEditorModelsCollection.InsertTextAction(
+                TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 content,
                 CancellationToken.None));
         
         Assert.Equal(
             content, 
-            TextEditor.GetAllText());
+            TextEditorModel.GetAllText());
     }
     
     /// <summary>
@@ -64,27 +64,27 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "A";
         
-        TextEditorService.InsertText(
-            new InsertTextTextEditorBaseAction(
-                TextEditorKey,
+        TextEditorService.ModelInsertText(
+            new TextEditorModelsCollection.InsertTextAction(
+                TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 content,
                 CancellationToken.None));
         
         Assert.Equal(
             content,
-            TextEditor.GetAllText());
+            TextEditorModel.GetAllText());
         
-        TextEditorService.DeleteTextByRange(
-            new DeleteTextByRangeTextEditorBaseAction(
-                TextEditorKey,
+        TextEditorService.ModelDeleteTextByRange(
+            new TextEditorModelsCollection.DeleteTextByRangeAction(
+                TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 1,
                 CancellationToken.None));
         
         Assert.Equal(
             string.Empty,
-            TextEditor.GetAllText());
+            TextEditorModel.GetAllText());
     }
     
     [Fact]
@@ -99,28 +99,28 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "Abcdefg";
         
-        TextEditorService.InsertText(
-            new InsertTextTextEditorBaseAction(
-                TextEditorKey,
+        TextEditorService.ModelInsertText(
+            new TextEditorModelsCollection.InsertTextAction(
+                TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 content,
                 CancellationToken.None));
         
         Assert.Equal(
             content,
-            TextEditor.GetAllText());
+            TextEditorModel.GetAllText());
         
         cursor.IndexCoordinates = (0, startingPositionIndex);
 
-        TextEditorService.DeleteTextByRange(
-            new DeleteTextByRangeTextEditorBaseAction(
-                TextEditorKey,
+        TextEditorService.ModelDeleteTextByRange(
+            new TextEditorModelsCollection.DeleteTextByRangeAction(
+                TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
                 count,
                 CancellationToken.None));
         
         Assert.Equal(
             content.Remove(startingPositionIndex, count),
-            TextEditor.GetAllText());
+            TextEditorModel.GetAllText());
     }
 }

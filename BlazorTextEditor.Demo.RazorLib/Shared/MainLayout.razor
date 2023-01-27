@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 @using BlazorALaCarte.DialogNotification.Installation
+@using BlazorALaCarte.Shared.Dimensions
 @using BlazorTextEditor.Demo.RazorLib.Links
 
 <PageTitle>BlazorTextEditor.Demo.ServerSide</PageTitle>
@@ -23,7 +24,7 @@
             
             
             var contentPaddingTopInRemInvariantCulture = contentPaddingTopInRem
-                .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                .ToCssValue();
         }
         
         <article class="content px-4"

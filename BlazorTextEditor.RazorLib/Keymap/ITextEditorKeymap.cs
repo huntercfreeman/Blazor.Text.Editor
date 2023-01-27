@@ -1,6 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Commands;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap;
@@ -14,7 +15,7 @@ public interface ITextEditorKeymap
     public string GetCursorCssClassString();
 
     public string GetCursorCssStyleString(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         TextEditorViewModel textEditorViewModel,
         TextEditorOptions textEditorOptions);
 }

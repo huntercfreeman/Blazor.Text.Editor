@@ -1,4 +1,5 @@
 using System.Text;
+using BlazorALaCarte.Shared.Dimensions;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.Virtualization;
@@ -23,7 +24,7 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
             else
             {
                 var widthInPixelsInvariantCulture = VirtualizationBoundary.WidthInPixels.Value
-                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    .ToCssValue();
                 
                 styleBuilder.Append($" width: {widthInPixelsInvariantCulture}px;");
             }
@@ -38,7 +39,7 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
             else
             {
                 var heightInPixelsInvariantCulture = VirtualizationBoundary.HeightInPixels.Value
-                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    .ToCssValue();
                 
                 styleBuilder.Append($" height: {heightInPixelsInvariantCulture}px;");
             }
@@ -53,7 +54,7 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
             else
             {
                 var leftInPixelsInvariantCulture = VirtualizationBoundary.LeftInPixels.Value
-                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    .ToCssValue();
                 
                 styleBuilder.Append($" left: {leftInPixelsInvariantCulture}px;");
             }
@@ -68,7 +69,7 @@ public partial class VirtualizationBoundaryDisplay : ComponentBase
             else
             {
                 var topInPixelsInvariantCulture = VirtualizationBoundary.TopInPixels.Value
-                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    .ToCssValue();
                 
                 styleBuilder.Append($" top: {topInPixelsInvariantCulture}px;");
             }

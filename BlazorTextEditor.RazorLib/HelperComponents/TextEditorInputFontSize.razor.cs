@@ -1,4 +1,5 @@
 using BlazorTextEditor.RazorLib.Store.TextEditorCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -8,7 +9,7 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 public partial class TextEditorInputFontSize : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorStates> TextEditorStatesWrap { get; set; } = null!;
+    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     
@@ -26,14 +27,14 @@ public partial class TextEditorInputFontSize : FluxorComponent
     
     private int TextEditorFontSize
     {
-        get => TextEditorStatesWrap.Value.GlobalTextEditorOptions.FontSizeInPixels 
+        get => TextEditorService.GlobalOptions.Options.FontSizeInPixels 
                ?? MINIMUM_FONT_SIZE_IN_PIXELS;
         set
         {
             if (value < MINIMUM_FONT_SIZE_IN_PIXELS)
                 value = MINIMUM_FONT_SIZE_IN_PIXELS;
             
-            TextEditorService.SetFontSize(value);
+            TextEditorService.GlobalOptionsSetFontSize(value);
         }
     }
 }

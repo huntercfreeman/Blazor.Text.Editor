@@ -6,6 +6,12 @@ namespace BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxObjects;
 
 public class FSharpCommentSyntax : IFSharpSyntax
 {
+    public FSharpCommentSyntax(
+        TextEditorTextSpan textEditorTextSpan)
+    {
+        TextEditorTextSpan = textEditorTextSpan;
+    }
+    
     public TextEditorTextSpan TextEditorTextSpan { get; }
     public ImmutableArray<IFSharpSyntax> Children => ImmutableArray<IFSharpSyntax>.Empty;
     public FSharpSyntaxKind FSharpSyntaxKind => FSharpSyntaxKind.Comment;

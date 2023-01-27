@@ -1,8 +1,12 @@
-﻿using BlazorALaCarte.Shared.Drag;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorALaCarte.Shared.Drag;
 using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorALaCarte.Shared.Store.DragCase;
 using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -21,7 +25,7 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
     private IDispatcher Dispatcher { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
@@ -55,7 +59,7 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
                                             TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
         
         var sliderProportionalTopInPixelsInvariantCulture = sliderProportionalTopInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
               
         var top = $"top: {sliderProportionalTopInPixelsInvariantCulture}px;";
         
@@ -67,7 +71,7 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
                                                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight;
         
         var sliderProportionalHeightInPixelsInvariantCulture = sliderProportionalHeightInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
 
         var height = $"height: {sliderProportionalHeightInPixelsInvariantCulture}px;";
         
@@ -110,7 +114,7 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
     public void SubscribeToDragEventForScrolling()
     {
         _dragEventHandler = DragEventHandlerScrollAsync;
-        Dispatcher.Dispatch(new SetDragStateAction(true, null));
+        Dispatcher.Dispatch(new DragState.SetDragStateAction(true, null));
     }
     
     private async Task DragEventHandlerScrollAsync(

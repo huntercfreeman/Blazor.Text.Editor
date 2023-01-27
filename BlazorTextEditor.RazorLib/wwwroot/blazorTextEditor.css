@@ -414,3 +414,26 @@
 .bte_use-vim-keymap {
     height: calc(100% - 200px);
 }
+
+.bte_text-editor-diff {
+    height: 100%;
+}
+
+.bte_text-editor-diff-header {
+    display: flex;
+    height: var(--bte_diff-header-height);
+}
+
+.bte_text-editor-diff-body {
+    display: flex;
+    height: calc(100% - var(--bte_diff-header-height));
+}
+
+.bte_text-editor-diff-body-separator {
+    background-color: var(--balc_primary-border-color);
+    width: var(--bte_diff-body-separator-width);
+}
+
+.bte_text-editor-diff-comparison-item {
+    width: calc(50% - var(--bte_diff-body-separator-width) / 2);
+}

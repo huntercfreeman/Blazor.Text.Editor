@@ -1,3 +1,9 @@
+/*
+This color theme is for the TextEditor specifically.
+
+The default colors are a clone of the Light Theme found in Visual Studio.
+*/
+
 .balc_visual-studio-light-theme-clone {
     --bte_primary-font-color: #000000;
     --bte_text-editor-cursor-foreground-color: #404040;

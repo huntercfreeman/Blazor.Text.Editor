@@ -1,14 +1,14 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib.Commands;
 
 public interface ITextEditorCommandParameter
 {
-    public TextEditorBase TextEditorBase { get; }
+    public TextEditorModel TextEditorModel { get; }
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; }
     public ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots { get; }
     public IClipboardProvider ClipboardProvider { get; }

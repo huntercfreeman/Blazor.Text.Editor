@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Model;
 
 namespace BlazorTextEditor.RazorLib.Autocomplete;
 
@@ -7,6 +7,6 @@ public interface IAutocompleteIndexer : IDisposable
 {
     public ImmutableArray<string> IndexedStrings { get; }
     
-    public Task IndexTextEditorAsync(TextEditorBase textEditorBase);
+    public Task IndexTextEditorAsync(TextEditorModel textEditorModel);
     public Task IndexWordAsync(string word);
 }

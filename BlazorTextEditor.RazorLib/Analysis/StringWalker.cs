@@ -2,7 +2,7 @@
 using System.Text;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Lexing;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Model;
 
 namespace BlazorTextEditor.RazorLib.Analysis;
 
@@ -11,7 +11,7 @@ namespace BlazorTextEditor.RazorLib.Analysis;
 ///     <see cref="ParserFacts.END_OF_FILE" />.
 ///     <br /><br />
 ///     Provides common API that can be used when implementing an <see cref="ILexer" />
-///     for the <see cref="TextEditorBase" />.
+///     for the <see cref="TextEditorModel" />.
 ///     <br /><br />
 ///     Additionally one can write a parser that takes in a string in order to handle
 ///     contextual lexing. The <see cref="ILexer" /> can then traverse the parsed result
@@ -302,14 +302,7 @@ public class StringWalker
     
     /// <summary>
     /// <see cref="ConsumeWord"/> will return immediately upon encountering whitespace.
-    /// <br/><br/>
-    /// That is to say, one should invoke <see cref="SkipWhitespace"/>
-    /// if they want to modify the position index to be at the next word.
-    /// <br/><br/>
-    /// Otherwise, <see cref="ConsumeWord"/> must be invoked foreach whitespace character
-    /// between each word.
     /// </summary>
-    /// <returns></returns>
     public (TextEditorTextSpan textSpan, string value) ConsumeWord(
         ImmutableArray<char>? additionalCharactersToBreakOn = null)
     {

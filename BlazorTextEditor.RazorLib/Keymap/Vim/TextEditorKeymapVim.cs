@@ -1,11 +1,13 @@
-﻿using BlazorALaCarte.Shared.Keyboard;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorALaCarte.Shared.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Commands.Vim;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Keymap.Default;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Keymap.Vim;
@@ -35,7 +37,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
     }
     
     public string GetCursorCssStyleString(
-        TextEditorBase textEditorBase,
+        TextEditorModel textEditorModel,
         TextEditorViewModel textEditorViewModel,
         TextEditorOptions textEditorOptions)
     {
@@ -48,7 +50,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             case VimMode.VisualLine:
             {
                 var characterWidthInPixelsInvariantCulture = characterWidthInPixels
-                    .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    .ToCssValue();
                 
                 return $"width: {characterWidthInPixelsInvariantCulture}px;";
             }
@@ -94,7 +96,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                         TextEditorCursor.MoveCursor(
                             keyboardEventArgs,
                             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                            textEditorCommandParameter.TextEditorBase);
+                            textEditorCommandParameter.TextEditorModel);
 
                         return Task.CompletedTask;
                     },
@@ -231,7 +233,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     textEditorCommandParameter =>
                     {
                         var positionIndex =
-                            textEditorCommandParameter.TextEditorBase.GetPositionIndex(
+                            textEditorCommandParameter.TextEditorModel.GetPositionIndex(
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
@@ -266,14 +268,14 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     textEditorCommandParameter =>
                     {
                         var startOfRowPositionIndexInclusive =
-                            textEditorCommandParameter.TextEditorBase.GetPositionIndex(
+                            textEditorCommandParameter.TextEditorModel.GetPositionIndex(
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                                 0);
 
                         textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
                             startOfRowPositionIndexInclusive;
 
-                        var endOfRowPositionIndexExclusive = textEditorCommandParameter.TextEditorBase.RowEndingPositions[
+                        var endOfRowPositionIndexExclusive = textEditorCommandParameter.TextEditorModel.RowEndingPositions[
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex]
                             .positionIndex;
                         
@@ -291,15 +293,15 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             }
             case ":":
             {
-                command = new TextEditorCommand(
-                    async textEditorCommandParameter =>
+                command = new TextEditorCommand(textEditorCommandParameter =>
                     {
-                        textEditorCommandParameter.TextEditorService.SetViewModelWith(
-                            textEditorCommandParameter.TextEditorViewModel.TextEditorViewModelKey,
+                        textEditorCommandParameter.TextEditorService.ViewModelWith(
+                            textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                             previousViewModel => previousViewModel with
                             {
                                 DisplayCommandBar = true
                             });
+                        return Task.CompletedTask;
                     },
                     false,
                     "Command Mode",
@@ -312,10 +314,10 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 command = new TextEditorCommand(
                     async textEditorCommandParameter =>
                     {
-                        textEditorCommandParameter.TextEditorService.UndoEdit(
-                            textEditorCommandParameter.TextEditorBase.Key);
+                        textEditorCommandParameter.TextEditorService.ModelUndoEdit(
+                            textEditorCommandParameter.TextEditorModel.ModelKey);
 
-                        await textEditorCommandParameter.TextEditorBase
+                        await textEditorCommandParameter.TextEditorModel
                             .ApplySyntaxHighlightingAsync();
                     },
                     false,
@@ -331,10 +333,10 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     command = new TextEditorCommand(
                         async textEditorCommandParameter =>
                         {
-                            textEditorCommandParameter.TextEditorService.RedoEdit(
-                                textEditorCommandParameter.TextEditorBase.Key);
+                            textEditorCommandParameter.TextEditorService.ModelRedoEdit(
+                                textEditorCommandParameter.TextEditorModel.ModelKey);
                             
-                            await textEditorCommandParameter.TextEditorBase
+                            await textEditorCommandParameter.TextEditorModel
                                 .ApplySyntaxHighlightingAsync();
                         },
                         false,

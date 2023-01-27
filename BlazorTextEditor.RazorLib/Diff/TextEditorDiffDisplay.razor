@@ -1,0 +1,29 @@
+﻿@using BlazorTextEditor.RazorLib.ViewModel
+
+<div class="bte_text-editor-diff @CssClassString"
+     style="@CssStyleString">
+     
+     @{
+          var textEditorDiff = TextEditorService.DiffsCollection.DiffsList
+               .FirstOrDefault(x => x.DiffKey == TextEditorDiffKey);
+     }
+     
+     @if (textEditorDiff is null)
+     {
+          <div>@nameof(textEditorDiff) was null</div>
+     }
+     else
+     {
+          <div class="bte_text-editor-diff-body">
+               <div class="bte_text-editor-diff-comparison-item">
+                    <TextEditorViewModelDisplay TextEditorViewModelKey="textEditorDiff.BeforeViewModelKey"/>
+               </div>
+
+               <div class="bte_text-editor-diff-body-separator"></div>
+
+               <div class="bte_text-editor-diff-comparison-item">
+                    <TextEditorViewModelDisplay TextEditorViewModelKey="textEditorDiff.AfterViewModelKey"/>
+               </div>
+          </div>
+     }
+</div>

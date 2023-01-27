@@ -1,0 +1,77 @@
+/*
+This color theme is for the TextEditor specifically.
+
+This color theme is used within BlazorStudio:
+https://github.com/huntercfreeman/BlazorStudio
+
+The Library's README makes no mention of this theme. The Visual Studio color themes
+clones provide a more familiar environment for people that use the Library.
+*/
+
+.balc_light-theme {
+    --bte_primary-font-color: #0A0A0A;
+    --bte_text-editor-cursor-foreground-color: #404040;
+    --bte_text-selection-background-color: #ADD6FF;
+    --bte_body-background-color: #FCFCFC;
+    --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
+    --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;
+    --bte_newline-foreground-color: #007F00;
+    --bte_newline-background-color: #faeee2;
+    --bte_method-foreground-color: #0CA500;
+    --bte_type-foreground-color: #2397D5;
+    --bte_parameter-foreground-color: #7400BC;
+    --bte_string-literal-foreground-color: #AA0F0F;
+    --bte_keyword-foreground-color: #E66400;
+    --bte_comment-foreground-color: #7E7C7C;
+    --bte_tag-name-foreground-color: #E66400;
+    --bte_injected-language-fragment-color: #E001D9;
+    --bte_css-property-name-color: #006E91;
+    --bte_css-property-value-color: #AA0F0F;
+    --bte_css-identifier-color: #E66400;
+    --bte_attribute-name-color: #006E91;
+    --bte_attribute-value-color : #AA0F0F;
+    --bte_json-property-key-color : #006E91;
+    --bte_json-property-value-color : #AA0F0F;
+    --bte_text-editor-gutter-border-color: #28ae0c;
+    --bte_text-editor-gutter-background-color: #F8F8EE;
+    --bte_secondary-font-color: var(--bte_primary-font-color);
+    --bte_secondary-background-color: #e6e6e6;
+    --bte_primary-overlay-box-shadow-color: #000000;
+    --bte_button-background-color: #b2d1ff;
+    --bte_button-foreground-color: var(--bte_primary-font-color);
+    --bte_button-disabled-background-color: #d7dde6;
+    --bte_button-disabled-foreground-color: var(--bte_primary-font-color);
+    --bte_resize-column-background-color: black;
+    --bte_resize-row-background-color: black;
+    --bte_dialog-display-background-color: rgb(252, 252, 245);
+    --bte_primary-box-shadow-color: #000000;
+    --bte_dialog-display-toolbar-background-color: #cad5eb;
+    --bte_primary-hover-background-color: #dda133;
+    --bte-primary-outline-color: #ADD6FF;
+    --bte-primary-active-not-focused-background-color: #d9dcdf;
+    --bte-primary-active-focused-background-color: #ADD6FF;
+    --bte_dropdown-display-default-background-color: #e6e6e6;
+    --bte_primary-emphasis-foreground-color: #124df9;
+    --bte_primary-disabled-background-color: #cfcfcf;
+    --bte_primary-disabled-foreground-color: #25180c;
+    --bte_primary-disabled-hover-background-color: var(--bte_primary-disabled-foreground-color);
+    --bte_primary-disabled-hover-foreground-color: var(--bte_primary-disabled-background-color);
+    --bte_notification-display-background-color: rgb(252, 252, 245);
+    --bte_notification-display-toolbar-background-color: rgb(192, 214, 247);
+    --bte_active-button-background-color: #d889e8;
+    --bte_active-button-primary-font-color: var(--bte_primary-font-color);
+    --bte_tertiary-background-color: #f3f0dc;
+    --bte_tertiary-foreground-color: var(--bte_primary-font-color);
+    --bte_hr-primary-background-color: currentColor;
+    --bte_error-foreground-color: red;
+    --bte_scrollbar-opacity: 0.5;
+    --bte_scrollbar-background-color: #9090af;
+    --bte_scrollbar-opacity-on-hover: 0.8;
+    --bte_scrollbar-slider-background-color: black;
+    --btv_outline-color: #33bcec;
+    --btv_active-but-not-focused-background-color: #7f8e93;
+    --btv_context-menu-background-color: red;
+    --btv_context-menu-foreground-color: green;
+    --btv-tree-view-expansion-chevron-color: currentColor;
+    --btv-tree-view-children-border-color: currentColor;
+}

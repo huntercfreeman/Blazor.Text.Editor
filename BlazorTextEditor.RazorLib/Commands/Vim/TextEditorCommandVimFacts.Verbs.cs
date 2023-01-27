@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Keymap.Vim;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Actions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 
 namespace BlazorTextEditor.RazorLib.Commands.Vim;
 
@@ -44,7 +44,7 @@ public static partial class TextEditorCommandVimFacts
                     true);
 
                 var textEditorCommandParameterForMotion = new TextEditorCommandParameter(
-                    textEditorCommandParameter.TextEditorBase,
+                    textEditorCommandParameter.TextEditorModel,
                     TextEditorCursorSnapshot.TakeSnapshots(textEditorCursorForMotion),
                     textEditorCommandParameter.ClipboardProvider,
                     textEditorCommandParameter.TextEditorService,
@@ -63,15 +63,15 @@ public static partial class TextEditorCommandVimFacts
                         motionResult.LowerPositionIndexImmutableCursor.ColumnIndex),
                     true);
 
-                var deleteTextTextEditorBaseAction = new DeleteTextByRangeTextEditorBaseAction(
-                    textEditorCommandParameter.TextEditorBase.Key,
+                var deleteTextTextEditorModelAction = new TextEditorModelsCollection.DeleteTextByRangeAction(
+                    textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
                     motionResult.PositionIndexDisplacement,
                     CancellationToken.None);
 
                 textEditorCommandParameter
                     .TextEditorService
-                    .DeleteTextByRange(deleteTextTextEditorBaseAction);
+                    .ModelDeleteTextByRange(deleteTextTextEditorModelAction);
             },
             true,
             $"Vim::Delete({innerTextEditorCommand.DisplayName})",

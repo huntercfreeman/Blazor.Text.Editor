@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.TextEditor;
+﻿using BlazorTextEditor.RazorLib.Model;
 
 namespace BlazorTextEditor.Demo.ClassLib.TextEditor;
 
@@ -6,6 +6,6 @@ public static partial class TextEditorFacts
 {
     public static class JavaScript
     {
-        public static readonly TextEditorKey JavaScriptTextEditorKey = TextEditorKey.NewTextEditorKey();
+        public static readonly TextEditorModelKey JavaScriptTextEditorModelKey = TextEditorModelKey.NewTextEditorModelKey();
     }
 }

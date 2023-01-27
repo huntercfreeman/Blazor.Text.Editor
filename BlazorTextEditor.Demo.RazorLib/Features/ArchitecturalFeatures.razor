@@ -1,0 +1,58 @@
+﻿<div class="bted_feature">
+    <span class="bted_emphasize">
+        Architectural Features:
+    </span>
+
+    <ul class="balc_indent-child-content">
+        <li class="bted_feature">
+            TextEditorModel
+            
+            <ul class="balc_indent-child-content">
+                <li class="bted_feature">
+                    Store the RichCharacter class instances that represent the text. 
+                    Each RichCharacter has only two properties and no fields. The properties are:
+                    'char Value', and 'byte DecorationByte'.
+                </li>
+                <li class="bted_feature">
+                    Each TextEditorModel has a unique underlying resource uri.
+                    Therefore, if one has a text file named "myHomework.txt",
+                    then only one TextEditorModel can exist with the resource uri of "myHomework.txt".
+                </li>
+            </ul>
+        </li>
+        <li class="bted_feature">
+            TextEditorViewModel
+            
+            <ul class="balc_indent-child-content">
+                <li class="bted_feature">
+                    Store the state of the user interface. For example, the user's cursor
+                    is stored here.
+                </li>
+                <li class="bted_feature">
+                    Each TextEditorViewModel has a unique underlying TextEditorModel.
+                    Therefore, if one has a TextEditorModel of a text file named "myHomework.txt",
+                    then arbitrary amount of TextEditorViewModels can reference that TextEditorModel.
+                </li>
+                <li class="bted_feature">
+                    For example, maybe one has a main text editor, but also a peek window open
+                    of the same underlying TextEditorModel. The main text editor is one TextEditorViewModel
+                    and the peek window is a separate TextEditorViewModel. Both of those TextEditorViewModels
+                    are referencing the same TextEditorModel. Therefore typing into the peek window will also
+                    result in the main text editor re-rendering with the updated text and vice versa.
+                </li>
+            </ul>
+        </li>
+        <li class="bted_feature">
+            TextEditorGroup
+            
+            <ul class="balc_indent-child-content">
+                <li class="bted_feature">
+                    Store the state of none or many tabs, and which tab is the active one.
+                </li>
+                <li class="bted_feature">
+                    Each tab represents a TextEditorViewModel.
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

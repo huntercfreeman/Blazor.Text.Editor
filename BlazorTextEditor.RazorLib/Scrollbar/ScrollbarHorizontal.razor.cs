@@ -1,8 +1,12 @@
-﻿using BlazorALaCarte.Shared.Drag;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorALaCarte.Shared.Drag;
 using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorALaCarte.Shared.Store.DragCase;
 using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModels;
+using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.ViewModel;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -21,7 +25,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     private IJSRuntime JsRuntime { get; set; } = null!;
     
     [CascadingParameter]
-    public TextEditorBase TextEditorBase { get; set; } = null!;
+    public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
@@ -50,7 +54,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                                   ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
         
         var scrollbarWidthInPixelsInvariantCulture = scrollbarWidthInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
         
         var width = $"width: {scrollbarWidthInPixelsInvariantCulture}px;";
 
@@ -68,7 +72,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                                              TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
         
         var sliderProportionalLeftInPixelsInvariantCulture = sliderProportionalLeftInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
 
         var left = $"left: {sliderProportionalLeftInPixelsInvariantCulture}px;";
         
@@ -80,7 +84,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                                               TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
         
         var sliderProportionalWidthInPixelsInvariantCulture = sliderProportionalWidthInPixels
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToCssValue();
 
         var width = $"width: {sliderProportionalWidthInPixelsInvariantCulture}px;";
         
@@ -123,7 +127,7 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
     public void SubscribeToDragEventForScrolling()
     {
         _dragEventHandler = DragEventHandlerScrollAsync;
-        Dispatcher.Dispatch(new SetDragStateAction(true, null));
+        Dispatcher.Dispatch(new DragState.SetDragStateAction(true, null));
     }
     
     private async Task DragEventHandlerScrollAsync(
