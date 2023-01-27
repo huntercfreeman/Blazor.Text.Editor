@@ -117,7 +117,6 @@ div.top-row:not(.navbar) {
 
 .bted_diff-matrix-debug {
     font-family: monospace;
-    border-right: 1px solid var(--balc_primary-border-color);
 }
 
 .bted_diff-matrix-debug-row {

@@ -85,13 +85,13 @@ public class TextEditorService : ITextEditorService
         _textEditorGlobalOptionsWrap.StateChanged += GlobalOptionsWrapOnStateChanged;
     }
 
-    public TextEditorModelsCollection TextEditorModelsCollection => _textEditorModelsCollectionWrap.Value;
-    public TextEditorViewModelsCollection TextEditorViewModelsCollection => _textEditorViewModelsCollectionWrap.Value;
-    public TextEditorGroupsCollection TextEditorGroupsCollection => _textEditorGroupsCollectionWrap.Value;
-    public TextEditorDiffsCollection TextEditorDiffsCollection => _textEditorDiffsCollectionWrap.Value;
-    public TextEditorGlobalOptions TextEditorGlobalOptions => _textEditorGlobalOptionsWrap.Value;
+    public TextEditorModelsCollection ModelsCollection => _textEditorModelsCollectionWrap.Value;
+    public TextEditorViewModelsCollection ViewModelsCollection => _textEditorViewModelsCollectionWrap.Value;
+    public TextEditorGroupsCollection GroupsCollection => _textEditorGroupsCollectionWrap.Value;
+    public TextEditorDiffsCollection DiffsCollection => _textEditorDiffsCollectionWrap.Value;
+    public TextEditorGlobalOptions GlobalOptions => _textEditorGlobalOptionsWrap.Value;
     
-    public ThemeRecord? GlobalThemeValue => _textEditorGlobalOptionsWrap.Value.Options.Theme;
+    public ThemeRecord? GlobalTheme => _textEditorGlobalOptionsWrap.Value.Options.Theme;
     public string GlobalThemeCssClassString => _textEditorGlobalOptionsWrap.Value.Options.Theme?.CssClassString ?? string.Empty;
     public string GlobalFontSizeInPixelsStyling => $"font-size: {_textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value.ToCssValue()}px;";
     public bool GlobalShowNewlines => _textEditorGlobalOptionsWrap.Value.Options.ShowNewlines!.Value;
@@ -188,7 +188,7 @@ public class TextEditorService : ITextEditorService
 
     public string? GetAllText(TextEditorModelKey textEditorModelKey)
     {
-        return TextEditorModelsCollection.TextEditorList
+        return ModelsCollection.TextEditorList
             .FirstOrDefault(x => x.ModelKey == textEditorModelKey)
             ?.GetAllText();
     }
@@ -545,7 +545,7 @@ public class TextEditorService : ITextEditorService
     
     public TextEditorModel? GetTextEditorModelOrDefaultByResourceUri(string resourceUri)
     {
-        return TextEditorModelsCollection.TextEditorList
+        return ModelsCollection.TextEditorList
             .FirstOrDefault(x =>
                 x.ResourceUri == resourceUri);
     }
@@ -562,7 +562,7 @@ public class TextEditorService : ITextEditorService
     
     public TextEditorModel? GetTextEditorModelOrDefault(TextEditorModelKey textEditorModelKey)
     {
-        return TextEditorModelsCollection.TextEditorList
+        return ModelsCollection.TextEditorList
             .FirstOrDefault(x =>
                 x.ModelKey == textEditorModelKey);
     }

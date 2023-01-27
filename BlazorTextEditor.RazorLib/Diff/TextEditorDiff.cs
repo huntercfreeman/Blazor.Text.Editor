@@ -3,6 +3,9 @@ using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib.Diff;
 
+/// <summary>
+/// TODO: Continue working on the diff editor
+/// </summary>
 public record TextEditorDiff(
     TextEditorDiffKey DiffKey,
     TextEditorViewModelKey BeforeViewModelKey,

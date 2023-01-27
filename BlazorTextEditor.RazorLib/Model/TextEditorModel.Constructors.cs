@@ -1,10 +1,12 @@
-﻿using BlazorTextEditor.RazorLib.Decoration;
+﻿using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Keymap.Default;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Model;
 
+/// <summary>Stores the <see cref="RichCharacter"/> class instances that represent the text.<br/><br/>Each TextEditorModel has a unique underlying resource uri.<br/><br/>Therefore, if one has a text file named "myHomework.txt", then only one TextEditorModel can exist with the resource uri of "myHomework.txt".</summary>
 public partial class TextEditorModel
 {
     public TextEditorModel(

@@ -27,7 +27,7 @@ public partial class TextEditorInputFontSize : FluxorComponent
     
     private int TextEditorFontSize
     {
-        get => TextEditorService.TextEditorGlobalOptions.Options.FontSizeInPixels 
+        get => TextEditorService.GlobalOptions.Options.FontSizeInPixels 
                ?? MINIMUM_FONT_SIZE_IN_PIXELS;
         set
         {

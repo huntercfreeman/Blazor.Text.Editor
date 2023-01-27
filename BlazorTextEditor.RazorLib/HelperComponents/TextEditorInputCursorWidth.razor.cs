@@ -29,7 +29,7 @@ public partial class TextEditorInputCursorWidth : FluxorComponent
     
     private double TextEditorCursorWidth
     {
-        get => TextEditorService.TextEditorGlobalOptions.Options.CursorWidthInPixels 
+        get => TextEditorService.GlobalOptions.Options.CursorWidthInPixels 
                ?? MINIMUM_CURSOR_SIZE_IN_PIXELS;
         set
         {
