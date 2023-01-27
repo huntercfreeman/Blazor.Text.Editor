@@ -23,7 +23,7 @@ public partial class TextEditorPage : ComponentBase
     private const string INPUT_RESOURCE_URI_ELEMENT_ID = "bted_input-resource-uri";
     private const string INPUT_WELL_KNOWN_MODEL_KIND_ELEMENT_ID = "bted_input-well-known-model-kind";
 
-    // TODO: The 10em written in the calc() was thrown together quickly. This needs to be done thoroughly.
+    // TODO: The values written in the calc() were thrown together quickly. This needs to be done thoroughly.
     private const string TEXT_EDITOR_GROUP_DISPLAY_CSS_STYLE_STRING = "height: calc(100% - 10em);";
 
     private static readonly TextEditorGroupKey TextEditorDemoGroupKey = TextEditorGroupKey.NewTextEditorGroupKey();

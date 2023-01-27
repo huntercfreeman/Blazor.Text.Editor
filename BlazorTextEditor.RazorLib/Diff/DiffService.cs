@@ -7,7 +7,7 @@ public static class DiffService
     /// <br/><br/>
     /// Watching https://www.youtube.com/watch?v=9n8jI2267MM
     /// </summary>
-    public static void CalculateDiff(
+    public static DiffMatchCell[,] CalculateDiff(
         string beforeText,
         string afterText)
     {
@@ -71,7 +71,7 @@ public static class DiffService
                 matchMatrix[beforeIndex, afterIndex] = diffMatchCell;
             }
         }
-        
-        var z = 2;
+
+        return matchMatrix;
     }
 }

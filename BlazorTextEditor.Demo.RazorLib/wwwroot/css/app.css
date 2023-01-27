@@ -114,3 +114,29 @@ div.top-row:not(.navbar) {
 .bted_emphasize {
     color: var(--balc_primary-emphasis-foreground-color);
 }
+
+.bted_diff-matrix-debug {
+    font-family: monospace;
+    border-right: 1px solid var(--balc_primary-border-color);
+}
+
+.bted_diff-matrix-debug-row {
+    display: flex;
+    width: fit-content;
+    height: max(3em, 3ch);
+    border-left: 1px solid var(--balc_primary-border-color);
+    border-bottom: 1px solid var(--balc_primary-border-color);
+}
+
+.bted_diff-matrix-debug-row:first-of-type {
+    border-top: 1px solid var(--balc_primary-border-color);
+}
+
+.bted_diff-matrix-debug-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: max(3em, 3ch);
+    height: 100%;
+    border-right: 1px solid var(--balc_primary-border-color);
+}

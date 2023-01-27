@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
+﻿using BlazorALaCarte.Shared.Dimensions;
+using BlazorTextEditor.Demo.ClassLib.TestDataFolder;
 using BlazorTextEditor.Demo.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Diff;
@@ -12,7 +13,7 @@ public partial class DiffEditorDemo : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
-
+    
     private static readonly TextEditorDiffKey DiffDemoDiffKey = TextEditorDiffKey.NewTextEditorDiffKey();
     
     private static readonly TextEditorViewModelKey DiffDemoBeforeViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
@@ -26,7 +27,7 @@ public partial class DiffEditorDemo : ComponentBase
             "DiffDemoBefore",
             DateTime.UtcNow,
             "C#",
-            TestData.CSharp.DIFF_DEMO_BEFORE_TEXT);
+            TestData.Diff.BEFORE_TEXT);
         
         TextEditorService.RegisterTemplatedTextEditorModel(
             TextEditorFacts.CSharp.DiffDemoAfterModelKey,
@@ -34,7 +35,7 @@ public partial class DiffEditorDemo : ComponentBase
             "DiffDemoAfter",
             DateTime.UtcNow,
             "C#",
-            TestData.CSharp.DIFF_DEMO_AFTER_TEXT);
+            TestData.Diff.AFTER_TEXT);
         
         TextEditorService.RegisterViewModel(
             DiffDemoBeforeViewModelKey,
@@ -50,5 +51,13 @@ public partial class DiffEditorDemo : ComponentBase
             DiffDemoAfterViewModelKey);
         
         base.OnInitialized();
+    }
+    
+    /// <summary>
+    /// TODO: The values written in the calc() were thrown together quickly. This needs to be done thoroughly.
+    /// </summary>
+    private string GetTextEditorDiffDisplayCssStyleString(int rowCount)
+    {
+        return $"height: calc(100% - 6em - max(3em, 3ch) * {rowCount.ToCssValue()});";
     }
 }
