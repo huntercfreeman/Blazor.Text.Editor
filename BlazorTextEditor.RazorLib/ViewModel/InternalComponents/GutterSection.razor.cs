@@ -25,7 +25,7 @@ public partial class GutterSection : ComponentBase
         if (TextEditorViewModel.TextEditorRenderStateKey != _previousTextEditorRenderStateKey)
         {
             _previousTextEditorRenderStateKey = TextEditorViewModel.TextEditorRenderStateKey;
-            TextEditorService.SetGutterScrollTopAsync(
+            TextEditorService.ViewModelSetGutterScrollTopAsync(
                 viewModel.GutterElementId,
                 viewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollTop);
         }

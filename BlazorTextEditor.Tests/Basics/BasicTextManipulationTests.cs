@@ -17,7 +17,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
             Key = "A"
         };
         
-        TextEditorService.HandleKeyboardEvent(
+        TextEditorService.ModelHandleKeyboardEvent(
             new TextEditorModelsCollection.KeyboardEventAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -36,7 +36,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
 
         var content = TestData.CSharp.EXAMPLE_TEXT_173_LINES;
         
-        TextEditorService.InsertText(
+        TextEditorService.ModelInsertText(
             new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -64,7 +64,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "A";
         
-        TextEditorService.InsertText(
+        TextEditorService.ModelInsertText(
             new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -75,7 +75,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
             content,
             TextEditorModel.GetAllText());
         
-        TextEditorService.DeleteTextByRange(
+        TextEditorService.ModelDeleteTextByRange(
             new TextEditorModelsCollection.DeleteTextByRangeAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -99,7 +99,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "Abcdefg";
         
-        TextEditorService.InsertText(
+        TextEditorService.ModelInsertText(
             new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -112,7 +112,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
         
         cursor.IndexCoordinates = (0, startingPositionIndex);
 
-        TextEditorService.DeleteTextByRange(
+        TextEditorService.ModelDeleteTextByRange(
             new TextEditorModelsCollection.DeleteTextByRangeAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),

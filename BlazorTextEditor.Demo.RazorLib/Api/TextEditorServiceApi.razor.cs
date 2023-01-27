@@ -17,7 +17,7 @@ public partial class TextEditorServiceApi : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.CSharp.TextEditorServiceApiModelKey,
             WellKnownModelKind.CSharp,
             nameof(TextEditorServiceApi),
@@ -25,7 +25,7 @@ public partial class TextEditorServiceApi : ComponentBase
             "C#",
             TestData.CSharp.TEXT_EDITOR_SERVICE_API);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             TextEditorServiceApiViewModelKey,
             TextEditorFacts.CSharp.TextEditorServiceApiModelKey);
         

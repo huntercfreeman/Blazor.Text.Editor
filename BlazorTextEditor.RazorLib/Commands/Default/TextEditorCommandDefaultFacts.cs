@@ -91,7 +91,7 @@ public static class TextEditorCommandDefaultFacts
             await textEditorCommandParameter.TextEditorViewModel.FocusTextEditorAsync();
             
             textEditorCommandParameter.TextEditorService
-                .HandleKeyboardEvent(new TextEditorModelsCollection.KeyboardEventAction(
+                .ModelHandleKeyboardEvent(new TextEditorModelsCollection.KeyboardEventAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     textEditorCursorSnapshots,
                     new KeyboardEventArgs
@@ -111,7 +111,7 @@ public static class TextEditorCommandDefaultFacts
                 .ClipboardProvider
                 .ReadClipboard();
 
-            textEditorCommandParameter.TextEditorService.InsertText(
+            textEditorCommandParameter.TextEditorService.ModelInsertText(
                 new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     new[]
@@ -138,7 +138,7 @@ public static class TextEditorCommandDefaultFacts
                 onSaveRequestedFunc
                     .Invoke(textEditorCommandParameter.TextEditorModel);
                 
-                textEditorCommandParameter.TextEditorService.SetViewModelWith(
+                textEditorCommandParameter.TextEditorService.ViewModelWith(
                     textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
@@ -163,7 +163,7 @@ public static class TextEditorCommandDefaultFacts
             primaryCursor.TextEditorSelection.EndingPositionIndex =
                 textEditorCommandParameter.TextEditorModel.DocumentLength;
             
-            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+            textEditorCommandParameter.TextEditorService.ViewModelWith(
                 textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
@@ -179,7 +179,7 @@ public static class TextEditorCommandDefaultFacts
     public static readonly TextEditorCommand Undo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .UndoEdit(textEditorCommandParameter.TextEditorModel.ModelKey);
+                .ModelUndoEdit(textEditorCommandParameter.TextEditorModel.ModelKey);
             
             return Task.CompletedTask;
         },
@@ -190,7 +190,7 @@ public static class TextEditorCommandDefaultFacts
     public static readonly TextEditorCommand Redo = new(textEditorCommandParameter =>
         {
             textEditorCommandParameter.TextEditorService
-                .RedoEdit(textEditorCommandParameter.TextEditorModel.ModelKey);
+                .ModelRedoEdit(textEditorCommandParameter.TextEditorModel.ModelKey);
 
             return Task.CompletedTask;
         },
@@ -200,7 +200,7 @@ public static class TextEditorCommandDefaultFacts
     
     public static readonly TextEditorCommand Remeasure = new(textEditorCommandParameter =>
         {
-            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+            textEditorCommandParameter.TextEditorService.ViewModelWith(
                 textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
@@ -208,7 +208,7 @@ public static class TextEditorCommandDefaultFacts
                     TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
                 });
             
-            textEditorCommandParameter.TextEditorService.SetViewModelWith(
+            textEditorCommandParameter.TextEditorService.ViewModelWith(
                 textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
@@ -318,7 +318,7 @@ public static class TextEditorCommandDefaultFacts
                 
             textEditorCommandParameter
                 .TextEditorService
-                .InsertText(insertTextTextEditorModelAction);
+                .ModelInsertText(insertTextTextEditorModelAction);
             return Task.CompletedTask;
         },
         false,
@@ -355,7 +355,7 @@ public static class TextEditorCommandDefaultFacts
                 
                 textEditorCommandParameter
                     .TextEditorService
-                    .InsertText(insertTextTextEditorModelAction);
+                    .ModelInsertText(insertTextTextEditorModelAction);
             }
 
             var lowerBoundPositionIndexChange = 1;
@@ -444,7 +444,7 @@ public static class TextEditorCommandDefaultFacts
                 
                     textEditorCommandParameter
                         .TextEditorService
-                        .DeleteTextByRange(deleteTextTextEditorModelAction);
+                        .ModelDeleteTextByRange(deleteTextTextEditorModelAction);
                 }
                 else if (readResult.StartsWith(KeyboardKeyFacts.WhitespaceCharacters.SPACE))
                 {
@@ -470,7 +470,7 @@ public static class TextEditorCommandDefaultFacts
                 
                     textEditorCommandParameter
                         .TextEditorService
-                        .DeleteTextByRange(deleteTextTextEditorModelAction);
+                        .ModelDeleteTextByRange(deleteTextTextEditorModelAction);
                 }
 
                 // Modify the lower bound of user's text selection
@@ -553,7 +553,7 @@ public static class TextEditorCommandDefaultFacts
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (temporaryIndexCoordinates.rowIndex, lengthOfRow);
             
-            textEditorCommandParameter.TextEditorService.InsertText(
+            textEditorCommandParameter.TextEditorService.ModelInsertText(
                 new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
@@ -580,7 +580,7 @@ public static class TextEditorCommandDefaultFacts
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (temporaryIndexCoordinates.rowIndex, 0);
             
-            textEditorCommandParameter.TextEditorService.InsertText(
+            textEditorCommandParameter.TextEditorService.ModelInsertText(
                 new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.TextEditorModel.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(

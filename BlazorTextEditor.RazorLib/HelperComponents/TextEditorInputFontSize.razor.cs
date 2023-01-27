@@ -34,7 +34,7 @@ public partial class TextEditorInputFontSize : FluxorComponent
             if (value < MINIMUM_FONT_SIZE_IN_PIXELS)
                 value = MINIMUM_FONT_SIZE_IN_PIXELS;
             
-            TextEditorService.SetFontSize(value);
+            TextEditorService.GlobalOptionsSetFontSize(value);
         }
     }
 }

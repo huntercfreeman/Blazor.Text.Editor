@@ -36,7 +36,7 @@ public partial class TextEditorInputHeight : FluxorComponent
             if (value < MINIMUM_HEIGHT_IN_PIXELS)
                 value = MINIMUM_HEIGHT_IN_PIXELS;
             
-            TextEditorService.SetHeight(value);
+            TextEditorService.GlobalOptionsSetHeight(value);
         }
     }
 
@@ -50,8 +50,8 @@ public partial class TextEditorInputHeight : FluxorComponent
     private void ToggleUseGlobalHeightInPixels(bool globalHeightInPixelsValueIsNull)
     {
         if (globalHeightInPixelsValueIsNull)
-            TextEditorService.SetHeight(MINIMUM_HEIGHT_IN_PIXELS);
+            TextEditorService.GlobalOptionsSetHeight(MINIMUM_HEIGHT_IN_PIXELS);
         else
-            TextEditorService.SetHeight(null);
+            TextEditorService.GlobalOptionsSetHeight(null);
     }
 }

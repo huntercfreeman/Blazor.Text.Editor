@@ -26,6 +26,6 @@ public partial class TextEditorInputShowNewLines : FluxorComponent
     public bool GlobalShowNewlines
     {
         get => TextEditorService.GlobalShowNewlines;
-        set => TextEditorService.SetShowNewlines(value);
+        set => TextEditorService.GlobalOptionsSetShowNewlines(value);
     }
 }

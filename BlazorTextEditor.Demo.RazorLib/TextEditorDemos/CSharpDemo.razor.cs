@@ -16,7 +16,7 @@ public partial class CSharpDemo : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.CSharp.CSharpTextEditorModelKey,
             WellKnownModelKind.CSharp,
             nameof(CSharpDemo),
@@ -24,7 +24,7 @@ public partial class CSharpDemo : ComponentBase
             "C#",
             TestData.CSharp.EXAMPLE_TEXT_173_LINES);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             CSharpTextEditorViewModelKey,
             TextEditorFacts.CSharp.CSharpTextEditorModelKey);
         

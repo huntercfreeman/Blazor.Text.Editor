@@ -68,53 +68,53 @@ public interface ITextEditorService : IDisposable
 
     #region MethodsSortedAlphabetically
     
-    public void AddViewModelToGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
-    public void DeleteTextByMotion(TextEditorModelsCollection.DeleteTextByMotionAction deleteTextByMotionAction);
-    public void DeleteTextByRange(TextEditorModelsCollection.DeleteTextByRangeAction deleteTextByRangeAction);
-    public void DisposeDiff(TextEditorDiffKey textEditorDiffKey);
-    public void DisposeTextEditor(TextEditorModelKey textEditorModelKey);
-    public Task FocusPrimaryCursorAsync(string primaryCursorContentId);
-    public string? GetAllText(TextEditorModelKey textEditorModelKey);
-    public string? GetAllText(TextEditorViewModelKey textEditorViewModelKey);
-    public Task<ElementMeasurementsInPixels> GetElementMeasurementsInPixelsById(string elementId);
-    public TextEditorGroup? GetTextEditorGroupOrDefault(TextEditorGroupKey textEditorGroupKey);
-    public TextEditorModel? GetTextEditorModelFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey);
-    public TextEditorModel? GetTextEditorModelOrDefault(TextEditorModelKey textEditorModelKey);
-    public TextEditorModel? GetTextEditorModelOrDefaultByResourceUri(string resourceUri);
-    public TextEditorViewModel? GetTextEditorViewModelOrDefault(TextEditorViewModelKey textEditorViewModelKey);
-    public ImmutableArray<TextEditorViewModel> GetViewModelsForModel(TextEditorModelKey textEditorModelKey);
-    public void HandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction);
-    public void InsertText(TextEditorModelsCollection.InsertTextAction insertTextAction);
-    public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
-    public Task MutateScrollVerticalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);
-    public void RedoEdit(TextEditorModelKey textEditorModelKey);
-    /// <summary>It is recommended to use the <see cref="RegisterTemplatedTextEditorModel" /> method as it will internally reference the <see cref="ILexer" /> and <see cref="IDecorationMapper" /> that correspond to the desired text editor.</summary>
-    public void RegisterCustomTextEditorModel(TextEditorModel textEditorModel);
-    public void RegisterDiff(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
-    public void RegisterGroup(TextEditorGroupKey textEditorGroupKey);
-    /// <summary>As an example, for a C# Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.CSharp" />.<br /><br />For a Plain Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.Plain" />.</summary>
-    public void RegisterTemplatedTextEditorModel(TextEditorModelKey textEditorModelKey, WellKnownModelKind wellKnownModelKind, string resourceUri, DateTime resourceLastWriteTime, string fileExtension, string initialContent);
-    public void RegisterViewModel(TextEditorViewModelKey textEditorViewModelKey, TextEditorModelKey textEditorModelKey);
-    public void ReloadTextEditorModel(TextEditorModelKey textEditorModelKey, string content);
-    public void RemoveViewModelFromGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
-    public void SetActiveViewModelOfGroup(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
-    public void SetCursorWidth(double cursorWidthInPixels);
-    public void SetFontSize(int fontSizeInPixels);
-    public Task SetGutterScrollTopAsync(string gutterElementId, double scrollTop);
-    public void SetHeight(int? heightInPixels);
-    public void SetKeymap(KeymapDefinition foundKeymap);
-    public void SetResourceData(TextEditorModelKey textEditorModelKey, string resourceUri, DateTime resourceLastWriteTime);
-    public Task SetScrollPositionAsync(string bodyElementId, string gutterElementId, double? scrollLeft, double? scrollTop);
-    public void SetShowNewlines(bool showNewlines);
-    public void SetShowWhitespace(bool showWhitespace);
-    public Task SetTextEditorOptionsFromLocalStorageAsync();
-    public void SetTheme(ThemeRecord theme);
-    public void SetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind);
-    public void SetViewModelWith(TextEditorViewModelKey textEditorViewModelKey, Func<TextEditorViewModel, TextEditorViewModel> withFunc);
-    public void ShowSettingsDialog(bool isResizable = false);
-    public void UndoEdit(TextEditorModelKey textEditorModelKey);
+    public Task CursorPrimaryFocusAsync(string primaryCursorContentId);
+    public void DiffDispose(TextEditorDiffKey textEditorDiffKey);
+    public void DiffRegister(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
+    public Task<ElementMeasurementsInPixels> ElementMeasurementsInPixelsAsync(string elementId);
+    public void GlobalOptionsSetCursorWidth(double cursorWidthInPixels);
+    public void GlobalOptionsSetFontSize(int fontSizeInPixels);
+    public Task GlobalOptionsSetFromLocalStorageAsync();
+    public void GlobalOptionsSetHeight(int? heightInPixels);
+    public void GlobalOptionsSetKeymap(KeymapDefinition foundKeymap);
+    public void GlobalOptionsSetShowNewlines(bool showNewlines);
+    public void GlobalOptionsSetShowWhitespace(bool showWhitespace);
     /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the "BlazorALaCarte.Shared" Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
-    public void WriteGlobalTextEditorOptionsToLocalStorage();
+    public void GlobalOptionsSetTheme(ThemeRecord theme);
+    public void GlobalOptionsShowSettingsDialog(bool isResizable = false);
+    public void GlobalOptionsWriteToLocalStorage();
+    public void GroupAddViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
+    public TextEditorGroup? GroupFindOrDefault(TextEditorGroupKey textEditorGroupKey);
+    public void GroupRegister(TextEditorGroupKey textEditorGroupKey);
+    public void GroupRemoveViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
+    public void GroupSetActiveViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
+    public void ModelDeleteTextByMotion(TextEditorModelsCollection.DeleteTextByMotionAction deleteTextByMotionAction);
+    public void ModelDeleteTextByRange(TextEditorModelsCollection.DeleteTextByRangeAction deleteTextByRangeAction);
+    public void ModelDispose(TextEditorModelKey textEditorModelKey);
+    public TextEditorModel? ModelFindOrDefault(TextEditorModelKey textEditorModelKey);
+    public string? ModelGetAllText(TextEditorModelKey textEditorModelKey);
+    public ImmutableArray<TextEditorViewModel> ModelGetViewModelsOrEmpty(TextEditorModelKey textEditorModelKey);
+    public void ModelHandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction);
+    public void ModelInsertText(TextEditorModelsCollection.InsertTextAction insertTextAction);
+    public void ModelRedoEdit(TextEditorModelKey textEditorModelKey);
+    /// <summary>It is recommended to use the <see cref="ModelRegisterTemplatedModel" /> method as it will internally reference the <see cref="ILexer" /> and <see cref="IDecorationMapper" /> that correspond to the desired text editor.</summary>
+    public void ModelRegisterCustomModel(TextEditorModel model);
+    /// <summary>As an example, for a C# Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.CSharp" />.<br /><br />For a Plain Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.Plain" />.</summary>
+    public void ModelRegisterTemplatedModel(TextEditorModelKey textEditorModelKey, WellKnownModelKind wellKnownModelKind, string resourceUri, DateTime resourceLastWriteTime, string fileExtension, string initialContent);
+    public void ModelReload(TextEditorModelKey textEditorModelKey, string content);
+    public void ModelSetResourceData(TextEditorModelKey textEditorModelKey, string resourceUri, DateTime resourceLastWriteTime);
+    public void ModelSetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind);
+    public void ModelUndoEdit(TextEditorModelKey textEditorModelKey);
+    public TextEditorModel? ResourceUriGetModelOrDefault(string resourceUri);
+    public TextEditorViewModel? ViewModelFindOrDefault(TextEditorViewModelKey textEditorViewModelKey);
+    public string? ViewModelGetAllText(TextEditorViewModelKey textEditorViewModelKey);
+    public TextEditorModel? ViewModelGetModelOrDefault(TextEditorViewModelKey textEditorViewModelKey);
+    public Task ViewModelMutateScrollHorizontalPositionAsync(string bodyElementId, string gutterElementId, double pixels);
+    public Task ViewModelMutateScrollVerticalPositionAsync(string bodyElementId, string gutterElementId, double pixels);
+    public void ViewModelRegister(TextEditorViewModelKey textEditorViewModelKey, TextEditorModelKey textEditorModelKey);
+    public Task ViewModelSetGutterScrollTopAsync(string gutterElementId, double scrollTopInPixels);
+    public Task ViewModelSetScrollPositionAsync(string bodyElementId, string gutterElementId, double? scrollLeftInPixels, double? scrollTopInPixels);
+    public void ViewModelWith(TextEditorViewModelKey textEditorViewModelKey, Func<TextEditorViewModel, TextEditorViewModel> withFunc);
 
     #endregion
 }

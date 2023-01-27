@@ -115,7 +115,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             {
                 _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
 
-                TextEditorService.SetViewModelWith(
+                TextEditorService.ViewModelWith(
                     TextEditorViewModelKey,
                     previousViewModel => previousViewModel with
                     {
@@ -174,7 +174,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     MeasureCharacterWidthAndRowHeightElementId,
                     MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
                 
-            TextEditorService.SetViewModelWith(
+            TextEditorService.ViewModelWith(
                 TextEditorViewModelKey,
                 previousViewModel => previousViewModel with
                 {

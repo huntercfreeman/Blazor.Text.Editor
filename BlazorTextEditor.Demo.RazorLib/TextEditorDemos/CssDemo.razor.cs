@@ -16,7 +16,7 @@ public partial class CssDemo : ComponentBase
 
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.Css.CssTextEditorModelKey,
             WellKnownModelKind.Css,
             nameof(CssDemo),
@@ -24,7 +24,7 @@ public partial class CssDemo : ComponentBase
             "CSS",
             TestData.Css.EXAMPLE_TEXT_21_LINES);
 
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             CssTextEditorViewModelKey,
             TextEditorFacts.Css.CssTextEditorModelKey);
         

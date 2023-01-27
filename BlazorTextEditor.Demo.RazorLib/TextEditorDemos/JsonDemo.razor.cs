@@ -23,9 +23,9 @@ public partial class JsonDemo : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterGroup(JsonTextEditorGroupKey);
+        TextEditorService.GroupRegister(JsonTextEditorGroupKey);
         
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.Json.JsonLaunchSettingsTextEditorModelKey,
             WellKnownModelKind.Json,
             nameof(JsonDemo) + "_1",
@@ -33,7 +33,7 @@ public partial class JsonDemo : ComponentBase
             "JSON",
             TestData.Json.EXAMPLE_TEXT_LAUNCH_SETTINGS);
         
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorModelKey,
             WellKnownModelKind.Json,
             nameof(JsonDemo) + "_2",
@@ -41,19 +41,19 @@ public partial class JsonDemo : ComponentBase
             "JSON",
             TestData.Json.EXAMPLE_TEXT_ARRAY_AS_TOP_LEVEL);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             JsonTextEditorViewModelKeyOne,
             TextEditorFacts.Json.JsonLaunchSettingsTextEditorModelKey);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             JsonTextEditorViewModelKeyTwo,
             TextEditorFacts.Json.JsonArrayAsTopLevelTextEditorModelKey);
         
-        TextEditorService.AddViewModelToGroup(
+        TextEditorService.GroupAddViewModel(
             JsonTextEditorGroupKey,
             JsonTextEditorViewModelKeyOne);
         
-        TextEditorService.AddViewModelToGroup(
+        TextEditorService.GroupAddViewModel(
             JsonTextEditorGroupKey,
             JsonTextEditorViewModelKeyTwo);
         

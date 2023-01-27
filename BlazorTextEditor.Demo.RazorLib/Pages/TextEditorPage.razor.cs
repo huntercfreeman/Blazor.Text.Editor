@@ -33,7 +33,7 @@ public partial class TextEditorPage : ComponentBase
 
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterGroup(TextEditorDemoGroupKey);
+        TextEditorService.GroupRegister(TextEditorDemoGroupKey);
 
         InitializeSampleCSharpEditor();
         InitializeSampleRazorEditor();
@@ -43,7 +43,7 @@ public partial class TextEditorPage : ComponentBase
 
     private void InitializeSampleCSharpEditor()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.CSharp.CSharpTextEditorModelKey,
             WellKnownModelKind.CSharp,
             nameof(CSharpDemo),
@@ -51,18 +51,18 @@ public partial class TextEditorPage : ComponentBase
             "C#",
             TestData.CSharp.EXAMPLE_TEXT_173_LINES);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             CSharpTextEditorViewModelKey,
             TextEditorFacts.CSharp.CSharpTextEditorModelKey);
         
-        TextEditorService.AddViewModelToGroup(
+        TextEditorService.GroupAddViewModel(
             TextEditorDemoGroupKey,
             CSharpTextEditorViewModelKey);
     }
 
     private void InitializeSampleRazorEditor()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.Razor.RazorTextEditorModelKey,
             WellKnownModelKind.Razor,
             nameof(RazorDemo),
@@ -70,11 +70,11 @@ public partial class TextEditorPage : ComponentBase
             "Razor",
             TestData.Razor.EXAMPLE_TEXT);
 
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             RazorTextEditorViewModelKey,
             TextEditorFacts.Razor.RazorTextEditorModelKey);
 
-        TextEditorService.AddViewModelToGroup(
+        TextEditorService.GroupAddViewModel(
             TextEditorDemoGroupKey,
             RazorTextEditorViewModelKey);
     }
@@ -120,7 +120,7 @@ public partial class TextEditorPage : ComponentBase
             };
         }
 
-        var existingTextEditorModel = TextEditorService.GetTextEditorModelOrDefaultByResourceUri(
+        var existingTextEditorModel = TextEditorService.ResourceUriGetModelOrDefault(
             inputResourceUri);
 
         if (existingTextEditorModel is not null)
@@ -131,7 +131,7 @@ public partial class TextEditorPage : ComponentBase
         
         var newFileModelKey = TextEditorModelKey.NewTextEditorModelKey();
 
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             newFileModelKey,
             selectedWellKnownModelKind,
             inputResourceUri,
@@ -141,15 +141,15 @@ public partial class TextEditorPage : ComponentBase
 
         var newFileViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             newFileViewModelKey,
             newFileModelKey);
 
-        TextEditorService.AddViewModelToGroup(
+        TextEditorService.GroupAddViewModel(
             TextEditorDemoGroupKey,
             newFileViewModelKey);
         
-        TextEditorService.SetActiveViewModelOfGroup(
+        TextEditorService.GroupSetActiveViewModel(
             TextEditorDemoGroupKey,
             newFileViewModelKey);
     }
@@ -157,7 +157,7 @@ public partial class TextEditorPage : ComponentBase
     private void HandleExistingTextEditorModel(TextEditorModel textEditorModel)
     {
         var listForExistingTextEditorViewModels = TextEditorService
-            .GetViewModelsForModel(textEditorModel.ModelKey);
+            .ModelGetViewModelsOrEmpty(textEditorModel.ModelKey);
 
         var viewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
 
@@ -169,16 +169,16 @@ public partial class TextEditorPage : ComponentBase
         }
         else
         {
-            TextEditorService.RegisterViewModel(
+            TextEditorService.ViewModelRegister(
                 viewModelKey,
                 textEditorModel.ModelKey);
         }
         
-        TextEditorService.AddViewModelToGroup(
+        TextEditorService.GroupAddViewModel(
             TextEditorDemoGroupKey,
             viewModelKey);
         
-        TextEditorService.SetActiveViewModelOfGroup(
+        TextEditorService.GroupSetActiveViewModel(
             TextEditorDemoGroupKey,
             viewModelKey);
     }

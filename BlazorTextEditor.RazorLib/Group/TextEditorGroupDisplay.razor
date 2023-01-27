@@ -18,7 +18,7 @@
         </div>
         <div class="bte_text-editor-group-active-view-model">
             @{
-                var textEditorModel = TextEditorService.GetTextEditorModelFromViewModelKey(
+                var textEditorModel = TextEditorService.ViewModelGetModelOrDefault(
                     textEditorGroup.ActiveViewModelKey);
         
                 if (textEditorModel is null)

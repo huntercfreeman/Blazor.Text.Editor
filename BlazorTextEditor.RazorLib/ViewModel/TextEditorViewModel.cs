@@ -46,7 +46,7 @@ public record TextEditorViewModel(
     public void CursorMovePageBottom()
     {
         var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
-        var textEditor = TextEditorService.GetTextEditorModelFromViewModelKey(
+        var textEditor = TextEditorService.ViewModelGetModelOrDefault(
             ViewModelKey);
 
         if (textEditor is not null &&
@@ -62,7 +62,7 @@ public record TextEditorViewModel(
     
     public async Task MutateScrollHorizontalPositionByPixelsAsync(double pixels)
     {
-        await TextEditorService.MutateScrollHorizontalPositionByPixelsAsync(
+        await TextEditorService.ViewModelMutateScrollHorizontalPositionAsync(
             BodyElementId,
             GutterElementId,
             pixels);
@@ -70,7 +70,7 @@ public record TextEditorViewModel(
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
     {
-        await TextEditorService.MutateScrollVerticalPositionByPixelsAsync(
+        await TextEditorService.ViewModelMutateScrollVerticalPositionAsync(
             BodyElementId,
             GutterElementId,
             pixels);
@@ -93,7 +93,7 @@ public record TextEditorViewModel(
     /// </summary>
     public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
     {
-        await TextEditorService.SetScrollPositionAsync(
+        await TextEditorService.ViewModelSetScrollPositionAsync(
             BodyElementId,
             GutterElementId,
             scrollLeft,
@@ -102,7 +102,7 @@ public record TextEditorViewModel(
 
     public async Task FocusTextEditorAsync()
     {
-        await TextEditorService.FocusPrimaryCursorAsync(
+        await TextEditorService.CursorPrimaryFocusAsync(
             PrimaryCursorContentId);
     }
     
@@ -116,12 +116,12 @@ public record TextEditorViewModel(
         
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
-        var textEditorModel = TextEditorService.GetTextEditorModelFromViewModelKey(ViewModelKey);
+        var textEditorModel = TextEditorService.ViewModelGetModelOrDefault(ViewModelKey);
 
         if (bodyMeasurementsInPixels is null)
         {
             bodyMeasurementsInPixels = await TextEditorService
-                .GetElementMeasurementsInPixelsById(BodyElementId);
+                .ElementMeasurementsInPixelsAsync(BodyElementId);
         }
 
         _mostRecentBodyMeasurementsInPixels = bodyMeasurementsInPixels; 
@@ -317,7 +317,7 @@ public record TextEditorViewModel(
             },
             localCharacterWidthAndRowHeight);
         
-        TextEditorService.SetViewModelWith(
+        TextEditorService.ViewModelWith(
                 ViewModelKey,
                 previousViewModel => previousViewModel with
                 {

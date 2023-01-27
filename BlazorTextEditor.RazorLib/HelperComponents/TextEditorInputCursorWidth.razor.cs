@@ -36,7 +36,7 @@ public partial class TextEditorInputCursorWidth : FluxorComponent
             if (value < MINIMUM_CURSOR_SIZE_IN_PIXELS)
                 value = MINIMUM_CURSOR_SIZE_IN_PIXELS;
             
-            TextEditorService.SetCursorWidth(value);
+            TextEditorService.GlobalOptionsSetCursorWidth(value);
         }
     }
 }

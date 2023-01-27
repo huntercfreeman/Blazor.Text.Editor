@@ -21,7 +21,7 @@ public partial class DiffEditorDemo : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.CSharp.DiffDemoBeforeModelKey,
             WellKnownModelKind.CSharp,
             "DiffDemoBefore",
@@ -29,7 +29,7 @@ public partial class DiffEditorDemo : ComponentBase
             "C#",
             TestData.Diff.BEFORE_TEXT);
         
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.CSharp.DiffDemoAfterModelKey,
             WellKnownModelKind.CSharp,
             "DiffDemoAfter",
@@ -37,15 +37,15 @@ public partial class DiffEditorDemo : ComponentBase
             "C#",
             TestData.Diff.AFTER_TEXT);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             DiffDemoBeforeViewModelKey,
             TextEditorFacts.CSharp.DiffDemoBeforeModelKey);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             DiffDemoAfterViewModelKey,
             TextEditorFacts.CSharp.DiffDemoAfterModelKey);
         
-        TextEditorService.RegisterDiff(
+        TextEditorService.DiffRegister(
             DiffDemoDiffKey,
             DiffDemoBeforeViewModelKey,
             DiffDemoAfterViewModelKey);

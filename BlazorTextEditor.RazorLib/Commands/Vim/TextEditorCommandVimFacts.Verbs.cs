@@ -71,7 +71,7 @@ public static partial class TextEditorCommandVimFacts
 
                 textEditorCommandParameter
                     .TextEditorService
-                    .DeleteTextByRange(deleteTextTextEditorModelAction);
+                    .ModelDeleteTextByRange(deleteTextTextEditorModelAction);
             },
             true,
             $"Vim::Delete({innerTextEditorCommand.DisplayName})",

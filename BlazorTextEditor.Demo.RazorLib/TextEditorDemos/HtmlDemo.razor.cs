@@ -16,7 +16,7 @@ public partial class HtmlDemo : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.Html.HtmlTextEditorModelKey,
             WellKnownModelKind.Html,
             nameof(HtmlDemo),
@@ -24,7 +24,7 @@ public partial class HtmlDemo : ComponentBase
             "HTML",
             TestData.Html.EXAMPLE_TEXT);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             HtmlTextEditorViewModelKey,
             TextEditorFacts.Html.HtmlTextEditorModelKey);
         

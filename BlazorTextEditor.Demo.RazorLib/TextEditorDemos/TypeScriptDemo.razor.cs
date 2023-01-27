@@ -16,7 +16,7 @@ public partial class TypeScriptDemo : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.TypeScript.TypeScriptTextEditorModelKey,
             WellKnownModelKind.TypeScript,
             nameof(TypeScriptDemo),
@@ -24,7 +24,7 @@ public partial class TypeScriptDemo : ComponentBase
             "TypeScript",
             TestData.TypeScript.EXAMPLE_TEXT);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             TypeScriptTextEditorViewModelKey,
             TextEditorFacts.TypeScript.TypeScriptTextEditorModelKey);
         

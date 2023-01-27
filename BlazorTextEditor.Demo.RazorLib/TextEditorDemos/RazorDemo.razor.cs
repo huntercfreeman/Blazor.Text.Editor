@@ -16,7 +16,7 @@ public partial class RazorDemo : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.Razor.RazorTextEditorModelKey,
             WellKnownModelKind.Razor,
             nameof(RazorDemo),
@@ -24,7 +24,7 @@ public partial class RazorDemo : ComponentBase
             "Razor",
             TestData.Razor.EXAMPLE_TEXT);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             RazorTextEditorViewModelKey,
             TextEditorFacts.Razor.RazorTextEditorModelKey);
         

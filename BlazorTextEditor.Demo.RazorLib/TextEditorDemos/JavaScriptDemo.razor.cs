@@ -16,7 +16,7 @@ public partial class JavaScriptDemo : ComponentBase
     
     protected override void OnInitialized()
     {
-        TextEditorService.RegisterTemplatedTextEditorModel(
+        TextEditorService.ModelRegisterTemplatedModel(
             TextEditorFacts.JavaScript.JavaScriptTextEditorModelKey,
             WellKnownModelKind.JavaScript,
             nameof(JavaScriptDemo),
@@ -24,7 +24,7 @@ public partial class JavaScriptDemo : ComponentBase
             "JavaScript",
             TestData.JavaScript.EXAMPLE_TEXT);
         
-        TextEditorService.RegisterViewModel(
+        TextEditorService.ViewModelRegister(
             JavaScriptTextEditorViewModelKey,
             TextEditorFacts.JavaScript.JavaScriptTextEditorModelKey);
         
