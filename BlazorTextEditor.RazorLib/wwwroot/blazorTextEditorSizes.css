@@ -21,4 +21,5 @@
     --bte_notification-display-toolbar-height: 2rem;
     --bte_scrollbar-size: 10px;
     --bte_diff-body-separator-width: 6px;
+    --bte_diff-header-height: 2em;
 }

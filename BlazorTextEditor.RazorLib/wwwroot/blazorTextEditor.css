@@ -419,9 +419,14 @@
     height: 100%;
 }
 
+.bte_text-editor-diff-header {
+    display: flex;
+    height: var(--bte_diff-header-height);
+}
+
 .bte_text-editor-diff-body {
     display: flex;
-    height: 100%;
+    height: calc(100% - var(--bte_diff-header-height));
 }
 
 .bte_text-editor-diff-body-separator {
