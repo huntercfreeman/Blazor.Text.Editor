@@ -12,6 +12,28 @@ public class MyClass
         return;
     }
 }";
+        public const string DIFF_DEMO_BEFORE_TEXT = @"namespace BlazorTreeView.RazorLib;
+public class MyClass
+{
+    public void MyMethod()
+    {
+        return;
+    }
+}";
+        
+        public const string DIFF_DEMO_AFTER_TEXT = @"namespace BlazorTreeView.RazorLib;
+public record MyRecord
+{
+    private static void AnotherMethod()
+    {
+        return;
+    }
+
+    public void MyMethod()
+    {
+        return;
+    }
+}";
         
         public const string EXAMPLE_TEXT_173_LINES = @"using System.Collections.Immutable;
 using BlazorTreeView.RazorLib.Store.TreeViewCase;

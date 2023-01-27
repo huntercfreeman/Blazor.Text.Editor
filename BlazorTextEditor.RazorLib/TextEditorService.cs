@@ -22,6 +22,7 @@ using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Diff;
 using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
@@ -30,6 +31,7 @@ using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.StorageCase;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
@@ -46,6 +48,7 @@ public class TextEditorService : ITextEditorService
     private readonly IState<TextEditorModelsCollection> _textEditorModelsCollectionWrap;
     private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollectionWrap;
     private readonly IState<TextEditorGroupsCollection> _textEditorGroupsCollectionWrap;
+    private readonly IState<TextEditorDiffsCollection> _textEditorDiffsCollectionWrap;
     private readonly IState<ThemeState> _themeStateWrap;
     private readonly IState<TextEditorGlobalOptions> _textEditorGlobalOptionsWrap;
     private readonly IDispatcher _dispatcher;
@@ -58,6 +61,7 @@ public class TextEditorService : ITextEditorService
         IState<TextEditorModelsCollection> textEditorModelsCollectionWrap,
         IState<TextEditorViewModelsCollection> textEditorViewModelsCollectionWrap,
         IState<TextEditorGroupsCollection> textEditorGroupsCollectionWrap,
+        IState<TextEditorDiffsCollection> textEditorDiffsCollectionWrap,
         IState<ThemeState> themeStateWrap,
         IState<TextEditorGlobalOptions> textEditorGlobalOptionsWrap,
         IDispatcher dispatcher,
@@ -67,6 +71,7 @@ public class TextEditorService : ITextEditorService
         _textEditorModelsCollectionWrap = textEditorModelsCollectionWrap;
         _textEditorViewModelsCollectionWrap = textEditorViewModelsCollectionWrap;
         _textEditorGroupsCollectionWrap = textEditorGroupsCollectionWrap;
+        _textEditorDiffsCollectionWrap = textEditorDiffsCollectionWrap;
         _themeStateWrap = themeStateWrap;
         _textEditorGlobalOptionsWrap = textEditorGlobalOptionsWrap;
         _dispatcher = dispatcher;
@@ -76,11 +81,16 @@ public class TextEditorService : ITextEditorService
         _textEditorModelsCollectionWrap.StateChanged += ModelsCollectionWrapOnModelsCollectionWrapChanged;
         _textEditorViewModelsCollectionWrap.StateChanged += ViewModelsCollectionWrapOnStateChanged;
         _textEditorGroupsCollectionWrap.StateChanged += GroupsCollectionWrapOnStateChanged;
+        _textEditorDiffsCollectionWrap.StateChanged += TextEditorDiffsCollectionWrapOnStateChanged;
         _textEditorGlobalOptionsWrap.StateChanged += GlobalOptionsWrapOnStateChanged;
     }
 
     public TextEditorModelsCollection TextEditorModelsCollection => _textEditorModelsCollectionWrap.Value;
+    public TextEditorViewModelsCollection TextEditorViewModelsCollection => _textEditorViewModelsCollectionWrap.Value;
+    public TextEditorGroupsCollection TextEditorGroupsCollection => _textEditorGroupsCollectionWrap.Value;
+    public TextEditorDiffsCollection TextEditorDiffsCollection => _textEditorDiffsCollectionWrap.Value;
     public TextEditorGlobalOptions TextEditorGlobalOptions => _textEditorGlobalOptionsWrap.Value;
+    
     public ThemeRecord? GlobalThemeValue => _textEditorGlobalOptionsWrap.Value.Options.Theme;
     public string GlobalThemeCssClassString => _textEditorGlobalOptionsWrap.Value.Options.Theme?.CssClassString ?? string.Empty;
     public string GlobalFontSizeInPixelsStyling => $"font-size: {_textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value.ToCssValue()}px;";
@@ -94,6 +104,7 @@ public class TextEditorService : ITextEditorService
     public event Action? ModelsCollectionChanged;
     public event Action? ViewModelsCollectionChanged;
     public event Action? GroupsCollectionChanged;
+    public event Action? DiffsCollectionChanged;
     public event Action? GlobalOptionsChanged;
         
     public void RegisterCustomTextEditorModel(
@@ -345,6 +356,11 @@ public class TextEditorService : ITextEditorService
     {
         GroupsCollectionChanged?.Invoke();
     }
+    
+    private void TextEditorDiffsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        DiffsCollectionChanged?.Invoke();
+    }
 
     private void GlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
     {
@@ -435,7 +451,26 @@ public class TextEditorService : ITextEditorService
                 textEditorViewModelKey,
                 withFunc));
     }
-
+    
+    public void RegisterDiff(
+        TextEditorDiffKey diffKey,
+        TextEditorViewModelKey beforeViewModelKey,
+        TextEditorViewModelKey afterViewModelKey)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorDiffsCollection.RegisterAction(
+                diffKey,
+                beforeViewModelKey,
+                afterViewModelKey));
+    }
+    
+    public void DisposeDiff(TextEditorDiffKey textEditorDiffKey)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorDiffsCollection.DisposeAction(
+                textEditorDiffKey));
+    }
+    
     public async Task SetGutterScrollTopAsync(string gutterElementId, double scrollTop)
     {
         await _jsRuntime.InvokeVoidAsync(
@@ -614,6 +649,7 @@ public class TextEditorService : ITextEditorService
         _textEditorModelsCollectionWrap.StateChanged -= ModelsCollectionWrapOnModelsCollectionWrapChanged;
         _textEditorViewModelsCollectionWrap.StateChanged -= ViewModelsCollectionWrapOnStateChanged;
         _textEditorGroupsCollectionWrap.StateChanged -= GroupsCollectionWrapOnStateChanged;
+        _textEditorDiffsCollectionWrap.StateChanged -= TextEditorDiffsCollectionWrapOnStateChanged;
         _textEditorGlobalOptionsWrap.StateChanged -= GlobalOptionsWrapOnStateChanged;
     }
 }

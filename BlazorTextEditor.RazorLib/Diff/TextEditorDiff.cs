@@ -5,10 +5,9 @@ using BlazorTextEditor.RazorLib.ViewModel;
 namespace BlazorTextEditor.RazorLib.Diff;
 
 public record TextEditorDiff(
-    TextEditorDiffKey TextEditorDiffKey,
+    TextEditorDiffKey DiffKey,
     TextEditorViewModelKey BeforeViewModelKey,
-    TextEditorViewModelKey AfterViewModelKey,
-    ImmutableList<TextEditorViewModelKey> ViewModelKeys)
+    TextEditorViewModelKey AfterViewModelKey)
 {
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
 }

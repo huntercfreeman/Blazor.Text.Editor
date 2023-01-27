@@ -8,6 +8,8 @@ public static partial class TextEditorFacts
     {
         public static readonly TextEditorModelKey CSharpTextEditorModelKey = TextEditorModelKey.NewTextEditorModelKey();
         public static readonly TextEditorModelKey TextEditorServiceApiModelKey = TextEditorModelKey.NewTextEditorModelKey();
+        public static readonly TextEditorModelKey DiffDemoBeforeModelKey = TextEditorModelKey.NewTextEditorModelKey();
+        public static readonly TextEditorModelKey DiffDemoAfterModelKey = TextEditorModelKey.NewTextEditorModelKey();
         public static readonly TextEditorModelKey MyClassTextEditorModelKey = TextEditorModelKey.NewTextEditorModelKey();
     }
 }

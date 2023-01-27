@@ -1,15 +1,16 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using Fluxor;
+using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.Group;
+namespace BlazorTextEditor.RazorLib.Diff;
 
-public partial class TextEditorGroupDisplay : IDisposable
+public partial class TextEditorDiffDisplay : ComponentBase
 {
     [Inject]
-    private IState<TextEditorGroupsCollection> TextEditorGroupsCollectionWrap { get; set; } = null!;
+    private IState<TextEditorDiffsCollection> TextEditorDiffsCollectionWrap { get; set; } = null!;
     [Inject]
     private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
     [Inject]
@@ -20,16 +21,16 @@ public partial class TextEditorGroupDisplay : IDisposable
     private ITextEditorService TextEditorService { get; set; } = null!;
 
     /// <summary>
-    /// If the provided <see cref="TextEditorGroupKey"/> is registered using the
+    /// If the provided <see cref="TextEditorDiffKey"/> is registered using the
     /// <see cref="ITextEditorService"/>. Then this component will automatically update
-    /// when the corresponding <see cref="TextEditorGroup"/> is replaced.
+    /// when the corresponding <see cref="TextEditorDiff"/> is replaced.
     /// <br/><br/>
-    /// A <see cref="TextEditorGroupKey"/> which is NOT registered using the
-    /// <see cref="ITextEditorService"/> can be passed in. Then if the <see cref="TextEditorGroupKey"/>
+    /// A <see cref="TextEditorDiffKey"/> which is NOT registered using the
+    /// <see cref="ITextEditorService"/> can be passed in. Then if the <see cref="TextEditorDiffKey"/>
     /// ever gets registered then this Blazor Component will update accordingly.
     /// </summary>
     [Parameter, EditorRequired]
-    public TextEditorGroupKey TextEditorGroupKey { get; set; } = null!;
+    public TextEditorDiffKey TextEditorDiffKey { get; set; } = null!;
     [Parameter]
     public string CssStyleString { get; set; } = string.Empty;
     [Parameter]
@@ -40,18 +41,18 @@ public partial class TextEditorGroupDisplay : IDisposable
 
     protected override void OnInitialized()
     {
-        TextEditorGroupsCollectionWrap.StateChanged += TextEditorGroupWrapOnStateChanged;
+        TextEditorDiffsCollectionWrap.StateChanged += TextEditorDiffWrapOnStateChanged;
 
         base.OnInitialized();
     }
 
-    private void TextEditorGroupWrapOnStateChanged(object? sender, EventArgs e)
+    private void TextEditorDiffWrapOnStateChanged(object? sender, EventArgs e)
     {
         InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        TextEditorGroupsCollectionWrap.StateChanged -= TextEditorGroupWrapOnStateChanged;
+        TextEditorDiffsCollectionWrap.StateChanged -= TextEditorDiffWrapOnStateChanged;
     }
 }

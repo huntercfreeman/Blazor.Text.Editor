@@ -1,14 +1,18 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Diff;
 using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
 using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib;
@@ -25,7 +29,11 @@ public interface ITextEditorService : IDisposable
     public const string LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY = "bte_text-editor-options";
 
     public TextEditorModelsCollection TextEditorModelsCollection { get; }
+    public TextEditorViewModelsCollection TextEditorViewModelsCollection { get; }
+    public TextEditorGroupsCollection TextEditorGroupsCollection { get; }
+    public TextEditorDiffsCollection TextEditorDiffsCollection { get; }
     public TextEditorGlobalOptions TextEditorGlobalOptions { get; }
+    
     public ThemeRecord? GlobalThemeValue { get; }
     public string GlobalThemeCssClassString { get; }
     public string GlobalFontSizeInPixelsStyling { get; }
@@ -39,6 +47,7 @@ public interface ITextEditorService : IDisposable
     public event Action? ModelsCollectionChanged;
     public event Action? ViewModelsCollectionChanged;
     public event Action? GroupsCollectionChanged;
+    public event Action? DiffsCollectionChanged;
     public event Action? GlobalOptionsChanged;
 
     /// <summary>
@@ -105,6 +114,13 @@ public interface ITextEditorService : IDisposable
     public TextEditorModel? GetTextEditorModelFromViewModelKey(TextEditorViewModelKey textEditorViewModelKey);
     public void SetViewModelWith(TextEditorViewModelKey textEditorViewModelKey, Func<TextEditorViewModel, TextEditorViewModel> withFunc);
 
+    public void RegisterDiff(
+        TextEditorDiffKey diffKey,
+        TextEditorViewModelKey beforeViewModelKey,
+        TextEditorViewModelKey afterViewModelKey);
+    
+    public void DisposeDiff(TextEditorDiffKey textEditorDiffKey);
+    
     public Task SetGutterScrollTopAsync(string gutterElementId, double scrollTop);
     
     public Task MutateScrollHorizontalPositionByPixelsAsync(string bodyElementId, string gutterElementId, double pixels);

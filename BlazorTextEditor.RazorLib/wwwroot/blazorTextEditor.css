@@ -414,3 +414,14 @@
 .bte_use-vim-keymap {
     height: calc(100% - 200px);
 }
+
+.bte_text-editor-diff-body {
+    display: flex;
+    
+}
+
+.bte_text-editor-diff-body-separator {
+    height: 100%;
+    background-color: var(--balc_primary-border-color);
+    width: var(--bte_diff-body-separator-width);
+}
