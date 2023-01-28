@@ -1,4 +1,4 @@
-# Blazor.Text.Editor
+# Blazor.Text.Editor (v7.0.0)
 
 ## Usage
 
@@ -38,7 +38,7 @@ public partial class Index : ComponentBase
 private static readonly TextEditorModelKey IndexTextEditorModelKey = TextEditorModelKey.NewTextEditorModelKey();
 ```
 
-- Now that we have a `TextEditorKey` we can override the Blazor lifecycle method, `OnInitialized`.
+- Now that we have a `TextEditorModelKey` we can override the Blazor lifecycle method, `OnInitialized`.
 
 - In `OnInitialized` note the autocomplete options when one is to type `TextEditorService.Register`. This is shown in the following GIF:
 

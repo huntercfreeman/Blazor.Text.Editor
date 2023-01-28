@@ -1,4 +1,4 @@
-# Blazor.Text.Editor
+# Blazor.Text.Editor (Some parts of this are outdated. I think this markdown file was made with v5.0.0 I will update this markdown file to v7.0.0 when I find time)
 
 ## Settings
 

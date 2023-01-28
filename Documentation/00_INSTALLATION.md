@@ -1,4 +1,4 @@
-# Blazor.Text.Editor
+# Blazor.Text.Editor (v7.0.0)
 
 ## Installation
 
