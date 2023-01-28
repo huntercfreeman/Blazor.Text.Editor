@@ -13,7 +13,7 @@
 ### Steps
 - Reference the `Blazor.Text.Editor` NuGet Package
 
-Use your preferred way to install NuGet Packages to install v6.1.0 of `Blazor.Text.Editor`.
+Use your preferred way to install NuGet Packages to install v7.0.0 of `Blazor.Text.Editor`.
 
 The nuget.org link to the NuGet Package is here: https://www.nuget.org/packages/Blazor.Text.Editor
 
