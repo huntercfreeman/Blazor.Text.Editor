@@ -26,6 +26,7 @@ directly.
 
 ## Getting started
 
+- Video format documentation: https://youtu.be/rE7nSpPfXx8
 - First of many markdown tutorials: [00_INSTALLATION.md](/Documentation/00_INSTALLATION.md)
 
 ## Installation
