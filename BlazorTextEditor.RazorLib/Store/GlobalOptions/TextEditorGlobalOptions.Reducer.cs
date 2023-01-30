@@ -1,6 +1,6 @@
 ﻿using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
+namespace BlazorTextEditor.RazorLib.Store.GlobalOptions;
 
 public partial class TextEditorGlobalOptions
 {
@@ -15,7 +15,10 @@ public partial class TextEditorGlobalOptions
             {
                 Options = inGlobalOptions.Options with
                 {
-                    FontSizeInPixels = setFontSizeAction.FontSizeInPixels
+                    CommonOptions = inGlobalOptions.Options.CommonOptions with
+                    {
+                        FontSizeInPixels = setFontSizeAction.FontSizeInPixels
+                    }
                 },
             };
         }
@@ -43,7 +46,7 @@ public partial class TextEditorGlobalOptions
             {
                 Options = inGlobalOptions.Options with
                 {
-                    HeightInPixels = setHeightAction.HeightInPixels
+                    TextEditorHeightInPixels = setHeightAction.HeightInPixels
                 },
             };
         }
@@ -57,7 +60,10 @@ public partial class TextEditorGlobalOptions
             {
                 Options = inGlobalOptions.Options with
                 {
-                    Theme = setThemeAction.Theme
+                    CommonOptions = inGlobalOptions.Options.CommonOptions with
+                    {
+                        ThemeKey = setThemeAction.Theme.ThemeKey
+                    }
                 },
             };
         }

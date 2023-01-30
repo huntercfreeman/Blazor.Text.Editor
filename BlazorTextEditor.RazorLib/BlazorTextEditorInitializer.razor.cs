@@ -1,6 +1,6 @@
-﻿using BlazorALaCarte.Shared.Services;
-using BlazorALaCarte.Shared.Store.ThemeCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
+﻿using BlazorALaCarte.Shared.Store.ThemeCase;
+using BlazorALaCarte.Shared.Theme;
+using BlazorTextEditor.RazorLib.Store.GlobalOptions;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -13,7 +13,7 @@ public partial class BlazorTextEditorInitializer : ComponentBase
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
-    private IThemeService ThemeService { get; set; } = null!;
+    private IThemeRecordsCollectionService ThemeRecordsCollectionService { get; set; } = null!;
 
     protected override void OnInitialized()
     {
@@ -22,12 +22,12 @@ public partial class BlazorTextEditorInitializer : ComponentBase
             foreach (var themeRecord in TextEditorServiceOptions.InitialThemeRecords)
             {
                 Dispatcher.Dispatch(
-                    new ThemeState.RegisterAction(
+                    new ThemeRecordsCollection.RegisterAction(
                         themeRecord));
             }
         }
 
-        var initialThemeRecord = ThemeService.ThemeStateWrap.Value.ThemeRecordsList
+        var initialThemeRecord = ThemeRecordsCollectionService.ThemeRecordsCollectionWrap.Value.ThemeRecordsList
             .FirstOrDefault(x => x.ThemeKey == TextEditorServiceOptions.InitialThemeKey);
 
         if (initialThemeRecord is not null)

@@ -1,9 +1,10 @@
 ﻿using BlazorALaCarte.Shared.Facts;
+using BlazorALaCarte.Shared.Options;
 using BlazorTextEditor.RazorLib.Keymap;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Options;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
+namespace BlazorTextEditor.RazorLib.Store.GlobalOptions;
 
 /// <summary>
 /// Keep the <see cref="TextEditorGlobalOptions"/> as a class
@@ -16,8 +17,9 @@ public partial class TextEditorGlobalOptions
     public TextEditorGlobalOptions()
     {
         Options = new TextEditorOptions(
-            20,
-            ThemeFacts.VisualStudioDarkThemeClone,
+            new CommonOptions(
+                20,
+                ThemeFacts.VisualStudioDarkThemeClone.ThemeKey),
             false,
             false,
             null,

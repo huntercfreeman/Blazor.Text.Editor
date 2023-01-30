@@ -3,7 +3,8 @@
 <div class="bte_text-editor-input-height @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
 
     @{
-        var globalHeightInPixelsValueIsNull = TextEditorService.GlobalHeightInPixelsValue is null;
+        var globalHeightInPixelsValueIsNull = TextEditorService.GlobalOptionsWrap.Value.Options.CommonOptions.FontSizeInPixels
+            is null;
     }
     
     <span class="@LabelElementCssClassString">

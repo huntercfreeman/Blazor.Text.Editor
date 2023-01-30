@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Diff;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
+namespace BlazorTextEditor.RazorLib.Store.Diff;
 
 public partial class TextEditorDiffsCollection
 {

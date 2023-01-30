@@ -2,7 +2,7 @@
 using BlazorTextEditor.RazorLib.Group;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+namespace BlazorTextEditor.RazorLib.Store.Group;
 
 /// <summary>
 /// Keep the <see cref="TextEditorGroupsCollection"/> as a class

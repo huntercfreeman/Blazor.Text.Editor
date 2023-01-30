@@ -3,7 +3,7 @@ using BlazorTextEditor.RazorLib.ViewModel;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+namespace BlazorTextEditor.RazorLib.Store.ViewModel;
 
 public partial class TextEditorViewModelsCollection
 {

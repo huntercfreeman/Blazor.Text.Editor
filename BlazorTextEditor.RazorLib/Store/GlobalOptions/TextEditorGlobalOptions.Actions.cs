@@ -1,7 +1,7 @@
 ﻿using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Keymap;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
+namespace BlazorTextEditor.RazorLib.Store.GlobalOptions;
 
 public partial class TextEditorGlobalOptions
 {

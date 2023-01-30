@@ -9,7 +9,7 @@
         var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
         var spaceKeyOutput = "&nbsp;";
 
-        if (TextEditorService.GlobalShowWhitespace)
+        if (TextEditorService.GlobalOptionsWrap.Value.Options.ShowWhitespace ?? default)
         {
             tabKeyOutput = "--->";
             spaceKeyOutput = "·";
@@ -17,7 +17,7 @@
     }
 
     <RowSection @ref="_rowSection"
-                GlobalShowNewlines="TextEditorService.GlobalShowNewlines"
+                GlobalShowNewlines="TextEditorService.GlobalOptionsWrap.Value.Options.ShowNewlines ?? default"
                 SpaceKeyOutput="@spaceKeyOutput"
                 TabKeyOutput="@tabKeyOutput"
                 TabIndex="@TabIndex"

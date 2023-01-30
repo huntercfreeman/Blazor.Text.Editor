@@ -1,8 +1,7 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+﻿using BlazorTextEditor.RazorLib.Store.Diff;
+using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
-using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.Diff;

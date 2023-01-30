@@ -1,6 +1,6 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+﻿using BlazorTextEditor.RazorLib.Store.Group;
+using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 

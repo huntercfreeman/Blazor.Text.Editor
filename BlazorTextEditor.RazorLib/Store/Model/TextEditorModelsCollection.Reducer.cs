@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Model;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+namespace BlazorTextEditor.RazorLib.Store.Model;
 
 public partial class TextEditorModelsCollection
 {

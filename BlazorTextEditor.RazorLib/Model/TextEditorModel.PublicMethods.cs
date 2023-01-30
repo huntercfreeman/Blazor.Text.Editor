@@ -6,8 +6,8 @@ using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store;
+using BlazorTextEditor.RazorLib.Store.Model;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Model;

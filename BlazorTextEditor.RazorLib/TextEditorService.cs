@@ -1,9 +1,9 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.DialogNotification.Dialog;
 using BlazorALaCarte.DialogNotification.Store.DialogCase;
-using BlazorALaCarte.Shared.Dimensions;
 using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Storage;
+using BlazorALaCarte.Shared.Store.StorageCase;
 using BlazorALaCarte.Shared.Store.ThemeCase;
 using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
@@ -29,14 +29,13 @@ using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.StorageCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.GlobalOptions;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Store.Diff;
+using BlazorTextEditor.RazorLib.Store.GlobalOptions;
+using BlazorTextEditor.RazorLib.Store.Group;
+using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Microsoft.JSInterop;
@@ -45,68 +44,49 @@ namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
-    private readonly IState<TextEditorModelsCollection> _textEditorModelsCollectionWrap;
-    private readonly IState<TextEditorViewModelsCollection> _textEditorViewModelsCollectionWrap;
-    private readonly IState<TextEditorGroupsCollection> _textEditorGroupsCollectionWrap;
-    private readonly IState<TextEditorDiffsCollection> _textEditorDiffsCollectionWrap;
-    private readonly IState<ThemeState> _themeStateWrap;
-    private readonly IState<TextEditorGlobalOptions> _textEditorGlobalOptionsWrap;
     private readonly IDispatcher _dispatcher;
-    private readonly IStorageProvider _storageProvider;
+    private readonly IStorageService _storageService;
     
     // TODO: Perhaps do not reference IJSRuntime but instead wrap it in a 'IUiProvider' or something like that. The 'IUiProvider' would then expose methods that allow the TextEditorViewModel to adjust the scrollbars. 
     private readonly IJSRuntime _jsRuntime;
 
     public TextEditorService(
-        IState<TextEditorModelsCollection> textEditorModelsCollectionWrap,
-        IState<TextEditorViewModelsCollection> textEditorViewModelsCollectionWrap,
-        IState<TextEditorGroupsCollection> textEditorGroupsCollectionWrap,
-        IState<TextEditorDiffsCollection> textEditorDiffsCollectionWrap,
-        IState<ThemeState> themeStateWrap,
+        IState<TextEditorModelsCollection> modelsCollectionWrap,
+        IState<TextEditorViewModelsCollection> viewModelsCollectionWrap,
+        IState<TextEditorGroupsCollection> groupsCollectionWrap,
+        IState<TextEditorDiffsCollection> diffsCollectionWrap,
+        IState<ThemeRecordsCollection> themeRecordsCollectionWrap,
         IState<TextEditorGlobalOptions> textEditorGlobalOptionsWrap,
         IDispatcher dispatcher,
-        IStorageProvider storageProvider,
+        IStorageService storageService,
         IJSRuntime jsRuntime)
     {
-        _textEditorModelsCollectionWrap = textEditorModelsCollectionWrap;
-        _textEditorViewModelsCollectionWrap = textEditorViewModelsCollectionWrap;
-        _textEditorGroupsCollectionWrap = textEditorGroupsCollectionWrap;
-        _textEditorDiffsCollectionWrap = textEditorDiffsCollectionWrap;
-        _themeStateWrap = themeStateWrap;
-        _textEditorGlobalOptionsWrap = textEditorGlobalOptionsWrap;
+        ModelsCollectionWrap = modelsCollectionWrap;
+        ViewModelsCollectionWrap = viewModelsCollectionWrap;
+        GroupsCollectionWrap = groupsCollectionWrap;
+        DiffsCollectionWrap = diffsCollectionWrap;
+        ThemeRecordsCollectionWrap = themeRecordsCollectionWrap;
+        GlobalOptionsWrap = textEditorGlobalOptionsWrap;
         _dispatcher = dispatcher;
-        _storageProvider = storageProvider;
+        _storageService = storageService;
         _jsRuntime = jsRuntime;
-
-        _textEditorModelsCollectionWrap.StateChanged += ModelsCollectionWrapOnModelsCollectionWrapChanged;
-        _textEditorViewModelsCollectionWrap.StateChanged += ViewModelsCollectionWrapOnStateChanged;
-        _textEditorGroupsCollectionWrap.StateChanged += GroupsCollectionWrapOnStateChanged;
-        _textEditorDiffsCollectionWrap.StateChanged += TextEditorDiffsCollectionWrapOnStateChanged;
-        _textEditorGlobalOptionsWrap.StateChanged += GlobalOptionsWrapOnStateChanged;
     }
-
-    public TextEditorModelsCollection ModelsCollection => _textEditorModelsCollectionWrap.Value;
-    public TextEditorViewModelsCollection ViewModelsCollection => _textEditorViewModelsCollectionWrap.Value;
-    public TextEditorGroupsCollection GroupsCollection => _textEditorGroupsCollectionWrap.Value;
-    public TextEditorDiffsCollection DiffsCollection => _textEditorDiffsCollectionWrap.Value;
-    public TextEditorGlobalOptions GlobalOptions => _textEditorGlobalOptionsWrap.Value;
     
-    public ThemeRecord? GlobalTheme => _textEditorGlobalOptionsWrap.Value.Options.Theme;
-    public string GlobalThemeCssClassString => _textEditorGlobalOptionsWrap.Value.Options.Theme?.CssClassString ?? string.Empty;
-    public string GlobalFontSizeInPixelsStyling => $"font-size: {_textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value.ToCssValue()}px;";
-    public bool GlobalShowNewlines => _textEditorGlobalOptionsWrap.Value.Options.ShowNewlines!.Value;
-    public bool GlobalShowWhitespace => _textEditorGlobalOptionsWrap.Value.Options.ShowWhitespace!.Value;
-    public int GlobalFontSizeInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.FontSizeInPixels!.Value;
-    public double GlobalCursorWidthInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.CursorWidthInPixels!.Value;
-    public KeymapDefinition GlobalKeymapDefinition => _textEditorGlobalOptionsWrap.Value.Options.KeymapDefinition!;
-    public int? GlobalHeightInPixelsValue => _textEditorGlobalOptionsWrap.Value.Options.HeightInPixels;
-
-    public event Action? ModelsCollectionChanged;
-    public event Action? ViewModelsCollectionChanged;
-    public event Action? GroupsCollectionChanged;
-    public event Action? DiffsCollectionChanged;
-    public event Action? GlobalOptionsChanged;
-        
+    public IState<TextEditorModelsCollection> ModelsCollectionWrap { get; }
+    public IState<TextEditorViewModelsCollection> ViewModelsCollectionWrap { get; }
+    public IState<TextEditorGroupsCollection> GroupsCollectionWrap { get; }
+    public IState<TextEditorDiffsCollection> DiffsCollectionWrap { get; }
+    public IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; }
+    public IState<TextEditorGlobalOptions> GlobalOptionsWrap { get; }
+    public string StorageKey => "bte_text-editor-options";
+    
+    public string GlobalThemeCssClassString => ThemeRecordsCollectionWrap.Value.ThemeRecordsList
+                                                   .FirstOrDefault(x =>
+                                                       x.ThemeKey == GlobalOptionsWrap.Value.Options.CommonOptions
+                                                           .ThemeKey)
+                                                   ?.CssClassString
+                                               ?? ThemeFacts.VisualStudioDarkThemeClone.CssClassString;
+    
     public void ModelRegisterCustomModel(
         TextEditorModel model)
     {
@@ -188,7 +168,7 @@ public class TextEditorService : ITextEditorService
 
     public string? ModelGetAllText(TextEditorModelKey textEditorModelKey)
     {
-        return ModelsCollection.TextEditorList
+        return ModelsCollectionWrap.Value.TextEditorList
             .FirstOrDefault(x => x.ModelKey == textEditorModelKey)
             ?.GetAllText();
     }
@@ -341,31 +321,6 @@ public class TextEditorService : ITextEditorService
             new DialogRecordsCollection.RegisterAction(
                 settingsDialog));
     }
-    
-    private void ModelsCollectionWrapOnModelsCollectionWrapChanged(object? sender, EventArgs e)
-    {
-        ModelsCollectionChanged?.Invoke();
-    }
-    
-    private void ViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
-    {
-        ViewModelsCollectionChanged?.Invoke();
-    }
-
-    private void GroupsCollectionWrapOnStateChanged(object? sender, EventArgs e)
-    {
-        GroupsCollectionChanged?.Invoke();
-    }
-    
-    private void TextEditorDiffsCollectionWrapOnStateChanged(object? sender, EventArgs e)
-    {
-        DiffsCollectionChanged?.Invoke();
-    }
-
-    private void GlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
-    {
-        GlobalOptionsChanged?.Invoke();
-    }
 
     public void GroupRegister(TextEditorGroupKey textEditorGroupKey)
     {
@@ -422,7 +377,7 @@ public class TextEditorService : ITextEditorService
 
     public ImmutableArray<TextEditorViewModel> ModelGetViewModelsOrEmpty(TextEditorModelKey textEditorModelKey)
     {
-        return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
+        return ViewModelsCollectionWrap.Value.ViewModelsList
             .Where(x => 
                 x.ModelKey == textEditorModelKey)
             .ToImmutableArray();
@@ -430,7 +385,7 @@ public class TextEditorService : ITextEditorService
 
     public TextEditorModel? ViewModelGetModelOrDefault(TextEditorViewModelKey textEditorViewModelKey)
     {
-        var textEditorViewModelsCollection = _textEditorViewModelsCollectionWrap.Value;
+        var textEditorViewModelsCollection = ViewModelsCollectionWrap.Value;
         
         var viewModel = textEditorViewModelsCollection.ViewModelsList
             .FirstOrDefault(x => 
@@ -545,7 +500,7 @@ public class TextEditorService : ITextEditorService
     
     public TextEditorModel? ResourceUriGetModelOrDefault(string resourceUri)
     {
-        return ModelsCollection.TextEditorList
+        return ModelsCollectionWrap.Value.TextEditorList
             .FirstOrDefault(x =>
                 x.ResourceUri == resourceUri);
     }
@@ -562,21 +517,21 @@ public class TextEditorService : ITextEditorService
     
     public TextEditorModel? ModelFindOrDefault(TextEditorModelKey textEditorModelKey)
     {
-        return ModelsCollection.TextEditorList
+        return ModelsCollectionWrap.Value.TextEditorList
             .FirstOrDefault(x =>
                 x.ModelKey == textEditorModelKey);
     }
     
     public TextEditorViewModel? ViewModelFindOrDefault(TextEditorViewModelKey textEditorViewModelKey)
     {
-        return _textEditorViewModelsCollectionWrap.Value.ViewModelsList
+        return ViewModelsCollectionWrap.Value.ViewModelsList
             .FirstOrDefault(x => 
                 x.ViewModelKey == textEditorViewModelKey);
     }
     
     public TextEditorGroup? GroupFindOrDefault(TextEditorGroupKey textEditorGroupKey)
     {
-        return _textEditorGroupsCollectionWrap.Value.GroupsList
+        return GroupsCollectionWrap.Value.GroupsList
             .FirstOrDefault(x => 
                 x.GroupKey == textEditorGroupKey);
     }
@@ -590,8 +545,8 @@ public class TextEditorService : ITextEditorService
     
     public async Task GlobalOptionsSetFromLocalStorageAsync()
     {
-        var optionsJsonString = (await _storageProvider
-            .GetValue(ITextEditorService.LOCAL_STORAGE_GLOBAL_TEXT_EDITOR_OPTIONS_KEY))
+        var optionsJsonString = await _storageService
+                .GetValue(StorageKey)
                 as string;
 
         if (string.IsNullOrWhiteSpace(optionsJsonString))
@@ -603,11 +558,11 @@ public class TextEditorService : ITextEditorService
         if (options is null)
             return;
         
-        if (options.Theme is not null)
+        if (options.CommonOptions.ThemeKey is not null)
         {
-            var matchedTheme = _themeStateWrap.Value.ThemeRecordsList
+            var matchedTheme = ThemeRecordsCollectionWrap.Value.ThemeRecordsList
                 .FirstOrDefault(x =>
-                    x.ThemeKey == options.Theme.ThemeKey);
+                    x.ThemeKey == options.CommonOptions.ThemeKey);
 
             GlobalOptionsSetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
         }
@@ -621,14 +576,14 @@ public class TextEditorService : ITextEditorService
             GlobalOptionsSetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
         }
         
-        if (options.FontSizeInPixels is not null)
-            GlobalOptionsSetFontSize(options.FontSizeInPixels.Value);
+        if (options.CommonOptions.FontSizeInPixels is not null)
+            GlobalOptionsSetFontSize(options.CommonOptions.FontSizeInPixels.Value);
         
         if (options.CursorWidthInPixels is not null)
             GlobalOptionsSetCursorWidth(options.CursorWidthInPixels.Value);
         
-        if (options.HeightInPixels is not null)
-            GlobalOptionsSetHeight(options.HeightInPixels.Value);
+        if (options.TextEditorHeightInPixels is not null)
+            GlobalOptionsSetHeight(options.TextEditorHeightInPixels.Value);
         
         if (options.ShowNewlines is not null)
             GlobalOptionsSetShowNewlines(options.ShowNewlines.Value);
@@ -640,16 +595,8 @@ public class TextEditorService : ITextEditorService
     public void GlobalOptionsWriteToLocalStorage()
     {
         _dispatcher.Dispatch(
-            new StorageEffects.WriteGlobalTextEditorOptionsToLocalStorageAction(
-                _textEditorGlobalOptionsWrap.Value.Options));
-    }
-    
-    public void Dispose()
-    {
-        _textEditorModelsCollectionWrap.StateChanged -= ModelsCollectionWrapOnModelsCollectionWrapChanged;
-        _textEditorViewModelsCollectionWrap.StateChanged -= ViewModelsCollectionWrapOnStateChanged;
-        _textEditorGroupsCollectionWrap.StateChanged -= GroupsCollectionWrapOnStateChanged;
-        _textEditorDiffsCollectionWrap.StateChanged -= TextEditorDiffsCollectionWrapOnStateChanged;
-        _textEditorGlobalOptionsWrap.StateChanged -= GlobalOptionsWrapOnStateChanged;
+            new StorageEffects.WriteToStorageAction(
+                StorageKey,
+                GlobalOptionsWrap.Value.Options));
     }
 }

@@ -1,9 +1,9 @@
 using BlazorALaCarte.DialogNotification.Installation;
+using BlazorALaCarte.Shared;
 using BlazorALaCarte.Shared.Clipboard;
 using BlazorALaCarte.Shared.Facts;
-using BlazorALaCarte.Shared.Installation;
-using BlazorALaCarte.Shared.Services;
 using BlazorALaCarte.Shared.Storage;
+using BlazorALaCarte.Shared.Theme;
 using BlazorALaCarte.TreeView.Installation;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using Fluxor;
@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
                     new JavaScriptInteropClipboardProvider(
                         serviceProvider.GetRequiredService<IJSRuntime>()),
                 serviceProvider =>
-                    new LocalStorageProvider(
+                    new LocalStorageService(
                         serviceProvider.GetRequiredService<IJSRuntime>()),
                 serviceProvider =>
                     new AutocompleteService(serviceProvider.GetRequiredService<IAutocompleteIndexer>()),
@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddTextEditorClassLibServices(
         this IServiceCollection services,
         Func<IServiceProvider, IClipboardProvider> clipboardProviderDefaultFactory,
-        Func<IServiceProvider, IStorageProvider> storageProviderDefaultFactory,
+        Func<IServiceProvider, IStorageService> storageProviderDefaultFactory,
         Func<IServiceProvider, IAutocompleteService> autocompleteServiceDefaultFactory,
         Func<IServiceProvider, IAutocompleteIndexer> autocompleteIndexerDefaultFactory,
         Action<TextEditorServiceOptions>? configure = null)
@@ -70,7 +70,7 @@ public static class ServiceCollectionExtensions
             .AddScoped(serviceProvider => storageProviderFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => autocompleteServiceFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => autocompleteIndexerFactory.Invoke(serviceProvider))
-            .AddScoped<IThemeService, ThemeService>()
+            .AddScoped<IThemeRecordsCollectionService, ThemeRecordsCollectionService>()
             .AddScoped<ITextEditorService, TextEditorService>();
 
         if (textEditorOptions.InitializeFluxor)
@@ -79,7 +79,7 @@ public static class ServiceCollectionExtensions
                 .AddFluxor(options => options
                     .ScanAssemblies(
                         typeof(ServiceCollectionExtensions).Assembly,
-                        typeof(BlazorALaCarte.Shared.Installation.ServiceCollectionExtensions).Assembly,
+                        typeof(BlazorALaCarte.Shared.ServiceCollectionExtensions).Assembly,
                         typeof(BlazorALaCarte.DialogNotification.Installation.ServiceCollectionExtensions).Assembly,
                         typeof(BlazorALaCarte.TreeView.Installation.ServiceCollectionExtensions).Assembly));
         }

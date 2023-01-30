@@ -1,5 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Keymap.Vim;
 
 namespace BlazorTextEditor.RazorLib.Commands.Vim;
@@ -229,7 +230,10 @@ public static partial class TextEditorCommandVimFacts
             return new TextEditorCommand(
                 async textEditorCommandParameter =>
                 {
-                    if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap is not
+                    var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                                                 ?? KeymapFacts.DefaultKeymapDefinition;
+                    
+                    if (activeKeymapDefinition.Keymap is not
                         TextEditorKeymapVim keymapVim)
                         return;
 
@@ -283,7 +287,10 @@ public static partial class TextEditorCommandVimFacts
             return new TextEditorCommand(
                 async textEditorCommandParameter =>
                 {
-                    if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap is not
+                    var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                                                 ?? KeymapFacts.DefaultKeymapDefinition;
+                    
+                    if (activeKeymapDefinition.Keymap is not
                         TextEditorKeymapVim keymapVim)
                         return;
 

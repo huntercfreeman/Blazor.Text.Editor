@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.ViewModel;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+namespace BlazorTextEditor.RazorLib.Store.Group;
 
 public partial class TextEditorGroupsCollection
 {

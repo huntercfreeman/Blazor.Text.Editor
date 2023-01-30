@@ -1,9 +1,6 @@
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;

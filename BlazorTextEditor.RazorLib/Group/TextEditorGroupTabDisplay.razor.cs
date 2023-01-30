@@ -1,5 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+﻿using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;

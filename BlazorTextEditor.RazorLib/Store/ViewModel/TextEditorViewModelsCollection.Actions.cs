@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+namespace BlazorTextEditor.RazorLib.Store.ViewModel;
 
 public partial class TextEditorViewModelsCollection
 {

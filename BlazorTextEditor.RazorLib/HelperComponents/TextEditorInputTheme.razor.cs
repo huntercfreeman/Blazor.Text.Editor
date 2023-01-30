@@ -2,8 +2,7 @@
 using BlazorALaCarte.Shared.Store;
 using BlazorALaCarte.Shared.Store.ThemeCase;
 using BlazorALaCarte.Shared.Theme;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -13,7 +12,7 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 public partial class TextEditorInputTheme : FluxorComponent
 {
     [Inject]
-    private IState<ThemeState> ThemeStatesWrap { get; set; } = null!;
+    private IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; set; } = null!;
     [Inject]
     private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
@@ -28,7 +27,7 @@ public partial class TextEditorInputTheme : FluxorComponent
     
     private void SelectedThemeChanged(ChangeEventArgs changeEventArgs)
     {
-        var themes = ThemeStatesWrap.Value.ThemeRecordsList;
+        var themeRecordsCollection = ThemeRecordsCollectionWrap.Value.ThemeRecordsList;
         
         var chosenThemeKeyGuidString = changeEventArgs.Value?.ToString() ?? string.Empty;
 
@@ -37,7 +36,7 @@ public partial class TextEditorInputTheme : FluxorComponent
         {
             var chosenThemeKey = new ThemeKey(chosenThemeKeyGuid);
 
-            var foundTheme = themes.FirstOrDefault(x => x.ThemeKey == chosenThemeKey);
+            var foundTheme = themeRecordsCollection.FirstOrDefault(x => x.ThemeKey == chosenThemeKey);
             
             if (foundTheme is not null)
                 TextEditorService.GlobalOptionsSetTheme(foundTheme);

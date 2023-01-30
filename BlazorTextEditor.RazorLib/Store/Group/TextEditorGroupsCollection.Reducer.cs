@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Group;
+namespace BlazorTextEditor.RazorLib.Store.Group;
 
 public partial class TextEditorGroupsCollection
 {

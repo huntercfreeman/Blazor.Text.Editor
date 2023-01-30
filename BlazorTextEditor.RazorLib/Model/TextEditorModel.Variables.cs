@@ -5,8 +5,8 @@ using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
+using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.TextEditor;
 using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib.Model;
@@ -70,7 +70,7 @@ public partial class TextEditorModel
 
     public (int rowIndex, int rowLength) MostCharactersOnASingleRowTuple { get; private set; }
 
-    public TextEditorOptions TextEditorOptions { get; } = TextEditorOptions.UnsetTextEditorOptions();
+    public TextEditorOptions? TextEditorOptions { get; }
 
     public ImmutableArray<(int positionIndex, RowEndingKind rowEndingKind)> RowEndingPositions =>
         _rowEndingPositions.ToImmutableArray();

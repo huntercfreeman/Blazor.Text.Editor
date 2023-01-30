@@ -1,4 +1,4 @@
-﻿namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+﻿namespace BlazorTextEditor.RazorLib.Store.Misc;
 
 /// <summary>
 /// <see cref="TextEditorRenderStateKey"/> is used to indicate

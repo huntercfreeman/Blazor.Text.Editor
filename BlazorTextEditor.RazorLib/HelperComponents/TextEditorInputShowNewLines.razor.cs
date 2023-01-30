@@ -1,5 +1,4 @@
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -25,7 +24,7 @@ public partial class TextEditorInputShowNewLines : FluxorComponent
 
     public bool GlobalShowNewlines
     {
-        get => TextEditorService.GlobalShowNewlines;
+        get => TextEditorService.GlobalOptionsWrap.Value.Options.ShowNewlines ?? default;
         set => TextEditorService.GlobalOptionsSetShowNewlines(value);
     }
 }

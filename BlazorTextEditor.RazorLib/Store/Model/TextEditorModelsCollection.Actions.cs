@@ -4,7 +4,7 @@ using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+namespace BlazorTextEditor.RazorLib.Store.Model;
 
 public partial class TextEditorModelsCollection
 {

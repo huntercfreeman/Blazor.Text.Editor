@@ -2,7 +2,7 @@
 using BlazorTextEditor.RazorLib.Model;
 using Fluxor;
 
-namespace BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+namespace BlazorTextEditor.RazorLib.Store.Model;
 
 /// <summary>
 /// Keep the <see cref="TextEditorModelsCollection"/> as a class

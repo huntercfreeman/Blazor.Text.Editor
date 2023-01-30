@@ -1,5 +1,4 @@
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -29,7 +28,7 @@ public partial class TextEditorInputHeight : FluxorComponent
     
     private int TextEditorHeight
     {
-        get => TextEditorService.GlobalOptions.Options.HeightInPixels 
+        get => TextEditorService.GlobalOptionsWrap.Value.Options.TextEditorHeightInPixels 
                ?? MINIMUM_HEIGHT_IN_PIXELS;
         set
         {

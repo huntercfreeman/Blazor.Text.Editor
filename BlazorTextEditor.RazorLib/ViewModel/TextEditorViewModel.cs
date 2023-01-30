@@ -3,7 +3,7 @@ using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Virtualization;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;

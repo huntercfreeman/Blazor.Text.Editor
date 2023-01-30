@@ -1,7 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.TextEditor;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
