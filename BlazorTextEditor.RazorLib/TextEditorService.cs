@@ -558,7 +558,7 @@ public class TextEditorService : ITextEditorService
         if (options is null)
             return;
         
-        if (options.CommonOptions.ThemeKey is not null)
+        if (options.CommonOptions?.ThemeKey is not null)
         {
             var matchedTheme = ThemeRecordsCollectionWrap.Value.ThemeRecordsList
                 .FirstOrDefault(x =>
@@ -576,7 +576,7 @@ public class TextEditorService : ITextEditorService
             GlobalOptionsSetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
         }
         
-        if (options.CommonOptions.FontSizeInPixels is not null)
+        if (options.CommonOptions?.FontSizeInPixels is not null)
             GlobalOptionsSetFontSize(options.CommonOptions.FontSizeInPixels.Value);
         
         if (options.CursorWidthInPixels is not null)

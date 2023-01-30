@@ -4,7 +4,7 @@ using BlazorTextEditor.RazorLib.Keymap;
 namespace BlazorTextEditor.RazorLib.Options;
 
 public record TextEditorOptions(
-    CommonOptions CommonOptions,
+    CommonOptions? CommonOptions,
     bool? ShowWhitespace,
     bool? ShowNewlines,
     int? TextEditorHeightInPixels,
