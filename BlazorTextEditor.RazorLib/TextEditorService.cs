@@ -229,7 +229,7 @@ public class TextEditorService : ITextEditorService
             new TextEditorGlobalOptions.SetFontSizeAction(
                 fontSizeInPixels));
         
-        GlobalOptionsWriteToLocalStorage();
+        GlobalOptionsWriteToStorage();
     }
     
     public void GlobalOptionsSetCursorWidth(double cursorWidthInPixels)
@@ -238,7 +238,7 @@ public class TextEditorService : ITextEditorService
             new TextEditorGlobalOptions.SetCursorWidthAction(
                 cursorWidthInPixels));
         
-        GlobalOptionsWriteToLocalStorage();
+        GlobalOptionsWriteToStorage();
     }
     
     public void GlobalOptionsSetHeight(int? heightInPixels)
@@ -247,7 +247,7 @@ public class TextEditorService : ITextEditorService
             new TextEditorGlobalOptions.SetHeightAction(
                 heightInPixels));
         
-        GlobalOptionsWriteToLocalStorage();
+        GlobalOptionsWriteToStorage();
     }
 
     public void GlobalOptionsSetTheme(ThemeRecord theme)
@@ -256,7 +256,7 @@ public class TextEditorService : ITextEditorService
             new TextEditorGlobalOptions.SetThemeAction(
                 theme));
         
-        GlobalOptionsWriteToLocalStorage();
+        GlobalOptionsWriteToStorage();
     }
     
     public void GlobalOptionsSetKeymap(KeymapDefinition foundKeymap)
@@ -265,7 +265,7 @@ public class TextEditorService : ITextEditorService
             new TextEditorGlobalOptions.SetKeymapAction(
                 foundKeymap));
         
-        GlobalOptionsWriteToLocalStorage();
+        GlobalOptionsWriteToStorage();
     }
 
     public void GlobalOptionsSetShowWhitespace(bool showWhitespace)
@@ -274,7 +274,7 @@ public class TextEditorService : ITextEditorService
             new TextEditorGlobalOptions.SetShowWhitespaceAction(
                 showWhitespace));
         
-        GlobalOptionsWriteToLocalStorage();
+        GlobalOptionsWriteToStorage();
     }
 
     public void GlobalOptionsSetShowNewlines(bool showNewlines)
@@ -283,7 +283,7 @@ public class TextEditorService : ITextEditorService
             new TextEditorGlobalOptions.SetShowNewlinesAction(
                 showNewlines));
 
-        GlobalOptionsWriteToLocalStorage();
+        GlobalOptionsWriteToStorage();
     }
 
     public void ModelSetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind)
@@ -592,7 +592,7 @@ public class TextEditorService : ITextEditorService
             GlobalOptionsSetShowWhitespace(options.ShowWhitespace.Value);
     }
     
-    public void GlobalOptionsWriteToLocalStorage()
+    public void GlobalOptionsWriteToStorage()
     {
         _dispatcher.Dispatch(
             new StorageEffects.WriteToStorageAction(

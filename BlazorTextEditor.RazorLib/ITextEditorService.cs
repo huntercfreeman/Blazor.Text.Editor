@@ -53,7 +53,7 @@ public interface ITextEditorService
     /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the "BlazorALaCarte.Shared" Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
     public void GlobalOptionsSetTheme(ThemeRecord theme);
     public void GlobalOptionsShowSettingsDialog(bool isResizable = false);
-    public void GlobalOptionsWriteToLocalStorage();
+    public void GlobalOptionsWriteToStorage();
     public void GroupAddViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     public TextEditorGroup? GroupFindOrDefault(TextEditorGroupKey textEditorGroupKey);
     public void GroupRegister(TextEditorGroupKey textEditorGroupKey);
