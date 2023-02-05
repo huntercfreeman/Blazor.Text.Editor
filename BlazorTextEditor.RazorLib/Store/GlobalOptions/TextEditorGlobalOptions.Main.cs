@@ -1,5 +1,5 @@
-﻿using BlazorALaCarte.Shared.Facts;
-using BlazorALaCarte.Shared.Options;
+﻿using BlazorALaCarte.Shared.Options;
+using BlazorALaCarte.Shared.Theme;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Options;
 using Fluxor;
@@ -19,6 +19,7 @@ public partial class TextEditorGlobalOptions
         Options = new TextEditorOptions(
             new CommonOptions(
                 20,
+                18,
                 ThemeFacts.VisualStudioDarkThemeClone.ThemeKey),
             false,
             false,

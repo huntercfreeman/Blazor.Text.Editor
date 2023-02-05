@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using BlazorALaCarte.Shared.Clipboard;
-using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Storage;
 using BlazorALaCarte.Shared.Store.StorageCase;
 using BlazorALaCarte.Shared.Theme;

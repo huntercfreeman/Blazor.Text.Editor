@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Facts;
 using BlazorALaCarte.Shared.Theme;
 
 namespace BlazorTextEditor.RazorLib;
