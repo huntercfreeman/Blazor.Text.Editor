@@ -118,28 +118,35 @@ public class DiffResult
         
         // Read the LongestCommonSubsequence by backtracking to the highest weights
         {
-            int runningRowIndex = squareSize;
-            int runningColumnIndex = squareSize;
-
-            var isFirstLoop = true;
-            var previousRowWeight = 0;
+            int runningRowIndex = squareSize - 1;
+            int runningColumnIndex = squareSize - 1;
             
-            while (runningRowIndex != 0 && runningColumnIndex != 0)
+            while (runningRowIndex != -1 && runningColumnIndex != -1)
             {
-                var cell = matchMatrix[runningRowIndex - 1, runningColumnIndex - 1];
+                var restoreColumnIndex = runningColumnIndex;
+                
+                var cell = matchMatrix[runningRowIndex, runningColumnIndex];
 
-                if ((isFirstLoop || cell.Weight == previousRowWeight - 1) &&
-                    cell.IsSourceOfRowWeight)
+                if (cell.IsSourceOfRowWeight)
                 {
                     longestCommonSubsequenceBuilder
                         .Append(cell.ValueColumn.CharacterValue);
                     
-                    previousRowWeight = cell.Weight + 1;
+                    runningColumnIndex--;
                     runningRowIndex--;
+                    
                     continue;
                 }
 
-                runningColumnIndex--;
+                if (runningColumnIndex == 0)
+                {
+                    runningColumnIndex = restoreColumnIndex;
+                    runningRowIndex--;
+                }
+                else
+                {
+                    runningColumnIndex--;
+                }
             }
         }
 
