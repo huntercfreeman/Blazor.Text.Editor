@@ -313,7 +313,7 @@ public static partial class TextEditorCommandVimFacts
                             // Anchor went from being the lower bound to the upper bound.
 
                             var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorModel
-                                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                                .FindRowInformation(
                                     previousAnchorPositionIndex.Value);
 
                             textEditorCommandParameter
@@ -339,7 +339,7 @@ public static partial class TextEditorCommandVimFacts
                             // Anchor went from being the upper bound to the lower bound.
 
                             var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorModel
-                                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                                .FindRowInformation(
                                     previousAnchorPositionIndex.Value);
 
                             textEditorCommandParameter

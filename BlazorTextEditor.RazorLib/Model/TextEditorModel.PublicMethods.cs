@@ -430,7 +430,7 @@ public partial class TextEditorModel
     }
 
     public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple)
-        FindRowIndexRowStartRowEndingTupleFromPositionIndex(int positionIndex)
+        FindRowInformation(int positionIndex)
     {
         for (var i = _rowEndingPositions.Count - 1; i >= 0; i--)
         {

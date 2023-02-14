@@ -139,12 +139,12 @@ public static class TextEditorSelectionHelper
     {
         var firstRowToSelectDataInclusive =
             textEditorModel
-                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                .FindRowInformation(
                     positionIndexBounds.lowerPositionIndexInclusive).rowIndex;
 
         var lastRowToSelectDataExclusive =
             textEditorModel
-                .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                .FindRowInformation(
                     positionIndexBounds.upperPositionIndexExclusive).rowIndex +
             1;
         

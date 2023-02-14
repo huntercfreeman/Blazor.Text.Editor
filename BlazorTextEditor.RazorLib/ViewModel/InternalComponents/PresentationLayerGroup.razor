@@ -16,7 +16,7 @@
             @foreach (var textSpan in presentation.TextEditorTextSpans)
             {
                 <div class="@presentation.DecorationMapper.Map(textSpan.DecorationByte)"
-                     style="">
+                     style="position: absolute; @GetCssStyleString(textSpan.StartingIndexInclusive, textSpan.EndingIndexExclusive, TextEditorModel, TextEditorViewModel)">
                     
                 </div>
             }

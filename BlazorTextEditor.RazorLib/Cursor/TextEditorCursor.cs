@@ -75,7 +75,7 @@ public class TextEditorCursor
                         .GetSelectionBounds(rememberTextEditorSelection);
 
                     var lowerRowMetaData = textEditorModel
-                        .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                        .FindRowInformation(
                             selectionBounds.lowerPositionIndexInclusive);
 
                     localIndexCoordinates.rowIndex =
@@ -163,7 +163,7 @@ public class TextEditorCursor
 
                     var upperRowMetaData =
                         textEditorModel
-                            .FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                            .FindRowInformation(
                                 selectionBounds.upperPositionIndexExclusive);
 
                     localIndexCoordinates.rowIndex =

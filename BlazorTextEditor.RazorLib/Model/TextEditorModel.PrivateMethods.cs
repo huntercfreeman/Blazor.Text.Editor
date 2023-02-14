@@ -67,7 +67,7 @@ public partial class TextEditorModel
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
 
                 var lowerRowData = 
-                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    FindRowInformation(
                         selectionBounds.lowerPositionIndexInclusive);
 
                 var lowerColumnIndex = selectionBounds.lowerPositionIndexInclusive -
@@ -273,11 +273,11 @@ public partial class TextEditorModel
                     (lowerPositionIndexInclusiveBound, upperPositionIndexExclusive) = (upperPositionIndexExclusive, lowerPositionIndexInclusiveBound);
 
                 var lowerRowMetaData =
-                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    FindRowInformation(
                         lowerPositionIndexInclusiveBound);
 
                 var upperRowMetaData =
-                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    FindRowInformation(
                         upperPositionIndexExclusive);
 
                 // Value is needed when knowing what row ending positions

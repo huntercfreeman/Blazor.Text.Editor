@@ -20,16 +20,20 @@ public partial class PresentationLayerGroup : ComponentBase
     [Parameter, EditorRequired]
     public List<TextEditorPresentation> TextEditorPresentations { get; set; } = new();
     
-    private string GetTextSelectionStyleCss(
-        int lowerPositionIndexInclusive,
-        int upperPositionIndexExclusive,
-        int rowIndex)
+    private string GetCssStyleString(
+        int startingPositionIndexInclusive,
+        int endingPositionIndexExclusive,
+        TextEditorModel textEditorModel,
+        TextEditorViewModel textEditorViewModel)
     {
-        if (rowIndex >= TextEditorModel.RowEndingPositions.Length)
+        var startingRowInformation = textEditorModel.FindRowInformation(
+            startingPositionIndexInclusive);
+        
+        if (startingRowInformation.rowIndex >= textEditorModel.RowEndingPositions.Length)
             return string.Empty;
-
-        var startOfRowTuple = TextEditorModel.GetStartOfRowTuple(rowIndex);
-        var endOfRowTuple = TextEditorModel.RowEndingPositions[rowIndex];
+        
+        var startOfRowTuple = textEditorModel.GetStartOfRowTuple(startingRowInformation.rowIndex);
+        var endOfRowTuple = textEditorModel.RowEndingPositions[startingRowInformation.rowIndex];
 
         var selectionStartingColumnIndex = 0;
         var selectionEndingColumnIndex =
@@ -37,43 +41,43 @@ public partial class PresentationLayerGroup : ComponentBase
 
         var fullWidthOfRowIsSelected = true;
 
-        if (lowerPositionIndexInclusive > startOfRowTuple.positionIndex)
+        if (startingPositionIndexInclusive > startOfRowTuple.positionIndex)
         {
             selectionStartingColumnIndex =
-                lowerPositionIndexInclusive - startOfRowTuple.positionIndex;
+                startingPositionIndexInclusive - startOfRowTuple.positionIndex;
 
             fullWidthOfRowIsSelected = false;
         }
 
-        if (upperPositionIndexExclusive < endOfRowTuple.positionIndex)
+        if (endingPositionIndexExclusive < endOfRowTuple.positionIndex)
         {
             selectionEndingColumnIndex =
-                upperPositionIndexExclusive - startOfRowTuple.positionIndex;
+                endingPositionIndexExclusive - startOfRowTuple.positionIndex;
 
             fullWidthOfRowIsSelected = false;
         }
 
         var topInPixelsInvariantCulture =
-            (rowIndex * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            (startingRowInformation.rowIndex * textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
             .ToCssValue();
         
         var top = $"top: {topInPixelsInvariantCulture}px;";
 
         var heightInPixelsInvariantCulture =
-            (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            (textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
             .ToCssValue();
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var selectionStartInPixels =
             selectionStartingColumnIndex *
-            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         // selectionStartInPixels offset from Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditorModel
+            var tabsOnSameRowBeforeCursor = textEditorModel
                 .GetTabsCountOnSameRowBeforeCursor(
-                    rowIndex,
+                    startingRowInformation.rowIndex,
                     selectionStartingColumnIndex);
 
             // 1 of the character width is already accounted for
@@ -82,7 +86,7 @@ public partial class PresentationLayerGroup : ComponentBase
 
             selectionStartInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                      textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         var selectionStartInPixelsInvariantCulture = selectionStartInPixels
@@ -92,14 +96,14 @@ public partial class PresentationLayerGroup : ComponentBase
 
         var selectionWidthInPixels =
             selectionEndingColumnIndex *
-            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels -
+            textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels -
             selectionStartInPixels;
 
         // Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditorModel
+            var tabsOnSameRowBeforeCursor = textEditorModel
                 .GetTabsCountOnSameRowBeforeCursor(
-                    rowIndex,
+                    startingRowInformation.rowIndex,
                     selectionEndingColumnIndex);
 
             // 1 of the character width is already accounted for
@@ -108,18 +112,18 @@ public partial class PresentationLayerGroup : ComponentBase
 
             selectionWidthInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                      textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         var widthCssStyleString = "width: ";
 
-        var fullWidthValue = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
+        var fullWidthValue = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
 
-        if (TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width >
-            TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
+        if (textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width >
+            textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
         {
             // If content does not fill the viewable width of the Text Editor User Interface
-            fullWidthValue = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+            fullWidthValue = textEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
         }
         
         var fullWidthValueInPixelsInvariantCulture = fullWidthValue
@@ -131,7 +135,7 @@ public partial class PresentationLayerGroup : ComponentBase
         if (fullWidthOfRowIsSelected)
             widthCssStyleString += $"{fullWidthValueInPixelsInvariantCulture}px;";
         else if (selectionStartingColumnIndex != 0 &&
-                 upperPositionIndexExclusive > endOfRowTuple.positionIndex - 1)
+                 endingPositionIndexExclusive > endOfRowTuple.positionIndex - 1)
             widthCssStyleString += $"calc({fullWidthValueInPixelsInvariantCulture}px - {selectionStartInPixelsInvariantCulture}px);";
         else
             widthCssStyleString += $"{selectionWidthInPixelsInvariantCulture}px;";

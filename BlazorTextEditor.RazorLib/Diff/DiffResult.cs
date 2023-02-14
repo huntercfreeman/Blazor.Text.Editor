@@ -186,6 +186,9 @@ public class DiffResult
     private static List<TextEditorTextSpan> GetMatchTextSpans(HashSet<int> positionIndicesThatMatchHashSet)
     {
         var matchTextSpans = new List<TextEditorTextSpan>();
+
+        if (!positionIndicesThatMatchHashSet.Any())
+            return matchTextSpans;
         
         var sortedBeforePositionIndicesThatMatch = positionIndicesThatMatchHashSet
             .OrderBy(x => x)

@@ -249,6 +249,10 @@
     position: absolute;
 }
 
+.bte_diff-match {
+    background-color: var(--bte_diff-match-background-color);
+}
+
 .bte_unselectable {
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
