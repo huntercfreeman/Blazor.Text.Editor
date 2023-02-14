@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Decoration;
+using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Misc;
@@ -24,6 +26,23 @@ public record TextEditorViewModel(
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
     public Action<TextEditorModel>? OnSaveRequested { get; init; }
     public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }
+
+    /// <summary>
+    /// <see cref="FirstTextEditorPresentationLayer"/> is painted prior to any internal workings of the text editor.
+    /// <br/><br/>
+    /// Therefore the selected text is rendered after anything in the <see cref="FirstTextEditorPresentationLayer"/>.
+    /// <br/><br/>
+    /// When using the <see cref="FirstTextEditorPresentationLayer"/> one might find their css overriden by for example, text being selected.
+    /// </summary>
+    public List<TextEditorPresentation> FirstTextEditorPresentationLayer { get; init; } = new();
+    /// <summary>
+    /// <see cref="LastTextEditorPresentationLayer"/> is painted after any internal workings of the text editor.
+    /// <br/><br/>
+    /// Therefore the selected text is rendered before anything in the <see cref="LastTextEditorPresentationLayer"/>.
+    /// <br/><br/>
+    /// When using the <see cref="LastTextEditorPresentationLayer"/> one might selected text not being rendered with the text selection css if it were overriden by something in the <see cref="LastTextEditorPresentationLayer"/>.
+    /// </summary>
+    public List<TextEditorPresentation> LastTextEditorPresentationLayer { get; init; } = new();
 
     public string CommandBarValue { get; set; } = string.Empty;
     

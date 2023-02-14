@@ -17,7 +17,7 @@
 
     var fontSizeInPixelsCssStyleString = string.Empty;
 
-    if (globalTextEditorOptions.CommonOptions.FontSizeInPixels is not null)
+    if (globalTextEditorOptions.CommonOptions?.FontSizeInPixels is not null)
     {
         fontSizeInPixelsCssStyleString = 
             $"font-size: {globalTextEditorOptions.CommonOptions.FontSizeInPixels.Value.ToCssValue()}px;";

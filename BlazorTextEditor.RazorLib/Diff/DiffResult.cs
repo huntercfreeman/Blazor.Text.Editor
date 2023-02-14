@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Diff;
 
@@ -8,18 +9,25 @@ public class DiffResult
         string beforeText,
         string afterText,
         DiffMatchCell[,] diffMatrix,
-        string longestCommonSubsequence)
+        string longestCommonSubsequence,
+        List<TextEditorTextSpan> beforeMatchTextSpans,
+        List<TextEditorTextSpan> afterMatchTextSpans)
     {
         BeforeText = beforeText;
         AfterText = afterText;
         DiffMatrix = diffMatrix;
         LongestCommonSubsequence = longestCommonSubsequence;
+        BeforeMatchTextSpans = beforeMatchTextSpans;
+        AfterMatchTextSpans = afterMatchTextSpans;
     }
 
     public string BeforeText { get; }
     public string AfterText { get; }
     public DiffMatchCell[,] DiffMatrix { get; }
     public string LongestCommonSubsequence { get; }
+    public List<TextEditorTextSpan> BeforeMatchTextSpans { get; }
+    public List<TextEditorTextSpan> AfterMatchTextSpans { get; }
+    public TextEditorTextSpan TextSpans { get; }
 
     /// <summary>
     /// This method aims to implement the "An O(ND) Difference Algorithm"
@@ -115,6 +123,9 @@ public class DiffResult
         }
 
         var longestCommonSubsequenceBuilder = new StringBuilder();
+
+        var beforePositionIndicesThatMatchHashSet = new HashSet<int>();
+        var afterPositionIndicesThatMatchHashSet = new HashSet<int>();
         
         // Read the LongestCommonSubsequence by backtracking to the highest weights
         {
@@ -131,6 +142,9 @@ public class DiffResult
                 {
                     longestCommonSubsequenceBuilder
                         .Append(cell.ValueColumn.CharacterValue);
+
+                    beforePositionIndicesThatMatchHashSet.Add(cell.ValueRow.PositionIndex);
+                    afterPositionIndicesThatMatchHashSet.Add(cell.ValueColumn.PositionIndex);
                     
                     runningColumnIndex--;
                     runningRowIndex--;
@@ -154,13 +168,54 @@ public class DiffResult
             .ToString()
             .Reverse()
             .ToArray());
-        
+
+        var beforeMatchTextSpans = GetMatchTextSpans(beforePositionIndicesThatMatchHashSet);
+        var afterMatchTextSpans = GetMatchTextSpans(afterPositionIndicesThatMatchHashSet);
+
         var diffResult = new DiffResult(
             beforeText,
             afterText,
             matchMatrix,
-            longestCommonSubsequenceValue);
+            longestCommonSubsequenceValue,
+            beforeMatchTextSpans,
+            afterMatchTextSpans);
 
         return diffResult;
+    }
+
+    private static List<TextEditorTextSpan> GetMatchTextSpans(HashSet<int> positionIndicesThatMatchHashSet)
+    {
+        var matchTextSpans = new List<TextEditorTextSpan>();
+        
+        var sortedBeforePositionIndicesThatMatch = positionIndicesThatMatchHashSet
+            .OrderBy(x => x)
+            .ToArray();
+
+        var firstIndex = sortedBeforePositionIndicesThatMatch.First();
+            
+        var startingIndexInclusive = firstIndex;
+        var endingIndexExclusive = firstIndex + 1;
+            
+        foreach (var index in sortedBeforePositionIndicesThatMatch)
+        {
+            if (index >= endingIndexExclusive)
+            {
+                var textSpan = new TextEditorTextSpan(
+                    startingIndexInclusive,
+                    endingIndexExclusive,
+                    (byte)TextEditorDiffDecorationKind.Match);
+
+                matchTextSpans.Add(textSpan);
+                    
+                startingIndexInclusive = index;
+                endingIndexExclusive = index + 1;
+            }
+            else
+            {
+                endingIndexExclusive = index + 1;
+            }
+        }
+
+        return matchTextSpans;
     }
 }

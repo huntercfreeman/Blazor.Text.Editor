@@ -1,0 +1,25 @@
+﻿@using BlazorTextEditor.RazorLib.Cursor
+
+<div class="@CssClassString">
+    
+    @{
+        var localTextEditorViewModel = TextEditorViewModel;
+        
+        var presentationLayerOrderedByRankAscending = TextEditorPresentations
+                .OrderBy(x => x.Rank)
+            .ToList();
+    }
+
+    @foreach (var presentation in presentationLayerOrderedByRankAscending)
+    {
+        <div class="@presentation.CssClassString">
+            @foreach (var textSpan in presentation.TextEditorTextSpans)
+            {
+                <div class="@presentation.DecorationMapper.Map(textSpan.DecorationByte)"
+                     style="">
+                    
+                </div>
+            }
+        </div>
+    }
+</div>
