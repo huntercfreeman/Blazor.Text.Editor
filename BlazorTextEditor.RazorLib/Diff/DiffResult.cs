@@ -190,18 +190,28 @@ public class DiffResult
         if (!positionIndicesThatMatchHashSet.Any())
             return matchTextSpans;
         
-        var sortedBeforePositionIndicesThatMatch = positionIndicesThatMatchHashSet
+        var sortedPositionIndicesThatMatch = positionIndicesThatMatchHashSet
             .OrderBy(x => x)
-            .ToArray();
+            .ToList();
 
-        var firstIndex = sortedBeforePositionIndicesThatMatch.First();
-            
-        var startingIndexInclusive = firstIndex;
-        var endingIndexExclusive = firstIndex + 1;
-            
-        foreach (var index in sortedBeforePositionIndicesThatMatch)
+        // The foreach loop coalesces contiguous indices into a single TextEditorTextSpan
+        // and the logic that does the coalescing will not write out the final index without this.
+        sortedPositionIndicesThatMatch.Add(int.MaxValue);
+
+        var startingIndexInclusive = sortedPositionIndicesThatMatch.First();
+        var endingIndexExclusive = startingIndexInclusive + 1;
+
+        var skipFirstIndex = sortedPositionIndicesThatMatch
+            .Skip(1)
+            .ToArray();
+        
+        foreach (var index in skipFirstIndex)
         {
-            if (index >= endingIndexExclusive)
+            if (index == endingIndexExclusive)
+            {
+                endingIndexExclusive++;
+            }
+            else
             {
                 var textSpan = new TextEditorTextSpan(
                     startingIndexInclusive,
@@ -211,10 +221,6 @@ public class DiffResult
                 matchTextSpans.Add(textSpan);
                     
                 startingIndexInclusive = index;
-                endingIndexExclusive = index + 1;
-            }
-            else
-            {
                 endingIndexExclusive = index + 1;
             }
         }
