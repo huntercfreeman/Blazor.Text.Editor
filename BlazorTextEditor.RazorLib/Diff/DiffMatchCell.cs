@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace BlazorTextEditor.RazorLib.Diff;
+﻿namespace BlazorTextEditor.RazorLib.Diff;
 
 public class DiffMatchCell
 {

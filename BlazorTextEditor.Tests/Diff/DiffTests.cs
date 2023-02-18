@@ -1,4 +1,3 @@
-using BlazorTextEditor.RazorLib.Diff;
 using BlazorTextEditor.Tests.TestDataFolder;
 
 namespace BlazorTextEditor.Tests.Diff;

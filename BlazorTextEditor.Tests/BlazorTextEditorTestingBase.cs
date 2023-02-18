@@ -1,7 +1,6 @@
 ﻿using BlazorALaCarte.Shared.Clipboard;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.StorageCase;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
 
