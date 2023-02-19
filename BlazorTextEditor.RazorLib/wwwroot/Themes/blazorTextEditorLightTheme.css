@@ -24,11 +24,11 @@ clones provide a more familiar environment for people that use the Library.
     --bte_string-literal-foreground-color: #AA0F0F;
     --bte_keyword-foreground-color: #D77D00;
     --bte_comment-foreground-color: #7E7C7C;
-    --bte_tag-name-foreground-color: #E66400;
+    --bte_tag-name-foreground-color: #D77D00;
     --bte_injected-language-fragment-color: #E001D9;
     --bte_css-property-name-color: #006E91;
     --bte_css-property-value-color: #AA0F0F;
-    --bte_css-identifier-color: #E66400;
+    --bte_css-identifier-color: #D77D00;
     --bte_attribute-name-color: #006E91;
     --bte_attribute-value-color : #AA0F0F;
     --bte_json-property-key-color : #006E91;
