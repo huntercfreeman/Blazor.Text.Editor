@@ -800,5 +800,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         }
     
         _disposed = true;
+        
+        base.Dispose(disposing);
     }
 }
