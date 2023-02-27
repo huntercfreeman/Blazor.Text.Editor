@@ -8,51 +8,49 @@ public partial class TextEditorDiffsCollection
     private class Reducer
     {
         [ReducerMethod]
-        public static TextEditorDiffsCollection ReduceRegisterTextEditorDiffAction(
-            TextEditorDiffsCollection inDiffsCollection,
-            RegisterAction registerAction)
-        {
-            var existingTextEditorDiff = inDiffsCollection.DiffsList
-                .FirstOrDefault(x =>
-                    x.DiffKey ==
-                    registerAction.DiffKey);
-
-            if (existingTextEditorDiff is not null)
-                return inDiffsCollection;
-
-            var diff = new TextEditorDiff(
-                registerAction.DiffKey,
-                registerAction.BeforeViewModelKey,
-                registerAction.AfterViewModelKey);
-
-            var nextList = inDiffsCollection.DiffsList
-                .Add(diff);
-
-            return new TextEditorDiffsCollection
-            {
-                DiffsList = nextList
-            };
-        }
-        
-        [ReducerMethod]
-        public static TextEditorDiffsCollection ReduceDisposeTextEditorDiffAction(
+        public static TextEditorDiffsCollection ReduceDisposeAction(
             TextEditorDiffsCollection inDiffsCollection,
             DisposeAction disposeAction)
         {
-            var existingTextEditorDiff = inDiffsCollection.DiffsList
+            var existingTextEditorDiff = inDiffsCollection.DiffModelsList
                 .FirstOrDefault(x =>
-                    x.DiffKey ==
-                    disposeAction.DiffKey);
+                    x.DiffKey == disposeAction.DiffKey);
 
             if (existingTextEditorDiff is null)
                 return inDiffsCollection;
 
-            var nextList = inDiffsCollection.DiffsList
+            var nextList = inDiffsCollection.DiffModelsList
                 .Remove(existingTextEditorDiff);
 
             return new TextEditorDiffsCollection
             {
-                DiffsList = nextList
+                DiffModelsList = nextList
+            };
+        }
+        
+        [ReducerMethod]
+        public static TextEditorDiffsCollection ReduceRegisterAction(
+            TextEditorDiffsCollection inDiffsCollection,
+            RegisterAction registerAction)
+        {
+            var existingTextEditorDiff = inDiffsCollection.DiffModelsList
+                .FirstOrDefault(x =>
+                    x.DiffKey == registerAction.DiffKey);
+
+            if (existingTextEditorDiff is not null)
+                return inDiffsCollection;
+
+            var diff = new TextEditorDiffModel(
+                registerAction.DiffKey,
+                registerAction.BeforeViewModelKey,
+                registerAction.AfterViewModelKey);
+
+            var nextList = inDiffsCollection.DiffModelsList
+                .Add(diff);
+
+            return new TextEditorDiffsCollection
+            {
+                DiffModelsList = nextList
             };
         }
     }

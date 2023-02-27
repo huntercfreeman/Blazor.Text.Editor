@@ -418,14 +418,110 @@ public class TextEditorService : ITextEditorService
                 afterViewModelKey));
     }
     
-    public void DiffDispose(TextEditorDiffKey textEditorDiffKey)
+    public void DiffCalculate(
+        TextEditorDiffKey textEditorDiffKey,
+        CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+            return;
+        
+        var textEditorDiff = DiffModelFindOrDefault(textEditorDiffKey);
+
+        if (textEditorDiff is null)
+            return;
+        
+        var beforeViewModel = ViewModelFindOrDefault(textEditorDiff.BeforeViewModelKey);
+        var afterViewModel = ViewModelFindOrDefault(textEditorDiff.AfterViewModelKey);
+
+        if (beforeViewModel is null ||
+            afterViewModel is null)
+        {
+            return;
+        }
+        
+        var beforeModel = ModelFindOrDefault(beforeViewModel.ModelKey);
+        var afterModel = ModelFindOrDefault(afterViewModel.ModelKey);
+
+        if (beforeModel is null ||
+            afterModel is null)
+        {
+            return;
+        }
+        
+        var beforeText = beforeModel.GetAllText();
+        var afterText = afterModel.GetAllText();
+
+        var diffResult = TextEditorDiffResult.Calculate(
+            beforeText,
+            afterText);
+
+        ChangeFirstPresentationLayer(
+            beforeViewModel.ViewModelKey,
+            diffResult.BeforeLongestCommonSubsequenceTextSpans);
+        
+        ChangeFirstPresentationLayer(
+            afterViewModel.ViewModelKey,
+            diffResult.AfterLongestCommonSubsequenceTextSpans);
+            
+        void ChangeFirstPresentationLayer(
+            TextEditorViewModelKey viewModelKey,
+            ImmutableList<TextEditorTextSpan> longestCommonSubsequenceTextSpans)
+        {
+            _dispatcher.Dispatch(
+                new TextEditorViewModelsCollection.SetViewModelWithAction(
+                    viewModelKey,
+                    inViewModel =>
+                    {
+                        var outPresentationLayer = inViewModel.FirstPresentationLayer;
+                    
+                        var inPresentationModel = outPresentationLayer
+                            .FirstOrDefault(x =>
+                                x.TextEditorPresentationKey == DiffFacts.PresentationKey);
+
+                        if (inPresentationModel is null)
+                        {
+                            inPresentationModel = DiffFacts.EmptyPresentationModel;
+                        
+                            outPresentationLayer = outPresentationLayer.Add(
+                                inPresentationModel);
+                        }
+
+                        var outPresentationModel = inPresentationModel with
+                        {
+                            TextEditorTextSpans = longestCommonSubsequenceTextSpans
+                        };
+                    
+                        outPresentationLayer = outPresentationLayer.Replace(
+                            inPresentationModel,
+                            outPresentationModel);
+
+                        return inViewModel with
+                        {
+                            FirstPresentationLayer = outPresentationLayer
+                        };
+                    }));
+        }
+    }
+    
+    public void DiffDispose(
+        TextEditorDiffKey textEditorDiffKey)
     {
         _dispatcher.Dispatch(
             new TextEditorDiffsCollection.DisposeAction(
                 textEditorDiffKey));
     }
     
-    public async Task ViewModelSetGutterScrollTopAsync(string gutterElementId, double scrollTopInPixels)
+    public TextEditorDiffModel? DiffModelFindOrDefault(
+        TextEditorDiffKey textEditorDiffKey)
+    {
+        return DiffsCollectionWrap.Value.DiffModelsList
+            .FirstOrDefault(x =>
+                x.DiffKey == textEditorDiffKey);
+    }
+    
+    public async Task ViewModelSetGutterScrollTopAsync(
+        string gutterElementId,
+        double scrollTopInPixels)
     {
         await _jsRuntime.InvokeVoidAsync(
             "blazorTextEditor.setGutterScrollTop",

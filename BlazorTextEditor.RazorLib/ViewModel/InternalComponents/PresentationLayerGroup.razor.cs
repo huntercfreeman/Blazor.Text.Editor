@@ -1,4 +1,5 @@
-﻿using BlazorALaCarte.Shared.Dimensions;
+﻿using System.Collections.Immutable;
+using BlazorALaCarte.Shared.Dimensions;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Model;
@@ -18,7 +19,7 @@ public partial class PresentationLayerGroup : ComponentBase
     [Parameter, EditorRequired]
     public string CssClassString { get; set; } = string.Empty;
     [Parameter, EditorRequired]
-    public List<TextEditorPresentation> TextEditorPresentations { get; set; } = new();
+    public ImmutableList<TextEditorPresentationModel> TextEditorPresentations { get; set; } = ImmutableList<TextEditorPresentationModel>.Empty;
     
     private string GetCssStyleString(
         int startingPositionIndexInclusive,

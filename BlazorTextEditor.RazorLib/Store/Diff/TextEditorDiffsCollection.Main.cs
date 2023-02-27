@@ -14,8 +14,8 @@ public partial class TextEditorDiffsCollection
 {
     public TextEditorDiffsCollection()
     {
-        DiffsList = ImmutableList<TextEditorDiff>.Empty; 
+        DiffModelsList = ImmutableList<TextEditorDiffModel>.Empty; 
     }
 
-    public ImmutableList<TextEditorDiff> DiffsList { get; init; }
+    public ImmutableList<TextEditorDiffModel> DiffModelsList { get; init; }
 }

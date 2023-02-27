@@ -15,13 +15,13 @@
 
     <PresentationLayerGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"
                             CssClassString="bte_first-presentation-layer-group"
-                            TextEditorPresentations="localViewModel.FirstTextEditorPresentationLayer"/>
+                            TextEditorPresentations="localViewModel.FirstPresentationLayer"/>
 
     <TextSelectionGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"/>
 
     <PresentationLayerGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"
                             CssClassString="bte_last-presentation-layer-group"
-                            TextEditorPresentations="localViewModel.LastTextEditorPresentationLayer"/>
+                            TextEditorPresentations="localViewModel.LastPresentationLayer"/>
 
     @foreach (var virtualizedRow in TextEditorViewModel.VirtualizationResult.Entries)
     {

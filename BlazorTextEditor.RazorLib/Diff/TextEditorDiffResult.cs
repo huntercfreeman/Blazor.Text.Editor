@@ -1,32 +1,33 @@
-﻿using System.Text;
+﻿using System.Collections.Immutable;
+using System.Text;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Diff;
 
-public class DiffResult
+public class TextEditorDiffResult
 {
-    private DiffResult(
+    private TextEditorDiffResult(
         string beforeText,
         string afterText,
-        DiffMatchCell[,] diffMatrix,
+        TextEditorDiffMatchCell[,] diffMatrix,
         string longestCommonSubsequence,
-        List<TextEditorTextSpan> beforeMatchTextSpans,
-        List<TextEditorTextSpan> afterMatchTextSpans)
+        ImmutableList<TextEditorTextSpan> beforeLongestCommonSubsequenceTextSpans,
+        ImmutableList<TextEditorTextSpan> afterLongestCommonSubsequenceTextSpans)
     {
         BeforeText = beforeText;
         AfterText = afterText;
         DiffMatrix = diffMatrix;
         LongestCommonSubsequence = longestCommonSubsequence;
-        BeforeMatchTextSpans = beforeMatchTextSpans;
-        AfterMatchTextSpans = afterMatchTextSpans;
+        BeforeLongestCommonSubsequenceTextSpans = beforeLongestCommonSubsequenceTextSpans;
+        AfterLongestCommonSubsequenceTextSpans = afterLongestCommonSubsequenceTextSpans;
     }
 
     public string BeforeText { get; }
     public string AfterText { get; }
-    public DiffMatchCell[,] DiffMatrix { get; }
+    public TextEditorDiffMatchCell[,] DiffMatrix { get; }
     public string LongestCommonSubsequence { get; }
-    public List<TextEditorTextSpan> BeforeMatchTextSpans { get; }
-    public List<TextEditorTextSpan> AfterMatchTextSpans { get; }
+    public ImmutableList<TextEditorTextSpan> BeforeLongestCommonSubsequenceTextSpans { get; }
+    public ImmutableList<TextEditorTextSpan> AfterLongestCommonSubsequenceTextSpans { get; }
     public TextEditorTextSpan TextSpans { get; }
 
     /// <summary>
@@ -34,40 +35,28 @@ public class DiffResult
     /// <br/><br/>
     /// Watching https://www.youtube.com/watch?v=9n8jI2267MM
     /// </summary>
-    public static DiffResult Calculate(
+    public static TextEditorDiffResult Calculate(
         string beforeText,
         string afterText)
     {
         // Need to build a square two dimensional array.
-
+        //
+        // Envisioning that 'beforeText' represents the rows
+        // and 'afterText' represents the columns.
         var beforeTextLength = beforeText.Length;
         var afterTextLength = afterText.Length;
+        
+        var squaredSize = Math.Max(beforeTextLength, afterTextLength);
 
-        // Envisioning that 'beforeTextLength' represents the rows.
-        // And 'afterTextLength' represents the columns.
-        var squareSize = Math.Max(beforeTextLength, afterTextLength);
+        var matchMatrix = new TextEditorDiffMatchCell[squaredSize, squaredSize];
 
-        var matchMatrix = new DiffMatchCell[squareSize, squareSize];
-
-        for (int beforeIndex = 0; beforeIndex < squareSize; beforeIndex++)
+        for (int beforeIndex = 0; beforeIndex < beforeTextLength; beforeIndex++)
         {
-            char? beforeCharacterValue = null;
+            char? beforeCharacterValue = beforeText[beforeIndex];
 
-            if (beforeIndex < beforeTextLength)
-                beforeCharacterValue = beforeText[beforeIndex];
-
-            int? weightOfMatchFoundPreviouslyOnThisRow = null;
-
-            for (int afterIndex = 0; afterIndex < squareSize; afterIndex++)
+            for (int afterIndex = 0; afterIndex < afterTextLength; afterIndex++)
             {
-                char? afterCharacterValue = null;
-
-                if (afterIndex < afterTextLength)
-                    afterCharacterValue = afterText[afterIndex];
-
-                var rowValue = new DiffMatchCellValue(beforeCharacterValue, beforeIndex);
-
-                var columnValue = new DiffMatchCellValue(afterCharacterValue, afterIndex);
+                char? afterCharacterValue = afterText[afterIndex];
 
                 int weight;
                 bool isSourceOfRowWeight = false;
@@ -112,7 +101,7 @@ public class DiffResult
                     weight = weightOfMatchFoundPreviouslyOnThisRow.Value;
                 }
 
-                var cell = new DiffMatchCell(
+                var cell = new TextEditorDiffMatchCell(
                     rowValue,
                     columnValue,
                     weight,
@@ -120,6 +109,22 @@ public class DiffResult
 
                 matchMatrix[beforeIndex, afterIndex] = cell;
             }
+            
+            if (afterTextLength < beforeTextLength)
+            {
+                // TODO: This if block for setting fabricated columns.
+                
+                // This if block sets the cells in the fabricated column
+                // in order to create a square matrix
+            }
+        }
+
+        if (beforeTextLength < afterTextLength)
+        {
+            // TODO: This if block for setting fabricated rows.
+            
+            // This if block sets the cells in the fabricated row
+            // in order to create a square matrix
         }
 
         var longestCommonSubsequenceBuilder = new StringBuilder();
@@ -129,8 +134,8 @@ public class DiffResult
         
         // Read the LongestCommonSubsequence by backtracking to the highest weights
         {
-            int runningRowIndex = squareSize - 1;
-            int runningColumnIndex = squareSize - 1;
+            int runningRowIndex = squaredSize - 1;
+            int runningColumnIndex = squaredSize - 1;
             
             while (runningRowIndex != -1 && runningColumnIndex != -1)
             {
@@ -172,13 +177,13 @@ public class DiffResult
         var beforeMatchTextSpans = GetMatchTextSpans(beforePositionIndicesThatMatchHashSet);
         var afterMatchTextSpans = GetMatchTextSpans(afterPositionIndicesThatMatchHashSet);
 
-        var diffResult = new DiffResult(
+        var diffResult = new TextEditorDiffResult(
             beforeText,
             afterText,
             matchMatrix,
             longestCommonSubsequenceValue,
-            beforeMatchTextSpans,
-            afterMatchTextSpans);
+            beforeMatchTextSpans.ToImmutableList(),
+            afterMatchTextSpans.ToImmutableList());
 
         return diffResult;
     }

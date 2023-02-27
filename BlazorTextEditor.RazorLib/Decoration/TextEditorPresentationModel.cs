@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Lexing;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Decoration;
 
@@ -7,9 +8,9 @@ namespace BlazorTextEditor.RazorLib.Decoration;
 /// <param name="CssClassString">A div is rendered with this css class. Inside this div are the divs gotten from the text spans. One likely only will use this css class as an identifier while viewing the browser's debugging tools.</param>
 /// <param name="DecorationMapper">The decoration mapper that is responsible for converting a decoration byte to a css class</param>
 /// <param name="TextEditorTextSpans">The list of position indices that are to painted with certain decoration bytes.</param>
-public record TextEditorPresentation(
+public record TextEditorPresentationModel(
     TextEditorPresentationKey TextEditorPresentationKey,
     int Rank,
     string CssClassString,
     IDecorationMapper DecorationMapper,
-    List<TextEditorTextSpan> TextEditorTextSpans);
+    ImmutableList<TextEditorTextSpan> TextEditorTextSpans);

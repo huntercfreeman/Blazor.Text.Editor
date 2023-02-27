@@ -27,21 +27,21 @@ public record TextEditorViewModel(
     public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }
 
     /// <summary>
-    /// <see cref="FirstTextEditorPresentationLayer"/> is painted prior to any internal workings of the text editor.
+    /// <see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.
     /// <br/><br/>
-    /// Therefore the selected text is rendered after anything in the <see cref="FirstTextEditorPresentationLayer"/>.
+    /// Therefore the selected text is rendered after anything in the <see cref="FirstPresentationLayer"/>.
     /// <br/><br/>
-    /// When using the <see cref="FirstTextEditorPresentationLayer"/> one might find their css overriden by for example, text being selected.
+    /// When using the <see cref="FirstPresentationLayer"/> one might find their css overriden by for example, text being selected.
     /// </summary>
-    public List<TextEditorPresentation> FirstTextEditorPresentationLayer { get; init; } = new();
+    public ImmutableList<TextEditorPresentationModel> FirstPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
     /// <summary>
-    /// <see cref="LastTextEditorPresentationLayer"/> is painted after any internal workings of the text editor.
+    /// <see cref="LastPresentationLayer"/> is painted after any internal workings of the text editor.
     /// <br/><br/>
-    /// Therefore the selected text is rendered before anything in the <see cref="LastTextEditorPresentationLayer"/>.
+    /// Therefore the selected text is rendered before anything in the <see cref="LastPresentationLayer"/>.
     /// <br/><br/>
-    /// When using the <see cref="LastTextEditorPresentationLayer"/> one might selected text not being rendered with the text selection css if it were overriden by something in the <see cref="LastTextEditorPresentationLayer"/>.
+    /// When using the <see cref="LastPresentationLayer"/> one might selected text not being rendered with the text selection css if it were overriden by something in the <see cref="LastPresentationLayer"/>.
     /// </summary>
-    public List<TextEditorPresentation> LastTextEditorPresentationLayer { get; init; } = new();
+    public ImmutableList<TextEditorPresentationModel> LastPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
 
     public string CommandBarValue { get; set; } = string.Empty;
     

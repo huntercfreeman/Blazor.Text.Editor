@@ -1,10 +1,10 @@
 ﻿namespace BlazorTextEditor.RazorLib.Diff;
 
-public class DiffMatchCell
+public class TextEditorDiffMatchCell
 {
-    public DiffMatchCell(
-        DiffMatchCellValue valueRow,
-        DiffMatchCellValue valueColumn,
+    public TextEditorDiffMatchCell(
+        TextEditorDiffMatchCellValue valueRow,
+        TextEditorDiffMatchCellValue valueColumn,
         int weight,
         bool isSourceOfRowWeight)
     {
@@ -14,8 +14,8 @@ public class DiffMatchCell
         IsSourceOfRowWeight = isSourceOfRowWeight;
     }
 
-    public DiffMatchCellValue ValueRow { get; }
-    public DiffMatchCellValue ValueColumn { get; }
+    public TextEditorDiffMatchCellValue ValueRow { get; }
+    public TextEditorDiffMatchCellValue ValueColumn { get; }
     public int Weight { get; set; }
     public bool IsSourceOfRowWeight { get; }
 }

@@ -2,10 +2,10 @@
 
 /// <summary>
 /// <see cref="TextEditorPresentationKey"/> is used to uniquely 
-/// identify a <see cref="TextEditorPresentation"/>.
+/// identify a <see cref="TextEditorPresentationModel"/>.
 /// <br/><br/>
 /// When interacting with the <see cref="ITextEditorService"/> it is
-/// common that a method regarding a <see cref="TextEditorPresentation"/>
+/// common that a method regarding a <see cref="TextEditorPresentationModel"/>
 /// will take a <see cref="TextEditorPresentationKey"/> as a parameter.
 /// </summary>
 public record TextEditorPresentationKey(Guid Guid)
