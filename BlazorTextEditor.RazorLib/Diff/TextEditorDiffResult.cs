@@ -10,6 +10,7 @@ public class TextEditorDiffResult
         string beforeText,
         string afterText,
         TextEditorDiffCell[,] diffMatrix,
+        (int sourceWeight, int beforeIndex, int afterIndex) highestSourceWeightTuple,
         string longestCommonSubsequence,
         ImmutableList<TextEditorTextSpan> beforeLongestCommonSubsequenceTextSpans,
         ImmutableList<TextEditorTextSpan> afterLongestCommonSubsequenceTextSpans)
@@ -17,6 +18,7 @@ public class TextEditorDiffResult
         BeforeText = beforeText;
         AfterText = afterText;
         DiffMatrix = diffMatrix;
+        HighestSourceWeightTuple = highestSourceWeightTuple;
         LongestCommonSubsequence = longestCommonSubsequence;
         BeforeLongestCommonSubsequenceTextSpans = beforeLongestCommonSubsequenceTextSpans;
         AfterLongestCommonSubsequenceTextSpans = afterLongestCommonSubsequenceTextSpans;
@@ -25,10 +27,10 @@ public class TextEditorDiffResult
     public string BeforeText { get; }
     public string AfterText { get; }
     public TextEditorDiffCell[,] DiffMatrix { get; }
+    public (int sourceWeight, int beforeIndex, int afterIndex) HighestSourceWeightTuple { get; }
     public string LongestCommonSubsequence { get; }
     public ImmutableList<TextEditorTextSpan> BeforeLongestCommonSubsequenceTextSpans { get; }
     public ImmutableList<TextEditorTextSpan> AfterLongestCommonSubsequenceTextSpans { get; }
-    public TextEditorTextSpan TextSpans { get; }
 
     /// <summary>
     /// This method aims to implement the "An O(ND) Difference Algorithm"
@@ -49,6 +51,8 @@ public class TextEditorDiffResult
         var squaredSize = Math.Max(beforeTextLength, afterTextLength);
 
         var diffMatrix = new TextEditorDiffCell[squaredSize, squaredSize];
+        
+        (int sourceWeight, int beforeIndex, int afterIndex) highestSourceWeightTuple = (-1, -1, -1);
 
         for (int beforeIndex = 0; beforeIndex < beforeTextLength; beforeIndex++)
         {
@@ -76,6 +80,8 @@ public class TextEditorDiffResult
                         afterCharValue,
                         cellSourceWeight,
                         true);
+                    
+                    highestSourceWeightTuple = (cellSourceWeight, beforeIndex, afterIndex);
                 }
                 else
                 {
@@ -146,8 +152,8 @@ public class TextEditorDiffResult
         
         // Read the LongestCommonSubsequence by backtracking to the highest weights
         {
-            int runningRowIndex = squaredSize - 1;
-            int runningColumnIndex = squaredSize - 1;
+            int runningRowIndex = highestSourceWeightTuple.beforeIndex;
+            int runningColumnIndex = highestSourceWeightTuple.afterIndex;
             
             while (runningRowIndex != -1 && runningColumnIndex != -1)
             {
@@ -199,6 +205,7 @@ public class TextEditorDiffResult
             beforeText,
             afterText,
             diffMatrix,
+            highestSourceWeightTuple,
             longestCommonSubsequenceValue,
             beforeMatchTextSpans.ToImmutableList(),
             afterMatchTextSpans.ToImmutableList());

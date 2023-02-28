@@ -86,6 +86,8 @@ public static partial class TestData
             ///     Longest common subsequence: "bdefk"
             /// Observed output:
             ///     Longest common subsequence: "b"
+            /// Resolved output:
+            ///     Longest common subsequence: "bdefk\r"
             /// </summary>
             public static class Bug_000
             {
