@@ -4,9 +4,16 @@ namespace BlazorTextEditor.Tests.TestDataFolder;
 
 public static partial class TestData
 {
+    /// <summary>
+    /// The input for test cases are grouped. These groups are for organizational purposes.
+    /// </summary>
     public static class Diff
     {
-        public static class Simple
+        /// <summary>
+        /// Input without any newline characters belong under this group.
+        /// Input of a newline character followed by no further content belongs under this group.
+        /// </summary>
+        public static class SingleLineBaseCases
         {
             public static class NoLineEndings
             {
@@ -31,21 +38,12 @@ public static partial class TestData
                 public const string SAMPLE_000 = "abcdefk\r\n";
                 public const string SAMPLE_010 = "bhdefck\r\n";
             }
-
-            public static IEnumerable<string> GetAllInputSimple => new[]
-            {
-                NoLineEndings.SAMPLE_000,
-                NoLineEndings.SAMPLE_010,
-                WithLinefeedEnding.SAMPLE_000,
-                WithLinefeedEnding.SAMPLE_010,
-                WithCarriageReturnEnding.SAMPLE_000,
-                WithCarriageReturnEnding.SAMPLE_010,
-                WithCarriageReturnLinefeedEnding.SAMPLE_000,
-                WithCarriageReturnLinefeedEnding.SAMPLE_010,
-            }.ToImmutableArray();
         }
         
-        public static class MultiLine
+        /// <summary>
+        /// Input with at least one newline character which is followed by any content (including another line ending character) afterwards belong under this group.
+        /// </summary>
+        public static class MultiLineBaseCases
         {
             public static class WithLinefeedEnding
             {
@@ -64,16 +62,36 @@ public static partial class TestData
                 public const string SAMPLE_000 = "abcdefk\r\nzabc";
                 public const string SAMPLE_010 = "bhdefck\r\nzabc";
             }
-
-            public static IEnumerable<string> GetAllInputMultiLine => new[]
+            
+            public static class ManyEmptyLinesWithEqualLengthInput
             {
-                WithLinefeedEnding.SAMPLE_000,
-                WithLinefeedEnding.SAMPLE_010,
-                WithCarriageReturnEnding.SAMPLE_000,
-                WithCarriageReturnEnding.SAMPLE_010,
-                WithCarriageReturnLinefeedEnding.SAMPLE_000,
-                WithCarriageReturnLinefeedEnding.SAMPLE_010,
-            }.ToImmutableArray();
+                public const string SAMPLE_000 = "\n\n\n\n\n";
+                public const string SAMPLE_010 = "\n\n\n\n\n";
+            }
+            
+            public static class ManyEmptyLinesWithUnequalLengthInput
+            {
+                public const string SAMPLE_000 = "\n\n\n";
+                public const string SAMPLE_010 = "\n\n\n\n\n";
+            }
+        }
+        
+        /// <summary>
+        /// <see cref="JustifiedCases"/> are made up from more complex input. An example could be an input does not provide a valid output and had been reported as a bug. That input which had the bug output should exist here for eternity, always to be asserted that the bug is still fixed.
+        /// </summary>
+        public static class JustifiedCases
+        {
+            /// <summary>
+            /// Expected output:
+            ///     Longest common subsequence: "bdefk"
+            /// Observed output:
+            ///     Longest common subsequence: "b"
+            /// </summary>
+            public static class Bug_000
+            {
+                public const string SAMPLE_000 = "abcdefk\r";
+                public const string SAMPLE_010 = "bhdefck\r\n";
+            }
         }
     }
 }
