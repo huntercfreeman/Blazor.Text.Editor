@@ -193,27 +193,31 @@ public class TextEditorDiffResult
 
                     decoratingRemainingColumns = true;
                     restoreColumnIndex = runningColumnIndex - 1;
-                    
-                    continue;
                 }
-
-                // Decoration logic
+                else
                 {
-                    if (cell.BeforeCharValue is null)
+                    // Decoration logic
                     {
-                        // Insertion
-                        afterPositionIndicesOfInsertionHashSet.Add(runningColumnIndex);
-                    }
-                    else if (cell.AfterCharValue is null)
-                    {
-                        // Deletion
-                        beforePositionIndicesOfDeletionHashSet.Add(runningRowIndex);
-                    }
-                    else
-                    {
-                        // Modification
-                        beforePositionIndicesOfModificationHashSet.Add(runningRowIndex);
-                        afterPositionIndicesOfModificationHashSet.Add(runningColumnIndex);
+                        if (afterTextLength > beforeTextLength &&
+                            runningColumnIndex > beforeTextLength - 1)
+                        {
+                            // Insertion
+                            afterPositionIndicesOfInsertionHashSet.Add(runningRowIndex);
+                        }
+                        else if (beforeTextLength > afterTextLength &&
+                                 runningRowIndex >= afterTextLength)
+                        {
+                            // Deletion
+                            beforePositionIndicesOfDeletionHashSet.Add(runningColumnIndex);
+                        }
+                        // TODO: Else if for modification is not working.
+                        //
+                        // else if (cell.BeforeCharValue != cell.AfterCharValue)
+                        // {
+                        //     // Modification
+                        //     beforePositionIndicesOfModificationHashSet.Add(runningRowIndex);
+                        //     afterPositionIndicesOfModificationHashSet.Add(runningColumnIndex);
+                        // }
                     }
                 }
 
