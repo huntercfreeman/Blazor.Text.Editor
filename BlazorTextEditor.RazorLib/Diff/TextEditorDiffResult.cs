@@ -81,7 +81,8 @@ public class TextEditorDiffResult
                         cellSourceWeight,
                         true);
                     
-                    highestSourceWeightTuple = (cellSourceWeight, beforeIndex, afterIndex);
+                    if (cellSourceWeight > highestSourceWeightTuple.sourceWeight)
+                        highestSourceWeightTuple = (cellSourceWeight, beforeIndex, afterIndex);
                 }
                 else
                 {

@@ -94,6 +94,20 @@ public static partial class TestData
                 public const string SAMPLE_000 = "abcdefk\r";
                 public const string SAMPLE_010 = "bhdefck\r\n";
             }
+            
+            /// <summary>
+            /// Expected output:
+            ///     Longest common subsequence: "bdefk\n"
+            /// Observed output:
+            ///     Longest common subsequence: "b\n"
+            /// Resolved output:
+            ///     Longest common subsequence: "bdefk\n"
+            /// </summary>
+            public static class Bug_010
+            {
+                public const string SAMPLE_000 = "abcdefk\n\n\n\n";
+                public const string SAMPLE_010 = "bhdefck\n";
+            }
         }
     }
 }
