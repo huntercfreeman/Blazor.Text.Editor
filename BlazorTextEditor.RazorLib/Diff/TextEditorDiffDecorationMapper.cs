@@ -7,12 +7,12 @@ public class TextEditorDiffDecorationMapper : IDecorationMapper
 {
     public string Map(byte decorationByte)
     {
-        var decoration = (CSharpDecorationKind)decorationByte;
+        var decoration = (TextEditorDiffDecorationKind)decorationByte;
 
         return decoration switch
         {
-            CSharpDecorationKind.None => string.Empty,
-            CSharpDecorationKind.Method => "bte_diff-match",
+            TextEditorDiffDecorationKind.None => string.Empty,
+            TextEditorDiffDecorationKind.LongestCommonSubsequence => "bte_diff-longest-common-subsequence-presentation",
             _ => string.Empty,
         };
     }

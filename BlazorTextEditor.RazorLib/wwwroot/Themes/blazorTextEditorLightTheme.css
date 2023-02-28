@@ -12,7 +12,7 @@ clones provide a more familiar environment for people that use the Library.
     --bte_primary-font-color: #0A0A0A;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
-    --bte_diff-match-background-color: red;
+    --bte_diff-longest-common-subsequence-presentation-background-color: red;
     --bte_body-background-color: #FCFCFC;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;

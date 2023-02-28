@@ -3,5 +3,5 @@
 public enum TextEditorDiffDecorationKind
 {
     None,
-    Match,
+    LongestCommonSubsequence,
 }

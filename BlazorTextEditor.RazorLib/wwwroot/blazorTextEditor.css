@@ -249,8 +249,8 @@
     position: absolute;
 }
 
-.bte_diff-match {
-    background-color: var(--bte_diff-match-background-color);
+.bte_diff-longest-common-subsequence-presentation {
+    background-color: var(--bte_diff-longest-common-subsequence-presentation-background-color);
 }
 
 .bte_unselectable {

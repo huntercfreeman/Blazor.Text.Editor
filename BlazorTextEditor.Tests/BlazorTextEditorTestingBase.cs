@@ -1,4 +1,5 @@
 ﻿using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Storage;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Model;
 using Fluxor;
@@ -34,7 +35,7 @@ public class BlazorTextEditorTestingBase
                 new InMemoryClipboardProvider();
             
             options.StorageProviderFactory = _ =>
-                new DoNothingStorageProvider();
+                new DoNothingStorageService();
         });
         
         services

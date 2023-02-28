@@ -1,12 +1,17 @@
 ﻿@using BlazorTextEditor.RazorLib.ViewModel
 
-<div class="bte_text-editor-diff @CssClassString"
+<div class="bte_text-editor-diff @TextEditorService.GlobalThemeCssClassString @CssClassString"
      style="@CssStyleString">
      
      @{
           var textEditorDiff = TextEditorService.DiffsCollectionWrap.Value.DiffModelsList
                .FirstOrDefault(x => x.DiffKey == TextEditorDiffKey);
      }
+     
+     <div class="bte_text-editor-diff-title">
+          The longest common subsequence is given a background color of
+          <span class="bte_diff-longest-common-subsequence-presentation">SAMPLE_TEXT</span>
+     </div>
      
      @if (textEditorDiff is null)
      {

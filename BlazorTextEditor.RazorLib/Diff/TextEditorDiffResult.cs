@@ -269,7 +269,7 @@ public class TextEditorDiffResult
                 var textSpan = new TextEditorTextSpan(
                     startingIndexInclusive,
                     endingIndexExclusive,
-                    (byte)TextEditorDiffDecorationKind.Match);
+                    (byte)TextEditorDiffDecorationKind.LongestCommonSubsequence);
 
                 matchTextSpans.Add(textSpan);
                     
