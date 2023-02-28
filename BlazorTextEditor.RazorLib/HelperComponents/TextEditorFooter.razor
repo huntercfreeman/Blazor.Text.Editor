@@ -6,39 +6,41 @@
 
 <div class="bte_text-editor-footer @TextEditorService.GlobalThemeCssClassString">
     @{
-        var textEditor = MutableReferenceToTextEditor;
+        var textEditorModel = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
         
-        if (textEditor is not null &&
+        if (textEditorModel is not null &&
             textEditorViewModel is not null)
         {
-            if (!string.IsNullOrWhiteSpace(textEditor.FileExtension))
+            if (!string.IsNullOrWhiteSpace(textEditorModel.FileExtension))
             {
                 <div class="bte_text-editor-footer-entry">
-                    @textEditor.FileExtension
+                    @textEditorModel.FileExtension
                 </div>
             }
 
             <div class="bte_text-editor-footer-entry">
-                length:@($"{textEditor.DocumentLength}")
+                length:@($"{textEditorModel.DocumentLength}")
                 &nbsp;
-                lines:@($"{textEditor.RowCount}")
+                lines:@($"{textEditorModel.RowCount}")
             </div>
 
             <div class="bte_text-editor-footer-entry">
                 Ln:@($"{textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1}")
                 &nbsp;
                 Col:@($"{textEditorViewModel.PrimaryCursor.IndexCoordinates.columnIndex + 1}")
+                &nbsp;
+                Pos:@($"{textEditorModel.GetCursorPositionIndex(textEditorViewModel.PrimaryCursor) + 1}")
             </div>
 
             <div class="bte_text-editor-footer-entry">
-                @if (textEditor.OnlyRowEndingKind is null)
+                @if (textEditorModel.OnlyRowEndingKind is null)
                 {
                     <text>has:mixed </text>
                 }
                 else
                 {
-                    <text>has:@textEditor.OnlyRowEndingKind.Value.AsFriendlyName() </text>
+                    <text>has:@textEditorModel.OnlyRowEndingKind.Value.AsFriendlyName() </text>
                 }
 
                 use:
@@ -46,7 +48,7 @@
                     @foreach (var rowEndingKind in RowEndingKind.Linefeed.GetRowEndingsUserAllowedToUse())
                     {
                         <option value="@rowEndingKind.ToString()"
-                                selected="@(textEditor.UsingRowEndingKind == rowEndingKind)">
+                                selected="@(textEditorModel.UsingRowEndingKind == rowEndingKind)">
                             @rowEndingKind.AsFriendlyName()
                         </option>
                     }
@@ -56,7 +58,7 @@
         else
         {
             <div class="bte_text-editor-footer-entry bte_text-editor-footer-file-sizing">
-                @if (textEditor is null)
+                @if (textEditorModel is null)
                 {
                     <div>The @nameof(TextEditorModel) was null</div>
                 }
