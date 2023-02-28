@@ -5,7 +5,7 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.Model;
 
 namespace BlazorTextEditor.RazorLib.Model;
 
@@ -67,7 +67,7 @@ public partial class TextEditorModel
                     cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
 
                 var lowerRowData = 
-                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    FindRowInformation(
                         selectionBounds.lowerPositionIndexInclusive);
 
                 var lowerColumnIndex = selectionBounds.lowerPositionIndexInclusive -
@@ -273,11 +273,11 @@ public partial class TextEditorModel
                     (lowerPositionIndexInclusiveBound, upperPositionIndexExclusive) = (upperPositionIndexExclusive, lowerPositionIndexInclusiveBound);
 
                 var lowerRowMetaData =
-                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    FindRowInformation(
                         lowerPositionIndexInclusiveBound);
 
                 var upperRowMetaData =
-                    FindRowIndexRowStartRowEndingTupleFromPositionIndex(
+                    FindRowInformation(
                         upperPositionIndexExclusive);
 
                 // Value is needed when knowing what row ending positions

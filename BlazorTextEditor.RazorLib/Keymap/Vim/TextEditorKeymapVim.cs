@@ -6,7 +6,7 @@ using BlazorTextEditor.RazorLib.Commands.Vim;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Keymap.Default;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components.Web;
 

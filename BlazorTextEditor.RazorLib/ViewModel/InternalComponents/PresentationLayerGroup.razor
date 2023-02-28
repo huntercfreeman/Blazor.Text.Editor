@@ -1,0 +1,51 @@
+﻿@using BlazorTextEditor.RazorLib.Cursor
+
+<div class="@CssClassString">
+
+    @{
+        var localTextEditorModel = TextEditorModel;
+        var localTextEditorViewModel = TextEditorViewModel;
+
+        var presentationLayerOrderedByRankAscending = TextEditorPresentations
+            .OrderBy(x => x.Rank)
+            .ToList();
+    }
+
+    @foreach (var presentation in presentationLayerOrderedByRankAscending)
+    {
+        <div class="@presentation.CssClassString">
+            @foreach (var textSpan in presentation.TextEditorTextSpans)
+            {
+                var boundsInPositionIndexUnits =
+                    (textSpan.StartingIndexInclusive, textSpan.EndingIndexExclusive);
+                
+                var firstRowToSelectDataInclusive = localTextEditorModel
+                        .FindRowInformation(
+                            boundsInPositionIndexUnits.StartingIndexInclusive)
+                        .rowIndex;
+
+                var lastRowToSelectDataExclusive = localTextEditorModel
+                        .FindRowInformation(
+                            boundsInPositionIndexUnits.EndingIndexExclusive).rowIndex +
+                    1;
+        
+                var boundsInRowIndexUnits = 
+                    (firstRowToSelectDataInclusive, lastRowToSelectDataExclusive);
+
+                for (var i = boundsInRowIndexUnits.firstRowToSelectDataInclusive;
+                    i < boundsInRowIndexUnits.lastRowToSelectDataExclusive;
+                    i++)
+                {
+                    var rowIndex = i;
+
+                    <div class="@GetCssClass(presentation, textSpan.DecorationByte)"
+                         style="@GetPresentationCssStyleString(
+                                    boundsInPositionIndexUnits.StartingIndexInclusive,
+                                    boundsInPositionIndexUnits.EndingIndexExclusive,
+                                    rowIndex)">
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>

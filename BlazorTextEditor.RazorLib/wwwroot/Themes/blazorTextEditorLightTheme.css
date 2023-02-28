@@ -12,6 +12,10 @@ clones provide a more familiar environment for people that use the Library.
     --bte_primary-font-color: #0A0A0A;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
+    --bte_diff-longest-common-subsequence-background-color: red;
+    --bte_diff-insertion-background-color: green;
+    --bte_diff-deletion-background-color: blue;
+    --bte_diff-modification-background-color: yellow;
     --bte_body-background-color: #FCFCFC;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;
@@ -21,13 +25,13 @@ clones provide a more familiar environment for people that use the Library.
     --bte_type-foreground-color: #2397D5;
     --bte_parameter-foreground-color: #7400BC;
     --bte_string-literal-foreground-color: #AA0F0F;
-    --bte_keyword-foreground-color: #E66400;
+    --bte_keyword-foreground-color: #D77D00;
     --bte_comment-foreground-color: #7E7C7C;
-    --bte_tag-name-foreground-color: #E66400;
+    --bte_tag-name-foreground-color: #D77D00;
     --bte_injected-language-fragment-color: #E001D9;
     --bte_css-property-name-color: #006E91;
     --bte_css-property-value-color: #AA0F0F;
-    --bte_css-identifier-color: #E66400;
+    --bte_css-identifier-color: #D77D00;
     --bte_attribute-name-color: #006E91;
     --bte_attribute-value-color : #AA0F0F;
     --bte_json-property-key-color : #006E91;

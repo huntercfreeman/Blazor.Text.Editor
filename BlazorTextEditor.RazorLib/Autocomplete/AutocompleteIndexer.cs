@@ -13,7 +13,12 @@ public class AutocompleteIndexer : IAutocompleteIndexer
     {
         _textEditorService = textEditorService;
         
-        _textEditorService.ModelsCollectionChanged += TextEditorServiceTextEditorModelsCollectionChanged;
+        _textEditorService.ModelsCollectionWrap.StateChanged += ModelsCollectionWrapOnStateChanged;
+    }
+
+    private void ModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        // TODO: When should the indexer re-index or incrementally do so
     }
 
     public ImmutableArray<string> IndexedStrings => _indexedStrings
@@ -33,14 +38,9 @@ public class AutocompleteIndexer : IAutocompleteIndexer
         
         return Task.CompletedTask;
     }
-
-    private void TextEditorServiceTextEditorModelsCollectionChanged()
-    {
-        // TODO: When should the indexer re-index or incrementally do so
-    }
     
     public void Dispose()
     {
-        _textEditorService.ModelsCollectionChanged -= TextEditorServiceTextEditorModelsCollectionChanged;
+        _textEditorService.ModelsCollectionWrap.StateChanged -= ModelsCollectionWrapOnStateChanged;
     }
 }

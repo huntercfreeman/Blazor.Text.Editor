@@ -1,13 +1,12 @@
-﻿using BlazorTextEditor.RazorLib.Store.TextEditorCase.Diff;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.ViewModel;
+﻿using BlazorTextEditor.RazorLib.Store.Diff;
+using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
-using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.Diff;
 
-public partial class TextEditorDiffDisplay : ComponentBase
+public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
 {
     [Inject]
     private IState<TextEditorDiffsCollection> TextEditorDiffsCollectionWrap { get; set; } = null!;
@@ -23,7 +22,7 @@ public partial class TextEditorDiffDisplay : ComponentBase
     /// <summary>
     /// If the provided <see cref="TextEditorDiffKey"/> is registered using the
     /// <see cref="ITextEditorService"/>. Then this component will automatically update
-    /// when the corresponding <see cref="TextEditorDiff"/> is replaced.
+    /// when the corresponding <see cref="TextEditorDiffModel"/> is replaced.
     /// <br/><br/>
     /// A <see cref="TextEditorDiffKey"/> which is NOT registered using the
     /// <see cref="ITextEditorService"/> can be passed in. Then if the <see cref="TextEditorDiffKey"/>
@@ -39,20 +38,47 @@ public partial class TextEditorDiffDisplay : ComponentBase
     [Parameter]
     public int TabIndex { get; set; } = -1;
 
+    private CancellationTokenSource _calculateDiffCancellationTokenSource = new();
+    private TextEditorDiffResult? _mostRecentDiffResult;
+
     protected override void OnInitialized()
     {
         TextEditorDiffsCollectionWrap.StateChanged += TextEditorDiffWrapOnStateChanged;
+        TextEditorModelsCollectionWrap.StateChanged += TextEditorModelsCollectionWrapOnStateChanged;
 
+        TextEditorModelsCollectionWrapOnStateChanged(null, EventArgs.Empty);
+        
         base.OnInitialized();
     }
 
-    private void TextEditorDiffWrapOnStateChanged(object? sender, EventArgs e)
+    private async void TextEditorDiffWrapOnStateChanged(
+        object? sender,
+        EventArgs e)
     {
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    private async void TextEditorModelsCollectionWrapOnStateChanged(
+        object? sender,
+        EventArgs e)
+    {
+        _calculateDiffCancellationTokenSource.Cancel();
+        _calculateDiffCancellationTokenSource = new();
+        
+        var token = _calculateDiffCancellationTokenSource.Token;
+        
+        _mostRecentDiffResult = TextEditorService.DiffCalculate(
+            TextEditorDiffKey,
+            token);
+        
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         TextEditorDiffsCollectionWrap.StateChanged -= TextEditorDiffWrapOnStateChanged;
+        TextEditorModelsCollectionWrap.StateChanged -=TextEditorModelsCollectionWrapOnStateChanged;
+
+        _calculateDiffCancellationTokenSource.Cancel();
     }
 }

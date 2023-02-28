@@ -7,11 +7,21 @@
 <div class="bte_row-section"
      id="@TextEditorViewModel.BodyElementId">
     
+    @{ var localViewModel = TextEditorViewModel; }
+
     @* VirtualizationDisplay must be rendered first as it will modify the scrollHeight / scrollWidth of the scrollable parent *@
     <VirtualizationDisplay VirtualizationResultWithoutTypeMask="TextEditorViewModel.VirtualizationResult"
                            ItemsProviderFunc="VirtualizationDisplayItemsProviderFunc"/>
 
+    <PresentationLayerGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"
+                            CssClassString="bte_first-presentation-layer-group"
+                            TextEditorPresentations="localViewModel.FirstPresentationLayer"/>
+
     <TextSelectionGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"/>
+
+    <PresentationLayerGroup PrimaryCursorSnapshot="PrimaryCursorSnapshot"
+                            CssClassString="bte_last-presentation-layer-group"
+                            TextEditorPresentations="localViewModel.LastPresentationLayer"/>
 
     @foreach (var virtualizedRow in TextEditorViewModel.VirtualizationResult.Entries)
     {

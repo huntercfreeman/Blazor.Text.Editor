@@ -9,13 +9,14 @@
     <select @onchange="SelectedThemeChanged"
             class="@InputElementCssClassString">
         @{
-            var themes = ThemeStatesWrap.Value.ThemeRecordsList;
-            var chosenTheme = TextEditorService.GlobalTheme;
+            var themes = ThemeRecordsCollectionWrap.Value.ThemeRecordsList;
+            var chosenThemeKey = TextEditorService.GlobalOptionsWrap.Value.Options.CommonOptions.ThemeKey
+                ?? ThemeFacts.VisualStudioDarkThemeClone.ThemeKey;
             
             foreach (var theme in themes)
             {
                 <option value="@theme.ThemeKey.Guid.ToString()"
-                        selected="@((chosenTheme?.ThemeKey ?? ThemeKey.Empty) == theme.ThemeKey)">
+                        selected="@((chosenThemeKey ?? ThemeKey.Empty) == theme.ThemeKey)">
                     @theme.DisplayName
                 </option>
             }

@@ -2,10 +2,10 @@
 
 /// <summary>
 /// <see cref="TextEditorDiffKey"/> is used to uniquely 
-/// identify a <see cref="TextEditorDiff"/>.
+/// identify a <see cref="TextEditorDiffModel"/>.
 /// <br/><br/>
 /// When interacting with the <see cref="ITextEditorService"/> it is
-/// common that a method regarding a <see cref="TextEditorDiff"/>
+/// common that a method regarding a <see cref="TextEditorDiffModel"/>
 /// will take a <see cref="TextEditorDiffKey"/> as a parameter.
 /// </summary>
 public record TextEditorDiffKey(Guid Guid)

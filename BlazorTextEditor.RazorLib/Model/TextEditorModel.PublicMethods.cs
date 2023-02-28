@@ -6,8 +6,8 @@ using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store;
+using BlazorTextEditor.RazorLib.Store.Model;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Model;
@@ -430,7 +430,7 @@ public partial class TextEditorModel
     }
 
     public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple)
-        FindRowIndexRowStartRowEndingTupleFromPositionIndex(int positionIndex)
+        FindRowInformation(int positionIndex)
     {
         for (var i = _rowEndingPositions.Count - 1; i >= 0; i--)
         {

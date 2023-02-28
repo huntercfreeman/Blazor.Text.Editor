@@ -9,9 +9,8 @@ using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Store.Misc;
+using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -100,9 +99,10 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         var currentGlobalFontSizeInPixels = TextEditorService
-            .GlobalOptions
+            .GlobalOptionsWrap
+            .Value
             .Options
-            .FontSizeInPixels!
+            .CommonOptions.FontSizeInPixels!
             .Value;
 
         var dirtyGlobalFontSizeInPixels =
@@ -244,9 +244,10 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 .HasSelectedText(
                     primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
-        var command = TextEditorService.GlobalOptions.Options.KeymapDefinition!.Keymap.Map(
-            keyboardEventArgs,
-            hasSelection);
+        var command = TextEditorService
+            .GlobalOptionsWrap.Value.Options.KeymapDefinition!.Keymap.Map(
+                keyboardEventArgs,
+                hasSelection);
         
         if (KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE == keyboardEventArgs.Code &&
             keyboardEventArgs.ShiftKey)
@@ -771,9 +772,10 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private string GetGlobalHeightInPixelsStyling()
     {
         var heightInPixels = TextEditorService
-            .GlobalOptions
+            .GlobalOptionsWrap
+            .Value
             .Options
-            .HeightInPixels;
+            .TextEditorHeightInPixels;
 
         if (heightInPixels is null)
             return string.Empty;
@@ -798,5 +800,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         }
     
         _disposed = true;
+        
+        base.Dispose(disposing);
     }
 }

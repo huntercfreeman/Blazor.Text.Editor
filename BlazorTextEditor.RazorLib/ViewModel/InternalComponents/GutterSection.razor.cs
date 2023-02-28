@@ -1,6 +1,6 @@
 ﻿using BlazorALaCarte.Shared.Dimensions;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
 

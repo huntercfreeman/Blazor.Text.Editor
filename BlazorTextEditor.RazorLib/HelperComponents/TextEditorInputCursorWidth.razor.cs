@@ -1,7 +1,5 @@
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
-using BlazorTextEditor.RazorLib.TextEditor;
+using BlazorTextEditor.RazorLib.Store.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -29,7 +27,7 @@ public partial class TextEditorInputCursorWidth : FluxorComponent
     
     private double TextEditorCursorWidth
     {
-        get => TextEditorService.GlobalOptions.Options.CursorWidthInPixels 
+        get => TextEditorService.GlobalOptionsWrap.Value.Options.CursorWidthInPixels 
                ?? MINIMUM_CURSOR_SIZE_IN_PIXELS;
         set
         {

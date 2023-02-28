@@ -1,5 +1,4 @@
-using BlazorTextEditor.RazorLib.Store.TextEditorCase;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.Model;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
@@ -27,7 +26,7 @@ public partial class TextEditorInputFontSize : FluxorComponent
     
     private int TextEditorFontSize
     {
-        get => TextEditorService.GlobalOptions.Options.FontSizeInPixels 
+        get => TextEditorService.GlobalOptionsWrap.Value.Options.CommonOptions.FontSizeInPixels 
                ?? MINIMUM_FONT_SIZE_IN_PIXELS;
         set
         {

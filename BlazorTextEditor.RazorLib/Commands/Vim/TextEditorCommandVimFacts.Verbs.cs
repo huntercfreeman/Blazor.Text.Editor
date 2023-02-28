@@ -1,7 +1,8 @@
 ﻿using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Keymap.Vim;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Model;
+using BlazorTextEditor.RazorLib.Store.Model;
 
 namespace BlazorTextEditor.RazorLib.Commands.Vim;
 
@@ -25,7 +26,10 @@ public static partial class TextEditorCommandVimFacts
                 await DeleteLine.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
 
-                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                                             ?? KeymapFacts.DefaultKeymapDefinition;
+                
+                if (activeKeymapDefinition.Keymap
                     is TextEditorKeymapVim vimKeymap)
                 {
                     vimKeymap.ActiveVimMode = VimMode.Insert;
@@ -85,7 +89,10 @@ public static partial class TextEditorCommandVimFacts
                 await deleteMotion.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
                 
-                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                                             ?? KeymapFacts.DefaultKeymapDefinition;
+                
+                if (activeKeymapDefinition.Keymap
                     is TextEditorKeymapVim textEditorKeymapVim)
                 {
                     textEditorKeymapVim.ActiveVimMode = VimMode.Insert;
@@ -100,8 +107,11 @@ public static partial class TextEditorCommandVimFacts
             {
                 await TextEditorCommandDefaultFacts.Cut.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
+
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                                             ?? KeymapFacts.DefaultKeymapDefinition;
                 
-                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                if (activeKeymapDefinition.Keymap
                     is TextEditorKeymapVim textEditorKeymapVim)
                 {
                     textEditorKeymapVim.ActiveVimMode = VimMode.Insert;
@@ -130,7 +140,10 @@ public static partial class TextEditorCommandVimFacts
                 await TextEditorCommandDefaultFacts.NewLineBelow.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
                 
-                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                                             ?? KeymapFacts.DefaultKeymapDefinition;
+                
+                if (activeKeymapDefinition.Keymap
                     is TextEditorKeymapVim textEditorKeymapVim)
                 {
                     textEditorKeymapVim.ActiveVimMode = VimMode.Insert;
@@ -146,7 +159,10 @@ public static partial class TextEditorCommandVimFacts
                 await TextEditorCommandDefaultFacts.NewLineAbove.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
                 
-                if (textEditorCommandParameter.TextEditorService.GlobalKeymapDefinition.Keymap
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                                             ?? KeymapFacts.DefaultKeymapDefinition;
+                
+                if (activeKeymapDefinition.Keymap
                     is TextEditorKeymapVim textEditorKeymapVim)
                 {
                     textEditorKeymapVim.ActiveVimMode = VimMode.Insert;

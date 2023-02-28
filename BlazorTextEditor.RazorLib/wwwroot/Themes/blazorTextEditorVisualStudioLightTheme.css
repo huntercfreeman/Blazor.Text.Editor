@@ -8,6 +8,10 @@ The default colors are a clone of the Light Theme found in Visual Studio.
     --bte_primary-font-color: #000000;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
+    --bte_diff-longest-common-subsequence-background-color: #ffb3f1;
+    --bte_diff-insertion-background-color: green;
+    --bte_diff-deletion-background-color: blue;
+    --bte_diff-modification-background-color: yellow;
     --bte_body-background-color: #fdfdfd;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;

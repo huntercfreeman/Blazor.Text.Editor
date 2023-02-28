@@ -1,7 +1,7 @@
 ﻿using BlazorALaCarte.Shared.Clipboard;
+using BlazorALaCarte.Shared.Storage;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.StorageCase;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,7 +35,7 @@ public class BlazorTextEditorTestingBase
                 new InMemoryClipboardProvider();
             
             options.StorageProviderFactory = _ =>
-                new DoNothingStorageProvider();
+                new DoNothingStorageService();
         });
         
         services

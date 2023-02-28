@@ -1,9 +1,10 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.TextEditorCase.Misc;
+using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Virtualization;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
@@ -24,6 +25,23 @@ public record TextEditorViewModel(
     public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
     public Action<TextEditorModel>? OnSaveRequested { get; init; }
     public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }
+
+    /// <summary>
+    /// <see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.
+    /// <br/><br/>
+    /// Therefore the selected text is rendered after anything in the <see cref="FirstPresentationLayer"/>.
+    /// <br/><br/>
+    /// When using the <see cref="FirstPresentationLayer"/> one might find their css overriden by for example, text being selected.
+    /// </summary>
+    public ImmutableList<TextEditorPresentationModel> FirstPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
+    /// <summary>
+    /// <see cref="LastPresentationLayer"/> is painted after any internal workings of the text editor.
+    /// <br/><br/>
+    /// Therefore the selected text is rendered before anything in the <see cref="LastPresentationLayer"/>.
+    /// <br/><br/>
+    /// When using the <see cref="LastPresentationLayer"/> one might selected text not being rendered with the text selection css if it were overriden by something in the <see cref="LastPresentationLayer"/>.
+    /// </summary>
+    public ImmutableList<TextEditorPresentationModel> LastPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
 
     public string CommandBarValue { get; set; } = string.Empty;
     
