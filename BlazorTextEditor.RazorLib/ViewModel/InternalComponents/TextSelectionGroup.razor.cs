@@ -15,7 +15,10 @@ public partial class TextSelectionGroup : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
     
-    private string GetTextSelectionStyleCss(int lowerPositionIndexInclusive, int upperPositionIndexExclusive, int rowIndex)
+    private string GetTextSelectionStyleCss(
+        int lowerPositionIndexInclusive,
+        int upperPositionIndexExclusive,
+        int rowIndex)
     {
         if (rowIndex >= TextEditorModel.RowEndingPositions.Length)
             return string.Empty;

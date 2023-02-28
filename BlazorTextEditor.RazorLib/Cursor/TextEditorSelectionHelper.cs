@@ -137,15 +137,15 @@ public static class TextEditorSelectionHelper
         TextEditorModel textEditorModel,
         (int lowerPositionIndexInclusive, int upperPositionIndexExclusive) positionIndexBounds)
     {
-        var firstRowToSelectDataInclusive =
-            textEditorModel
+        var firstRowToSelectDataInclusive = textEditorModel
                 .FindRowInformation(
-                    positionIndexBounds.lowerPositionIndexInclusive).rowIndex;
+                    positionIndexBounds.lowerPositionIndexInclusive)
+                .rowIndex;
 
-        var lastRowToSelectDataExclusive =
-            textEditorModel
+        var lastRowToSelectDataExclusive = textEditorModel
                 .FindRowInformation(
-                    positionIndexBounds.upperPositionIndexExclusive).rowIndex +
+                    positionIndexBounds.upperPositionIndexExclusive)
+                .rowIndex +
             1;
         
         return (firstRowToSelectDataInclusive, lastRowToSelectDataExclusive);

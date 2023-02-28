@@ -108,6 +108,36 @@ public static partial class TestData
                 public const string SAMPLE_000 = "abcdefk\n\n\n\n";
                 public const string SAMPLE_010 = "bhdefck\n";
             }
+            
+            /// <summary>
+            /// Expected output:
+            ///     Longest common subsequence: "Mary had a little lamb,\nIts fleece was white as snow..."
+            /// Observed output:
+            ///     Longest common subsequence: "Mary had a little lamb,\n"
+            /// Resolved output:
+            ///     Longest common subsequence: TODO
+            /// </summary>
+            public static class Bug_020
+            {
+                public const string SAMPLE_000 = "Mary had a little lamb,\nIts fleece was white as snow...";
+                public const string SAMPLE_010 = "Mary had a little lamb,\nIts fleece was white as snow...";
+            }
+            
+            /// <summary>
+            /// Expected output:
+            ///     Longest common subsequence: "Mary had a little lamb, white as snow..."
+            /// Observed output:
+            ///     Longest common subsequence: "Mary had a little lamb, white as snow..."
+            ///     UserInterface: The after is rendering a presentation over the entire width of the third row. Yet there is no third row.
+            /// Resolved output:
+            ///     Longest common subsequence: TODO
+            ///     UserInterface: TODO
+            /// </summary>
+            public static class Bug_030
+            {
+                public const string SAMPLE_000 = "Mary had a little lamb,\nwhite as snow...";
+                public const string SAMPLE_010 = "Mary had a little lamb,\nIts fleece was white as snow...";
+            }
         }
     }
 }

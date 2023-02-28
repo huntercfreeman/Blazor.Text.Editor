@@ -418,17 +418,16 @@ public class TextEditorService : ITextEditorService
                 afterViewModelKey));
     }
     
-    public void DiffCalculate(
-        TextEditorDiffKey textEditorDiffKey,
+    public TextEditorDiffResult? DiffCalculate(TextEditorDiffKey textEditorDiffKey,
         CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
-            return;
+            return null;
         
         var textEditorDiff = DiffModelFindOrDefault(textEditorDiffKey);
 
         if (textEditorDiff is null)
-            return;
+            return null;
         
         var beforeViewModel = ViewModelFindOrDefault(textEditorDiff.BeforeViewModelKey);
         var afterViewModel = ViewModelFindOrDefault(textEditorDiff.AfterViewModelKey);
@@ -436,7 +435,7 @@ public class TextEditorService : ITextEditorService
         if (beforeViewModel is null ||
             afterViewModel is null)
         {
-            return;
+            return null;
         }
         
         var beforeModel = ModelFindOrDefault(beforeViewModel.ModelKey);
@@ -445,7 +444,7 @@ public class TextEditorService : ITextEditorService
         if (beforeModel is null ||
             afterModel is null)
         {
-            return;
+            return null;
         }
         
         var beforeText = beforeModel.GetAllText();
@@ -462,7 +461,9 @@ public class TextEditorService : ITextEditorService
         ChangeFirstPresentationLayer(
             afterViewModel.ViewModelKey,
             diffResult.AfterLongestCommonSubsequenceTextSpans);
-            
+
+        return diffResult;
+        
         void ChangeFirstPresentationLayer(
             TextEditorViewModelKey viewModelKey,
             ImmutableList<TextEditorTextSpan> longestCommonSubsequenceTextSpans)

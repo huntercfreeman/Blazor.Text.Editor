@@ -39,7 +39,8 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
     public int TabIndex { get; set; } = -1;
 
     private CancellationTokenSource _calculateDiffCancellationTokenSource = new();
-    
+    private TextEditorDiffResult? _mostRecentDiffResult;
+
     protected override void OnInitialized()
     {
         TextEditorDiffsCollectionWrap.StateChanged += TextEditorDiffWrapOnStateChanged;
@@ -57,7 +58,7 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
     }
     
-    private void TextEditorModelsCollectionWrapOnStateChanged(
+    private async void TextEditorModelsCollectionWrapOnStateChanged(
         object? sender,
         EventArgs e)
     {
@@ -66,9 +67,11 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
         
         var token = _calculateDiffCancellationTokenSource.Token;
         
-        TextEditorService.DiffCalculate(
+        _mostRecentDiffResult = TextEditorService.DiffCalculate(
             TextEditorDiffKey,
             token);
+        
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()

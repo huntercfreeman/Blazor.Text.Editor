@@ -40,7 +40,7 @@ public interface ITextEditorService
     #region MethodsSortedAlphabetically
     
     public Task CursorPrimaryFocusAsync(string primaryCursorContentId);
-    public void DiffCalculate(TextEditorDiffKey textEditorDiffKey, CancellationToken cancellationToken);
+    public TextEditorDiffResult? DiffCalculate(TextEditorDiffKey textEditorDiffKey, CancellationToken cancellationToken);
     public void DiffDispose(TextEditorDiffKey textEditorDiffKey);
     public TextEditorDiffModel? DiffModelFindOrDefault(TextEditorDiffKey textEditorDiffKey);
     public void DiffRegister(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
