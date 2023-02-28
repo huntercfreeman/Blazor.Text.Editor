@@ -251,6 +251,7 @@
 
 .bte_diff-longest-common-subsequence-presentation {
     background-color: var(--bte_diff-longest-common-subsequence-presentation-background-color);
+    position: absolute;
 }
 
 .bte_unselectable {
