@@ -9,7 +9,7 @@ public class TextEditorDiffResult
     private TextEditorDiffResult(
         string beforeText,
         string afterText,
-        TextEditorDiffMatchCell[,] diffMatrix,
+        TextEditorDiffCell[,] diffMatrix,
         string longestCommonSubsequence,
         ImmutableList<TextEditorTextSpan> beforeLongestCommonSubsequenceTextSpans,
         ImmutableList<TextEditorTextSpan> afterLongestCommonSubsequenceTextSpans)
@@ -24,7 +24,7 @@ public class TextEditorDiffResult
 
     public string BeforeText { get; }
     public string AfterText { get; }
-    public TextEditorDiffMatchCell[,] DiffMatrix { get; }
+    public TextEditorDiffCell[,] DiffMatrix { get; }
     public string LongestCommonSubsequence { get; }
     public ImmutableList<TextEditorTextSpan> BeforeLongestCommonSubsequenceTextSpans { get; }
     public ImmutableList<TextEditorTextSpan> AfterLongestCommonSubsequenceTextSpans { get; }
@@ -48,83 +48,95 @@ public class TextEditorDiffResult
         
         var squaredSize = Math.Max(beforeTextLength, afterTextLength);
 
-        var matchMatrix = new TextEditorDiffMatchCell[squaredSize, squaredSize];
+        var diffMatrix = new TextEditorDiffCell[squaredSize, squaredSize];
 
         for (int beforeIndex = 0; beforeIndex < beforeTextLength; beforeIndex++)
         {
-            char? beforeCharacterValue = beforeText[beforeIndex];
+            char beforeCharValue = beforeText[beforeIndex];
 
             for (int afterIndex = 0; afterIndex < afterTextLength; afterIndex++)
             {
-                char? afterCharacterValue = afterText[afterIndex];
+                char afterCharValue = afterText[afterIndex];
 
-                int weight;
-                bool isSourceOfRowWeight = false;
+                var cellSourceWeight = GetCellSourceWeight(
+                    diffMatrix,
+                    beforeIndex,
+                    afterIndex);
+                
+                var rowLargestWeightPriorToCurrentColumn = GetRowLargestWeightPriorToCurrentColumn(
+                    diffMatrix,
+                    beforeIndex,
+                    afterIndex);
 
-                if (weightOfMatchFoundPreviouslyOnThisRow is null)
+                if (beforeCharValue == afterCharValue &&
+                    cellSourceWeight >= rowLargestWeightPriorToCurrentColumn)
                 {
-                    weight = 0;
-
-                    if (beforeCharacterValue is not null &&
-                        afterCharacterValue is not null &&
-                        beforeCharacterValue.Value == afterCharacterValue.Value)
-                    {
-                        isSourceOfRowWeight = true;
-
-                        int runningRowIndex = beforeIndex;
-                        int runningColumnIndex = afterIndex;
-
-                        while (runningRowIndex != 0 && runningColumnIndex != 0)
-                        {
-                            var readWeight = matchMatrix[runningRowIndex - 1, runningColumnIndex - 1].Weight;
-
-                            if (readWeight != 0)
-                            {
-                                weight = readWeight + 1;
-                                break;
-                            }
-
-                            // Mutate loop variables
-                            {
-                                runningRowIndex--;
-                            }
-                        }
-
-                        if (weight == 0)
-                            weight = 1;
-
-                        weightOfMatchFoundPreviouslyOnThisRow = weight;
-                    }
+                    diffMatrix[beforeIndex, afterIndex] = new TextEditorDiffCell(
+                        beforeCharValue,
+                        afterCharValue,
+                        cellSourceWeight,
+                        true);
                 }
                 else
                 {
-                    weight = weightOfMatchFoundPreviouslyOnThisRow.Value;
+                    diffMatrix[beforeIndex, afterIndex] = new TextEditorDiffCell(
+                        beforeCharValue,
+                        afterCharValue,
+                        rowLargestWeightPriorToCurrentColumn,
+                        false);
                 }
-
-                var cell = new TextEditorDiffMatchCell(
-                    rowValue,
-                    columnValue,
-                    weight,
-                    isSourceOfRowWeight);
-
-                matchMatrix[beforeIndex, afterIndex] = cell;
             }
             
-            if (afterTextLength < beforeTextLength)
+            for (
+                int fabricatedAfterIndex = afterTextLength;
+                fabricatedAfterIndex < squaredSize;
+                fabricatedAfterIndex++)
             {
-                // TODO: This if block for setting fabricated columns.
-                
-                // This if block sets the cells in the fabricated column
+                // This for loop sets the cells in the fabricated column
                 // in order to create a square matrix
+                // where afterTextLength < beforeTextLength
+                
+                var rowLargestWeightPriorToCurrentColumn = GetRowLargestWeightPriorToCurrentColumn(
+                    diffMatrix,
+                    beforeIndex,
+                    fabricatedAfterIndex);
+                
+                diffMatrix[beforeIndex, fabricatedAfterIndex] = new TextEditorDiffCell(
+                    beforeCharValue,
+                    null,
+                    rowLargestWeightPriorToCurrentColumn,
+                    false);
+                
             }
         }
 
-        if (beforeTextLength < afterTextLength)
+        for (
+            int fabricatedBeforeIndex = beforeTextLength;
+            fabricatedBeforeIndex < squaredSize;
+            fabricatedBeforeIndex++)
         {
-            // TODO: This if block for setting fabricated rows.
-            
-            // This if block sets the cells in the fabricated row
+            // This for loop sets the cells in the fabricated row
             // in order to create a square matrix
+            // where beforeTextLength < afterTextLength
+            //
+            // TODO: This logic should to be removed. Instead of looking at this algorithm from the perspective of 'before' and 'after' text. It might be best to have the perspective be 'vertical' and 'horizontal' text. Then the 'vertical' text is equal to the longer of the two string inputs. By having the row count defined by the longer of the two strings you only would ever fabricate columns. This would allow for a lot of code to be removed.
+            
+            for (
+                int fabricatedAfterIndex = 0;
+                fabricatedAfterIndex < squaredSize;
+                fabricatedAfterIndex++)
+            {
+                var rowLargestWeightPriorToCurrentColumn = GetRowLargestWeightPriorToCurrentColumn(
+                    diffMatrix,
+                    fabricatedBeforeIndex,
+                    fabricatedAfterIndex);
+                
+                diffMatrix[fabricatedBeforeIndex, fabricatedAfterIndex] = new TextEditorDiffCell(
+                    null,
+                    null,
+                    rowLargestWeightPriorToCurrentColumn,
+                    false);
+            }
         }
 
         var longestCommonSubsequenceBuilder = new StringBuilder();
@@ -141,15 +153,21 @@ public class TextEditorDiffResult
             {
                 var restoreColumnIndex = runningColumnIndex;
                 
-                var cell = matchMatrix[runningRowIndex, runningColumnIndex];
+                var cell = diffMatrix[runningRowIndex, runningColumnIndex];
 
                 if (cell.IsSourceOfRowWeight)
                 {
+                    if (cell.BeforeCharValue != cell.AfterCharValue)
+                    {
+                        throw new ApplicationException(
+                            $"The {nameof(cell.BeforeCharValue)}:'{cell.BeforeCharValue}' was not equal to the {nameof(cell.AfterCharValue)}:'{cell.AfterCharValue}'");
+                    }
+                    
                     longestCommonSubsequenceBuilder
-                        .Append(cell.ValueColumn.CharacterValue);
+                        .Append(cell.BeforeCharValue);
 
-                    beforePositionIndicesThatMatchHashSet.Add(cell.ValueRow.PositionIndex);
-                    afterPositionIndicesThatMatchHashSet.Add(cell.ValueColumn.PositionIndex);
+                    beforePositionIndicesThatMatchHashSet.Add(runningRowIndex);
+                    afterPositionIndicesThatMatchHashSet.Add(runningColumnIndex);
                     
                     runningColumnIndex--;
                     runningRowIndex--;
@@ -180,12 +198,42 @@ public class TextEditorDiffResult
         var diffResult = new TextEditorDiffResult(
             beforeText,
             afterText,
-            matchMatrix,
+            diffMatrix,
             longestCommonSubsequenceValue,
             beforeMatchTextSpans.ToImmutableList(),
             afterMatchTextSpans.ToImmutableList());
 
         return diffResult;
+    }
+    
+    private static int GetCellSourceWeight(
+        TextEditorDiffCell[,] diffMatrix,
+        int beforeIndex,
+        int afterIndex)
+    {
+        if (beforeIndex > 0 &&
+            afterIndex > 0)
+        {
+            return diffMatrix[beforeIndex - 1, afterIndex - 1]
+                       .Weight +
+                   1;
+        }
+
+        return 1;
+    }
+    
+    private static int GetRowLargestWeightPriorToCurrentColumn(
+        TextEditorDiffCell[,] diffMatrix,
+        int beforeIndex,
+        int afterIndex)
+    {
+        if (afterIndex > 0)
+        {
+            return diffMatrix[beforeIndex, afterIndex - 1]
+                .Weight;
+        }
+
+        return 0;
     }
 
     private static List<TextEditorTextSpan> GetMatchTextSpans(HashSet<int> positionIndicesThatMatchHashSet)
