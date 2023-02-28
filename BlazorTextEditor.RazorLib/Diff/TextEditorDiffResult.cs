@@ -163,10 +163,13 @@ public class TextEditorDiffResult
             int runningColumnIndex = highestSourceWeightTuple.afterIndex;
 
             bool decoratingRemainingColumns = false;
+
+            var restoreColumnIndex = runningColumnIndex;
             
             while (runningRowIndex != -1 && runningColumnIndex != -1)
             {
-                var restoreColumnIndex = runningColumnIndex;
+                if (!decoratingRemainingColumns)
+                    restoreColumnIndex = runningColumnIndex;
                 
                 var cell = diffMatrix[runningRowIndex, runningColumnIndex];
 
@@ -189,6 +192,7 @@ public class TextEditorDiffResult
                     }
 
                     decoratingRemainingColumns = true;
+                    restoreColumnIndex = runningColumnIndex - 1;
                     
                     continue;
                 }
