@@ -249,8 +249,23 @@
     position: absolute;
 }
 
-.bte_diff-longest-common-subsequence-presentation {
-    background-color: var(--bte_diff-longest-common-subsequence-presentation-background-color);
+.bte_diff-longest-common-subsequence {
+    background-color: var(--bte_diff-longest-common-subsequence-background-color);
+    position: absolute;
+}
+
+.bte_diff-insertion {
+    background-color: var(--bte_diff-insertion-background-color);
+    position: absolute;
+}
+
+.bte_diff-deletion {
+    background-color: var(--bte_diff-deletion-background-color);
+    position: absolute;
+}
+
+.bte_diff-modification {
+    background-color: var(--bte_diff-modification-background-color);
     position: absolute;
 }
 

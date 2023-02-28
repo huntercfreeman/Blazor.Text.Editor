@@ -12,7 +12,10 @@ public class TextEditorDiffDecorationMapper : IDecorationMapper
         return decoration switch
         {
             TextEditorDiffDecorationKind.None => string.Empty,
-            TextEditorDiffDecorationKind.LongestCommonSubsequence => "bte_diff-longest-common-subsequence-presentation",
+            TextEditorDiffDecorationKind.LongestCommonSubsequence => "bte_diff-longest-common-subsequence",
+            TextEditorDiffDecorationKind.Insertion => "bte_diff-insertion",
+            TextEditorDiffDecorationKind.Deletion => "bte_diff-deletion",
+            TextEditorDiffDecorationKind.Modification => "bte_diff-modification",
             _ => string.Empty,
         };
     }

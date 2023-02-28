@@ -4,4 +4,7 @@ public enum TextEditorDiffDecorationKind
 {
     None,
     LongestCommonSubsequence,
+    Insertion,
+    Deletion,
+    Modification
 }

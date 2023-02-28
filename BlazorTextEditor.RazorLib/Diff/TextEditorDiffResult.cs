@@ -113,7 +113,6 @@ public class TextEditorDiffResult
                     null,
                     rowLargestWeightPriorToCurrentColumn,
                     false);
-                
             }
         }
 
@@ -148,13 +147,22 @@ public class TextEditorDiffResult
 
         var longestCommonSubsequenceBuilder = new StringBuilder();
 
-        var beforePositionIndicesThatMatchHashSet = new HashSet<int>();
-        var afterPositionIndicesThatMatchHashSet = new HashSet<int>();
+        var beforePositionIndicesOfLongestCommonSubsequenceHashSet = new HashSet<int>();
+        var afterPositionIndicesOfLongestCommonSubsequenceHashSet = new HashSet<int>();
+        
+        var afterPositionIndicesOfInsertionHashSet = new HashSet<int>();
+        
+        var beforePositionIndicesOfDeletionHashSet = new HashSet<int>();
+        
+        var beforePositionIndicesOfModificationHashSet = new HashSet<int>();
+        var afterPositionIndicesOfModificationHashSet = new HashSet<int>();
         
         // Read the LongestCommonSubsequence by backtracking to the highest weights
         {
             int runningRowIndex = highestSourceWeightTuple.beforeIndex;
             int runningColumnIndex = highestSourceWeightTuple.afterIndex;
+
+            bool decoratingRemainingColumns = false;
             
             while (runningRowIndex != -1 && runningColumnIndex != -1)
             {
@@ -162,7 +170,8 @@ public class TextEditorDiffResult
                 
                 var cell = diffMatrix[runningRowIndex, runningColumnIndex];
 
-                if (cell.IsSourceOfRowWeight)
+                if (cell.IsSourceOfRowWeight && 
+                    !decoratingRemainingColumns)
                 {
                     if (cell.BeforeCharValue != cell.AfterCharValue)
                     {
@@ -173,17 +182,41 @@ public class TextEditorDiffResult
                     longestCommonSubsequenceBuilder
                         .Append(cell.BeforeCharValue);
 
-                    beforePositionIndicesThatMatchHashSet.Add(runningRowIndex);
-                    afterPositionIndicesThatMatchHashSet.Add(runningColumnIndex);
-                    
-                    runningColumnIndex--;
-                    runningRowIndex--;
+                    // Decoration logic for longest common subsequence
+                    {
+                        beforePositionIndicesOfLongestCommonSubsequenceHashSet.Add(runningRowIndex);
+                        afterPositionIndicesOfLongestCommonSubsequenceHashSet.Add(runningColumnIndex);
+                    }
+
+                    decoratingRemainingColumns = true;
                     
                     continue;
                 }
 
+                // Decoration logic
+                {
+                    if (cell.BeforeCharValue is null)
+                    {
+                        // Insertion
+                        afterPositionIndicesOfInsertionHashSet.Add(runningColumnIndex);
+                    }
+                    else if (cell.AfterCharValue is null)
+                    {
+                        // Deletion
+                        beforePositionIndicesOfDeletionHashSet.Add(runningRowIndex);
+                    }
+                    else
+                    {
+                        // Modification
+                        beforePositionIndicesOfModificationHashSet.Add(runningRowIndex);
+                        afterPositionIndicesOfModificationHashSet.Add(runningColumnIndex);
+                    }
+                }
+
                 if (runningColumnIndex == 0)
                 {
+                    decoratingRemainingColumns = false;
+                    
                     runningColumnIndex = restoreColumnIndex;
                     runningRowIndex--;
                 }
@@ -198,9 +231,48 @@ public class TextEditorDiffResult
             .ToString()
             .Reverse()
             .ToArray());
-
-        var beforeMatchTextSpans = GetMatchTextSpans(beforePositionIndicesThatMatchHashSet);
-        var afterMatchTextSpans = GetMatchTextSpans(afterPositionIndicesThatMatchHashSet);
+        
+        var beforeTextSpans = new List<TextEditorTextSpan>();
+        var afterTextSpans = new List<TextEditorTextSpan>();
+        
+        // Decoration logic
+        {
+            // Longest common subsequence
+            {
+                beforeTextSpans.AddRange(GetTextSpans(
+                    beforePositionIndicesOfLongestCommonSubsequenceHashSet,
+                    (byte)TextEditorDiffDecorationKind.LongestCommonSubsequence));
+                
+                afterTextSpans.AddRange(GetTextSpans(
+                    afterPositionIndicesOfLongestCommonSubsequenceHashSet,
+                    (byte)TextEditorDiffDecorationKind.LongestCommonSubsequence));
+            }
+            
+            // Insertion
+            {
+                afterTextSpans.AddRange(GetTextSpans(
+                    afterPositionIndicesOfInsertionHashSet,
+                    (byte)TextEditorDiffDecorationKind.Insertion));
+            }
+            
+            // Deletion
+            {
+                beforeTextSpans.AddRange(GetTextSpans(
+                    beforePositionIndicesOfDeletionHashSet,
+                    (byte)TextEditorDiffDecorationKind.Deletion));
+            }
+            
+            // Modification
+            {
+                beforeTextSpans.AddRange(GetTextSpans(
+                    beforePositionIndicesOfModificationHashSet,
+                    (byte)TextEditorDiffDecorationKind.Modification));
+                
+                afterTextSpans.AddRange(GetTextSpans(
+                    afterPositionIndicesOfModificationHashSet,
+                    (byte)TextEditorDiffDecorationKind.Modification));
+            }
+        }
 
         var diffResult = new TextEditorDiffResult(
             beforeText,
@@ -208,8 +280,8 @@ public class TextEditorDiffResult
             diffMatrix,
             highestSourceWeightTuple,
             longestCommonSubsequenceValue,
-            beforeMatchTextSpans.ToImmutableList(),
-            afterMatchTextSpans.ToImmutableList());
+            beforeTextSpans.ToImmutableList(),
+            afterTextSpans.ToImmutableList());
 
         return diffResult;
     }
@@ -244,14 +316,16 @@ public class TextEditorDiffResult
         return 0;
     }
 
-    private static List<TextEditorTextSpan> GetMatchTextSpans(HashSet<int> positionIndicesThatMatchHashSet)
+    private static List<TextEditorTextSpan> GetTextSpans(
+        HashSet<int> positionIndicesHashSet,
+        byte decorationByte)
     {
         var matchTextSpans = new List<TextEditorTextSpan>();
 
-        if (!positionIndicesThatMatchHashSet.Any())
+        if (!positionIndicesHashSet.Any())
             return matchTextSpans;
         
-        var sortedPositionIndicesThatMatch = positionIndicesThatMatchHashSet
+        var sortedPositionIndicesThatMatch = positionIndicesHashSet
             .OrderBy(x => x)
             .ToList();
 
@@ -277,7 +351,7 @@ public class TextEditorDiffResult
                 var textSpan = new TextEditorTextSpan(
                     startingIndexInclusive,
                     endingIndexExclusive,
-                    (byte)TextEditorDiffDecorationKind.LongestCommonSubsequence);
+                    decorationByte);
 
                 matchTextSpans.Add(textSpan);
                     
