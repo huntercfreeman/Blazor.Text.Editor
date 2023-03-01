@@ -4,7 +4,7 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.HelperComponents;
+namespace BlazorTextEditor.RazorLib.Options;
 
 public partial class TextEditorSettings : FluxorComponent
 {

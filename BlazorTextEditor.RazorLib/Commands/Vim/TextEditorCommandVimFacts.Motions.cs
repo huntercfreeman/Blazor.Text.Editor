@@ -230,7 +230,7 @@ public static partial class TextEditorCommandVimFacts
             return new TextEditorCommand(
                 async textEditorCommandParameter =>
                 {
-                    var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                    var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.OptionsWrap.Value.Options.KeymapDefinition
                                                  ?? KeymapFacts.DefaultKeymapDefinition;
                     
                     if (activeKeymapDefinition.Keymap is not
@@ -287,7 +287,7 @@ public static partial class TextEditorCommandVimFacts
             return new TextEditorCommand(
                 async textEditorCommandParameter =>
                 {
-                    var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                    var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.OptionsWrap.Value.Options.KeymapDefinition
                                                  ?? KeymapFacts.DefaultKeymapDefinition;
                     
                     if (activeKeymapDefinition.Keymap is not

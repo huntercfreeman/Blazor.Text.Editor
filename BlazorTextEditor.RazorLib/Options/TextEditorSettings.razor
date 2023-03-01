@@ -1,0 +1,25 @@
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<div style="overflow: auto; height: 100%; padding: 10px;">
+
+    <CascadingValue Name="InputElementCssClass" Value="InputElementCssClass">
+        <TextEditorSettingsPreview TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <InputTextEditorFontSize CssClassString="bte_add-margin-top"/>
+        <InputTextEditorCursorWidth TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <InputTextEditorHeight TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <InputTextEditorShowNewLines TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <InputTextEditorShowWhitespace TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <InputTextEditorTheme TopLevelDivElementCssClassString="bte_add-margin-top"/>
+        <InputTextEditorKeymap TopLevelDivElementCssClassString="bte_add-margin-top"/>
+
+        <div>
+            @{
+                var indexedStrings = AutocompleteIndexer.IndexedStrings;
+
+                <div>
+                    Indexed Strings Count: @($"{indexedStrings.Length:N0}")
+                </div>
+            }
+        </div>
+    </CascadingValue>
+</div>

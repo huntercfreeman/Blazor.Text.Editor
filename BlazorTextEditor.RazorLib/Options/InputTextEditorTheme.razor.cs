@@ -5,9 +5,9 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.HelperComponents;
+namespace BlazorTextEditor.RazorLib.Options;
 
-public partial class TextEditorInputTheme : FluxorComponent
+public partial class InputTextEditorTheme : FluxorComponent
 {
     [Inject]
     private IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; set; } = null!;
@@ -37,11 +37,11 @@ public partial class TextEditorInputTheme : FluxorComponent
             var foundTheme = themeRecordsCollection.FirstOrDefault(x => x.ThemeKey == chosenThemeKey);
             
             if (foundTheme is not null)
-                TextEditorService.GlobalOptionsSetTheme(foundTheme);
+                TextEditorService.OptionsSetTheme(foundTheme);
         }
         else
         {
-            TextEditorService.GlobalOptionsSetTheme(ThemeFacts.VisualStudioDarkThemeClone);
+            TextEditorService.OptionsSetTheme(ThemeFacts.VisualStudioDarkThemeClone);
         }
     }
 }

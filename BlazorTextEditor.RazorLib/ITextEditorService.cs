@@ -11,9 +11,9 @@ using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.Diff;
-using BlazorTextEditor.RazorLib.Store.GlobalOptions;
 using BlazorTextEditor.RazorLib.Store.Group;
 using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.Options;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
@@ -30,10 +30,10 @@ public interface ITextEditorService
     public IState<TextEditorGroupsCollection> GroupsCollectionWrap { get; }
     public IState<TextEditorDiffsCollection> DiffsCollectionWrap { get; }
     public IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; }
-    public IState<TextEditorGlobalOptions> GlobalOptionsWrap { get; }
+    public IState<TextEditorOptionsState> OptionsWrap { get; }
     /// <summary>This is used when interacting with the <see cref="IStorageService"/> to set and get data.</summary>
     public string StorageKey { get; }
-    public string GlobalThemeCssClassString { get; }
+    public string ThemeCssClassString { get; }
 
     #endregion
     
@@ -45,17 +45,17 @@ public interface ITextEditorService
     public TextEditorDiffModel? DiffModelFindOrDefault(TextEditorDiffKey textEditorDiffKey);
     public void DiffRegister(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
     public Task<ElementMeasurementsInPixels> ElementMeasurementsInPixelsAsync(string elementId);
-    public void GlobalOptionsSetCursorWidth(double cursorWidthInPixels);
-    public void GlobalOptionsSetFontSize(int fontSizeInPixels);
-    public Task GlobalOptionsSetFromLocalStorageAsync();
-    public void GlobalOptionsSetHeight(int? heightInPixels);
-    public void GlobalOptionsSetKeymap(KeymapDefinition foundKeymap);
-    public void GlobalOptionsSetShowNewlines(bool showNewlines);
-    public void GlobalOptionsSetShowWhitespace(bool showWhitespace);
+    public void OptionsSetCursorWidth(double cursorWidthInPixels);
+    public void OptionsSetFontSize(int fontSizeInPixels);
+    public Task OptionsSetFromLocalStorageAsync();
+    public void OptionsSetHeight(int? heightInPixels);
+    public void OptionsSetKeymap(KeymapDefinition foundKeymap);
+    public void OptionsSetShowNewlines(bool showNewlines);
+    public void OptionsSetShowWhitespace(bool showWhitespace);
     /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the AppOptions Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
-    public void GlobalOptionsSetTheme(ThemeRecord theme);
-    public void GlobalOptionsShowSettingsDialog(bool isResizable = false);
-    public void GlobalOptionsWriteToStorage();
+    public void OptionsSetTheme(ThemeRecord theme);
+    public void OptionsShowSettingsDialog(bool isResizable = false);
+    public void OptionsWriteToStorage();
     public void GroupAddViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     public TextEditorGroup? GroupFindOrDefault(TextEditorGroupKey textEditorGroupKey);
     public void GroupRegister(TextEditorGroupKey textEditorGroupKey);

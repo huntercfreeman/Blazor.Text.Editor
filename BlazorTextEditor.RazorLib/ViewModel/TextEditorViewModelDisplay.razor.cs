@@ -99,7 +99,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         var currentGlobalFontSizeInPixels = TextEditorService
-            .GlobalOptionsWrap
+            .OptionsWrap
             .Value
             .Options
             .CommonOptions.FontSizeInPixels!
@@ -245,7 +245,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
         var command = TextEditorService
-            .GlobalOptionsWrap.Value.Options.KeymapDefinition!.Keymap.Map(
+            .OptionsWrap.Value.Options.KeymapDefinition!.Keymap.Map(
                 keyboardEventArgs,
                 hasSelection);
         
@@ -772,7 +772,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private string GetGlobalHeightInPixelsStyling()
     {
         var heightInPixels = TextEditorService
-            .GlobalOptionsWrap
+            .OptionsWrap
             .Value
             .Options
             .TextEditorHeightInPixels;

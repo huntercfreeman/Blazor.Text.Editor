@@ -1,6 +1,6 @@
 ﻿using BlazorCommon.RazorLib.Store.ThemeCase;
 using BlazorCommon.RazorLib.Theme;
-using BlazorTextEditor.RazorLib.Store.GlobalOptions;
+using BlazorTextEditor.RazorLib.Store.Options;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -33,7 +33,7 @@ public partial class BlazorTextEditorInitializer : ComponentBase
         if (initialThemeRecord is not null)
         {
             Dispatcher.Dispatch(
-                new TextEditorGlobalOptions.SetThemeAction(
+                new TextEditorOptionsState.SetThemeAction(
                     initialThemeRecord));
         }
         

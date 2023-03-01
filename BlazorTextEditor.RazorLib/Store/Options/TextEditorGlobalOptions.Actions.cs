@@ -1,9 +1,9 @@
 ﻿using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Keymap;
 
-namespace BlazorTextEditor.RazorLib.Store.GlobalOptions;
+namespace BlazorTextEditor.RazorLib.Store.Options;
 
-public partial class TextEditorGlobalOptions
+public partial class TextEditorOptionsState
 {
     public record SetFontSizeAction(int FontSizeInPixels);
     public record SetCursorWidthAction(double CursorWidthInPixels);
