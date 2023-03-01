@@ -21,5 +21,5 @@ public interface ITextEditorServiceOptions
     /// The default theme is <see cref="ThemeFacts.VisualStudioDarkThemeClone"/>.
     /// </summary>
     public ThemeKey InitialThemeKey { get; }
-    public ImmutableArray<ThemeRecord>? InitialThemeRecords { get; }
+    public ImmutableArray<ThemeRecord>? CustomThemeRecords { get; }
 }

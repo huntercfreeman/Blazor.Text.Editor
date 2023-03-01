@@ -17,9 +17,9 @@ public partial class BlazorTextEditorInitializer : ComponentBase
 
     protected override void OnInitialized()
     {
-        if (TextEditorServiceOptions.InitialThemeRecords is not null)
+        if (TextEditorServiceOptions.CustomThemeRecords is not null)
         {
-            foreach (var themeRecord in TextEditorServiceOptions.InitialThemeRecords)
+            foreach (var themeRecord in TextEditorServiceOptions.CustomThemeRecords)
             {
                 Dispatcher.Dispatch(
                     new ThemeRecordsCollection.RegisterAction(

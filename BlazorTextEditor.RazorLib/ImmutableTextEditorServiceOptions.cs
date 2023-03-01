@@ -10,12 +10,12 @@ public class ImmutableTextEditorServiceOptions : ITextEditorServiceOptions
     {
         InitializeFluxor = textEditorServiceOptions.InitializeFluxor;
         InitialThemeKey = textEditorServiceOptions.InitialThemeKey;
-        InitialThemeRecords = textEditorServiceOptions.InitialThemeRecords;
+        CustomThemeRecords = textEditorServiceOptions.CustomThemeRecords;
         InitialTheme = textEditorServiceOptions.InitialTheme;
     }
 
     public bool InitializeFluxor { get; }
     public ThemeKey? InitialThemeKey { get; }
-    public ImmutableArray<ThemeRecord>? InitialThemeRecords { get; }
+    public ImmutableArray<ThemeRecord>? CustomThemeRecords { get; }
     public ThemeRecord InitialTheme { get; }
 }

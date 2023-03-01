@@ -9,7 +9,8 @@ public class TextEditorServiceOptions : ITextEditorServiceOptions
 {
     public bool InitializeFluxor { get; set; } = true;
     public ThemeKey? InitialThemeKey { get; set; }
-    public ImmutableArray<ThemeRecord>? InitialThemeRecords { get; set; }
+    public ImmutableArray<ThemeRecord>? CustomThemeRecords { get; set; } =
+        BlazorTextEditorCustomThemeFacts.BlazorStudioTextEditorThemes;
     public ThemeRecord InitialTheme { get; set; } = ThemeFacts.VisualStudioDarkThemeClone;
     /// <summary>
     /// Default value if left null is: <see cref="AutocompleteService"/>

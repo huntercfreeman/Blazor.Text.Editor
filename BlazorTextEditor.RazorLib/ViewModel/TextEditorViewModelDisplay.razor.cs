@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorCommon.RazorLib.Keyboard;
@@ -27,7 +28,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
     [Inject]
-    private IClipboardProvider ClipboardProvider { get; set; } = null!;
+    private IClipboardService ClipboardService { get; set; } = null!;
 
     [Parameter]
     public string WrapperStyleCssString { get; set; } = string.Empty;
@@ -287,7 +288,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     new TextEditorCommandParameter(
                         safeTextEditorReference,
                         cursorSnapshots,
-                        ClipboardProvider,
+                        ClipboardService,
                         TextEditorService,
                         safeTextEditorViewModel));
             }
