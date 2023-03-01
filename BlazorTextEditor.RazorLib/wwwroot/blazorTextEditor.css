@@ -269,13 +269,6 @@
     position: absolute;
 }
 
-.bte_unselectable {
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
-}
-
 .bte_newline {
     color: var(--bte_newline-foreground-color);
     background-color: var(--bte_newline-background-color);
@@ -337,61 +330,6 @@
 .bte_button:disabled {
     background-color: var(--bte_button-disabled-background-color);
     color: var(--bte_button-disabled-foreground-color);
-}
-
-.bte_unselectable {
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
-}
-
-.bte_editor-display {
-    border-left: var(--bte_editor-display-border-left-size) solid var(--bte_primary-border-color);
-    height: 100%;
-}
-
-.bte_editor-tabs-bar {
-    display: flex;
-    height: var(--bte_editor-tabs-bar-height);
-    margin-bottom: 10px;
-    overflow-x: auto;
-    font-size: 0.8em;
-}
-
-.bte_editor-tab-display {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2px;
-    margin: 2px;
-    /*background-color: var(--bte_secondary-background-color);*/
-    cursor: pointer;
-}
-
-.bte_editor-tab-display:hover {
-    /*background-color: var(--bte_primary-hover-background-color);*/
-    /*color: var(--bte_primary-hover-font-color);*/
-}
-
-.bte_editor-tab-display.bte_active {
-    /*color: var(--bte_primary-active-font-color);*/
-    /*background-color: var(--bte_primary-active-background-color);*/
-    /*box-shadow: var(--bte_primary-overlay-box-shadow);*/
-}
-
-.bte_editor-tab-close-display {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2px;
-    margin-left: 5px;
-    /*background-color: var(--bte_secondary-background-color);*/
-}
-
-.bte_editor-tab-close-display:hover {
-    /*background-color: var(--bte_tertiary-hover-background-color);*/
-    /*color: var(--bte_tertiary-hover-font-color);*/
 }
 
 .bte_resize-column {
@@ -458,6 +396,19 @@
     width: calc(50% - var(--bte_diff-body-separator-width) / 2);
 }
 
+:root {
+    /* Sizes Text Editor */
+    --bte_text-editor-footer-height: 2.2em;
+    --bte_text-editor-footer-padding-left: 5px;
+    --bte_text-editor-header-height: 2.2em;
+    --bte_text-editor-header-padding-left: 5px;
+    --bte_text-editor-command-bar-height: 2.2em;
+    --bte_text-editor-command-bar-padding-left: 5px;
+    --bte_scrollbar-size: 10px;
+    --bte_diff-body-separator-width: 6px;
+    --bte_diff-header-height: 2em;
+}
+
 .bcrl_visual-studio-light-theme-clone {
     /*
         The colors are a close cloning of the
@@ -508,7 +459,7 @@
     --bte-primary-outline-color: #ADD6FF;
     --bte-primary-active-not-focused-background-color: #d9dcdf;
     --bte-primary-active-focused-background-color: #ADD6FF;
-    --bte_dropdown-display-default-background-color: #e6e6e6;
+    --bcrl_dropdown-display-default-background-color: #e6e6e6;
     --bte_primary-emphasis-foreground-color: #124df9;
     --bte_primary-disabled-background-color: #cfcfcf;
     --bte_primary-disabled-foreground-color: #25180c;
@@ -584,7 +535,7 @@
     --bte-primary-outline-color: #2d498b;
     --bte-primary-active-not-focused-background-color: #566060;
     --bte-primary-active-focused-background-color: #2d498b;
-    --bte_dropdown-display-default-background-color: rgb(48, 51, 101);
+    --bcrl_dropdown-display-default-background-color: rgb(48, 51, 101);
     --bte_primary-emphasis-foreground-color: #4d8aea;
     --bte_primary-disabled-background-color: #5c5959;
     --bte_primary-disabled-foreground-color: #ba931e;
@@ -660,7 +611,7 @@
     --bte-primary-outline-color: #2d498b;
     --bte-primary-active-not-focused-background-color: #566060;
     --bte-primary-active-focused-background-color: #2d498b;
-    --bte_dropdown-display-default-background-color: rgb(48, 51, 101);
+    --bcrl_dropdown-display-default-background-color: rgb(48, 51, 101);
     --bte_primary-emphasis-foreground-color: #4d8aea;
     --bte_primary-disabled-background-color: #5c5959;
     --bte_primary-disabled-foreground-color: #ba931e;
@@ -736,7 +687,7 @@
     --bte-primary-outline-color: #ADD6FF;
     --bte-primary-active-not-focused-background-color: #d9dcdf;
     --bte-primary-active-focused-background-color: #ADD6FF;
-    --bte_dropdown-display-default-background-color: #e6e6e6;
+    --bcrl_dropdown-display-default-background-color: #e6e6e6;
     --bte_primary-emphasis-foreground-color: #124df9;
     --bte_primary-disabled-background-color: #cfcfcf;
     --bte_primary-disabled-foreground-color: #25180c;
