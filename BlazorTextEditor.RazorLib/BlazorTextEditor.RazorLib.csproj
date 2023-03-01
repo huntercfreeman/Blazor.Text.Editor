@@ -37,9 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\BlazorALaCarte\BlazorALaCarte.DialogNotification\BlazorALaCarte.DialogNotification\BlazorALaCarte.DialogNotification.csproj" />
-      <ProjectReference Include="..\..\BlazorALaCarte\BlazorALaCarte.Shared\BlazorALaCarte.Shared\BlazorALaCarte.Shared.csproj" />
-      <ProjectReference Include="..\..\BlazorALaCarte\BlazorALaCarte.TreeView\BlazorALaCarte.TreeView\BlazorALaCarte.TreeView.csproj" />
+      <ProjectReference Include="..\..\BlazorCommon\BlazorCommon.RazorLib\BlazorCommon.RazorLib.csproj" />
     </ItemGroup>
 
 </Project>

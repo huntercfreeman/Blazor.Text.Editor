@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Dimensions;
+using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Model;

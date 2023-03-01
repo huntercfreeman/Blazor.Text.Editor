@@ -1,4 +1,4 @@
-﻿using BlazorALaCarte.Shared.Dimensions;
+﻿using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Virtualization;

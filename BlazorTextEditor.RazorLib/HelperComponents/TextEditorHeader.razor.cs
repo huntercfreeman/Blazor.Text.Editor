@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Clipboard;
+using BlazorCommon.RazorLib.Clipboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
@@ -14,7 +14,7 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 public partial class TextEditorHeader : TextEditorView
 {
     [Inject]
-    private IClipboardProvider ClipboardProvider { get; set; } = null!;
+    private IClipboardService ClipboardService { get; set; } = null!;
 
     [Parameter]
     public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
@@ -26,7 +26,7 @@ public partial class TextEditorHeader : TextEditorView
         return new TextEditorCommandParameter(
             textEditorModel,
             TextEditorCursorSnapshot.TakeSnapshots(textEditorViewModel.PrimaryCursor),
-            ClipboardProvider,
+            ClipboardService,
             TextEditorService,
             textEditorViewModel);
     }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Keyboard;
+using BlazorCommon.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Model;
@@ -36,7 +36,7 @@ public static class TextEditorCommandDefaultFacts
             }
             
             await textEditorCommandParameter
-                .ClipboardProvider
+                .ClipboardService
                 .SetClipboard(
                     selectedText);
 
@@ -84,7 +84,7 @@ public static class TextEditorCommandDefaultFacts
                 return; // Should never occur
             
             await textEditorCommandParameter
-                .ClipboardProvider
+                .ClipboardService
                 .SetClipboard(
                     selectedText);
 
@@ -108,7 +108,7 @@ public static class TextEditorCommandDefaultFacts
         async textEditorCommandParameter =>
         {
             var clipboard = await textEditorCommandParameter
-                .ClipboardProvider
+                .ClipboardService
                 .ReadClipboard();
 
             textEditorCommandParameter.TextEditorService.ModelInsertText(

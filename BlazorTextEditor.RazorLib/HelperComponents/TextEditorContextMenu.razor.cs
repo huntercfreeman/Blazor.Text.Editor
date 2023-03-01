@@ -2,6 +2,8 @@
 using BlazorALaCarte.Shared.Clipboard;
 using BlazorALaCarte.Shared.Keyboard;
 using BlazorALaCarte.Shared.Menu;
+using BlazorCommon.RazorLib.Keyboard;
+using BlazorCommon.RazorLib.Menu;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;

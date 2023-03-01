@@ -1,5 +1,5 @@
-﻿using BlazorALaCarte.Shared.Store.ThemeCase;
-using BlazorALaCarte.Shared.Theme;
+﻿using BlazorCommon.RazorLib.Store.ThemeCase;
+using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Store.GlobalOptions;
 using Fluxor;
 using Microsoft.AspNetCore.Components;

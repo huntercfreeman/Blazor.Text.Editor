@@ -1,5 +1,5 @@
 using System.Text;
-using BlazorALaCarte.Shared.Dimensions;
+using BlazorCommon.RazorLib.Dimensions;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.Virtualization;

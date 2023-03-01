@@ -1,5 +1,5 @@
-﻿using BlazorALaCarte.Shared.Options;
-using BlazorALaCarte.Shared.Theme;
+﻿using BlazorCommon.RazorLib.Options;
+using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Options;
 using Fluxor;

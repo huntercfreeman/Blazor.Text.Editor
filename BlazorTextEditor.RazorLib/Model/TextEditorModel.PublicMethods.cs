@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Keyboard;
+using BlazorCommon.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;

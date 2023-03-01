@@ -1,10 +1,10 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.DialogNotification.Dialog;
-using BlazorALaCarte.DialogNotification.Store.DialogCase;
-using BlazorALaCarte.Shared.Storage;
-using BlazorALaCarte.Shared.Store.StorageCase;
-using BlazorALaCarte.Shared.Store.ThemeCase;
-using BlazorALaCarte.Shared.Theme;
+using BlazorCommon.RazorLib.Dialog;
+using BlazorCommon.RazorLib.Storage;
+using BlazorCommon.RazorLib.Store.DialogCase;
+using BlazorCommon.RazorLib.Store.StorageCase;
+using BlazorCommon.RazorLib.Store.ThemeCase;
+using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;

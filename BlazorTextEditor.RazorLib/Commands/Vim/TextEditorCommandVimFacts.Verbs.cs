@@ -50,7 +50,7 @@ public static partial class TextEditorCommandVimFacts
                 var textEditorCommandParameterForMotion = new TextEditorCommandParameter(
                     textEditorCommandParameter.TextEditorModel,
                     TextEditorCursorSnapshot.TakeSnapshots(textEditorCursorForMotion),
-                    textEditorCommandParameter.ClipboardProvider,
+                    textEditorCommandParameter.ClipboardService,
                     textEditorCommandParameter.TextEditorService,
                     textEditorCommandParameter.TextEditorViewModel);
 

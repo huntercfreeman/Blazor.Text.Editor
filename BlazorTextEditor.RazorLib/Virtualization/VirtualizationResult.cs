@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Measurement;
 

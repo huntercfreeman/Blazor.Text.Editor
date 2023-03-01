@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Storage;
-using BlazorALaCarte.Shared.Store.ThemeCase;
-using BlazorALaCarte.Shared.Theme;
+using BlazorCommon.RazorLib.Storage;
+using BlazorCommon.RazorLib.Store.ThemeCase;
+using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Diff;
 using BlazorTextEditor.RazorLib.Group;

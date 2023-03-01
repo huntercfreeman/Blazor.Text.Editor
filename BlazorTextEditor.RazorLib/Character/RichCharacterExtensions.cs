@@ -1,4 +1,4 @@
-﻿using BlazorALaCarte.Shared.Keyboard;
+﻿using BlazorCommon.RazorLib.Keyboard;
 
 namespace BlazorTextEditor.RazorLib.Character;
 

@@ -1,5 +1,5 @@
-﻿using BlazorALaCarte.Shared.Dimensions;
-using BlazorALaCarte.Shared.Keyboard;
+﻿using BlazorCommon.RazorLib.Dimensions;
+using BlazorCommon.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Commands.Vim;

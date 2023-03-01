@@ -1,9 +1,6 @@
-using BlazorALaCarte.DialogNotification.Installation;
-using BlazorALaCarte.Shared;
-using BlazorALaCarte.Shared.Clipboard;
-using BlazorALaCarte.Shared.Storage;
-using BlazorALaCarte.Shared.Theme;
-using BlazorALaCarte.TreeView.Installation;
+using BlazorCommon.RazorLib.Clipboard;
+using BlazorCommon.RazorLib.Storage;
+using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,60 +12,16 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBlazorTextEditor(
         this IServiceCollection services,
-        Action<TextEditorServiceOptions>? configureTextEditorServiceOptions = null,
-        Action<ThemeServiceOptions>? configureThemeServiceOptions = null)
-    {
-        return services
-            .AddSharedServices(
-                x => {},
-                configureThemeServiceOptions ?? new Action<ThemeServiceOptions>(x => 
-                    x.InitialThemeKey = ThemeFacts.VisualStudioDarkThemeClone.ThemeKey))
-            .AddDialogNotificationServices()
-            .AddTreeViewServices()
-            .AddTextEditorClassLibServices(
-                serviceProvider =>
-                    new JavaScriptInteropClipboardProvider(
-                        serviceProvider.GetRequiredService<IJSRuntime>()),
-                serviceProvider =>
-                    new LocalStorageService(
-                        serviceProvider.GetRequiredService<IJSRuntime>()),
-                serviceProvider =>
-                    new AutocompleteService(serviceProvider.GetRequiredService<IAutocompleteIndexer>()),
-                serviceProvider =>
-                    new AutocompleteIndexer(serviceProvider.GetRequiredService<ITextEditorService>()),
-                configureTextEditorServiceOptions);
-    }
-
-    private static IServiceCollection AddTextEditorClassLibServices(
-        this IServiceCollection services,
-        Func<IServiceProvider, IClipboardProvider> clipboardProviderDefaultFactory,
-        Func<IServiceProvider, IStorageService> storageProviderDefaultFactory,
-        Func<IServiceProvider, IAutocompleteService> autocompleteServiceDefaultFactory,
-        Func<IServiceProvider, IAutocompleteIndexer> autocompleteIndexerDefaultFactory,
         Action<TextEditorServiceOptions>? configure = null)
     {
         var textEditorOptions = new TextEditorServiceOptions();
         configure?.Invoke(textEditorOptions);
 
-        var clipboardProviderFactory = textEditorOptions.ClipboardProviderFactory
-                                       ?? clipboardProviderDefaultFactory;
-        
-        var storageProviderFactory = textEditorOptions.StorageProviderFactory
-                                       ?? storageProviderDefaultFactory;
-        
-        var autocompleteServiceFactory = textEditorOptions.AutocompleteServiceFactory
-                                                ?? autocompleteServiceDefaultFactory;
-        
-        var autocompleteIndexerFactory = textEditorOptions.AutocompleteIndexerFactory
-                                                ?? autocompleteIndexerDefaultFactory;
-
         services
             .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
                 _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
-            .AddScoped(serviceProvider => clipboardProviderFactory.Invoke(serviceProvider))
-            .AddScoped(serviceProvider => storageProviderFactory.Invoke(serviceProvider))
-            .AddScoped(serviceProvider => autocompleteServiceFactory.Invoke(serviceProvider))
-            .AddScoped(serviceProvider => autocompleteIndexerFactory.Invoke(serviceProvider))
+            .AddScoped(serviceProvider => textEditorOptions.AutocompleteServiceFactory.Invoke(serviceProvider))
+            .AddScoped(serviceProvider => textEditorOptions.AutocompleteIndexerFactory.Invoke(serviceProvider))
             .AddScoped<IThemeRecordsCollectionService, ThemeRecordsCollectionService>()
             .AddScoped<ITextEditorService, TextEditorService>();
 
@@ -78,9 +31,7 @@ public static class ServiceCollectionExtensions
                 .AddFluxor(options => options
                     .ScanAssemblies(
                         typeof(ServiceCollectionExtensions).Assembly,
-                        typeof(BlazorALaCarte.Shared.ServiceCollectionExtensions).Assembly,
-                        typeof(BlazorALaCarte.DialogNotification.Installation.ServiceCollectionExtensions).Assembly,
-                        typeof(BlazorALaCarte.TreeView.Installation.ServiceCollectionExtensions).Assembly));
+                        typeof(BlazorCommon.RazorLib.ServiceCollectionExtensions).Assembly));
         }
 
         return services;
