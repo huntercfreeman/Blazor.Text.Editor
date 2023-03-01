@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorCommon.RazorLib.Storage;
 using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using Microsoft.Extensions.DependencyInjection;

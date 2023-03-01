@@ -1,7 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Clipboard;
-using BlazorALaCarte.Shared.Keyboard;
-using BlazorALaCarte.Shared.Menu;
 using BlazorCommon.RazorLib.Keyboard;
 using BlazorCommon.RazorLib.Menu;
 using BlazorTextEditor.RazorLib.Commands;

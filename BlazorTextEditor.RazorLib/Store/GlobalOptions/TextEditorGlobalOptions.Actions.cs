@@ -10,7 +10,7 @@ public partial class TextEditorGlobalOptions
     public record SetHeightAction(int? HeightInPixels);
     /// <summary>
     /// This is setting the TextEditor's theme specifically.
-    /// This is not to be confused with the "BlazorALaCarte.Shared" Themes which
+    /// This is not to be confused with the AppOptions Themes which
     /// get applied at an application level.
     /// <br/><br/>
     /// This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"

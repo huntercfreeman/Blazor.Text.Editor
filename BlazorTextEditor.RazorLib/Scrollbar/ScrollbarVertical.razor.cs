@@ -1,8 +1,4 @@
-﻿using BlazorALaCarte.Shared.Dimensions;
-using BlazorALaCarte.Shared.Drag;
-using BlazorALaCarte.Shared.JavaScriptObjects;
-using BlazorALaCarte.Shared.Store.DragCase;
-using BlazorCommon.RazorLib.Dimensions;
+﻿using BlazorCommon.RazorLib.Dimensions;
 using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorCommon.RazorLib.Store.DragCase;
 using BlazorTextEditor.RazorLib.Character;

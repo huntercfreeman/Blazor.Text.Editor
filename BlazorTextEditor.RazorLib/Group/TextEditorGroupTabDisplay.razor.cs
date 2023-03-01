@@ -21,7 +21,7 @@ public partial class TextEditorGroupTabDisplay : ComponentBase
     public TextEditorGroup TextEditorGroup { get; set; } = null!;
 
     private string IsActiveCssClass => TextEditorGroup.ActiveViewModelKey == TextEditorViewModelKey
-        ? "balc_active"
+        ? "bcrl_active"
         : string.Empty;
 
     private void OnClickSetActiveTextEditorViewModel()

@@ -1,10 +1,6 @@
-using BlazorCommon.RazorLib.Clipboard;
-using BlazorCommon.RazorLib.Storage;
 using BlazorCommon.RazorLib.Theme;
-using BlazorTextEditor.RazorLib.Autocomplete;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib;
 

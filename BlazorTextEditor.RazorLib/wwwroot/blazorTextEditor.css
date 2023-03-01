@@ -18,7 +18,7 @@
 }
 
 .bte_text-editor-group-tabs-list {
-    height: var(--balc_tabs-bar-height);
+    height: var(--bcrl_tabs-bar-height);
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
@@ -26,7 +26,7 @@
 }
 
 .bte_text-editor-group-active-view-model {
-    height: calc(100% - var(--balc_tabs-bar-height));
+    height: calc(100% - var(--bcrl_tabs-bar-height));
 }
 
 .bte_method {
@@ -450,7 +450,7 @@
 }
 
 .bte_text-editor-diff-body-separator {
-    background-color: var(--balc_primary-border-color);
+    background-color: var(--bcrl_primary-border-color);
     width: var(--bte_diff-body-separator-width);
 }
 

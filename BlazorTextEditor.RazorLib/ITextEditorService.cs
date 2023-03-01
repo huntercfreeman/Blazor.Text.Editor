@@ -52,7 +52,7 @@ public interface ITextEditorService
     public void GlobalOptionsSetKeymap(KeymapDefinition foundKeymap);
     public void GlobalOptionsSetShowNewlines(bool showNewlines);
     public void GlobalOptionsSetShowWhitespace(bool showWhitespace);
-    /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the "BlazorALaCarte.Shared" Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
+    /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the AppOptions Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
     public void GlobalOptionsSetTheme(ThemeRecord theme);
     public void GlobalOptionsShowSettingsDialog(bool isResizable = false);
     public void GlobalOptionsWriteToStorage();

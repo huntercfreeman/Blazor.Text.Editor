@@ -1,8 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Clipboard;
-using BlazorALaCarte.Shared.Dimensions;
-using BlazorALaCarte.Shared.JavaScriptObjects;
-using BlazorALaCarte.Shared.Keyboard;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorCommon.RazorLib.Keyboard;
