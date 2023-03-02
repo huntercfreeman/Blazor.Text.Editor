@@ -4,7 +4,7 @@
 
 .bte_text-editor {
     height: calc(100% - var(--bte_text-editor-header-height) - var(--bte_text-editor-footer-height));
-    min-height: 200px;
+    min-height: var(--bte_text-editor-content-min-height);
     color: var(--bte_primary-font-color);
     background-color: var(--bte_body-background-color);
     cursor: text;
@@ -398,6 +398,7 @@
 
 :root {
     /* Sizes Text Editor */
+    --bte_text-editor-content-min-height: 100px;
     --bte_text-editor-footer-height: 2.2em;
     --bte_text-editor-footer-padding-left: 5px;
     --bte_text-editor-header-height: 2.2em;
@@ -485,7 +486,7 @@
     --btv-tree-view-children-border-color: currentColor;
 }
 
-.bcrl_visual-studio-light-theme-clone {
+.bcrl_visual-studio-dark-theme-clone {
     /*
         The colors are a close cloning of the
         Dark Theme found in Visual Studio.
