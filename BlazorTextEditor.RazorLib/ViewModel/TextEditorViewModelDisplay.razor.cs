@@ -631,7 +631,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// The autocomplete occurs on LetterOrDigit typed or { Ctrl + Space }.
     /// Furthermore, the autocomplete is done via <see cref="IAutocompleteService"/>
     /// and the one can provide their own implementation when registering the
-    /// BlazorTextEditor services using <see cref="TextEditorServiceOptions.AutocompleteServiceFactory"/>
+    /// BlazorTextEditor services using <see cref="BlazorTextEditorOptions.AutocompleteServiceFactory"/>
     /// </summary>
     public async Task HandleAfterOnKeyDownAsync(
         TextEditorModel textEditor,

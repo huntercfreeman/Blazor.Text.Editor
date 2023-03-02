@@ -9,7 +9,7 @@ namespace BlazorTextEditor.RazorLib;
 public partial class BlazorTextEditorInitializer : ComponentBase
 {
     [Inject]
-    private ITextEditorServiceOptions TextEditorServiceOptions { get; set; } = null!;
+    private BlazorTextEditorOptions BlazorTextEditorOptions { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
@@ -17,9 +17,9 @@ public partial class BlazorTextEditorInitializer : ComponentBase
 
     protected override void OnInitialized()
     {
-        if (TextEditorServiceOptions.CustomThemeRecords is not null)
+        if (BlazorTextEditorOptions.CustomThemeRecords is not null)
         {
-            foreach (var themeRecord in TextEditorServiceOptions.CustomThemeRecords)
+            foreach (var themeRecord in BlazorTextEditorOptions.CustomThemeRecords)
             {
                 Dispatcher.Dispatch(
                     new ThemeRecordsCollection.RegisterAction(
@@ -28,7 +28,7 @@ public partial class BlazorTextEditorInitializer : ComponentBase
         }
 
         var initialThemeRecord = ThemeRecordsCollectionService.ThemeRecordsCollectionWrap.Value.ThemeRecordsList
-            .FirstOrDefault(x => x.ThemeKey == TextEditorServiceOptions.InitialThemeKey);
+            .FirstOrDefault(x => x.ThemeKey == BlazorTextEditorOptions.InitialThemeKey);
 
         if (initialThemeRecord is not null)
         {

@@ -1,3 +1,4 @@
+using BlazorCommon.RazorLib;
 using BlazorCommon.RazorLib.Theme;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,14 +9,19 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBlazorTextEditor(
         this IServiceCollection services,
-        Action<TextEditorServiceOptions>? configure = null)
+        Func<BlazorTextEditorOptions, BlazorTextEditorOptions>? configure = null)
     {
-        var textEditorOptions = new TextEditorServiceOptions();
+        var textEditorOptions = new BlazorTextEditorOptions();
         configure?.Invoke(textEditorOptions);
 
+        if (textEditorOptions.BlazorCommonOptions is not null)
+        {
+            services.AddBlazorCommonServices(options => 
+                textEditorOptions.BlazorCommonOptions);
+        }
+
         services
-            .AddSingleton<ITextEditorServiceOptions, ImmutableTextEditorServiceOptions>(
-                _ => new ImmutableTextEditorServiceOptions(textEditorOptions))
+            .AddSingleton(textEditorOptions)
             .AddScoped(serviceProvider => textEditorOptions.AutocompleteServiceFactory.Invoke(serviceProvider))
             .AddScoped(serviceProvider => textEditorOptions.AutocompleteIndexerFactory.Invoke(serviceProvider))
             .AddScoped<IThemeRecordsCollectionService, ThemeRecordsCollectionService>()
