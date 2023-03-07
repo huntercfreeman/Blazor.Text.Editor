@@ -105,7 +105,7 @@ public partial class TextEditorOptionsState
             {
                 Options = inOptionsState.Options with
                 {
-                    ShowWhitespace = setShowNewlinesAction.ShowNewlines
+                    ShowNewlines = setShowNewlinesAction.ShowNewlines
                 },
             };
         }
