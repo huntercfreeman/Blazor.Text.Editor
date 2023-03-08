@@ -21,4 +21,15 @@ public partial class TextEditorFooter : TextEditorView
         if (Enum.TryParse<RowEndingKind>(rowEndingKindString, out var rowEndingKind))
             TextEditorService.ModelSetUsingRowEndingKind(localTextEditorViewModel.ModelKey, rowEndingKind);
     }
+    
+    private string StyleMinWidthFromMaxLengthOfValue(int value)
+    {
+        var maxLengthOfValue = value
+            .ToString()
+            .Length;
+
+        var padCharacterWidthUnits = 1;
+
+        return $"min-width: calc(1ch * {maxLengthOfValue + padCharacterWidthUnits})";
+    }
 }

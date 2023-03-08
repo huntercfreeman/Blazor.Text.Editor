@@ -293,11 +293,16 @@
 
 .bte_text-editor-footer-entry {
     padding-right: 5px;
+    display: flex;
 }
 
 .bte_text-editor-footer-entry:not(:last-child) {
     border-right: 2px solid var(--bte_text-editor-caret-row-border-color-no-focus-within-editor);
     margin-right: 5px;
+}
+
+.bte_text-editor-footer-name-value-pair {
+    display: flex;
 }
 
 .bte_text-editor-header {
