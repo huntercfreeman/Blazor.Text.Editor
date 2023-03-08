@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using BlazorALaCarte.Shared.Dimensions;
+using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;

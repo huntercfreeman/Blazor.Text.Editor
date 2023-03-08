@@ -1,7 +1,7 @@
 ﻿using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.GlobalOptions;
 using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.Options;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
@@ -26,7 +26,7 @@ public class TextEditorView : FluxorComponent
     [Inject]
     protected IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
     [Inject]
-    protected IState<TextEditorGlobalOptions> TextEditorGlobalOptionsWrap { get; set; } = null!;
+    protected IState<TextEditorOptionsState> TextEditorGlobalOptionsWrap { get; set; } = null!;
     [Inject]
     protected ITextEditorService TextEditorService { get; set; } = null!;
     

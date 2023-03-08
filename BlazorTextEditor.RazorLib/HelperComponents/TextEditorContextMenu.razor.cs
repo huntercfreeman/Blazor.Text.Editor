@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Clipboard;
-using BlazorALaCarte.Shared.Keyboard;
-using BlazorALaCarte.Shared.Menu;
+using BlazorCommon.RazorLib.Clipboard;
+using BlazorCommon.RazorLib.Keyboard;
+using BlazorCommon.RazorLib.Menu;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
@@ -16,7 +16,7 @@ namespace BlazorTextEditor.RazorLib.HelperComponents;
 public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inheritance needed? It should cascade down from TextEditorViewModelDisplay.razor -> TextEditorView
 {
     [Inject]
-    private IClipboardProvider ClipboardProvider { get; set; } = null!;
+    private IClipboardService ClipboardService { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
@@ -57,7 +57,7 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
         return new TextEditorCommandParameter(
             TextEditorModel,
             TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
-            ClipboardProvider,
+            ClipboardService,
             TextEditorService,
             TextEditorViewModel);
     }

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.DialogNotification.Dialog;
-using BlazorALaCarte.DialogNotification.Store.DialogCase;
-using BlazorALaCarte.Shared.Storage;
-using BlazorALaCarte.Shared.Store.StorageCase;
-using BlazorALaCarte.Shared.Store.ThemeCase;
-using BlazorALaCarte.Shared.Theme;
+using BlazorCommon.RazorLib.Dialog;
+using BlazorCommon.RazorLib.Storage;
+using BlazorCommon.RazorLib.Store.DialogCase;
+using BlazorCommon.RazorLib.Store.StorageCase;
+using BlazorCommon.RazorLib.Store.ThemeCase;
+using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
@@ -31,9 +31,9 @@ using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.Diff;
-using BlazorTextEditor.RazorLib.Store.GlobalOptions;
 using BlazorTextEditor.RazorLib.Store.Group;
 using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.Options;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
@@ -55,7 +55,7 @@ public class TextEditorService : ITextEditorService
         IState<TextEditorGroupsCollection> groupsCollectionWrap,
         IState<TextEditorDiffsCollection> diffsCollectionWrap,
         IState<ThemeRecordsCollection> themeRecordsCollectionWrap,
-        IState<TextEditorGlobalOptions> textEditorGlobalOptionsWrap,
+        IState<TextEditorOptionsState> textEditorOptionsWrap,
         IDispatcher dispatcher,
         IStorageService storageService,
         IJSRuntime jsRuntime)
@@ -65,7 +65,7 @@ public class TextEditorService : ITextEditorService
         GroupsCollectionWrap = groupsCollectionWrap;
         DiffsCollectionWrap = diffsCollectionWrap;
         ThemeRecordsCollectionWrap = themeRecordsCollectionWrap;
-        GlobalOptionsWrap = textEditorGlobalOptionsWrap;
+        OptionsWrap = textEditorOptionsWrap;
         _dispatcher = dispatcher;
         _storageService = storageService;
         _jsRuntime = jsRuntime;
@@ -76,12 +76,12 @@ public class TextEditorService : ITextEditorService
     public IState<TextEditorGroupsCollection> GroupsCollectionWrap { get; }
     public IState<TextEditorDiffsCollection> DiffsCollectionWrap { get; }
     public IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; }
-    public IState<TextEditorGlobalOptions> GlobalOptionsWrap { get; }
+    public IState<TextEditorOptionsState> OptionsWrap { get; }
     public string StorageKey => "bte_text-editor-options";
     
-    public string GlobalThemeCssClassString => ThemeRecordsCollectionWrap.Value.ThemeRecordsList
+    public string ThemeCssClassString => ThemeRecordsCollectionWrap.Value.ThemeRecordsList
                                                    .FirstOrDefault(x =>
-                                                       x.ThemeKey == GlobalOptionsWrap.Value.Options.CommonOptions
+                                                       x.ThemeKey == OptionsWrap.Value.Options.CommonOptions
                                                            .ThemeKey)
                                                    ?.CssClassString
                                                ?? ThemeFacts.VisualStudioDarkThemeClone.CssClassString;
@@ -222,67 +222,67 @@ public class TextEditorService : ITextEditorService
                 textEditorModelKey));
     }
 
-    public void GlobalOptionsSetFontSize(int fontSizeInPixels)
+    public void OptionsSetFontSize(int fontSizeInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorGlobalOptions.SetFontSizeAction(
+            new TextEditorOptionsState.SetFontSizeAction(
                 fontSizeInPixels));
         
-        GlobalOptionsWriteToStorage();
+        OptionsWriteToStorage();
     }
     
-    public void GlobalOptionsSetCursorWidth(double cursorWidthInPixels)
+    public void OptionsSetCursorWidth(double cursorWidthInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorGlobalOptions.SetCursorWidthAction(
+            new TextEditorOptionsState.SetCursorWidthAction(
                 cursorWidthInPixels));
         
-        GlobalOptionsWriteToStorage();
+        OptionsWriteToStorage();
     }
     
-    public void GlobalOptionsSetHeight(int? heightInPixels)
+    public void OptionsSetHeight(int? heightInPixels)
     {
         _dispatcher.Dispatch(
-            new TextEditorGlobalOptions.SetHeightAction(
+            new TextEditorOptionsState.SetHeightAction(
                 heightInPixels));
         
-        GlobalOptionsWriteToStorage();
+        OptionsWriteToStorage();
     }
 
-    public void GlobalOptionsSetTheme(ThemeRecord theme)
+    public void OptionsSetTheme(ThemeRecord theme)
     {
         _dispatcher.Dispatch(
-            new TextEditorGlobalOptions.SetThemeAction(
+            new TextEditorOptionsState.SetThemeAction(
                 theme));
         
-        GlobalOptionsWriteToStorage();
+        OptionsWriteToStorage();
     }
     
-    public void GlobalOptionsSetKeymap(KeymapDefinition foundKeymap)
+    public void OptionsSetKeymap(KeymapDefinition foundKeymap)
     {
         _dispatcher.Dispatch(
-            new TextEditorGlobalOptions.SetKeymapAction(
+            new TextEditorOptionsState.SetKeymapAction(
                 foundKeymap));
         
-        GlobalOptionsWriteToStorage();
+        OptionsWriteToStorage();
     }
 
-    public void GlobalOptionsSetShowWhitespace(bool showWhitespace)
+    public void OptionsSetShowWhitespace(bool showWhitespace)
     {
         _dispatcher.Dispatch(
-            new TextEditorGlobalOptions.SetShowWhitespaceAction(
+            new TextEditorOptionsState.SetShowWhitespaceAction(
                 showWhitespace));
         
-        GlobalOptionsWriteToStorage();
+        OptionsWriteToStorage();
     }
 
-    public void GlobalOptionsSetShowNewlines(bool showNewlines)
+    public void OptionsSetShowNewlines(bool showNewlines)
     {
         _dispatcher.Dispatch(
-            new TextEditorGlobalOptions.SetShowNewlinesAction(
+            new TextEditorOptionsState.SetShowNewlinesAction(
                 showNewlines));
 
-        GlobalOptionsWriteToStorage();
+        OptionsWriteToStorage();
     }
 
     public void ModelSetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind)
@@ -305,7 +305,7 @@ public class TextEditorService : ITextEditorService
                 resourceLastWriteTime));
     }
 
-    public void GlobalOptionsShowSettingsDialog(bool isResizable = false)
+    public void OptionsShowSettingsDialog(bool isResizable = false)
     {
         var settingsDialog = new DialogRecord(
             DialogKey.NewDialogKey(), 
@@ -639,7 +639,7 @@ public class TextEditorService : ITextEditorService
             primaryCursorContentId);
     }
     
-    public async Task GlobalOptionsSetFromLocalStorageAsync()
+    public async Task OptionsSetFromLocalStorageAsync()
     {
         var optionsJsonString = await _storageService
                 .GetValue(StorageKey)
@@ -649,7 +649,7 @@ public class TextEditorService : ITextEditorService
             return;
         
         var options = System.Text.Json.JsonSerializer
-            .Deserialize<TextEditorOptions>(optionsJsonString);
+            .Deserialize<Options.TextEditorOptions>(optionsJsonString);
 
         if (options is null)
             return;
@@ -660,7 +660,7 @@ public class TextEditorService : ITextEditorService
                 .FirstOrDefault(x =>
                     x.ThemeKey == options.CommonOptions.ThemeKey);
 
-            GlobalOptionsSetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
+            OptionsSetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
         }
         
         if (options.KeymapDefinition is not null)
@@ -669,30 +669,30 @@ public class TextEditorService : ITextEditorService
                 .FirstOrDefault(x =>
                     x.KeymapKey == options.KeymapDefinition.KeymapKey);
             
-            GlobalOptionsSetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
+            OptionsSetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
         }
         
         if (options.CommonOptions?.FontSizeInPixels is not null)
-            GlobalOptionsSetFontSize(options.CommonOptions.FontSizeInPixels.Value);
+            OptionsSetFontSize(options.CommonOptions.FontSizeInPixels.Value);
         
         if (options.CursorWidthInPixels is not null)
-            GlobalOptionsSetCursorWidth(options.CursorWidthInPixels.Value);
+            OptionsSetCursorWidth(options.CursorWidthInPixels.Value);
         
         if (options.TextEditorHeightInPixels is not null)
-            GlobalOptionsSetHeight(options.TextEditorHeightInPixels.Value);
+            OptionsSetHeight(options.TextEditorHeightInPixels.Value);
         
         if (options.ShowNewlines is not null)
-            GlobalOptionsSetShowNewlines(options.ShowNewlines.Value);
+            OptionsSetShowNewlines(options.ShowNewlines.Value);
         
         if (options.ShowWhitespace is not null)
-            GlobalOptionsSetShowWhitespace(options.ShowWhitespace.Value);
+            OptionsSetShowWhitespace(options.ShowWhitespace.Value);
     }
     
-    public void GlobalOptionsWriteToStorage()
+    public void OptionsWriteToStorage()
     {
         _dispatcher.Dispatch(
             new StorageEffects.WriteToStorageAction(
                 StorageKey,
-                GlobalOptionsWrap.Value.Options));
+                OptionsWrap.Value.Options));
     }
 }

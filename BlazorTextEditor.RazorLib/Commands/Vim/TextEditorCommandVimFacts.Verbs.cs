@@ -26,7 +26,7 @@ public static partial class TextEditorCommandVimFacts
                 await DeleteLine.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
 
-                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.OptionsWrap.Value.Options.KeymapDefinition
                                              ?? KeymapFacts.DefaultKeymapDefinition;
                 
                 if (activeKeymapDefinition.Keymap
@@ -50,7 +50,7 @@ public static partial class TextEditorCommandVimFacts
                 var textEditorCommandParameterForMotion = new TextEditorCommandParameter(
                     textEditorCommandParameter.TextEditorModel,
                     TextEditorCursorSnapshot.TakeSnapshots(textEditorCursorForMotion),
-                    textEditorCommandParameter.ClipboardProvider,
+                    textEditorCommandParameter.ClipboardService,
                     textEditorCommandParameter.TextEditorService,
                     textEditorCommandParameter.TextEditorViewModel);
 
@@ -89,7 +89,7 @@ public static partial class TextEditorCommandVimFacts
                 await deleteMotion.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
                 
-                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.OptionsWrap.Value.Options.KeymapDefinition
                                              ?? KeymapFacts.DefaultKeymapDefinition;
                 
                 if (activeKeymapDefinition.Keymap
@@ -108,7 +108,7 @@ public static partial class TextEditorCommandVimFacts
                 await TextEditorCommandDefaultFacts.Cut.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
 
-                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.OptionsWrap.Value.Options.KeymapDefinition
                                              ?? KeymapFacts.DefaultKeymapDefinition;
                 
                 if (activeKeymapDefinition.Keymap
@@ -140,7 +140,7 @@ public static partial class TextEditorCommandVimFacts
                 await TextEditorCommandDefaultFacts.NewLineBelow.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
                 
-                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.OptionsWrap.Value.Options.KeymapDefinition
                                              ?? KeymapFacts.DefaultKeymapDefinition;
                 
                 if (activeKeymapDefinition.Keymap
@@ -159,7 +159,7 @@ public static partial class TextEditorCommandVimFacts
                 await TextEditorCommandDefaultFacts.NewLineAbove.DoAsyncFunc
                     .Invoke(textEditorCommandParameter);
                 
-                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition
+                var activeKeymapDefinition = textEditorCommandParameter.TextEditorService.OptionsWrap.Value.Options.KeymapDefinition
                                              ?? KeymapFacts.DefaultKeymapDefinition;
                 
                 if (activeKeymapDefinition.Keymap

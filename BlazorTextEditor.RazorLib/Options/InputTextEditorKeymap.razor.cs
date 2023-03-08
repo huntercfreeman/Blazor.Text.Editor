@@ -4,9 +4,9 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.HelperComponents;
+namespace BlazorTextEditor.RazorLib.Options;
 
-public partial class TextEditorInputKeymap : FluxorComponent
+public partial class InputTextEditorKeymap : FluxorComponent
 {
     [Inject]
     private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
@@ -35,11 +35,11 @@ public partial class TextEditorInputKeymap : FluxorComponent
                 .FirstOrDefault(x => x.KeymapKey == chosenKeymapKey);
             
             if (foundKeymap is not null)
-                TextEditorService.GlobalOptionsSetKeymap(foundKeymap);
+                TextEditorService.OptionsSetKeymap(foundKeymap);
         }
         else
         {
-            TextEditorService.GlobalOptionsSetKeymap(KeymapFacts.DefaultKeymapDefinition);
+            TextEditorService.OptionsSetKeymap(KeymapFacts.DefaultKeymapDefinition);
         }
     }
 }

@@ -3,9 +3,9 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.HelperComponents;
+namespace BlazorTextEditor.RazorLib.Options;
 
-public partial class TextEditorInputHeight : FluxorComponent
+public partial class InputTextEditorHeight : FluxorComponent
 {
     [Inject]
     private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
@@ -28,14 +28,14 @@ public partial class TextEditorInputHeight : FluxorComponent
     
     private int TextEditorHeight
     {
-        get => TextEditorService.GlobalOptionsWrap.Value.Options.TextEditorHeightInPixels 
+        get => TextEditorService.OptionsWrap.Value.Options.TextEditorHeightInPixels 
                ?? MINIMUM_HEIGHT_IN_PIXELS;
         set
         {
             if (value < MINIMUM_HEIGHT_IN_PIXELS)
                 value = MINIMUM_HEIGHT_IN_PIXELS;
             
-            TextEditorService.GlobalOptionsSetHeight(value);
+            TextEditorService.OptionsSetHeight(value);
         }
     }
 
@@ -49,8 +49,8 @@ public partial class TextEditorInputHeight : FluxorComponent
     private void ToggleUseGlobalHeightInPixels(bool globalHeightInPixelsValueIsNull)
     {
         if (globalHeightInPixelsValueIsNull)
-            TextEditorService.GlobalOptionsSetHeight(MINIMUM_HEIGHT_IN_PIXELS);
+            TextEditorService.OptionsSetHeight(MINIMUM_HEIGHT_IN_PIXELS);
         else
-            TextEditorService.GlobalOptionsSetHeight(null);
+            TextEditorService.OptionsSetHeight(null);
     }
 }

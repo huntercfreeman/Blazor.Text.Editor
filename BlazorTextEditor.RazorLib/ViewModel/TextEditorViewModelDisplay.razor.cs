@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
-using BlazorALaCarte.Shared.Clipboard;
-using BlazorALaCarte.Shared.Dimensions;
-using BlazorALaCarte.Shared.JavaScriptObjects;
-using BlazorALaCarte.Shared.Keyboard;
+using BlazorCommon.RazorLib.Clipboard;
+using BlazorCommon.RazorLib.Dimensions;
+using BlazorCommon.RazorLib.JavaScriptObjects;
+using BlazorCommon.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
@@ -28,7 +28,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
     [Inject]
-    private IClipboardProvider ClipboardProvider { get; set; } = null!;
+    private IClipboardService ClipboardService { get; set; } = null!;
 
     [Parameter]
     public string WrapperStyleCssString { get; set; } = string.Empty;
@@ -99,7 +99,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
 
         var currentGlobalFontSizeInPixels = TextEditorService
-            .GlobalOptionsWrap
+            .OptionsWrap
             .Value
             .Options
             .CommonOptions.FontSizeInPixels!
@@ -245,7 +245,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
         
         var command = TextEditorService
-            .GlobalOptionsWrap.Value.Options.KeymapDefinition!.Keymap.Map(
+            .OptionsWrap.Value.Options.KeymapDefinition!.Keymap.Map(
                 keyboardEventArgs,
                 hasSelection);
         
@@ -288,7 +288,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     new TextEditorCommandParameter(
                         safeTextEditorReference,
                         cursorSnapshots,
-                        ClipboardProvider,
+                        ClipboardService,
                         TextEditorService,
                         safeTextEditorViewModel));
             }
@@ -631,7 +631,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// The autocomplete occurs on LetterOrDigit typed or { Ctrl + Space }.
     /// Furthermore, the autocomplete is done via <see cref="IAutocompleteService"/>
     /// and the one can provide their own implementation when registering the
-    /// BlazorTextEditor services using <see cref="TextEditorServiceOptions.AutocompleteServiceFactory"/>
+    /// BlazorTextEditor services using <see cref="BlazorTextEditorOptions.AutocompleteServiceFactory"/>
     /// </summary>
     public async Task HandleAfterOnKeyDownAsync(
         TextEditorModel textEditor,
@@ -772,7 +772,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private string GetGlobalHeightInPixelsStyling()
     {
         var heightInPixels = TextEditorService
-            .GlobalOptionsWrap
+            .OptionsWrap
             .Value
             .Options
             .TextEditorHeightInPixels;

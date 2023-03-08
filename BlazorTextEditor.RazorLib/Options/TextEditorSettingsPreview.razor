@@ -3,13 +3,13 @@
 @using BlazorTextEditor.RazorLib
 @using BlazorTextEditor.RazorLib.ViewModel
 
-<div class="bte_text-editor-input-cursor-size @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
+<div class="bte_text-editor-input-cursor-size @TextEditorService.ThemeCssClassString @TopLevelDivElementCssClassString">
     <span class="@LabelElementCssClassString">
         Preview Settings:&nbsp;
     </span>
     
     <div class="@PreviewElementCssClassString">
-        <TextEditorViewModelDisplay WrapperStyleCssString="height: 100px;"
+        <TextEditorViewModelDisplay WrapperStyleCssString="height: var(--bte_text-editor-content-min-height);"
                                     TextEditorStyleCssString="height: 100%;"
                                     IncludeHeaderHelperComponent="false"
                                     IncludeFooterHelperComponent="false"

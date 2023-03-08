@@ -1,8 +1,8 @@
-﻿@using BlazorALaCarte.Shared.Theme
+﻿@using BlazorCommon.RazorLib.Theme
 @using BlazorTextEditor.RazorLib.Keymap
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<div class="bte_text-editor-input-keymap @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
+<div class="bte_text-editor-input-keymap @TextEditorService.ThemeCssClassString @TopLevelDivElementCssClassString">
     <span class="@LabelElementCssClassString">
         Keymap:&nbsp;
     </span>
@@ -11,7 +11,7 @@
             class="@InputElementCssClassString">
         @{
             var keymaps = KeymapFacts.AllKeymapDefinitions;
-            var chosenKeymap = TextEditorService.GlobalOptionsWrap.Value.Options.KeymapDefinition;
+            var chosenKeymap = TextEditorService.OptionsWrap.Value.Options.KeymapDefinition;
             
             foreach (var keymap in keymaps)
             {

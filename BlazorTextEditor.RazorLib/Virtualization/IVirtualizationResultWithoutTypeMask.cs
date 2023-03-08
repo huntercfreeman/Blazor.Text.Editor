@@ -1,4 +1,4 @@
-using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Measurement;
 
 namespace BlazorTextEditor.RazorLib.Virtualization;

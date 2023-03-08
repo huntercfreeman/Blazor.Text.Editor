@@ -1,4 +1,4 @@
-﻿using BlazorALaCarte.Shared.Options;
+﻿using BlazorCommon.RazorLib.Options;
 using BlazorTextEditor.RazorLib.Keymap;
 
 namespace BlazorTextEditor.RazorLib.Options;

@@ -1,7 +1,7 @@
-﻿@using BlazorALaCarte.Shared.Theme
+﻿@using BlazorCommon.RazorLib.Theme
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<div class="bte_text-editor-input-theme @TextEditorService.GlobalThemeCssClassString @TopLevelDivElementCssClassString">
+<div class="bte_text-editor-input-theme @TextEditorService.ThemeCssClassString @TopLevelDivElementCssClassString">
     <span class="@LabelElementCssClassString">
         Theme:&nbsp;
     </span>
@@ -10,7 +10,7 @@
             class="@InputElementCssClassString">
         @{
             var themes = ThemeRecordsCollectionWrap.Value.ThemeRecordsList;
-            var chosenThemeKey = TextEditorService.GlobalOptionsWrap.Value.Options.CommonOptions.ThemeKey
+            var chosenThemeKey = TextEditorService.OptionsWrap.Value.Options.CommonOptions.ThemeKey
                 ?? ThemeFacts.VisualStudioDarkThemeClone.ThemeKey;
             
             foreach (var theme in themes)

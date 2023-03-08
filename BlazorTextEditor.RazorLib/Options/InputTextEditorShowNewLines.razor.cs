@@ -3,15 +3,15 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorTextEditor.RazorLib.HelperComponents;
+namespace BlazorTextEditor.RazorLib.Options;
 
-public partial class TextEditorInputFontSize : FluxorComponent
+public partial class InputTextEditorShowNewLines : FluxorComponent
 {
     [Inject]
     private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
-    
+
     [CascadingParameter(Name="InputElementCssClass")]
     public string CascadingInputElementCssClass { get; set; } = string.Empty;
 
@@ -22,18 +22,9 @@ public partial class TextEditorInputFontSize : FluxorComponent
     [Parameter]
     public string LabelElementCssClassString { get; set; } = string.Empty;
 
-    private const int MINIMUM_FONT_SIZE_IN_PIXELS = 5;
-    
-    private int TextEditorFontSize
+    public bool GlobalShowNewlines
     {
-        get => TextEditorService.GlobalOptionsWrap.Value.Options.CommonOptions.FontSizeInPixels 
-               ?? MINIMUM_FONT_SIZE_IN_PIXELS;
-        set
-        {
-            if (value < MINIMUM_FONT_SIZE_IN_PIXELS)
-                value = MINIMUM_FONT_SIZE_IN_PIXELS;
-            
-            TextEditorService.GlobalOptionsSetFontSize(value);
-        }
+        get => TextEditorService.OptionsWrap.Value.Options.ShowNewlines ?? default;
+        set => TextEditorService.OptionsSetShowNewlines(value);
     }
 }

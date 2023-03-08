@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace BlazorTextEditor.Tests.TestDataFolder;
+﻿namespace BlazorTextEditor.Tests.TestDataFolder;
 
 public static partial class TestData
 {

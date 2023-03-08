@@ -1,5 +1,4 @@
-using BlazorALaCarte.Shared.Dimensions;
-using BlazorALaCarte.Shared.JavaScriptObjects;
+using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;

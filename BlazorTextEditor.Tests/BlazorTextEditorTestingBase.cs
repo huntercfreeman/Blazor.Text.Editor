@@ -1,5 +1,6 @@
-﻿using BlazorALaCarte.Shared.Clipboard;
-using BlazorALaCarte.Shared.Storage;
+﻿using BlazorCommon.RazorLib;
+using BlazorCommon.RazorLib.Clipboard;
+using BlazorCommon.RazorLib.Storage;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Model;
 using Fluxor;
@@ -27,22 +28,25 @@ public class BlazorTextEditorTestingBase
     {
         var services = new ServiceCollection();
 
-        services.AddBlazorTextEditor(options =>
+        services.AddBlazorCommonServices(options =>
         {
-            options.InitializeFluxor = false;
+            var inBlazorCommonFactories = options.BlazorCommonFactories;
             
-            options.ClipboardProviderFactory = _ => 
-                new InMemoryClipboardProvider();
-            
-            options.StorageProviderFactory = _ =>
-                new DoNothingStorageService();
+            return options with
+            {
+                InitializeFluxor = false,
+                BlazorCommonFactories = inBlazorCommonFactories with
+                {
+                    ClipboardServiceFactory = _ => new InMemoryClipboardService(true),
+                    StorageServiceFactory = _ => new DoNothingStorageService(true)
+                }
+            };
         });
         
-        services
-            .AddFluxor(options => options
-                .ScanAssemblies(
-                    typeof(RazorLib.ServiceCollectionExtensions)
-                        .Assembly));
+        services.AddFluxor(options => options
+            .ScanAssemblies(
+                typeof(BlazorCommon.RazorLib.ServiceCollectionExtensions).Assembly,
+                typeof(BlazorTextEditor.RazorLib.ServiceCollectionExtensions).Assembly));
 
         ServiceProvider = services.BuildServiceProvider();
 

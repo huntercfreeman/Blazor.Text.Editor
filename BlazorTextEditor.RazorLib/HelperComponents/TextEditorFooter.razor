@@ -4,7 +4,7 @@
 
 @inherits TextEditorView
 
-<div class="bte_text-editor-footer @TextEditorService.GlobalThemeCssClassString">
+<div class="bte_text-editor-footer @TextEditorService.ThemeCssClassString">
     @{
         var textEditorModel = MutableReferenceToTextEditor;
         var textEditorViewModel = ReplaceableTextEditorViewModel;
@@ -20,17 +20,66 @@
             }
 
             <div class="bte_text-editor-footer-entry">
-                length:@($"{textEditorModel.DocumentLength}")
-                &nbsp;
-                lines:@($"{textEditorModel.RowCount}")
+                <div class="bte_text-editor-footer-name-value-pair">
+                    <div class="bte_text-editor-footer-name">
+                        length:
+                    </div>
+                    <div class="bte_text-editor-footer-value"
+                          style="@StyleMinWidthFromMaxLengthOfValue(textEditorModel.DocumentLength)">
+                        @($"{textEditorModel.DocumentLength}")
+                    </div>
+                </div>
+                
+                <div class="bte_text-editor-footer-name-value-pair">
+                    <div class="bte_text-editor-footer-name">
+                        lines:
+                    </div>
+                    <div class="bte_text-editor-footer-value"
+                          style="@StyleMinWidthFromMaxLengthOfValue(textEditorModel.RowCount)">
+                        @($"{textEditorModel.RowCount}")
+                    </div>
+                </div>
             </div>
 
             <div class="bte_text-editor-footer-entry">
-                Ln:@($"{textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1}")
-                &nbsp;
-                Col:@($"{textEditorViewModel.PrimaryCursor.IndexCoordinates.columnIndex + 1}")
-                &nbsp;
-                Pos:@($"{textEditorModel.GetCursorPositionIndex(textEditorViewModel.PrimaryCursor) + 1}")
+                <div class="bte_text-editor-footer-name-value-pair">
+                    <div class="bte_text-editor-footer-name">
+                        Ln:
+                    </div>
+
+                    @{ var rowNumber = textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1; }
+                    
+                    <div class="bte_text-editor-footer-value"
+                          style="@StyleMinWidthFromMaxLengthOfValue(textEditorModel.RowCount)">
+                        @($"{rowNumber}")
+                    </div>
+                </div>
+                
+                <div class="bte_text-editor-footer-name-value-pair">
+                    <div class="bte_text-editor-footer-name">
+                        Col:
+                    </div>
+
+                    @{ var columnNumber = textEditorViewModel.PrimaryCursor.IndexCoordinates.columnIndex + 1; }
+                    
+                    <div class="bte_text-editor-footer-value"
+                          style="@StyleMinWidthFromMaxLengthOfValue(textEditorModel.MostCharactersOnASingleRowTuple.rowLength)">
+                        @($"{columnNumber}")
+                    </div>
+                </div>
+                
+                <div class="bte_text-editor-footer-name-value-pair">
+                    <div class="bte_text-editor-footer-name">
+                        Pos:
+                    </div>
+
+                    @{ var positionNumber = textEditorModel.GetCursorPositionIndex(textEditorViewModel.PrimaryCursor) + 1; }
+                    
+                    <div class="bte_text-editor-footer-value"
+                          style="@StyleMinWidthFromMaxLengthOfValue(textEditorModel.DocumentLength)">
+                        @($"{positionNumber}")
+                    </div>
+                </div>
             </div>
 
             <div class="bte_text-editor-footer-entry">
