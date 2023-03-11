@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
     {
         var textEditorOptions = new BlazorTextEditorOptions();
         configure?.Invoke(textEditorOptions);
-
+        
         if (textEditorOptions.BlazorCommonOptions is not null)
         {
             services.AddBlazorCommonServices(options => 
@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
                         typeof(ServiceCollectionExtensions).Assembly,
                         typeof(BlazorCommon.RazorLib.ServiceCollectionExtensions).Assembly));
         }
-
+        
         return services;
     }
 }
