@@ -383,6 +383,10 @@
     height: 100%;
 }
 
+.bte_diff-longest-common-subsequence {
+    color: var(--bte_primary-font-color);
+}
+
 .bte_text-editor-diff-header {
     display: flex;
     height: var(--bte_diff-header-height);
@@ -500,7 +504,7 @@
     --bte_primary-font-color: #DCDCDC;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
     --bte_text-selection-background-color: #245B82;
-    --bte_diff-longest-common-subsequence-background-color: red;
+    --bte_diff-longest-common-subsequence-background-color: #7e0077;
     --bte_diff-insertion-background-color: green;
     --bte_diff-deletion-background-color: blue;
     --bte_diff-modification-background-color: yellow;
@@ -576,7 +580,7 @@
     --bte_primary-font-color: #D2D2D2;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
     --bte_text-selection-background-color: #1E557D;
-    --bte_diff-longest-common-subsequence-background-color: red;
+    --bte_diff-longest-common-subsequence-background-color: #7e0077;
     --bte_diff-insertion-background-color: green;
     --bte_diff-deletion-background-color: blue;
     --bte_diff-modification-background-color: yellow;
@@ -652,7 +656,7 @@
     --bte_primary-font-color: #0A0A0A;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
-    --bte_diff-longest-common-subsequence-background-color: red;
+    --bte_diff-longest-common-subsequence-background-color: #ffb3f1;
     --bte_diff-insertion-background-color: green;
     --bte_diff-deletion-background-color: blue;
     --bte_diff-modification-background-color: yellow;
