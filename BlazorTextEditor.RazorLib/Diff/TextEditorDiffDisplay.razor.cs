@@ -1,5 +1,7 @@
-﻿using BlazorTextEditor.RazorLib.Store.Diff;
+﻿using BlazorCommon.RazorLib.Store.ApplicationOptions;
+using BlazorTextEditor.RazorLib.Store.Diff;
 using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.Options;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -14,6 +16,8 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
     private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
+    [Inject]
+    private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
@@ -45,7 +49,8 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
     {
         TextEditorDiffsCollectionWrap.StateChanged += TextEditorDiffWrapOnStateChanged;
         TextEditorModelsCollectionWrap.StateChanged += TextEditorModelsCollectionWrapOnStateChanged;
-
+        TextEditorOptionsStateWrap.StateChanged += TextEditorOptionsStateWrapOnStateChanged;
+            
         TextEditorModelsCollectionWrapOnStateChanged(null, EventArgs.Empty);
         
         base.OnInitialized();
@@ -74,11 +79,19 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
+    private async void TextEditorOptionsStateWrapOnStateChanged(
+        object? sender,
+        EventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+    
     public void Dispose()
     {
         TextEditorDiffsCollectionWrap.StateChanged -= TextEditorDiffWrapOnStateChanged;
         TextEditorModelsCollectionWrap.StateChanged -=TextEditorModelsCollectionWrapOnStateChanged;
-
+        TextEditorOptionsStateWrap.StateChanged -= TextEditorOptionsStateWrapOnStateChanged;
+       
         _calculateDiffCancellationTokenSource.Cancel();
     }
 }

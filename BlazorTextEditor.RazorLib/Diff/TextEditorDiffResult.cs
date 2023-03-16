@@ -73,7 +73,7 @@ public class TextEditorDiffResult
                     afterIndex);
 
                 if (beforeCharValue == afterCharValue &&
-                    cellSourceWeight >= rowLargestWeightPriorToCurrentColumn)
+                    cellSourceWeight > rowLargestWeightPriorToCurrentColumn)
                 {
                     diffMatrix[beforeIndex, afterIndex] = new TextEditorDiffCell(
                         beforeCharValue,
@@ -159,22 +159,24 @@ public class TextEditorDiffResult
         
         // Read the LongestCommonSubsequence by backtracking to the highest weights
         {
-            int runningRowIndex = highestSourceWeightTuple.beforeIndex;
-            int runningColumnIndex = highestSourceWeightTuple.afterIndex;
+            var runningRowIndex = highestSourceWeightTuple.beforeIndex;
+            var runningColumnIndex = highestSourceWeightTuple.afterIndex;
 
-            bool decoratingRemainingColumns = false;
+            var targetSourceWeight = highestSourceWeightTuple.sourceWeight;
+                
+            var foundLargestWeight = false;
 
             var restoreColumnIndex = runningColumnIndex;
             
             while (runningRowIndex != -1 && runningColumnIndex != -1)
             {
-                if (!decoratingRemainingColumns)
+                if (!foundLargestWeight)
                     restoreColumnIndex = runningColumnIndex;
                 
                 var cell = diffMatrix[runningRowIndex, runningColumnIndex];
 
                 if (cell.IsSourceOfRowWeight && 
-                    !decoratingRemainingColumns)
+                    cell.Weight == targetSourceWeight)
                 {
                     if (cell.BeforeCharValue != cell.AfterCharValue)
                     {
@@ -190,25 +192,27 @@ public class TextEditorDiffResult
                         beforePositionIndicesOfLongestCommonSubsequenceHashSet.Add(runningRowIndex);
                         afterPositionIndicesOfLongestCommonSubsequenceHashSet.Add(runningColumnIndex);
                     }
-
-                    decoratingRemainingColumns = true;
+                    
                     restoreColumnIndex = runningColumnIndex - 1;
+                    
+                    // Forces the row index decrementation then a column index restoration.
+                    runningColumnIndex = 0;
                 }
                 else
                 {
                     // Decoration logic
                     {
                         if (afterTextLength > beforeTextLength &&
-                            runningColumnIndex > beforeTextLength - 1)
+                            !afterPositionIndicesOfLongestCommonSubsequenceHashSet.Contains(runningColumnIndex))
                         {
                             // Insertion
-                            afterPositionIndicesOfInsertionHashSet.Add(runningRowIndex);
+                            afterPositionIndicesOfInsertionHashSet.Add(runningColumnIndex);
                         }
                         else if (beforeTextLength > afterTextLength &&
                                  runningRowIndex >= afterTextLength)
                         {
                             // Deletion
-                            beforePositionIndicesOfDeletionHashSet.Add(runningColumnIndex);
+                            beforePositionIndicesOfDeletionHashSet.Add(runningRowIndex);
                         }
                         // TODO: Else if for modification is not working.
                         //
@@ -223,8 +227,6 @@ public class TextEditorDiffResult
 
                 if (runningColumnIndex == 0)
                 {
-                    decoratingRemainingColumns = false;
-                    
                     runningColumnIndex = restoreColumnIndex;
                     runningRowIndex--;
                 }
