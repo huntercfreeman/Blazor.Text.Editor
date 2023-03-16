@@ -21,7 +21,7 @@ public class BlazorTextEditorCustomThemeFacts
         ThemeColorKind.Dark,
         new [] { ThemeScope.TextEditor }.ToImmutableList());
 
-    public static readonly ImmutableArray<ThemeRecord> BlazorStudioTextEditorThemes = new ThemeRecord[]
+    public static readonly ImmutableArray<ThemeRecord> AllCustomThemes = new[]
     {
         LightTheme,
         DarkTheme

@@ -11,7 +11,7 @@ public record BlazorTextEditorOptions
     public bool InitializeFluxor { get; init; } = true;
     public ThemeKey? InitialThemeKey { get; init; }
     public ImmutableArray<ThemeRecord>? CustomThemeRecords { get; init; } =
-        BlazorTextEditorCustomThemeFacts.BlazorStudioTextEditorThemes;
+        BlazorTextEditorCustomThemeFacts.AllCustomThemes;
     public ThemeRecord InitialTheme { get; init; } = ThemeFacts.VisualStudioDarkThemeClone;
     /// <summary>
     /// Default value if left null is: <see cref="AutocompleteService"/>
