@@ -420,7 +420,7 @@ public class MovementTests : BlazorTextEditorTestingBase
     }
     
     [Fact]
-    public void ARROW_HOME_SHOULD_CHANGE_COLUMN_INDEX()
+    public void HOME_SHOULD_CHANGE_COLUMN_INDEX()
     {
         var content = "See you later!\nOh wait I forgot something!";
         
@@ -441,13 +441,13 @@ public class MovementTests : BlazorTextEditorTestingBase
         TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
             (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
         
-        var arrowHomeKeyboardEventArg = new KeyboardEventArgs
+        var homeKeyboardEventArg = new KeyboardEventArgs
         {
             Key = KeyboardKeyFacts.MovementKeys.HOME
         };
         
         TextEditorCursor.MoveCursor(
-            arrowHomeKeyboardEventArg,
+            homeKeyboardEventArg,
             TextEditorViewModel.PrimaryCursor,
             TextEditorModel);
 
@@ -457,7 +457,7 @@ public class MovementTests : BlazorTextEditorTestingBase
     }
     
     [Fact]
-    public void ARROW_HOME_SHOULD_NOT_CHANGE_COLUMN_INDEX()
+    public void HOME_SHOULD_NOT_CHANGE_COLUMN_INDEX()
     {
         var content = "See you later!\nOh wait I forgot something!";
         
@@ -478,13 +478,13 @@ public class MovementTests : BlazorTextEditorTestingBase
         TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
             (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
         
-        var arrowHomeKeyboardEventArg = new KeyboardEventArgs
+        var homeKeyboardEventArg = new KeyboardEventArgs
         {
             Key = KeyboardKeyFacts.MovementKeys.HOME
         };
         
         TextEditorCursor.MoveCursor(
-            arrowHomeKeyboardEventArg,
+            homeKeyboardEventArg,
             TextEditorViewModel.PrimaryCursor,
             TextEditorModel);
 
@@ -494,7 +494,7 @@ public class MovementTests : BlazorTextEditorTestingBase
     }
     
     [Fact]
-    public void ARROW_END_SHOULD_CHANGE_COLUMN_INDEX()
+    public void END_SHOULD_CHANGE_COLUMN_INDEX()
     {
         var content = "See you later!\nOh wait I forgot something!";
         
@@ -515,13 +515,13 @@ public class MovementTests : BlazorTextEditorTestingBase
         TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
             (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
         
-        var arrowEndKeyboardEventArg = new KeyboardEventArgs
+        var endKeyboardEventArg = new KeyboardEventArgs
         {
             Key = KeyboardKeyFacts.MovementKeys.END
         };
         
         TextEditorCursor.MoveCursor(
-            arrowEndKeyboardEventArg,
+            endKeyboardEventArg,
             TextEditorViewModel.PrimaryCursor,
             TextEditorModel);
 
@@ -531,7 +531,7 @@ public class MovementTests : BlazorTextEditorTestingBase
     }
     
     [Fact]
-    public void ARROW_END_SHOULD_NOT_CHANGE_COLUMN_INDEX()
+    public void END_SHOULD_NOT_CHANGE_COLUMN_INDEX()
     {
         var content = "See you later!\nOh wait I forgot something!";
         
@@ -552,13 +552,13 @@ public class MovementTests : BlazorTextEditorTestingBase
         TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
             (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
         
-        var arrowEndKeyboardEventArg = new KeyboardEventArgs
+        var endKeyboardEventArg = new KeyboardEventArgs
         {
             Key = KeyboardKeyFacts.MovementKeys.END
         };
         
         TextEditorCursor.MoveCursor(
-            arrowEndKeyboardEventArg,
+            endKeyboardEventArg,
             TextEditorViewModel.PrimaryCursor,
             TextEditorModel);
 
