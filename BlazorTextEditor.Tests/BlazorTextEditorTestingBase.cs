@@ -3,8 +3,10 @@ using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Storage;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.Tests;
 
@@ -16,6 +18,7 @@ public class BlazorTextEditorTestingBase
     protected readonly ServiceProvider ServiceProvider;
     protected readonly ITextEditorService TextEditorService;
     protected readonly TextEditorModelKey TextEditorModelKey = TextEditorModelKey.NewTextEditorModelKey();
+    protected readonly TextEditorViewModelKey TextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
 
     protected TextEditorModel TextEditorModel => TextEditorService
         .ModelFindOrDefault(TextEditorModelKey)
@@ -23,26 +26,50 @@ public class BlazorTextEditorTestingBase
                 $"{nameof(TextEditorService)}" +
                 $".{nameof(TextEditorService.ModelFindOrDefault)}" +
                 " returned null.");
+    
+    protected TextEditorViewModel TextEditorViewModel => TextEditorService
+        .ViewModelFindOrDefault(TextEditorViewModelKey)
+            ?? throw new ApplicationException(
+                $"{nameof(TextEditorService)}" +
+                $".{nameof(TextEditorService.ViewModelFindOrDefault)}" +
+                " returned null.");
 
     public BlazorTextEditorTestingBase()
     {
         var services = new ServiceCollection();
 
-        services.AddBlazorCommonServices(options =>
+        services.AddScoped<IJSRuntime>(_ => new DoNothingJsRuntime());
+
+        var shouldInitializeFluxor = false;
+        
+        services.AddBlazorTextEditor(inTextEditorOptions =>
         {
-            var inBlazorCommonFactories = options.BlazorCommonFactories;
-            
-            return options with
+            var blazorCommonOptions = 
+                (inTextEditorOptions.BlazorCommonOptions ?? new()) with
             {
-                InitializeFluxor = false,
-                BlazorCommonFactories = inBlazorCommonFactories with
-                {
-                    ClipboardServiceFactory = _ => new InMemoryClipboardService(true),
-                    StorageServiceFactory = _ => new DoNothingStorageService(true)
-                }
+                InitializeFluxor = shouldInitializeFluxor
+            };
+
+            var blazorCommonFactories = blazorCommonOptions.BlazorCommonFactories with
+            {
+                ClipboardServiceFactory = _ => new InMemoryClipboardService(true),
+                StorageServiceFactory = _ => new DoNothingStorageService(true)
+            };
+            
+            blazorCommonOptions = blazorCommonOptions with
+            {
+                BlazorCommonFactories = blazorCommonFactories
+            };
+            
+            return inTextEditorOptions with
+            {
+                InitializeFluxor = shouldInitializeFluxor,
+                CustomThemeRecords = BlazorTextEditorCustomThemeFacts.AllCustomThemes,
+                InitialThemeKey = BlazorTextEditorCustomThemeFacts.DarkTheme.ThemeKey,
+                BlazorCommonOptions = blazorCommonOptions 
             };
         });
-        
+
         services.AddFluxor(options => options
             .ScanAssemblies(
                 typeof(BlazorCommon.RazorLib.ServiceCollectionExtensions).Assembly,
@@ -68,5 +95,9 @@ public class BlazorTextEditorTestingBase
             TextEditorModelKey);
         
         TextEditorService.ModelRegisterCustomModel(textEditor);
+        
+        TextEditorService.ViewModelRegister(
+            TextEditorViewModelKey,
+            TextEditorModelKey);
     }
 }
