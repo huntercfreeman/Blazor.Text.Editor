@@ -1,7 +1,7 @@
 using BlazorTextEditor.RazorLib.Diff;
 using BlazorTextEditor.Tests.TestDataFolder;
 
-namespace BlazorTextEditor.Tests.Diff;
+namespace BlazorTextEditor.Tests.Basics.Diff;
 
 public class DiffTests
 {

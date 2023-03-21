@@ -4,7 +4,7 @@ using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
 
-namespace BlazorTextEditor.Tests.Lexers;
+namespace BlazorTextEditor.Tests.Basics.Lexers;
 
 public class LexJsonTests
 {

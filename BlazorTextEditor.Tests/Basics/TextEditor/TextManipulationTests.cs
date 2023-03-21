@@ -3,12 +3,12 @@ using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.Tests.TestDataFolder;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTextEditor.Tests.Basics;
+namespace BlazorTextEditor.Tests.Basics.TextEditor;
 
-public class BasicTextManipulationTests : BlazorTextEditorTestingBase
+public class TextManipulationTests : BlazorTextEditorTestingBase
 {
     [Fact]
-    public void InsertByKeyboardEvent()
+    public void INSERT_BY_KEYBOARD_EVENT()
     {
         var cursor = new TextEditorCursor((0, 0), true);
 
@@ -30,7 +30,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
     }
     
     [Fact]
-    public void InsertManyCharacterString()
+    public void INSERT_MANY_CHARACTER_STRING()
     {
         var cursor = new TextEditorCursor((0, 0), true);
 
@@ -52,13 +52,13 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
     /// TODO: Insert '\r' then '\n' this would erroneously result in two spaces if typed manually as the two would not combine to "\r\n"
     /// </summary>
     [Fact]
-    public void InsertCarriageReturnThenNewLine()
+    public void INSERT_CARRIAGE_RETURN_THEN_NEW_LINE()
     {
         throw new NotImplementedException();
     }
     
     [Fact]
-    public void DeleteSingleCharacter()
+    public void DELETE_SINGLE_CHARACTER()
     {
         var cursor = new TextEditorCursor((0, 0), true);
 
@@ -88,7 +88,7 @@ public class BasicTextManipulationTests : BlazorTextEditorTestingBase
     }
     
     [Fact]
-    public void DeleteManyCharacters()
+    public void DELETE_MANY_CHARACTERS()
     {
         var startingPositionIndex = 2;
         var count = 3;

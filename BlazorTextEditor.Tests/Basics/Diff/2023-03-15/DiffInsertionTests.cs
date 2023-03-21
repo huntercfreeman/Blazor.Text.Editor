@@ -1,6 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Diff;
 
-namespace BlazorTextEditor.Tests.Diff._2023_03_15;
+namespace BlazorTextEditor.Tests.Basics.Diff._2023_03_15;
 
 public class DiffInsertionTests
 {

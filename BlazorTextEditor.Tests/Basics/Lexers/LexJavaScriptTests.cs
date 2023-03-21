@@ -4,7 +4,7 @@ using BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
 
-namespace BlazorTextEditor.Tests.Lexers;
+namespace BlazorTextEditor.Tests.Basics.Lexers;
 
 public class LexJavaScriptTests
 {

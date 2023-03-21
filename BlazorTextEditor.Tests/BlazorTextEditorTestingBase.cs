@@ -5,6 +5,7 @@ using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Model;
 using Fluxor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.Tests;
 
@@ -42,6 +43,8 @@ public class BlazorTextEditorTestingBase
                 }
             };
         });
+
+        services.AddScoped<IJSRuntime>(_ => new DoNothingJsRuntime());
         
         services.AddFluxor(options => options
             .ScanAssemblies(
