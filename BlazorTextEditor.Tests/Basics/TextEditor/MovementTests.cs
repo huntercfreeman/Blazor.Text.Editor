@@ -420,17 +420,150 @@ public class MovementTests : BlazorTextEditorTestingBase
     }
     
     [Fact]
-    public void ARROW_RIGHT()
+    public void ARROW_HOME_SHOULD_CHANGE_COLUMN_INDEX()
     {
+        var content = "See you later!\nOh wait I forgot something!";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+        
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var text = TextEditorModel.GetAllText();
+
+        Assert.Equal(content, text);
+        
+        TextEditorViewModel.PrimaryCursor.PreferredColumnIndex = 3;
+        
+        TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
+            (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
+        
+        var arrowHomeKeyboardEventArg = new KeyboardEventArgs
+        {
+            Key = KeyboardKeyFacts.MovementKeys.HOME
+        };
+        
+        TextEditorCursor.MoveCursor(
+            arrowHomeKeyboardEventArg,
+            TextEditorViewModel.PrimaryCursor,
+            TextEditorModel);
+
+        Assert.Equal(
+            (0, 0),
+            TextEditorViewModel.PrimaryCursor.IndexCoordinates);
     }
     
     [Fact]
-    public void ARROW_HOME()
+    public void ARROW_HOME_SHOULD_NOT_CHANGE_COLUMN_INDEX()
     {
+        var content = "See you later!\nOh wait I forgot something!";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+        
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var text = TextEditorModel.GetAllText();
+
+        Assert.Equal(content, text);
+        
+        TextEditorViewModel.PrimaryCursor.PreferredColumnIndex = 0;
+        
+        TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
+            (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
+        
+        var arrowHomeKeyboardEventArg = new KeyboardEventArgs
+        {
+            Key = KeyboardKeyFacts.MovementKeys.HOME
+        };
+        
+        TextEditorCursor.MoveCursor(
+            arrowHomeKeyboardEventArg,
+            TextEditorViewModel.PrimaryCursor,
+            TextEditorModel);
+
+        Assert.Equal(
+            (0, 0),
+            TextEditorViewModel.PrimaryCursor.IndexCoordinates);
     }
     
     [Fact]
-    public void ARROW_END()
+    public void ARROW_END_SHOULD_CHANGE_COLUMN_INDEX()
     {
+        var content = "See you later!\nOh wait I forgot something!";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+        
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var text = TextEditorModel.GetAllText();
+
+        Assert.Equal(content, text);
+        
+        TextEditorViewModel.PrimaryCursor.PreferredColumnIndex = 3;
+        
+        TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
+            (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
+        
+        var arrowEndKeyboardEventArg = new KeyboardEventArgs
+        {
+            Key = KeyboardKeyFacts.MovementKeys.END
+        };
+        
+        TextEditorCursor.MoveCursor(
+            arrowEndKeyboardEventArg,
+            TextEditorViewModel.PrimaryCursor,
+            TextEditorModel);
+
+        Assert.Equal(
+            (0, content.IndexOf('\n')),
+            TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+    }
+    
+    [Fact]
+    public void ARROW_END_SHOULD_NOT_CHANGE_COLUMN_INDEX()
+    {
+        var content = "See you later!\nOh wait I forgot something!";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+        
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var text = TextEditorModel.GetAllText();
+
+        Assert.Equal(content, text);
+        
+        TextEditorViewModel.PrimaryCursor.PreferredColumnIndex = content.IndexOf('\n');
+        
+        TextEditorViewModel.PrimaryCursor.IndexCoordinates = 
+            (0, TextEditorViewModel.PrimaryCursor.PreferredColumnIndex);
+        
+        var arrowEndKeyboardEventArg = new KeyboardEventArgs
+        {
+            Key = KeyboardKeyFacts.MovementKeys.END
+        };
+        
+        TextEditorCursor.MoveCursor(
+            arrowEndKeyboardEventArg,
+            TextEditorViewModel.PrimaryCursor,
+            TextEditorModel);
+
+        Assert.Equal(
+            (0, content.IndexOf('\n')),
+            TextEditorViewModel.PrimaryCursor.IndexCoordinates);
     }
 }
