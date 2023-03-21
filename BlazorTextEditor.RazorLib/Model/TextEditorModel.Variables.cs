@@ -40,6 +40,12 @@ public partial class TextEditorModel
     public int DocumentLength => _content.Count;
 
     public ImmutableArray<EditBlock> EditBlocks => _editBlocksPersisted.ToImmutableArray();
+    
+    public ImmutableArray<(int positionIndex, RowEndingKind rowEndingKind)> RowEndingPositions =>
+        _rowEndingPositions.ToImmutableArray();
+    
+    public ImmutableArray<(RowEndingKind rowEndingKind, int count)> RowEndingKindCounts =>
+        _rowEndingKindCounts.ToImmutableArray();
 
     /// <summary>
     ///     If there is a mixture of<br />
@@ -71,7 +77,4 @@ public partial class TextEditorModel
     public (int rowIndex, int rowLength) MostCharactersOnASingleRowTuple { get; private set; }
 
     public TextEditorOptions? TextEditorOptions { get; }
-
-    public ImmutableArray<(int positionIndex, RowEndingKind rowEndingKind)> RowEndingPositions =>
-        _rowEndingPositions.ToImmutableArray();
 }

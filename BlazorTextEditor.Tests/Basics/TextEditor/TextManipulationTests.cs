@@ -1,4 +1,6 @@
-﻿using BlazorTextEditor.RazorLib.Cursor;
+﻿using BlazorCommon.RazorLib.Keyboard;
+using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.Tests.TestDataFolder;
 using Microsoft.AspNetCore.Components.Web;
@@ -8,53 +10,276 @@ namespace BlazorTextEditor.Tests.Basics.TextEditor;
 public class TextManipulationTests : BlazorTextEditorTestingBase
 {
     [Fact]
-    public void INSERT_BY_KEYBOARD_EVENT()
+    public void INSERT_CHARACTER_BY_KEYBOARD_EVENT()
     {
-        var cursor = new TextEditorCursor((0, 0), true);
+        var startingText = TextEditorModel.GetAllText();
 
-        var keyboardEventArgs = new KeyboardEventArgs
+        Assert.Equal(string.Empty, startingText);
+        Assert.Equal((0, 0), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+
+        var keyAKeyboardEventArg = new KeyboardEventArgs
         {
-            Key = "A"
+            Key = "a"
         };
+
+        var keyboardEventAction = new TextEditorModelsCollection.KeyboardEventAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            keyAKeyboardEventArg,
+            CancellationToken.None);
+
+        TextEditorService.ModelHandleKeyboardEvent(keyboardEventAction);
         
-        TextEditorService.ModelHandleKeyboardEvent(
-            new TextEditorModelsCollection.KeyboardEventAction(
-                TextEditorModelKey,
-                TextEditorCursorSnapshot.TakeSnapshots(cursor),
-                keyboardEventArgs,
-                CancellationToken.None));
+        var endingText = TextEditorModel.GetAllText();
         
-        Assert.Equal(
-            keyboardEventArgs.Key, 
-            TextEditorModel.GetAllText());
+        Assert.Equal("a", endingText);
+        Assert.Equal((0, 1), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
     }
     
     [Fact]
-    public void INSERT_MANY_CHARACTER_STRING()
+    public void INSERT_CHARACTER_BY_DIRECT_INSERTION()
     {
-        var cursor = new TextEditorCursor((0, 0), true);
+        var startingText = TextEditorModel.GetAllText();
 
-        var content = TestData.CSharp.EXAMPLE_TEXT_173_LINES;
+        Assert.Equal(string.Empty, startingText);
+        Assert.Equal((0, 0), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+
+        var content = "a";
         
-        TextEditorService.ModelInsertText(
-            new TextEditorModelsCollection.InsertTextAction(
-                TextEditorModelKey,
-                TextEditorCursorSnapshot.TakeSnapshots(cursor),
-                content,
-                CancellationToken.None));
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+
+        TextEditorService.ModelInsertText(insertTextAction);
         
-        Assert.Equal(
-            content, 
-            TextEditorModel.GetAllText());
+        var endingText = TextEditorModel.GetAllText();
+
+        var newlineCount = content.Count(x => x == '\n');
+        
+        var finalLineLength = content
+            .Split('\n')
+            .Last()
+            .Length;
+        
+        Assert.Equal(content, endingText);
+        Assert.Equal((newlineCount, finalLineLength), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+    }
+    
+    [Fact]
+    public void INSERT_STRING_BY_DIRECT_INSERTION()
+    {
+        var startingText = TextEditorModel.GetAllText();
+
+        Assert.Equal(string.Empty, startingText);
+        Assert.Equal((0, 0), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+
+        var content = "See you later!\nOh wait I forgot something!";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var endingText = TextEditorModel.GetAllText();
+
+        var newlineCount = content.Count(x => x == '\n');
+        
+        var finalLineLength = content
+            .Split('\n')
+            .Last()
+            .Length;
+        
+        Assert.Equal(content, endingText);
+        Assert.Equal((newlineCount, finalLineLength), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
     }
     
     /// <summary>
-    /// TODO: Insert '\r' then '\n' this would erroneously result in two spaces if typed manually as the two would not combine to "\r\n"
+    /// 2023-21-03:
+    ///     Description: When inserting "\r\n" the behavior is currently erroneous and this test will fail.
+    ///     Expected: The insertion of "\r\n" is to result in "\r\n" being inserted. 
+    ///     Actual: The insertion of "\r\n" results in "\n" being inserted. 
     /// </summary>
     [Fact]
-    public void INSERT_CARRIAGE_RETURN_THEN_NEW_LINE()
+    public void INSERT_CARRIAGE_RETURN_LINE_FEED()
     {
-        throw new NotImplementedException();
+        var startingText = TextEditorModel.GetAllText();
+
+        Assert.Equal(string.Empty, startingText);
+        Assert.Equal((0, 0), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+
+        var content = "\r\n";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var endingText = TextEditorModel.GetAllText();
+
+        Assert.Equal(content, endingText);
+        Assert.Equal(2, TextEditorModel.RowCount);
+
+        // "\r\n"
+        {
+            var carriageReturnLinefeedCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.CarriageReturnLinefeed);
+
+            Assert.Equal(1, carriageReturnLinefeedCounts.count);
+        }
+
+        // "\r"
+        {
+            var carriageReturnCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.CarriageReturn);
+
+            Assert.Equal(0, carriageReturnCounts.count);
+        }
+
+        // "\n"
+        {
+            var linefeedCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.Linefeed);
+
+            Assert.Equal(0, linefeedCounts.count);
+        }
+    }
+    
+    /// <summary>
+    /// 2023-21-03:
+    ///     Description: When inserting "\r" the behavior is currently erroneous and this test will fail.
+    ///     Expected: The insertion of "\r" is to result in the CarriageReturn count to be 1 
+    ///     Actual: The insertion of "\r" results in the CarriageReturn count to be 0
+    /// 2023-21-03:
+    ///     Description: When inserting "\r" the behavior is currently erroneous and this test will fail.
+    ///     Expected: The insertion of "\r" is to result in the TextEditorModel.RowCount to be 2 
+    ///     Actual: The insertion of "\r" results in the TextEditorModel.RowCount to be 1
+    /// </summary>
+    [Fact]
+    public void INSERT_CARRIAGE_RETURN()
+    {
+        var startingText = TextEditorModel.GetAllText();
+
+        Assert.Equal(string.Empty, startingText);
+        Assert.Equal((0, 0), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+
+        var content = "\r";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var endingText = TextEditorModel.GetAllText();
+
+        Assert.Equal(content, endingText);
+        Assert.Equal(2, TextEditorModel.RowCount);
+
+        // "\r\n"
+        {
+            var carriageReturnLinefeedCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.CarriageReturnLinefeed);
+
+            Assert.Equal(0, carriageReturnLinefeedCounts.count);
+        }
+
+        // "\r"
+        {
+            var carriageReturnCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.CarriageReturn);
+
+            Assert.Equal(1, carriageReturnCounts.count);
+        }
+
+        // "\n"
+        {
+            var linefeedCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.Linefeed);
+
+            Assert.Equal(0, linefeedCounts.count);
+        }
+    }
+    
+    /// <summary>
+    /// 2023-21-03:
+    ///     Description: When inserting "\n" the behavior is currently erroneous and this test will fail.
+    ///     Expected: The insertion of "\n" is to result in the Linefeed count to be 1 
+    ///     Actual: The insertion of "\r" results in the Linefeed count to be 0
+    /// </summary>
+    [Fact]
+    public void INSERT_LINEFEED()
+    {
+        var startingText = TextEditorModel.GetAllText();
+
+        Assert.Equal(string.Empty, startingText);
+        Assert.Equal((0, 0), TextEditorViewModel.PrimaryCursor.IndexCoordinates);
+
+        var content = "\n";
+        
+        var insertTextAction = new TextEditorModelsCollection.InsertTextAction(
+            TextEditorModelKey,
+            TextEditorCursorSnapshot.TakeSnapshots(TextEditorViewModel.PrimaryCursor),
+            content,
+            CancellationToken.None);
+
+        TextEditorService.ModelInsertText(insertTextAction);
+        
+        var endingText = TextEditorModel.GetAllText();
+
+        Assert.Equal(content, endingText);
+        Assert.Equal(2, TextEditorModel.RowCount);
+
+        // "\r\n"
+        {
+            var carriageReturnLinefeedCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.CarriageReturnLinefeed);
+
+            Assert.Equal(0, carriageReturnLinefeedCounts.count);
+        }
+
+        // "\r"
+        {
+            var carriageReturnCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.CarriageReturn);
+
+            Assert.Equal(0, carriageReturnCounts.count);
+        }
+
+        // "\n"
+        {
+            var linefeedCounts = TextEditorModel.RowEndingKindCounts
+                .Single(x =>
+                    x.rowEndingKind == RowEndingKind.Linefeed);
+
+            Assert.Equal(1, linefeedCounts.count);
+        }
+    }
+    
+    [Fact]
+    public void INSERT_CARRIAGE_RETURN_THEN_INSERT_LINE_FEED()
+    {
+        throw new NotImplementedException(
+            "The behavior which occurs in this situation needs to be decided on." +
+            " " +
+            "Then a test needs made to ensure the functionality stays consistent.");
     }
     
     [Fact]
