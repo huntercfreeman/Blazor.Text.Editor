@@ -273,6 +273,12 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
         }
     }
     
+    /// <summary>
+    /// Given the text:: "line1"
+    ///     If a user makes an insertion request for specifically "\r"
+    ///     and then a second insertion request for specifically "\n"
+    ///     the code needs to handle this properly.
+    /// </summary>
     [Fact]
     public void INSERT_CARRIAGE_RETURN_THEN_INSERT_LINE_FEED()
     {
@@ -280,6 +286,63 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             "The behavior which occurs in this situation needs to be decided on." +
             " " +
             "Then a test needs made to ensure the functionality stays consistent.");
+    }
+
+    /// <summary>
+    /// Given the text: "line 1\r\nline 2"
+    ///     If a user requests to delete only the "\r\n" the code
+    ///     needs to accurately update the row positions, among other things.
+    /// </summary>
+    [Fact]
+    public void DELETE_CARRIAGE_RETURN_LINE_FEED()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Given the text: "line 1\rline 2"
+    ///     If a user requests to delete only the "\r" the code
+    ///     needs to accurately update the row positions, among other things.
+    /// </summary>
+    [Fact]
+    public void DELETE_CARRIAGE_RETURN()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Given the text: "line 1\nline 2"
+    ///     If a user requests to delete only the "\n" the code
+    ///     needs to accurately update the row positions, among other things.
+    /// </summary>
+    [Fact]
+    public void DELETE_LINE_FEED()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Given the text: "line 1\r\nline 2"
+    ///     If a user requests to delete only the '\r' the code
+    ///     needs to identify that the user requested to
+    ///     delete a "\r\n" and then delete both characters.
+    /// </summary>
+    [Fact]
+    public void DELETE_ONLY_THE_CARRIAGE_RETURN_OF_A_CARRIAGE_RETURN_LINE_FEED()
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Given the text: "line 1\r\nline 2"
+    ///     if a user requests to delete only the '\n' the code
+    ///     needs to identify that the user requested to
+    ///     delete a "\r\n" and then delete both characters.
+    /// </summary>
+    [Fact]
+    public void DELETE_ONLY_THE_LINE_FEED_OF_A_CARRIAGE_RETURN_LINE_FEED()
+    {
+        throw new NotImplementedException();
     }
     
     [Fact]
