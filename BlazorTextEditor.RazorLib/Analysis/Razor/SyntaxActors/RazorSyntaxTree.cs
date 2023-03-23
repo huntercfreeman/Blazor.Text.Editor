@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Text;
-using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.Facts;
@@ -1173,55 +1173,62 @@ public class RazorSyntaxTree
                 < 0)
                 continue;
 
-            var cSharpDecorationKind = (CSharpDecorationKind)lexedTokenTextSpan.DecorationByte;
+            var cSharpDecorationKind = (GenericDecorationKind)lexedTokenTextSpan.DecorationByte;
 
             switch (cSharpDecorationKind)
             {
-                case CSharpDecorationKind.None:
+                case GenericDecorationKind.None:
                     break;
-                case CSharpDecorationKind.Method:
-                    var razorMethodTextSpan = lexedTokenTextSpan with
-                    {
-                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageMethod,
-                        StartingIndexInclusive = startingIndexInclusive,
-                        EndingIndexExclusive = endingIndexExclusive,
-                    };
-
-                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                        ImmutableArray<IHtmlSyntax>.Empty,
-                        string.Empty,
-                        razorMethodTextSpan));
-
-                    break;
-                case CSharpDecorationKind.Type:
-                    var razorTypeTextSpan = lexedTokenTextSpan with
-                    {
-                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageType,
-                        StartingIndexInclusive = startingIndexInclusive,
-                        EndingIndexExclusive = endingIndexExclusive,
-                    };
-
-                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                        ImmutableArray<IHtmlSyntax>.Empty,
-                        string.Empty,
-                        razorTypeTextSpan));
-
-                    break;
-                case CSharpDecorationKind.Parameter:
-                    var razorVariableTextSpan = lexedTokenTextSpan with
-                    {
-                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageVariable,
-                        StartingIndexInclusive = startingIndexInclusive,
-                        EndingIndexExclusive = endingIndexExclusive,
-                    };
-
-                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                        ImmutableArray<IHtmlSyntax>.Empty,
-                        string.Empty,
-                        razorVariableTextSpan));
-
-                    break;
-                case CSharpDecorationKind.StringLiteral:
+                // case CSharpDecorationKind.Method:
+                {
+                    //     var razorMethodTextSpan = lexedTokenTextSpan with
+                    //     {
+                    //         DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageMethod,
+                    //         StartingIndexInclusive = startingIndexInclusive,
+                    //         EndingIndexExclusive = endingIndexExclusive,
+                    //     };
+                    //
+                    //     injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                    //         ImmutableArray<IHtmlSyntax>.Empty,
+                    //         string.Empty,
+                    //         razorMethodTextSpan));
+                    //
+                    //     break;
+                }
+                // case CSharpDecorationKind.Type:
+                {
+                    //     var razorTypeTextSpan = lexedTokenTextSpan with
+                    //     {
+                    //         DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageType,
+                    //         StartingIndexInclusive = startingIndexInclusive,
+                    //         EndingIndexExclusive = endingIndexExclusive,
+                    //     };
+                    //
+                    //     injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                    //         ImmutableArray<IHtmlSyntax>.Empty,
+                    //         string.Empty,
+                    //         razorTypeTextSpan));
+                    //
+                    //     break;
+                }
+                // case CSharpDecorationKind.Parameter:
+                {
+                    //     var razorVariableTextSpan = lexedTokenTextSpan with
+                    //     {
+                    //         DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageVariable,
+                    //         StartingIndexInclusive = startingIndexInclusive,
+                    //         EndingIndexExclusive = endingIndexExclusive,
+                    //     };
+                    //
+                    //     injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                    //         ImmutableArray<IHtmlSyntax>.Empty,
+                    //         string.Empty,
+                    //         razorVariableTextSpan));
+                    //
+                    //     break;
+                }
+                case GenericDecorationKind.String:
+                {
                     var razorStringLiteralTextSpan = lexedTokenTextSpan with
                     {
                         DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageStringLiteral,
@@ -1235,7 +1242,9 @@ public class RazorSyntaxTree
                         razorStringLiteralTextSpan));
 
                     break;
-                case CSharpDecorationKind.Keyword:
+                }
+                case GenericDecorationKind.Keyword:
+                {
                     var razorKeywordTextSpan = lexedTokenTextSpan with
                     {
                         DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageKeyword,
@@ -1249,7 +1258,9 @@ public class RazorSyntaxTree
                         razorKeywordTextSpan));
 
                     break;
-                case CSharpDecorationKind.Comment:
+                }
+                case GenericDecorationKind.CommentSingleLine:
+                {
                     var razorCommentTextSpan = lexedTokenTextSpan with
                     {
                         DecorationByte = (byte)HtmlDecorationKind.Comment,
@@ -1263,6 +1274,23 @@ public class RazorSyntaxTree
                         razorCommentTextSpan));
 
                     break;
+                }
+                case GenericDecorationKind.CommentMultiLine:
+                {
+                    var razorCommentTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.Comment,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorCommentTextSpan));
+
+                    break;
+                }
             }
         }
 

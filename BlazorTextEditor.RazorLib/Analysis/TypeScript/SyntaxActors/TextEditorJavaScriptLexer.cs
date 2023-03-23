@@ -1,15 +1,15 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.CSharp.Facts;
-using BlazorTextEditor.RazorLib.Analysis.FSharp.Facts;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.TypeScript.Facts;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
+namespace BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 
-public class TextEditorCSharpLexer : ILexer
+public class TextEditorTypeScriptLexer : ILexer
 {
-    public static readonly GenericLanguageDefinition CSharpLanguageDefinition = new GenericLanguageDefinition(
+    
+    public static readonly GenericLanguageDefinition TypeScriptLanguageDefinition = new GenericLanguageDefinition(
         "\"",
         "\"",
         "(",
@@ -23,44 +23,44 @@ public class TextEditorCSharpLexer : ILexer
         }.ToImmutableArray(),
         "/*",
         "*/",
-        CSharpKeywords.ALL);
+        TypeScriptKeywords.ALL);
 
-    private readonly GenericSyntaxTree _cSharpSyntaxTree;
+    private readonly GenericSyntaxTree _typeScriptSyntaxTree;
 
-    public TextEditorCSharpLexer()
+    public TextEditorTypeScriptLexer()
     {
-        _cSharpSyntaxTree = new GenericSyntaxTree(CSharpLanguageDefinition); 
+        _typeScriptSyntaxTree = new GenericSyntaxTree(TypeScriptLanguageDefinition);
     }
     
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
-        var cSharpSyntaxUnit = _cSharpSyntaxTree
+        var typeScriptSyntaxUnit = _typeScriptSyntaxTree
             .ParseText(text);
 
-        var cSharpSyntaxWalker = new GenericSyntaxWalker();
+        var typeScriptSyntaxWalker = new GenericSyntaxWalker();
 
-        cSharpSyntaxWalker.Visit(cSharpSyntaxUnit.GenericDocumentSyntax);
+        typeScriptSyntaxWalker.Visit(typeScriptSyntaxUnit.GenericDocumentSyntax);
 
         var textEditorTextSpans = new List<TextEditorTextSpan>();
 
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericStringSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericStringSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericCommentSingleLineSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericCommentSingleLineSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericCommentMultiLineSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericCommentMultiLineSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericKeywordSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericKeywordSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericFunctionSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericFunctionSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
