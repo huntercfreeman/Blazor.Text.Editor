@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Analysis.CSharp.Facts;
 using BlazorTextEditor.RazorLib.Analysis.FSharp.Facts;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
@@ -17,9 +18,9 @@ public class TextEditorCSharpLexer : ILexer
             WhitespaceFacts.CARRIAGE_RETURN.ToString(),
             WhitespaceFacts.LINE_FEED.ToString()
         }.ToImmutableArray(),
-        "(*",
-        "*)",
-        FSharpKeywords.ALL);
+        "/*",
+        "*/",
+        CSharpKeywords.ALL);
 
     private readonly GenericSyntaxTree _cSharpSyntaxTree;
 
