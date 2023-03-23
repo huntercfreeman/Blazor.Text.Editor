@@ -12,6 +12,9 @@ public class TextEditorTypeScriptLexer : ILexer
     public static readonly GenericLanguageDefinition TypeScriptLanguageDefinition = new GenericLanguageDefinition(
         "\"",
         "\"",
+        "(",
+        ")",
+        ".",
         "//",
         new []
         {
@@ -54,6 +57,10 @@ public class TextEditorTypeScriptLexer : ILexer
         
         textEditorTextSpans
             .AddRange(typeScriptSyntaxWalker.GenericKeywordSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(typeScriptSyntaxWalker.GenericFunctionSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());

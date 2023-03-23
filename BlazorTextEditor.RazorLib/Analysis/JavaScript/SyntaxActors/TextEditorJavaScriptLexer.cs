@@ -12,6 +12,9 @@ public class TextEditorJavaScriptLexer : ILexer
     public static readonly GenericLanguageDefinition JavaScriptLanguageDefinition = new GenericLanguageDefinition(
         "\"",
         "\"",
+        "(",
+        ")",
+        ".",
         "//",
         new []
         {
@@ -54,6 +57,10 @@ public class TextEditorJavaScriptLexer : ILexer
         
         textEditorTextSpans
             .AddRange(javaScriptSyntaxWalker.GenericKeywordSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(javaScriptSyntaxWalker.GenericFunctionSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());

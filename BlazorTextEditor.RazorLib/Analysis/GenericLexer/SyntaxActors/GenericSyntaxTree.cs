@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -41,12 +42,20 @@ public class GenericSyntaxTree
                 
                 documentChildren.Add(genericCommentMultiLineSyntax);
             }
+            else if (stringWalker.CheckForSubstring(GenericLanguageDefinition.FunctionInvocationStart))
+            {
+                if (TryParseFunctionIdentifier(stringWalker, diagnosticBag, out var genericFunctionSyntax) &&
+                    genericFunctionSyntax is not null)
+                {
+                    documentChildren.Add(genericFunctionSyntax);
+                }
+            }
             else
             {
-                if (TryParseKeyword(stringWalker, diagnosticBag, out var fSharpKeywordSyntax) &&
-                    fSharpKeywordSyntax is not null)
+                if (TryParseKeyword(stringWalker, diagnosticBag, out var genericKeywordSyntax) &&
+                    genericKeywordSyntax is not null)
                 {
-                    documentChildren.Add(fSharpKeywordSyntax);
+                    documentChildren.Add(genericKeywordSyntax);
                 }
             }
             
@@ -169,7 +178,8 @@ public class GenericSyntaxTree
     /// currentCharacterIn:<br/>
     /// -Any CurrentCharacter value is valid as this method is 'try'
     /// </summary>
-    private bool TryParseKeyword(StringWalker stringWalker,
+    private bool TryParseKeyword(
+        StringWalker stringWalker,
         TextEditorDiagnosticBag diagnosticBag,
         out GenericKeywordSyntax? genericKeywordSyntax)
     {
@@ -199,5 +209,85 @@ public class GenericSyntaxTree
         
         genericKeywordSyntax = null;
         return false;
+    }
+    
+    private bool TryParseFunctionIdentifier(
+        StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag,
+        out GenericFunctionSyntax? genericFunctionSyntax)
+    {
+        /*
+         * var obj = new Object();
+         *
+         * obj.Function();
+         *
+         * -----------------------
+         *
+         * Algorithm:
+         *     Found '(', so read the previous word (skip any whitespace).
+         *     If previous word is a valid function identifier,
+         *     then assume it is so.
+         */
+        
+        /*
+         * var z = 2 + 4(3 - 1)
+         *
+         * Distribution of a number over parenthesis should not
+         * get syntax highlighted as a function identifier.
+         */
+
+        var rememberPositionIndex = stringWalker.PositionIndex;
+        
+        bool startedReadingWord = false;
+
+        var wordBuilder = new StringBuilder();
+        
+        // Enter here at '('
+        while (!stringWalker.IsEof)
+        {
+            var backtrackedToCharacter = stringWalker.BacktrackCharacter();
+
+            if (backtrackedToCharacter == ParserFacts.END_OF_FILE)
+                break;
+            
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+            {
+                if (startedReadingWord)
+                    break;
+            }
+            else if (stringWalker.CheckForSubstring(GenericLanguageDefinition.MemberAccessToken) ||
+                     stringWalker.CheckForSubstring(GenericLanguageDefinition.FunctionInvocationEnd))
+            {
+                break;
+            }
+            else
+            {
+                startedReadingWord = true;
+                wordBuilder.Insert(0, stringWalker.CurrentCharacter);
+            }
+        }
+
+        var word = wordBuilder.ToString();
+        
+        if (word.Length == 0 || char.IsDigit(word[0]))
+        {
+            genericFunctionSyntax = null;
+
+            _ = stringWalker.ReadRange(
+                rememberPositionIndex - stringWalker.PositionIndex);
+            
+            return false;
+        }
+        
+        genericFunctionSyntax = new GenericFunctionSyntax(
+            new TextEditorTextSpan(
+                stringWalker.PositionIndex + 1,
+                rememberPositionIndex,
+                (byte)GenericDecorationKind.Function));
+        
+        _ = stringWalker.ReadRange(
+            rememberPositionIndex - stringWalker.PositionIndex);
+        
+        return true;
     }
 }

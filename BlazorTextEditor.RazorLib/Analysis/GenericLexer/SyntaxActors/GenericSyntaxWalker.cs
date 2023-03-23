@@ -9,6 +9,7 @@ public class GenericSyntaxWalker
     public List<GenericCommentSingleLineSyntax> GenericCommentSingleLineSyntaxes { get; } = new();
     public List<GenericCommentMultiLineSyntax> GenericCommentMultiLineSyntaxes { get; } = new();
     public List<GenericKeywordSyntax> GenericKeywordSyntaxes { get; } = new();
+    public List<GenericFunctionSyntax> GenericFunctionSyntaxes { get; } = new();
 
     public void Visit(IGenericSyntax node)
     {
@@ -31,6 +32,9 @@ public class GenericSyntaxWalker
             case GenericSyntaxKind.Keyword:
                 VisitGenericKeywordSyntax((GenericKeywordSyntax)node);
                 break;
+            case GenericSyntaxKind.Function:
+                VisitGenericFunctionSyntax((GenericFunctionSyntax)node);
+                break;
         }
     }
 
@@ -52,5 +56,10 @@ public class GenericSyntaxWalker
     private void VisitGenericKeywordSyntax(GenericKeywordSyntax node)
     {
         GenericKeywordSyntaxes.Add(node);
+    }
+    
+    private void VisitGenericFunctionSyntax(GenericFunctionSyntax node)
+    {
+        GenericFunctionSyntaxes.Add(node);
     }
 }

@@ -6,5 +6,6 @@ public enum GenericSyntaxKind
     CommentMultiLine,
     String,
     Keyword,
+    Function,
     Document
 }

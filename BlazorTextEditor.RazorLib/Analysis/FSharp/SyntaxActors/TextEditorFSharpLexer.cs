@@ -11,6 +11,9 @@ public class TextEditorFSharpLexer : ILexer
     public static readonly GenericLanguageDefinition FSharpLanguageDefinition = new GenericLanguageDefinition(
         "\"",
         "\"",
+        "(",
+        ")",
+        ".",
         "//",
         new []
         {
@@ -53,6 +56,10 @@ public class TextEditorFSharpLexer : ILexer
         
         textEditorTextSpans
             .AddRange(fSharpSyntaxWalker.GenericKeywordSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(fSharpSyntaxWalker.GenericFunctionSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
