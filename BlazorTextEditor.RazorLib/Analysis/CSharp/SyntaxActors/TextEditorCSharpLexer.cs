@@ -1,225 +1,60 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
+using BlazorTextEditor.RazorLib.Analysis.FSharp.Facts;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
 
 namespace BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 
 public class TextEditorCSharpLexer : ILexer
 {
-    public async Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
+    public static readonly GenericLanguageDefinition CSharpLanguageDefinition = new GenericLanguageDefinition(
+        "\"",
+        "\"",
+        "//",
+        new []
+        {
+            WhitespaceFacts.CARRIAGE_RETURN.ToString(),
+            WhitespaceFacts.LINE_FEED.ToString()
+        }.ToImmutableArray(),
+        "(*",
+        "*)",
+        FSharpKeywords.ALL);
+
+    private readonly GenericSyntaxTree _cSharpSyntaxTree;
+
+    public TextEditorCSharpLexer()
     {
-        var syntaxTree = CSharpSyntaxTree.ParseText(text);
+        _cSharpSyntaxTree = new GenericSyntaxTree(CSharpLanguageDefinition); 
+    }
+    
+    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
+    {
+        var cSharpSyntaxUnit = _cSharpSyntaxTree
+            .ParseText(text);
 
-        var syntaxNodeRoot = await syntaxTree.GetRootAsync();
+        var cSharpSyntaxWalker = new GenericSyntaxWalker();
 
-        var generalSyntaxCollector = new GeneralSyntaxCollector();
+        cSharpSyntaxWalker.Visit(cSharpSyntaxUnit.GenericDocumentSyntax);
 
-        generalSyntaxCollector.Visit(syntaxNodeRoot);
+        var textEditorTextSpans = new List<TextEditorTextSpan>();
 
-        List<TextEditorTextSpan> textEditorTextSpans = new();
-
-        // Local variable decorations
-        {
-            var decorationByte = (byte)CSharpDecorationKind.Parameter;
-
-            // Variable declarators of local declaration statements
-            textEditorTextSpans.AddRange(generalSyntaxCollector.VariableDeclaratorSyntaxes
-                .Where(variableDeclarationSyntax =>
-                {
-                    if (variableDeclarationSyntax.Parent.IsKind(SyntaxKind.VariableDeclaration))
-                    {
-                        if (variableDeclarationSyntax.Parent.Parent.IsKind(SyntaxKind.LocalDeclarationStatement))
-                        {
-                            return true;                            
-                        }
-                    }
-
-                    return false;
-                })
-                .Select(variableDeclarationSyntax =>
-                    variableDeclarationSyntax.Identifier.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-            
-            // Parameter declaration identifier
-            textEditorTextSpans.AddRange(generalSyntaxCollector.ParameterSyntaxes
-                .Select(ps =>
-                {
-                    var identifierToken =
-                        ps.ChildTokens()
-                            .FirstOrDefault(x =>
-                                x.IsKind(SyntaxKind.IdentifierToken));
-
-                    return identifierToken.Span;
-                })
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // Argument declaration identifier
-            textEditorTextSpans.AddRange(generalSyntaxCollector.ArgumentSyntaxes
-                .Select(argumentSyntax => argumentSyntax.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-        }
+        textEditorTextSpans
+            .AddRange(cSharpSyntaxWalker.GenericStringSyntaxes
+                .Select(x => x.TextEditorTextSpan));
         
-        // Type decorations
-        {
-            var decorationByte = (byte)CSharpDecorationKind.Type;
-
-            // Property Type
-            textEditorTextSpans.AddRange(generalSyntaxCollector.PropertyDeclarationSyntaxes
-                .Select(pds => pds.Type.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // Class Declaration
-            textEditorTextSpans.AddRange(generalSyntaxCollector.ClassDeclarationSyntaxes
-                .Select(cds => cds.Identifier.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // Method return Type
-            textEditorTextSpans.AddRange(generalSyntaxCollector.MethodDeclarationSyntaxes
-                .Select(mds =>
-                {
-                    var retType = mds
-                        .ChildNodes()
-                        .FirstOrDefault(x => x.IsKind(SyntaxKind.IdentifierName));
-
-                    return retType?.Span ?? default;
-                })
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // Parameter declaration Type
-            textEditorTextSpans.AddRange(generalSyntaxCollector.ParameterSyntaxes
-                .Select(ps =>
-                {
-                    var identifierNameNode = ps.ChildNodes()
-                        .FirstOrDefault(x => x.IsKind(SyntaxKind.IdentifierName));
-
-                    if (identifierNameNode is null) return TextSpan.FromBounds(0, 0);
-
-                    return identifierNameNode.Span;
-                })
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-        }
-
-        // Method decorations
-        {
-            var decorationByte = (byte)CSharpDecorationKind.Method;
-
-            // Method declaration identifier
-            textEditorTextSpans.AddRange(generalSyntaxCollector.MethodDeclarationSyntaxes
-                .Select(mds => mds.Identifier.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // InvocationExpression
-            textEditorTextSpans.AddRange(generalSyntaxCollector.InvocationExpressionSyntaxes
-                .Select(ies =>
-                {
-                    var childNodes = ies.Expression.ChildNodes();
-
-                    var lastNode = childNodes.LastOrDefault();
-
-                    return lastNode?.Span ?? TextSpan.FromBounds(0, 0);
-                })
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-        }
-
-        // String literal
-        {
-            var decorationByte = (byte)CSharpDecorationKind.StringLiteral;
-
-            // String literal
-            textEditorTextSpans.AddRange(generalSyntaxCollector.StringLiteralExpressionSyntaxes
-                .Select(sles => sles.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-        }
-
-        // Keywords
-        {
-            var decorationByte = (byte)CSharpDecorationKind.Keyword;
-
-            // Keywords
-            textEditorTextSpans.AddRange(generalSyntaxCollector.KeywordSyntaxTokens
-                .Select(kst => kst.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // Contextual var keyword
-            textEditorTextSpans.AddRange(generalSyntaxCollector
-                .VarTextSpans
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-        }
-
-        // Comments
-        {
-            var decorationByte = (byte)CSharpDecorationKind.Comment;
-
-            // Default comments
-            textEditorTextSpans.AddRange(generalSyntaxCollector.SyntaxTrivias
-                .Select(st => st.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-
-            // Xml comments
-            textEditorTextSpans.AddRange(generalSyntaxCollector.XmlCommentSyntaxes
-                .Select(xml => xml.Span)
-                .Select(roslynSpan =>
-                    new TextEditorTextSpan(
-                        roslynSpan.Start,
-                        roslynSpan.End,
-                        decorationByte)));
-        }
-
-        return textEditorTextSpans.ToImmutableArray();
+        textEditorTextSpans
+            .AddRange(cSharpSyntaxWalker.GenericCommentSingleLineSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(cSharpSyntaxWalker.GenericCommentMultiLineSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(cSharpSyntaxWalker.GenericKeywordSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        return Task.FromResult(textEditorTextSpans.ToImmutableArray());
     }
 }

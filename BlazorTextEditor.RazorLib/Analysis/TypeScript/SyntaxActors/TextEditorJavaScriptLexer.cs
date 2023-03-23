@@ -1,14 +1,15 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Analysis.FSharp.Facts;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.TypeScript.Facts;
 using BlazorTextEditor.RazorLib.Lexing;
 
-namespace BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxActors;
+namespace BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 
-public class TextEditorFSharpLexer : ILexer
+public class TextEditorTypeScriptLexer : ILexer
 {
-    public static readonly GenericLanguageDefinition FSharpLanguageDefinition = new GenericLanguageDefinition(
+    
+    public static readonly GenericLanguageDefinition TypeScriptLanguageDefinition = new GenericLanguageDefinition(
         "\"",
         "\"",
         "//",
@@ -17,42 +18,42 @@ public class TextEditorFSharpLexer : ILexer
             WhitespaceFacts.CARRIAGE_RETURN.ToString(),
             WhitespaceFacts.LINE_FEED.ToString()
         }.ToImmutableArray(),
-        "(*",
-        "*)",
-        FSharpKeywords.ALL);
+        "/*",
+        "*/",
+        TypeScriptKeywords.ALL);
 
-    private readonly GenericSyntaxTree _fSharpSyntaxTree;
+    private readonly GenericSyntaxTree _typeScriptSyntaxTree;
 
-    public TextEditorFSharpLexer()
+    public TextEditorTypeScriptLexer()
     {
-        _fSharpSyntaxTree = new GenericSyntaxTree(FSharpLanguageDefinition); 
+        _typeScriptSyntaxTree = new GenericSyntaxTree(TypeScriptLanguageDefinition);
     }
     
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
-        var fSharpSyntaxUnit = _fSharpSyntaxTree
+        var typeScriptSyntaxUnit = _typeScriptSyntaxTree
             .ParseText(text);
 
-        var fSharpSyntaxWalker = new GenericSyntaxWalker();
+        var typeScriptSyntaxWalker = new GenericSyntaxWalker();
 
-        fSharpSyntaxWalker.Visit(fSharpSyntaxUnit.GenericDocumentSyntax);
+        typeScriptSyntaxWalker.Visit(typeScriptSyntaxUnit.GenericDocumentSyntax);
 
         var textEditorTextSpans = new List<TextEditorTextSpan>();
 
         textEditorTextSpans
-            .AddRange(fSharpSyntaxWalker.GenericStringSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericStringSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(fSharpSyntaxWalker.GenericCommentSingleLineSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericCommentSingleLineSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(fSharpSyntaxWalker.GenericCommentMultiLineSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericCommentMultiLineSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(fSharpSyntaxWalker.GenericKeywordSyntaxes
+            .AddRange(typeScriptSyntaxWalker.GenericKeywordSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());

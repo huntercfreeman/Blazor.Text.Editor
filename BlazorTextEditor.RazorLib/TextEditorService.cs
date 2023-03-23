@@ -5,25 +5,21 @@ using BlazorCommon.RazorLib.Store.DialogCase;
 using BlazorCommon.RazorLib.Store.StorageCase;
 using BlazorCommon.RazorLib.Store.ThemeCase;
 using BlazorCommon.RazorLib.Theme;
-using BlazorTextEditor.RazorLib.Analysis.CSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.FSharp.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.JavaScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.TypeScript.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Diff;
 using BlazorTextEditor.RazorLib.Group;
-using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
@@ -109,7 +105,7 @@ public class TextEditorService : ITextEditorService
         {
             case WellKnownModelKind.CSharp:
                 lexer = new TextEditorCSharpLexer();
-                decorationMapper = new TextEditorCSharpDecorationMapper();
+                decorationMapper = new GenericDecorationMapper();
                 break;
             case WellKnownModelKind.Html:
                 lexer = new TextEditorHtmlLexer();
@@ -125,7 +121,7 @@ public class TextEditorService : ITextEditorService
                 break;
             case WellKnownModelKind.FSharp:
                 lexer = new TextEditorFSharpLexer();
-                decorationMapper = new TextEditorFSharpDecorationMapper();
+                decorationMapper = new GenericDecorationMapper();
                 break;
             case WellKnownModelKind.Razor:
                 lexer = new TextEditorRazorLexer();
@@ -133,11 +129,11 @@ public class TextEditorService : ITextEditorService
                 break;
             case WellKnownModelKind.JavaScript:
                 lexer = new TextEditorJavaScriptLexer();
-                decorationMapper = new TextEditorJavaScriptDecorationMapper();
+                decorationMapper = new GenericDecorationMapper();
                 break;
             case WellKnownModelKind.TypeScript:
                 lexer = new TextEditorTypeScriptLexer();
-                decorationMapper = new TextEditorTypeScriptDecorationMapper();
+                decorationMapper = new GenericDecorationMapper();
                 break;
         }
         

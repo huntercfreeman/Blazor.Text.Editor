@@ -1,4 +1,6 @@
 ﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.JavaScript.Facts;
 using BlazorTextEditor.RazorLib.Lexing;
 
@@ -6,41 +8,52 @@ namespace BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
 
 public class TextEditorJavaScriptLexer : ILexer
 {
-    private readonly ImmutableArray<string> _keywords;
-
-    public TextEditorJavaScriptLexer(ImmutableArray<string> keywords)
-    {
-        _keywords = keywords;
-    }
     
+    public static readonly GenericLanguageDefinition JavaScriptLanguageDefinition = new GenericLanguageDefinition(
+        "\"",
+        "\"",
+        "//",
+        new []
+        {
+            WhitespaceFacts.CARRIAGE_RETURN.ToString(),
+            WhitespaceFacts.LINE_FEED.ToString()
+        }.ToImmutableArray(),
+        "/*",
+        "*/",
+        JavaScriptKeywords.ALL);
+
+    private readonly GenericSyntaxTree _javaScriptSyntaxTree;
+
     public TextEditorJavaScriptLexer()
-        : this(JavaScriptKeywords.ALL)
     {
+        _javaScriptSyntaxTree = new GenericSyntaxTree(JavaScriptLanguageDefinition);
     }
     
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
-        var javaScriptSyntaxUnit = 
-            JavaScriptSyntaxTree.ParseText(
-                text, 
-                _keywords);
+        var javaScriptSyntaxUnit = _javaScriptSyntaxTree
+            .ParseText(text);
 
-        var javaScriptSyntaxWalker = new JavaScriptSyntaxWalker();
+        var javaScriptSyntaxWalker = new GenericSyntaxWalker();
 
-        javaScriptSyntaxWalker.Visit(javaScriptSyntaxUnit.JavaScriptDocumentSyntax);
+        javaScriptSyntaxWalker.Visit(javaScriptSyntaxUnit.GenericDocumentSyntax);
 
         var textEditorTextSpans = new List<TextEditorTextSpan>();
 
         textEditorTextSpans
-            .AddRange(javaScriptSyntaxWalker.JavaScriptStringSyntaxes
+            .AddRange(javaScriptSyntaxWalker.GenericStringSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(javaScriptSyntaxWalker.JavaScriptCommentSyntaxes
+            .AddRange(javaScriptSyntaxWalker.GenericCommentSingleLineSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(javaScriptSyntaxWalker.JavaScriptKeywordSyntaxes
+            .AddRange(javaScriptSyntaxWalker.GenericCommentMultiLineSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(javaScriptSyntaxWalker.GenericKeywordSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());

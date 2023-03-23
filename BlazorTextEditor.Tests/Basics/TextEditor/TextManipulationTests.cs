@@ -1,8 +1,6 @@
-﻿using BlazorCommon.RazorLib.Keyboard;
-using BlazorTextEditor.RazorLib.Cursor;
+﻿using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.Model;
-using BlazorTextEditor.Tests.TestDataFolder;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.Tests.Basics.TextEditor;

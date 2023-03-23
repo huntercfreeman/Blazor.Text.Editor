@@ -1,5 +1,4 @@
-﻿using BlazorCommon.RazorLib;
-using BlazorCommon.RazorLib.Clipboard;
+﻿using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Storage;
 using BlazorTextEditor.RazorLib;
 using BlazorTextEditor.RazorLib.Model;
