@@ -1179,21 +1179,21 @@ public class RazorSyntaxTree
             {
                 case GenericDecorationKind.None:
                     break;
-                // case CSharpDecorationKind.Method:
+                case GenericDecorationKind.Function:
                 {
-                    //     var razorMethodTextSpan = lexedTokenTextSpan with
-                    //     {
-                    //         DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageMethod,
-                    //         StartingIndexInclusive = startingIndexInclusive,
-                    //         EndingIndexExclusive = endingIndexExclusive,
-                    //     };
-                    //
-                    //     injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
-                    //         ImmutableArray<IHtmlSyntax>.Empty,
-                    //         string.Empty,
-                    //         razorMethodTextSpan));
-                    //
-                    //     break;
+                    var razorMethodTextSpan = lexedTokenTextSpan with
+                    {
+                        DecorationByte = (byte)HtmlDecorationKind.InjectedLanguageMethod,
+                        StartingIndexInclusive = startingIndexInclusive,
+                        EndingIndexExclusive = endingIndexExclusive,
+                    };
+                    
+                    injectedLanguageFragmentSyntaxes.Add(new InjectedLanguageFragmentSyntax(
+                        ImmutableArray<IHtmlSyntax>.Empty,
+                        string.Empty,
+                        razorMethodTextSpan));
+                    
+                    break;
                 }
                 // case CSharpDecorationKind.Type:
                 {
