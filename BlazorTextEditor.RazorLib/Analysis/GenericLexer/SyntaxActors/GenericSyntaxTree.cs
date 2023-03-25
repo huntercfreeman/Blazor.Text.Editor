@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using BlazorCommon.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -50,7 +51,8 @@ public class GenericSyntaxTree
                     documentChildren.Add(genericFunctionSyntax);
                 }
             }
-            else
+            else if (!WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) &&
+                     !KeyboardKeyFacts.PunctuationCharacters.All.Contains(stringWalker.CurrentCharacter))
             {
                 if (TryParseKeyword(stringWalker, diagnosticBag, out var genericKeywordSyntax) &&
                     genericKeywordSyntax is not null)
@@ -183,14 +185,42 @@ public class GenericSyntaxTree
         TextEditorDiagnosticBag diagnosticBag,
         out GenericKeywordSyntax? genericKeywordSyntax)
     {
-        var wordTuple = stringWalker.ConsumeWord();
+        var startingPositionIndex = stringWalker.PositionIndex;
+        
+        // namespace BlazorApp1
+        // ^
+        
+        // namespace BlazorApp1
+        //         ^
+        
+        // namespace BlazorApp1;namespace; BlazorApp2
+        //                      ^
+        
+        while (!stringWalker.IsEof)
+        {
+            var backtrackedToCharacter = stringWalker.BacktrackCharacter();
+
+            if (backtrackedToCharacter == ParserFacts.END_OF_FILE)
+                break;
             
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter) ||
+                KeyboardKeyFacts.PunctuationCharacters.All.Contains(stringWalker.CurrentCharacter))
+            {
+                _ = stringWalker.ReadCharacter();
+                break;
+            }
+        }
+        
+        var wordTuple = stringWalker.ConsumeWord(KeyboardKeyFacts.PunctuationCharacters.All);
+        
         var foundKeyword = GenericLanguageDefinition.Keywords
             .FirstOrDefault(keyword =>
                 keyword == wordTuple.value);
         
         if (foundKeyword is not null)
         {
+            stringWalker.BacktrackCharacter();
+            
             genericKeywordSyntax = new GenericKeywordSyntax(
                 wordTuple.textSpan with
                 {
@@ -203,8 +233,8 @@ public class GenericSyntaxTree
 
         if (wordTuple.textSpan.StartingIndexInclusive != -1)
         {
-            // backtrack by the length of the word as it was not an actual keyword.
-            stringWalker.BacktrackRange(wordTuple.value.Length);
+            // backtrack to the original starting position
+            stringWalker.BacktrackRange(stringWalker.PositionIndex - startingPositionIndex);
         }
         
         genericKeywordSyntax = null;
@@ -216,26 +246,6 @@ public class GenericSyntaxTree
         TextEditorDiagnosticBag diagnosticBag,
         out GenericFunctionSyntax? genericFunctionSyntax)
     {
-        /*
-         * var obj = new Object();
-         *
-         * obj.Function();
-         *
-         * -----------------------
-         *
-         * Algorithm:
-         *     Found '(', so read the previous word (skip any whitespace).
-         *     If previous word is a valid function identifier,
-         *     then assume it is so.
-         */
-        
-        /*
-         * var z = 2 + 4(3 - 1)
-         *
-         * Distribution of a number over parenthesis should not
-         * get syntax highlighted as a function identifier.
-         */
-
         var rememberPositionIndex = stringWalker.PositionIndex;
         
         bool startedReadingWord = false;
@@ -255,7 +265,8 @@ public class GenericSyntaxTree
                 if (startedReadingWord)
                     break;
             }
-            else if (stringWalker.CheckForSubstring(GenericLanguageDefinition.MemberAccessToken) ||
+            else if (KeyboardKeyFacts.IsPunctuationCharacter(stringWalker.CurrentCharacter) ||
+                     stringWalker.CheckForSubstring(GenericLanguageDefinition.MemberAccessToken) ||
                      stringWalker.CheckForSubstring(GenericLanguageDefinition.FunctionInvocationEnd))
             {
                 break;
