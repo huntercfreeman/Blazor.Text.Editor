@@ -9,6 +9,7 @@ public class MyClass
 {
     public void MyMethod()
     {
+        // Here is a comment.
         return;
     }
 }";
