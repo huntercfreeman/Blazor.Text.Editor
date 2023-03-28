@@ -307,6 +307,7 @@ public class TextEditorService : ITextEditorService
             DialogKey.NewDialogKey(), 
             "Text Editor Settings",
             typeof(TextEditorSettings),
+            null,
             null)
         {
             IsResizable = isResizable
