@@ -301,14 +301,16 @@ public class TextEditorService : ITextEditorService
                 resourceLastWriteTime));
     }
 
-    public void OptionsShowSettingsDialog(bool isResizable = false)
+    public void OptionsShowSettingsDialog(
+        bool isResizable = false,
+        string? cssClassString = null)
     {
         var settingsDialog = new DialogRecord(
             DialogKey.NewDialogKey(), 
             "Text Editor Settings",
             typeof(TextEditorSettings),
             null,
-            null)
+            cssClassString)
         {
             IsResizable = isResizable
         };
