@@ -54,7 +54,7 @@ public interface ITextEditorService
     public void OptionsSetShowWhitespace(bool showWhitespace);
     /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the AppOptions Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
     public void OptionsSetTheme(ThemeRecord theme);
-    public void OptionsShowSettingsDialog(bool isResizable = false);
+    public void OptionsShowSettingsDialog(bool isResizable = false, string? cssClassString = null);
     public void OptionsWriteToStorage();
     public void GroupAddViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     public TextEditorGroup? GroupFindOrDefault(TextEditorGroupKey textEditorGroupKey);
