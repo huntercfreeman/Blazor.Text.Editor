@@ -12,7 +12,9 @@ public static class ServiceCollectionExtensions
         Func<BlazorTextEditorOptions, BlazorTextEditorOptions>? configure = null)
     {
         var textEditorOptions = new BlazorTextEditorOptions();
-        configure?.Invoke(textEditorOptions);
+
+        if (configure is not null)
+            textEditorOptions = configure.Invoke(textEditorOptions);
         
         if (textEditorOptions.BlazorCommonOptions is not null)
         {
