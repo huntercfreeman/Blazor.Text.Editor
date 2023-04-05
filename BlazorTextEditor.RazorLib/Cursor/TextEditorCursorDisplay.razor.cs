@@ -296,6 +296,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             },
             BLINK_CURSOR_BACKGROUND_TASK_NAME,
             BLINK_CURSOR_BACKGROUND_TASK_DESCRIPTION,
+            false,
             _ =>
             {
                 _ = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
