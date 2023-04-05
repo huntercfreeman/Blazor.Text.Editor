@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Facts;
-using BlazorTextEditor.RazorLib.Analysis.FSharp.Facts;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;

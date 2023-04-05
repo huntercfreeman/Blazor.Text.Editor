@@ -1,3 +1,4 @@
+using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
@@ -12,6 +13,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
+    [Inject]
+    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
     
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;
