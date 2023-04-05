@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.ViewModel;
+using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -15,6 +16,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private IJSRuntime JsRuntime { get; set; } = null!;
     [Inject]
     private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
     
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;
@@ -36,7 +39,17 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     [Parameter]
     public RenderFragment AutoCompleteMenuRenderFragment { get; set; } = null!;
     
+    public const string BLINK_CURSOR_BACKGROUND_TASK_NAME = "BlinkCursor";
+    public const string BLINK_CURSOR_BACKGROUND_TASK_DESCRIPTION = "This task blinks the cursor within the text editor.";
+    /// <summary>Scroll by 2 more rows than necessary to bring an out of view row into view.</summary>
+    private const int WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY = 2;    
+    /// <summary>Determine if a row is out of view with the lower and upper boundaries each being 1 row narrower.</summary>
+    private const int SCROLL_MARGIN_FOR_ROW_OUT_OF_VIEW = 1;
+    /// <summary>Determine if a column is out of view with the lower and upper boundaries each being 1 column narrower.</summary>
+    private const int SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW = 1;
+    
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
+    
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
     private TimeSpan _blinkingCursorTaskDelay = TimeSpan.FromMilliseconds(1000);
     private bool _hasBlinkAnimation = true;
@@ -50,20 +63,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private int _textEditorMenuShouldGetFocusRequestCount;
 
     private string _previouslyObservedTextEditorCursorDisplayId = string.Empty;
-
-    /// <summary>
-    /// Scroll by 2 more rows than necessary to bring an out of view row into view.
-    /// </summary>
-    private const int WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY = 2;
-    
-    /// <summary>
-    /// Determine if a row is out of view with the lower and upper boundaries each being 1 row narrower.
-    /// </summary>
-    private const int SCROLL_MARGIN_FOR_ROW_OUT_OF_VIEW = 1;
-    /// <summary>
-    /// Determine if a column is out of view with the lower and upper boundaries each being 1 column narrower.
-    /// </summary>
-    private const int SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW = 1;
 
     public string TextEditorCursorDisplayId => TextEditorCursor.IsPrimaryCursor
         ? TextEditorViewModel.PrimaryCursorContentId
@@ -283,16 +282,29 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var cancellationToken = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
 
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
-
-            if (!cancellationToken.IsCancellationRequested)
+        // TODO: This background task is not working properly. It was converted to a BackgroundTask from a invocation of Task.Run. 
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
             {
-                _hasBlinkAnimation = true;
-                await InvokeAsync(StateHasChanged);
-            }
-        }, cancellationToken);
+                await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
+
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    _hasBlinkAnimation = true;
+                    await InvokeAsync(StateHasChanged);
+                }
+            },
+            BLINK_CURSOR_BACKGROUND_TASK_NAME,
+            BLINK_CURSOR_BACKGROUND_TASK_DESCRIPTION,
+            _ =>
+            {
+                _ = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
+                return Task.CompletedTask;
+            },
+            Dispatcher,
+            cancellationToken);
+        
+        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
     }
 
     private void HandleOnKeyDown()
