@@ -1,7 +1,5 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.Css.Decoration;
-using BlazorTextEditor.RazorLib.Analysis.Css.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
