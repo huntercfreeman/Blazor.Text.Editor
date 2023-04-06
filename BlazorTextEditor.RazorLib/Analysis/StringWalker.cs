@@ -55,6 +55,8 @@ public class StringWalker
     /// </summary>
     public char NextCharacter => PeekCharacter(1);
 
+    public string Content => _content;
+    
     /// <summary>
     ///     Starting with <see cref="PeekCharacter" /> evaluated at 0
     ///     return that and the rest of the <see cref="_content" />
