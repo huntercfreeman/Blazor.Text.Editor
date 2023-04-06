@@ -44,6 +44,7 @@ public record TextEditorViewModel(
     public ImmutableList<TextEditorPresentationModel> LastPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
 
     public string CommandBarValue { get; set; } = string.Empty;
+    public bool ShouldSetFocusAfterNextRender { get; set; }
     
     public string BodyElementId => $"bte_text-editor-content_{ViewModelKey.Guid}";
     public string PrimaryCursorContentId => $"bte_text-editor-content_{ViewModelKey.Guid}_primary-cursor";

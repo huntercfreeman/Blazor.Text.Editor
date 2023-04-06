@@ -165,35 +165,42 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 ContentElementId);
         }
 
-        if (textEditorViewModel is not null && 
-            textEditorViewModel.ShouldMeasureDimensions)
+        if (textEditorViewModel is not null)
         {
-            var characterWidthAndRowHeight = await JsRuntime
-                .InvokeAsync<CharacterWidthAndRowHeight>(
-                    "blazorTextEditor.measureCharacterWidthAndRowHeight",
-                    MeasureCharacterWidthAndRowHeightElementId,
-                    MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
-                
-            TextEditorService.ViewModelWith(
-                TextEditorViewModelKey,
-                previousViewModel => previousViewModel with
-                {
-                    ShouldMeasureDimensions = false,
-                    VirtualizationResult = previousViewModel.VirtualizationResult with
-                    {
-                        CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                    }
-                });
-
-            // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
-            // thus the local variable must be updated accordingly.
-            textEditorViewModel = ReplaceableTextEditorViewModel;
-
-            if (textEditorViewModel is not null)
+            if (textEditorViewModel.ShouldMeasureDimensions)
             {
-                await textEditorViewModel.CalculateVirtualizationResultAsync(
-                    null,
-                    CancellationToken.None);
+                var characterWidthAndRowHeight = await JsRuntime
+                    .InvokeAsync<CharacterWidthAndRowHeight>(
+                        "blazorTextEditor.measureCharacterWidthAndRowHeight",
+                        MeasureCharacterWidthAndRowHeightElementId,
+                        MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
+                
+                TextEditorService.ViewModelWith(
+                    TextEditorViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        ShouldMeasureDimensions = false,
+                        VirtualizationResult = previousViewModel.VirtualizationResult with
+                        {
+                            CharacterWidthAndRowHeight = characterWidthAndRowHeight,
+                        }
+                    });
+
+                // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
+                // thus the local variable must be updated accordingly.
+                textEditorViewModel = ReplaceableTextEditorViewModel;
+
+                if (textEditorViewModel is not null)
+                {
+                    await textEditorViewModel.CalculateVirtualizationResultAsync(
+                        null,
+                        CancellationToken.None);
+                }
+            }
+            else if (textEditorViewModel.ShouldSetFocusAfterNextRender)
+            {
+                textEditorViewModel.ShouldSetFocusAfterNextRender = false;
+                await FocusTextEditorAsync();
             }
         }
 
