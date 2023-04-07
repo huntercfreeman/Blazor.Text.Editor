@@ -102,6 +102,7 @@ public static class HtmlSyntaxTree
                         break;
                 }
 
+                
                 // End Of File is unexpected at this point so report a diagnostic.
                 if (stringWalker.CurrentCharacter == ParserFacts.END_OF_FILE)
                 {

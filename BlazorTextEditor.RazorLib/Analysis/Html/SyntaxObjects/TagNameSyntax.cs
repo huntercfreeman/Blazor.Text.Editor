@@ -14,6 +14,7 @@ public class TagNameSyntax : IHtmlSyntax
         TextEditorTextSpan = textEditorTextSpan;
     }
 
+    /// <summary>Likely storing the value here is incorrect. It is believed one should never store values of lexed tokens but instead do a lookup into the original text using the text editor text span.</summary>
     public string Value { get; }
     public TextEditorTextSpan TextEditorTextSpan { get; }
     public HtmlSyntaxKind HtmlSyntaxKind => HtmlSyntaxKind.TagName;
