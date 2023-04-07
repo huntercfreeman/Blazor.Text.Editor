@@ -1,5 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxEnums;
-using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxObjects;
+﻿using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxObjects;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 
