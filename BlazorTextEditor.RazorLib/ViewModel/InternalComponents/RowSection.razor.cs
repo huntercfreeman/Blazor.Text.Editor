@@ -1,9 +1,11 @@
 ﻿using System.Text;
+using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Virtualization;
+using Fluxor;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
@@ -12,6 +14,10 @@ public partial class RowSection : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
+    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
     
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;
@@ -108,11 +114,20 @@ public partial class RowSection : ComponentBase
     private void VirtualizationDisplayItemsProviderFunc(
         VirtualizationRequest virtualizationRequest)
     {
-        Task.Run(async () =>
-        {
-            await TextEditorViewModel.CalculateVirtualizationResultAsync(
-                null,
-                CancellationToken.None); 
-        });
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
+            {
+                await TextEditorViewModel.CalculateVirtualizationResultAsync(
+                    null,
+                    CancellationToken.None); 
+            },
+            "VirtualizationDisplayItemsProviderFuncTask",
+            "TODO: Describe this task",
+            false,
+            _ =>  Task.CompletedTask,
+            Dispatcher,
+            CancellationToken.None);
+
+        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
     }
 }

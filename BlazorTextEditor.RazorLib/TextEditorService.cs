@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Dialog;
 using BlazorCommon.RazorLib.Storage;
 using BlazorCommon.RazorLib.Store.DialogCase;
@@ -40,6 +41,7 @@ namespace BlazorTextEditor.RazorLib;
 public class TextEditorService : ITextEditorService
 {
     private readonly IDispatcher _dispatcher;
+    private readonly IBackgroundTaskQueue _backgroundTaskQueue;
     private readonly IStorageService _storageService;
     
     // TODO: Perhaps do not reference IJSRuntime but instead wrap it in a 'IUiProvider' or something like that. The 'IUiProvider' would then expose methods that allow the TextEditorViewModel to adjust the scrollbars. 
@@ -53,6 +55,7 @@ public class TextEditorService : ITextEditorService
         IState<ThemeRecordsCollection> themeRecordsCollectionWrap,
         IState<TextEditorOptionsState> textEditorOptionsWrap,
         IDispatcher dispatcher,
+        IBackgroundTaskQueue backgroundTaskQueue,
         IStorageService storageService,
         IJSRuntime jsRuntime)
     {
@@ -63,6 +66,7 @@ public class TextEditorService : ITextEditorService
         ThemeRecordsCollectionWrap = themeRecordsCollectionWrap;
         OptionsWrap = textEditorOptionsWrap;
         _dispatcher = dispatcher;
+        _backgroundTaskQueue = backgroundTaskQueue;
         _storageService = storageService;
         _jsRuntime = jsRuntime;
     }
@@ -147,14 +151,23 @@ public class TextEditorService : ITextEditorService
             null,
             textEditorModelKey);
 
-        _ = Task.Run(async () =>
-        {
-            await textEditorModel.ApplySyntaxHighlightingAsync();
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
+            {
+                await textEditorModel.ApplySyntaxHighlightingAsync();
             
-            _dispatcher.Dispatch(
-                new TextEditorModelsCollection.ForceRerenderAction(
-                    textEditorModel.ModelKey));
-        });
+                _dispatcher.Dispatch(
+                    new TextEditorModelsCollection.ForceRerenderAction(
+                        textEditorModel.ModelKey));
+            },
+            "ApplySyntaxHighlightingAsyncTask",
+            "TODO: Describe this task",
+            false,
+            _ =>  Task.CompletedTask,
+            _dispatcher,
+            CancellationToken.None);
+
+        _backgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
         
         _dispatcher.Dispatch(
             new TextEditorModelsCollection.RegisterAction(

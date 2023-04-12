@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using BlazorCommon.RazorLib.BackgroundTaskCase;
+using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -8,6 +10,10 @@ public partial class VirtualizationDisplay : ComponentBase, IDisposable
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
+    [Inject]
+    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public IVirtualizationResultWithoutTypeMask VirtualizationResultWithoutTypeMask { get; set; } = null!;
@@ -105,10 +111,22 @@ public partial class VirtualizationDisplay : ComponentBase, IDisposable
     public void Dispose()
     {
         _scrollEventCancellationTokenSource.Cancel();
+        
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.disposeVirtualizationIntersectionObserver",
+                    cancellationToken,
+                    _virtualizationDisplayGuid.ToString());
+            },
+            "disposeVirtualizationIntersectionObserverTask",
+            "TODO: Describe this task",
+            false,
+            _ =>  Task.CompletedTask,
+            Dispatcher,
+            CancellationToken.None);
 
-        _ = Task.Run(async () =>
-            await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.disposeVirtualizationIntersectionObserver",
-                _virtualizationDisplayGuid.ToString()));
+        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
     }
 }

@@ -282,7 +282,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var cancellationToken = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
 
-        // TODO: This background task is not working properly. It was converted to a BackgroundTask from a invocation of Task.Run. 
         var backgroundTask = new BackgroundTask(
             async cancellationToken =>
             {
@@ -377,12 +376,22 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         
         if (IsFocusTarget)
         {
-            _ = Task.Run(async () =>
-            {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                    _intersectionObserverMapKey.ToString());
-            });
+            var backgroundTask = new BackgroundTask(
+                async cancellationToken =>
+                {
+                    await JsRuntime.InvokeVoidAsync(
+                        "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
+                        cancellationToken,
+                        _intersectionObserverMapKey.ToString());
+                },
+                "DisposeTextEditorCursorIntersectionObserverTask",
+                "Dispose of JavaScript Intersection Observer",
+                false,
+                _ =>  Task.CompletedTask,
+                Dispatcher,
+                CancellationToken.None);
+        
+            BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Keyboard;
 using BlazorCommon.RazorLib.Menu;
 using BlazorTextEditor.RazorLib.Autocomplete;
@@ -6,6 +7,7 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
+using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -17,6 +19,10 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
     private ITextEditorService TextEditorService { get; set; } = null!;
     [Inject]
     private IAutocompleteService AutocompleteService { get; set; } = null!;
+    [Inject]
+    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
 
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;
@@ -48,11 +54,20 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
     
     private void ReturnFocusToThis()
     {
-        _ = Task.Run(async () =>
-        {
-            await SetShouldDisplayMenuAsync
-                .Invoke(TextEditorMenuKind.None, true);
-        });
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
+            {
+                await SetShouldDisplayMenuAsync
+                    .Invoke(TextEditorMenuKind.None, true);
+            },
+            "SetShouldDisplayMenuAsyncTask",
+            "TODO: Describe this task",
+            false,
+            _ =>  Task.CompletedTask,
+            Dispatcher,
+            CancellationToken.None);
+
+        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
     }
 
     private MenuRecord GetMenuRecord()
@@ -113,11 +128,20 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
 
     private void SelectMenuOption(Func<Task> menuOptionAction)
     {
-        _ = Task.Run(async () =>
-        {
-            await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
-            await menuOptionAction();
-        });
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
+            {
+                await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
+                await menuOptionAction();
+            },
+            "SelectMenuOptionTask",
+            "TODO: Describe this task",
+            false,
+            _ =>  Task.CompletedTask,
+            Dispatcher,
+            CancellationToken.None);
+
+        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
     }
 
     private Task InsertAutocompleteMenuOption(

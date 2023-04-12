@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorCommon.RazorLib.JavaScriptObjects;
@@ -29,7 +30,9 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private IJSRuntime JsRuntime { get; set; } = null!;
     [Inject]
     private IClipboardService ClipboardService { get; set; } = null!;
-
+    [Inject]
+    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
+    
     [Parameter]
     public string WrapperStyleCssString { get; set; } = string.Empty;
     [Parameter]
@@ -339,14 +342,23 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             var textEditor = safeTextEditorReference;
 
             // Do not block UI thread with long running AfterOnKeyDownAsync 
-            _ = Task.Run(async () =>
-            {
-                await afterOnKeyDownAsync.Invoke(
-                    textEditor,
-                    cursorSnapshots,
-                    keyboardEventArgs,
-                    cursorDisplay.SetShouldDisplayMenuAsync);
-            });
+            var backgroundTask = new BackgroundTask(
+                async cancellationToken =>
+                {
+                    await afterOnKeyDownAsync.Invoke(
+                        textEditor,
+                        cursorSnapshots,
+                        keyboardEventArgs,
+                        cursorDisplay.SetShouldDisplayMenuAsync);
+                },
+                "AfterOnKeyDownAsyncTask",
+                "TODO: Describe this task",
+                false,
+                _ =>  Task.CompletedTask,
+                Dispatcher,
+                CancellationToken.None);
+
+            BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
         }
     }
 
