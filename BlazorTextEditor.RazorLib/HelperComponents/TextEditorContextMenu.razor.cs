@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Keyboard;
 using BlazorCommon.RazorLib.Menu;
@@ -7,6 +8,7 @@ using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
+using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -19,6 +21,10 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
     private IClipboardService ClipboardService { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
+    [Inject]
+    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
 
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;
@@ -70,11 +76,20 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
     
     private void ReturnFocusToThis()
     {
-        _ = Task.Run(async () =>
-        {
-            await SetShouldDisplayMenuAsync
-                .Invoke(TextEditorMenuKind.None, true);
-        });
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
+            {
+                await SetShouldDisplayMenuAsync
+                    .Invoke(TextEditorMenuKind.None, true);
+            },
+            "SetShouldDisplayMenuAsyncTask",
+            "TODO: Describe this task",
+            false,
+            _ =>  Task.CompletedTask,
+            Dispatcher,
+            CancellationToken.None);
+
+        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
     }
 
     private MenuRecord GetMenuRecord()
@@ -116,11 +131,20 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
 
     private void SelectMenuOption(Func<Task> menuOptionAction)
     {
-        _ = Task.Run(async () =>
-        {
-            await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
-            await menuOptionAction();
-        });
+        var backgroundTask = new BackgroundTask(
+            async cancellationToken =>
+            {
+                await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
+                await menuOptionAction();
+            },
+            "SelectMenuOptionTask",
+            "TODO: Describe this task",
+            false,
+            _ =>  Task.CompletedTask,
+            Dispatcher,
+            CancellationToken.None);
+
+        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
     }
 
     private async Task CutMenuOption()
