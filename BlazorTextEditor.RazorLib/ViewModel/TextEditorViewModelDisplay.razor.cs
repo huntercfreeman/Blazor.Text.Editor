@@ -67,6 +67,9 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
+    
+    private readonly SemaphoreSlim _onTouchMoveSemaphoreSlim = new(1, 1);
+    private readonly TimeSpan _onTouchMoveDelay = TimeSpan.FromMilliseconds(25);
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -79,6 +82,11 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// </summary>
     private bool _thinksLeftMouseButtonIsDown;
 
+    private bool _thinksTouchIsOccurring;
+
+    private TouchEventArgs? _previousTouchEventArgs = null;
+    private DateTime? _touchStartDateTime = null;
+    
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
@@ -803,6 +811,100 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             .ToCssValue();
         
         return $"height: {heightInPixelsInvariantCulture}px;";
+    }
+    
+    private Task HandleOnTouchStartAsync(TouchEventArgs touchEventArgs)
+    {
+        _touchStartDateTime = DateTime.UtcNow;
+        
+        _previousTouchEventArgs = touchEventArgs;
+        _thinksTouchIsOccurring = true;
+
+        return Task.CompletedTask;
+    }
+    
+    private async Task HandleOnTouchMoveAsync(TouchEventArgs touchEventArgs)
+    {
+        if (!_thinksTouchIsOccurring)
+            return;
+            
+        var success = await _onTouchMoveSemaphoreSlim
+            .WaitAsync(TimeSpan.Zero);
+
+        if (!success)
+            return;
+
+        try
+        {
+            var previousTouchPoint = _previousTouchEventArgs?.ChangedTouches
+                .FirstOrDefault(x => x.Identifier == 0);
+        
+            var currentTouchPoint = touchEventArgs.ChangedTouches
+                .FirstOrDefault(x => x.Identifier == 0);
+
+            if (previousTouchPoint is null || currentTouchPoint is null)
+                return;
+
+            var viewModel = ReplaceableTextEditorViewModel;
+
+            if (viewModel is null)
+                return;
+        
+            // Natural scrolling for touch devices
+            var diffX = previousTouchPoint.ClientX - currentTouchPoint.ClientX;
+            var diffY = previousTouchPoint.ClientY - currentTouchPoint.ClientY;
+
+            await viewModel.MutateScrollHorizontalPositionByPixelsAsync(diffX);
+            await viewModel.MutateScrollVerticalPositionByPixelsAsync(diffY);
+
+            await Task.Yield();
+
+            _previousTouchEventArgs = touchEventArgs;
+            
+            // _textEditorModelChangedCancellationTokenSource.Cancel();
+            // _textEditorModelChangedCancellationTokenSource = new CancellationTokenSource();
+            //
+            // await viewModel.CalculateVirtualizationResultAsync(
+            //     viewModel.VirtualizationResult.ElementMeasurementsInPixels,
+            //     _textEditorModelChangedCancellationTokenSource.Token);
+
+            await Task.Delay(_onTouchMoveDelay);
+        }
+        finally
+        {
+            _onTouchMoveSemaphoreSlim.Release();
+        }
+    }
+    
+    private async Task ClearTouchAsync(TouchEventArgs touchEventArgs)
+    {
+        var rememberStartTouchEventArgs = _previousTouchEventArgs;
+        
+        _thinksTouchIsOccurring = false;
+        _previousTouchEventArgs = null;
+
+        var clearTouchDateTime = DateTime.UtcNow;
+
+        var touchTimespan = clearTouchDateTime - _touchStartDateTime;
+
+        if (touchTimespan is null)
+            return;
+        
+        if (touchTimespan.Value.TotalMilliseconds < 200)
+        {
+            var startTouchPoint = rememberStartTouchEventArgs?.ChangedTouches
+                .FirstOrDefault(x => x.Identifier == 0);
+
+            if (startTouchPoint is null)
+                return;
+            
+            await HandleContentOnMouseDownAsync(new MouseEventArgs
+            {
+                Buttons = 1,
+                ClientX = startTouchPoint.ClientX,
+                ClientY = startTouchPoint.ClientY,
+            });
+        }
     }
 
     protected override void Dispose(bool disposing)

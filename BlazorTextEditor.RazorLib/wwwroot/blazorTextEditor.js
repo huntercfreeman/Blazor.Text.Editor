@@ -22,7 +22,7 @@ window.blazorTextEditor = {
         });
     },
     preventDefaultOnWheelEvents: function (elementId) {
-
+        
         let element = document.getElementById(elementId);
 
         if (!element) {
@@ -30,6 +30,12 @@ window.blazorTextEditor = {
         }
         
         element.addEventListener('wheel', (event) => {
+            event.preventDefault();
+        }, {
+            passive: false,
+        });
+        
+        element.addEventListener('touchstart', (event) => {
             event.preventDefault();
         }, {
             passive: false,
