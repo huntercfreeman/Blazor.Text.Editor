@@ -14,6 +14,10 @@ public class JsonSyntaxWalker
 
     public void Visit(IJsonSyntax jsonSyntax)
     {
+        // TODO: Trying to update the text editor demo. Am getting an exception about null references. Revisit this after finished.
+        if (jsonSyntax?.ChildJsonSyntaxes is null)
+            return;
+        
         foreach (var child in jsonSyntax.ChildJsonSyntaxes) 
             Visit(child);
 
