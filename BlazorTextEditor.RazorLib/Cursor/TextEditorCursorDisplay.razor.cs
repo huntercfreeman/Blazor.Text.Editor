@@ -282,29 +282,20 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var cancellationToken = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
 
-        var backgroundTask = new BackgroundTask(
-            async cancellationToken =>
-            {
-                await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
+        // One cannot use IBackgroundTaskQueue here because this is an "infinitely" running task.
+        //
+        // So, if one were to use IBackgroundTaskQueue for the blinking of the cursor,
+        // then no other background task will ever run (more or less).
+        Task.Run(async () =>
+        {
+            await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
 
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    _hasBlinkAnimation = true;
-                    await InvokeAsync(StateHasChanged);
-                }
-            },
-            BLINK_CURSOR_BACKGROUND_TASK_NAME,
-            BLINK_CURSOR_BACKGROUND_TASK_DESCRIPTION,
-            false,
-            _ =>
+            if (!cancellationToken.IsCancellationRequested)
             {
-                _ = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
-                return Task.CompletedTask;
-            },
-            Dispatcher,
-            cancellationToken);
-        
-        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+                _hasBlinkAnimation = true;
+                await InvokeAsync(StateHasChanged);
+            }
+        }, cancellationToken);
     }
 
     private void HandleOnKeyDown()

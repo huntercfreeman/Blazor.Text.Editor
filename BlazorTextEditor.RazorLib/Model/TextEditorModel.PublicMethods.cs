@@ -516,7 +516,7 @@ public partial class TextEditorModel
         // TODO: Invoke an event to reapply the CSS classes?
     }
 
-    public void SetLexerMapper(ILexer? lexer)
+    public void SetLexer(ILexer? lexer)
     {
         Lexer = lexer ?? new TextEditorLexerDefault();
 
