@@ -282,11 +282,9 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         var cancellationToken = CancelBlinkingCursorSourceAndCreateNewThenReturnToken();
 
-        // One cannot use IBackgroundTaskQueue here because this is an "infinitely" running task.
-        //
-        // So, if one were to use IBackgroundTaskQueue for the blinking of the cursor,
-        // then no other background task will ever run (more or less).
-        Task.Run(async () =>
+        // IBackgroundTaskQueue does not work well here because
+        // of how often this Task is started and stopped.
+        _ = Task.Run(async () =>
         {
             await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
 
@@ -367,22 +365,15 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         
         if (IsFocusTarget)
         {
-            var backgroundTask = new BackgroundTask(
-                async cancellationToken =>
-                {
-                    await JsRuntime.InvokeVoidAsync(
-                        "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                        cancellationToken,
-                        _intersectionObserverMapKey.ToString());
-                },
-                "DisposeTextEditorCursorIntersectionObserverTask",
-                "Dispose of JavaScript Intersection Observer",
-                false,
-                _ =>  Task.CompletedTask,
-                Dispatcher,
-                CancellationToken.None);
-        
-            BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+            // IBackgroundTaskQueue does not work well here because
+            // this Task does not need to be tracked.
+            _ = Task.Run(async () =>
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
+                    CancellationToken.None,
+                    _intersectionObserverMapKey.ToString());
+            }, CancellationToken.None);
         }
     }
 }

@@ -348,25 +348,17 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         if (cursorDisplay is not null)
         {
             var textEditor = safeTextEditorReference;
-
-            // Do not block UI thread with long running AfterOnKeyDownAsync 
-            var backgroundTask = new BackgroundTask(
-                async cancellationToken =>
-                {
-                    await afterOnKeyDownAsync.Invoke(
-                        textEditor,
-                        cursorSnapshots,
-                        keyboardEventArgs,
-                        cursorDisplay.SetShouldDisplayMenuAsync);
-                },
-                "AfterOnKeyDownAsyncTask",
-                "TODO: Describe this task",
-                false,
-                _ =>  Task.CompletedTask,
-                Dispatcher,
-                CancellationToken.None);
-
-            BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+            
+            // IBackgroundTaskQueue does not work well here because
+            // this Task does not need to be tracked.
+            _ = Task.Run(async () =>
+            {
+                await afterOnKeyDownAsync.Invoke(
+                    textEditor,
+                    cursorSnapshots,
+                    keyboardEventArgs,
+                    cursorDisplay.SetShouldDisplayMenuAsync);
+            }, CancellationToken.None);
         }
     }
 

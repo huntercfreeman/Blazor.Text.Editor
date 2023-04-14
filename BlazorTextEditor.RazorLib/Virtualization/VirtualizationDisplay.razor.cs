@@ -112,21 +112,14 @@ public partial class VirtualizationDisplay : ComponentBase, IDisposable
     {
         _scrollEventCancellationTokenSource.Cancel();
         
-        var backgroundTask = new BackgroundTask(
-            async cancellationToken =>
-            {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.disposeVirtualizationIntersectionObserver",
-                    cancellationToken,
-                    _virtualizationDisplayGuid.ToString());
-            },
-            "disposeVirtualizationIntersectionObserverTask",
-            "TODO: Describe this task",
-            false,
-            _ =>  Task.CompletedTask,
-            Dispatcher,
-            CancellationToken.None);
-
-        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+        // IBackgroundTaskQueue does not work well here because
+        // this Task does not need to be tracked.
+        _ = Task.Run(async () =>
+        {
+            await JsRuntime.InvokeVoidAsync(
+                "blazorTextEditor.disposeVirtualizationIntersectionObserver",
+                CancellationToken.None,
+                _virtualizationDisplayGuid.ToString());
+        }, CancellationToken.None);
     }
 }

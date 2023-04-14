@@ -54,20 +54,13 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
     
     private void ReturnFocusToThis()
     {
-        var backgroundTask = new BackgroundTask(
-            async cancellationToken =>
-            {
-                await SetShouldDisplayMenuAsync
-                    .Invoke(TextEditorMenuKind.None, true);
-            },
-            "SetShouldDisplayMenuAsyncTask",
-            "TODO: Describe this task",
-            false,
-            _ =>  Task.CompletedTask,
-            Dispatcher,
-            CancellationToken.None);
-
-        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+        // IBackgroundTaskQueue does not work well here because
+        // this Task does not need to be tracked.
+        _ = Task.Run(async () =>
+        {
+            await SetShouldDisplayMenuAsync
+                .Invoke(TextEditorMenuKind.None, true);
+        }, CancellationToken.None);
     }
 
     private MenuRecord GetMenuRecord()
@@ -128,20 +121,13 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
 
     private void SelectMenuOption(Func<Task> menuOptionAction)
     {
-        var backgroundTask = new BackgroundTask(
-            async cancellationToken =>
-            {
-                await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
-                await menuOptionAction();
-            },
-            "SelectMenuOptionTask",
-            "TODO: Describe this task",
-            false,
-            _ =>  Task.CompletedTask,
-            Dispatcher,
-            CancellationToken.None);
-
-        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+        // IBackgroundTaskQueue does not work well here because
+        // this Task does not need to be tracked.
+        _ = Task.Run(async () =>
+        {
+            await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
+            await menuOptionAction();
+        }, CancellationToken.None);
     }
 
     private Task InsertAutocompleteMenuOption(

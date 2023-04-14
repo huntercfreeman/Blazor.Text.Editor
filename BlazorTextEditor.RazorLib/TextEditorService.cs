@@ -150,24 +150,17 @@ public class TextEditorService : ITextEditorService
             decorationMapper,
             null,
             textEditorModelKey);
-
-        var backgroundTask = new BackgroundTask(
-            async cancellationToken =>
-            {
-                await textEditorModel.ApplySyntaxHighlightingAsync();
+        
+        // IBackgroundTaskQueue does not work well here because
+        // this Task does not need to be tracked.
+        _ = Task.Run(async () =>
+        {
+            await textEditorModel.ApplySyntaxHighlightingAsync();
             
-                _dispatcher.Dispatch(
-                    new TextEditorModelsCollection.ForceRerenderAction(
-                        textEditorModel.ModelKey));
-            },
-            "ApplySyntaxHighlightingAsyncTask",
-            "TODO: Describe this task",
-            false,
-            _ =>  Task.CompletedTask,
-            _dispatcher,
-            CancellationToken.None);
-
-        _backgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+            _dispatcher.Dispatch(
+                new TextEditorModelsCollection.ForceRerenderAction(
+                    textEditorModel.ModelKey));
+        }, CancellationToken.None);
         
         _dispatcher.Dispatch(
             new TextEditorModelsCollection.RegisterAction(

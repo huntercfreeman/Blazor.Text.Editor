@@ -114,20 +114,13 @@ public partial class RowSection : ComponentBase
     private void VirtualizationDisplayItemsProviderFunc(
         VirtualizationRequest virtualizationRequest)
     {
-        var backgroundTask = new BackgroundTask(
-            async cancellationToken =>
-            {
-                await TextEditorViewModel.CalculateVirtualizationResultAsync(
-                    null,
-                    CancellationToken.None); 
-            },
-            "VirtualizationDisplayItemsProviderFuncTask",
-            "TODO: Describe this task",
-            false,
-            _ =>  Task.CompletedTask,
-            Dispatcher,
-            CancellationToken.None);
-
-        BackgroundTaskQueue.QueueBackgroundWorkItem(backgroundTask);
+        // IBackgroundTaskQueue does not work well here because
+        // this Task does not need to be tracked.
+        _ = Task.Run(async () =>
+        {
+            await TextEditorViewModel.CalculateVirtualizationResultAsync(
+                null,
+                CancellationToken.None);
+        }, CancellationToken.None);
     }
 }
