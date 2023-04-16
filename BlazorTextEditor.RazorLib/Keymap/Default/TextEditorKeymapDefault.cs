@@ -81,6 +81,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "z" => TextEditorCommandDefaultFacts.Undo,
             "y" => TextEditorCommandDefaultFacts.Redo,
             "d" => TextEditorCommandDefaultFacts.Duplicate,
+            "]" => TextEditorCommandDefaultFacts.GoToMatchingCharacterFactory(keyboardEventArgs.ShiftKey),
             KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandDefaultFacts.ScrollLineDown,
             KeyboardKeyFacts.MovementKeys.ARROW_UP => TextEditorCommandDefaultFacts.ScrollLineUp,
             KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandDefaultFacts.CursorMovePageBottom,

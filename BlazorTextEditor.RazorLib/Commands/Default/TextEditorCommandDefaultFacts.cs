@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorCommon.RazorLib.Keyboard;
+using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Model;
@@ -603,4 +604,120 @@ public static class TextEditorCommandDefaultFacts
         false,
         "NewLineBelow",
         "defaults_new-line-below");
+    
+    public static TextEditorCommand GoToMatchingCharacterFactory(bool shouldSelectText) => new(
+        textEditorCommandParameter =>
+        {
+            var cursorPositionIndex = textEditorCommandParameter.TextEditorModel.GetCursorPositionIndex(
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor);
+            
+            if (shouldSelectText)
+            {
+                if (!TextEditorSelectionHelper.HasSelectedText(
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection))
+                {
+                    textEditorCommandParameter
+                            .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                        cursorPositionIndex;
+                }
+            }
+            else
+            {
+                textEditorCommandParameter
+                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
+            }
+            
+            var previousCharacter = textEditorCommandParameter.TextEditorModel.GetTextAt(
+                cursorPositionIndex - 1);
+            
+            var currentCharacter = textEditorCommandParameter.TextEditorModel.GetTextAt(
+                cursorPositionIndex);
+
+            char? characterToMatch = null;
+
+            if (CharacterKindHelper.CharToCharacterKind(currentCharacter) == CharacterKind.Punctuation)
+            {
+                // Prefer current character
+                characterToMatch = currentCharacter;
+            }
+            else if (CharacterKindHelper.CharToCharacterKind(previousCharacter) == CharacterKind.Punctuation)
+            {
+                // Fallback to the previous current character
+                characterToMatch = previousCharacter;
+            } 
+
+            if (characterToMatch is null)
+                return Task.CompletedTask;
+
+            var match = KeyboardKeyFacts
+                .MatchPunctuationCharacter(characterToMatch.Value);
+            
+            if (match is null)
+                return Task.CompletedTask;
+
+            var directionToFindMatchMatchingPunctuationCharacter = KeyboardKeyFacts
+                .DirectionToFindMatchMatchingPunctuationCharacter(characterToMatch.Value);
+
+            if (directionToFindMatchMatchingPunctuationCharacter is null)
+                return Task.CompletedTask;
+
+            var temporaryCursor = new TextEditorCursor(
+                (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex,
+                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.columnIndex),
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
+            
+            var unmatchedCharacters = 1;
+
+            while (true)
+            {
+                KeyboardEventArgs keyboardEventArgs;
+
+                if (directionToFindMatchMatchingPunctuationCharacter == -1)
+                {
+                    keyboardEventArgs = new KeyboardEventArgs
+                    {
+                        Key = KeyboardKeyFacts.MovementKeys.ARROW_LEFT,
+                    };
+                }
+                else
+                {
+                    keyboardEventArgs = new KeyboardEventArgs
+                    {
+                        Key = KeyboardKeyFacts.MovementKeys.ARROW_RIGHT,
+                    };
+                }
+                
+                TextEditorCursor.MoveCursor(
+                    keyboardEventArgs,
+                    temporaryCursor,
+                    textEditorCommandParameter.TextEditorModel);
+
+                var temporaryCursorPositionIndex = textEditorCommandParameter.TextEditorModel
+                    .GetCursorPositionIndex(
+                        temporaryCursor);
+                
+                var characterAt = textEditorCommandParameter.TextEditorModel.GetTextAt(
+                    temporaryCursorPositionIndex);
+                
+                if (characterAt == match)
+                    unmatchedCharacters--;
+                else if (characterAt == characterToMatch)
+                    unmatchedCharacters++;
+
+                if (unmatchedCharacters == 0)
+                    break;
+
+                if (temporaryCursorPositionIndex <= 0 ||
+                    temporaryCursorPositionIndex >= textEditorCommandParameter.TextEditorModel.DocumentLength)
+                    break;
+            }
+ 
+            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                temporaryCursor.IndexCoordinates;
+            
+            return Task.CompletedTask;
+        },
+        false,
+        "GoToMatchingCharacter",
+        "defaults_go-to-matching-character");
 }
