@@ -634,23 +634,35 @@ public static class TextEditorCommandDefaultFacts
                 cursorPositionIndex);
 
             char? characterToMatch = null;
+            char? match = null;
+            var fallbackToPreviousCharacter = false;
 
             if (CharacterKindHelper.CharToCharacterKind(currentCharacter) == CharacterKind.Punctuation)
             {
                 // Prefer current character
-                characterToMatch = currentCharacter;
+                match = KeyboardKeyFacts
+                    .MatchPunctuationCharacter(currentCharacter);
+
+                if (match is not null)
+                    characterToMatch = currentCharacter;
             }
-            else if (CharacterKindHelper.CharToCharacterKind(previousCharacter) == CharacterKind.Punctuation)
+            
+            if (characterToMatch is null &&
+                CharacterKindHelper.CharToCharacterKind(previousCharacter) == CharacterKind.Punctuation)
             {
                 // Fallback to the previous current character
-                characterToMatch = previousCharacter;
+                match = KeyboardKeyFacts
+                    .MatchPunctuationCharacter(previousCharacter);
+                
+                if (match is not null)
+                {
+                    characterToMatch = previousCharacter;
+                    fallbackToPreviousCharacter = true;
+                }
             } 
 
             if (characterToMatch is null)
                 return Task.CompletedTask;
-
-            var match = KeyboardKeyFacts
-                .MatchPunctuationCharacter(characterToMatch.Value);
             
             if (match is null)
                 return Task.CompletedTask;
@@ -665,8 +677,12 @@ public static class TextEditorCommandDefaultFacts
                 (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex,
                     textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.columnIndex),
                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
-            
-            var unmatchedCharacters = 1;
+
+            var unmatchedCharacters =
+                (fallbackToPreviousCharacter &&
+                 directionToFindMatchMatchingPunctuationCharacter == -1)
+                    ? 0
+                    : 1;
 
             while (true)
             {
@@ -710,6 +726,13 @@ public static class TextEditorCommandDefaultFacts
                 if (temporaryCursorPositionIndex <= 0 ||
                     temporaryCursorPositionIndex >= textEditorCommandParameter.TextEditorModel.DocumentLength)
                     break;
+            }
+            
+            if (shouldSelectText)
+            {
+                textEditorCommandParameter
+                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
+                    textEditorCommandParameter.TextEditorModel.GetCursorPositionIndex(temporaryCursor);
             }
  
             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
