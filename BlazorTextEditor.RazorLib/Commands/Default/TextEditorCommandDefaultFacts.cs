@@ -717,7 +717,7 @@ public static class TextEditorCommandDefaultFacts
             
             return Task.CompletedTask;
         },
-        false,
+        true,
         "GoToMatchingCharacter",
         "defaults_go-to-matching-character");
 }
