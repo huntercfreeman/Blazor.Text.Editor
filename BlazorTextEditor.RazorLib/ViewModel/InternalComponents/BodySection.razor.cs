@@ -22,6 +22,8 @@ public partial class BodySection : ComponentBase
     public string HtmlElementId { get; set; } = null!;
     [Parameter, EditorRequired]
     public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
+    [Parameter]
+    public bool IncludeContextMenuHelperComponent { get; set; }
     [Parameter, EditorRequired]
     public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
     

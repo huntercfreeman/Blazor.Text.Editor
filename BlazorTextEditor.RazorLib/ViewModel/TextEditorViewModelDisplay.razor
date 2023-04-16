@@ -59,13 +59,14 @@
                          style="@TextEditorStyleCssString"
                          class="bte_text-editor bcrl_unselectable @TextEditorClassCssString"
                          tabindex="-1">
-
+                        
                         <GutterSection/>
 
                         <BodySection @ref="_bodySection"
                                      TabIndex="TabIndex"
                                      HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
                                      ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
+                                     IncludeContextMenuHelperComponent="IncludeContextMenuHelperComponent"
                                      AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
                         
                         @if (textEditorViewModel.DisplayCommandBar)

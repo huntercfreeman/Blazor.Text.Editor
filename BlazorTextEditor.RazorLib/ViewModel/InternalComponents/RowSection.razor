@@ -98,7 +98,8 @@
                              TextEditorCursor="TextEditorViewModel.PrimaryCursor"
                              ScrollableContainerId="@TextEditorViewModel.BodyElementId"
                              IsFocusTarget="true"
-                             TabIndex="TabIndex">
+                             TabIndex="TabIndex"
+                             IncludeContextMenuHelperComponent="IncludeContextMenuHelperComponent">
 
         <OnContextMenuRenderFragment>
             @if (ContextMenuRenderFragmentOverride is not null)
