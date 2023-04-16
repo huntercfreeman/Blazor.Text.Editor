@@ -12,7 +12,8 @@
      style="@CaretRowStyleCss">
 </div>
 
-@if (_textEditorMenuKind != TextEditorMenuKind.None)
+@if (_textEditorMenuKind != TextEditorMenuKind.None &&
+     IncludeContextMenuHelperComponent)
 {
     <div @onkeydown:stopPropagation="true"
          @onmousedown:stopPropagation="true"

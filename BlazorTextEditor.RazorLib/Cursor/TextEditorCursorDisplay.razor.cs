@@ -35,6 +35,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     [Parameter, EditorRequired]
     public int TabIndex { get; set; }
     [Parameter]
+    public bool IncludeContextMenuHelperComponent { get; set; }
+    [Parameter]
     public RenderFragment OnContextMenuRenderFragment { get; set; } = null!;
     [Parameter]
     public RenderFragment AutoCompleteMenuRenderFragment { get; set; } = null!;

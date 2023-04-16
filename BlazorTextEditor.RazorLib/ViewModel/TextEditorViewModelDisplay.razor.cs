@@ -60,6 +60,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// <summary>If set to false the <see cref="TextEditorFooter"/> will NOT render below the text editor.</summary>
     [Parameter]
     public bool IncludeFooterHelperComponent { get; set; } = true;
+    [Parameter]
+    public bool IncludeContextMenuHelperComponent { get; set; } = true;
 
     private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromMilliseconds(750);

@@ -10,5 +10,6 @@ public enum WellKnownModelKind
     Razor,
     JavaScript,
     TypeScript,
+    TerminalGeneric,
     Plain,
 }
