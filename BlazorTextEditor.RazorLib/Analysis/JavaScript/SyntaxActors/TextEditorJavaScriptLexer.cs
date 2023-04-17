@@ -10,7 +10,7 @@ public class TextEditorJavaScriptLexer : ILexer
 {
     public static readonly GenericPreprocessorDefinition JavaScriptPreprocessorDefinition = new(
         "#",
-        ImmutableArray<DeliminationExtendedSyntax>.Empty);
+        ImmutableArray<DeliminationExtendedSyntaxDefinition>.Empty);
     
     public static readonly GenericLanguageDefinition JavaScriptLanguageDefinition = new GenericLanguageDefinition(
         "\"",

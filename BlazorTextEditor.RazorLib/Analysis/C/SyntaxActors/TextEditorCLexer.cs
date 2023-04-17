@@ -15,11 +15,10 @@ public class TextEditorCLexer : ILexer
         "#",
         new []
         {
-            new DeliminationExtendedSyntax(
+            new DeliminationExtendedSyntaxDefinition(
                 "<",
                 ">",
-                textSpan => new GenericStringSyntax(textSpan),
-                GenericDecorationKind.StringLiteral)
+                GenericDecorationKind.DeliminationExtended)
         }.ToImmutableArray());
     
     public static readonly GenericLanguageDefinition CLanguageDefinition = new GenericLanguageDefinition(
@@ -79,6 +78,10 @@ public class TextEditorCLexer : ILexer
         
         textEditorTextSpans
             .AddRange(cSyntaxWalker.GenericPreprocessorDirectiveSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(cSyntaxWalker.GenericDeliminationExtendedSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());

@@ -379,7 +379,7 @@ public class GenericSyntaxTree
             break;
         }
 
-        DeliminationExtendedSyntax? matchedDeliminationExtendedSyntax = null;
+        DeliminationExtendedSyntaxDefinition? matchedDeliminationExtendedSyntax = null;
         
         foreach (var deliminationExtendedSyntax in GenericLanguageDefinition.PreprocessorDefinition.DeliminationExtendedSyntaxes)
         {
@@ -413,8 +413,7 @@ public class GenericSyntaxTree
                 stringWalker.PositionIndex,
                 (byte)matchedDeliminationExtendedSyntax.GenericDecorationKind);
             
-            genericSyntax = matchedDeliminationExtendedSyntax.GenericSyntaxFactory
-                .Invoke(textSpan);
+            genericSyntax = new GenericDeliminationExtendedSyntax(textSpan);
             
             return true;
         }

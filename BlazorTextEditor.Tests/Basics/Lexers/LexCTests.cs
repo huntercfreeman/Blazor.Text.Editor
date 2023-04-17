@@ -243,8 +243,8 @@ int main()
 
         var expectedTextEditorTextSpans = new TextEditorTextSpan[]
         {
-            new(74, 78, (byte)GenericDecorationKind.PreprocessorDirective),
-            new(166, 172, (byte)GenericDecorationKind.PreprocessorDirective),
+            new(0, 8, (byte)GenericDecorationKind.PreprocessorDirective),
+            new(20, 28, (byte)GenericDecorationKind.PreprocessorDirective),
         };
         
         var cLexer = new TextEditorCLexer();
@@ -253,7 +253,7 @@ int main()
             await cLexer.Lex(testDataHelloWorld);
         
         textEditorTextSpans = textEditorTextSpans
-            .Where(x => x.DecorationByte == (byte)GenericDecorationKind.Function)
+            .Where(x => x.DecorationByte == (byte)GenericDecorationKind.PreprocessorDirective)
             .OrderBy(x => x.StartingIndexInclusive)
             .ToImmutableArray();
 

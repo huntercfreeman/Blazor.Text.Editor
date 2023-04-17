@@ -4,9 +4,10 @@ public enum GenericSyntaxKind
 {
     CommentSingleLine,
     CommentMultiLine,
-    String,
+    StringLiteral,
     Keyword,
     Function,
     Document,
-    PreprocessorDirective
+    PreprocessorDirective,
+    DeliminationExtended,
 }

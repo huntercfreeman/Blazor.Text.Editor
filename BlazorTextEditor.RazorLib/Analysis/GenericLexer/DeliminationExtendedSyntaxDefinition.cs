@@ -9,22 +9,19 @@ namespace BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 /// Given "#include &lt;stdlib.h&gt;" one would syntax highlight "&lt;stdlib.h&gt;"
 /// as if it were a string.
 /// </summary>
-public class DeliminationExtendedSyntax
+public class DeliminationExtendedSyntaxDefinition
 {
-    public DeliminationExtendedSyntax(
+    public DeliminationExtendedSyntaxDefinition(
         string syntaxStart,
         string syntaxEnd,
-        Func<TextEditorTextSpan, IGenericSyntax> genericSyntaxFactory,
         GenericDecorationKind genericDecorationKind)
     {
         SyntaxStart = syntaxStart;
         SyntaxEnd = syntaxEnd;
-        GenericSyntaxFactory = genericSyntaxFactory;
         GenericDecorationKind = genericDecorationKind;
     }
     
     public string SyntaxStart { get; }
     public string SyntaxEnd { get; }
-    public Func<TextEditorTextSpan, IGenericSyntax> GenericSyntaxFactory { get; }
     public GenericDecorationKind GenericDecorationKind { get; }
 }

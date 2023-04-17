@@ -9,5 +9,6 @@ public enum GenericDecorationKind
     Error,
     StringLiteral,
     Function,
-    PreprocessorDirective
+    PreprocessorDirective,
+    DeliminationExtended
 }

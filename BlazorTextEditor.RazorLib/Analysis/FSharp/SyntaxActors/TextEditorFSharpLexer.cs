@@ -10,7 +10,7 @@ public class TextEditorFSharpLexer : ILexer
 {
     public static readonly GenericPreprocessorDefinition FSharpPreprocessorDefinition = new(
         "#",
-        ImmutableArray<DeliminationExtendedSyntax>.Empty);
+        ImmutableArray<DeliminationExtendedSyntaxDefinition>.Empty);
     
     public static readonly GenericLanguageDefinition FSharpLanguageDefinition = new GenericLanguageDefinition(
         "\"",

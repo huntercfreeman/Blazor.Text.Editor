@@ -17,6 +17,7 @@ public class GenericDecorationMapper : IDecorationMapper
             GenericDecorationKind.CommentMultiLine => "bte_comment",
             GenericDecorationKind.Function => "bte_method",
             GenericDecorationKind.PreprocessorDirective => "bte_keyword",
+            GenericDecorationKind.DeliminationExtended => "bte_string-literal",
             _ => string.Empty,
         };
     }

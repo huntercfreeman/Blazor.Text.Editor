@@ -4,9 +4,9 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxObjects;
 
-public class GenericStringSyntax : IGenericSyntax
+public class GenericDeliminationExtendedSyntax : IGenericSyntax
 {
-    public GenericStringSyntax(
+    public GenericDeliminationExtendedSyntax(
         TextEditorTextSpan textEditorTextSpan)
     {
         TextEditorTextSpan = textEditorTextSpan;
@@ -14,5 +14,5 @@ public class GenericStringSyntax : IGenericSyntax
 
     public TextEditorTextSpan TextEditorTextSpan { get; }
     public ImmutableArray<IGenericSyntax> Children => ImmutableArray<IGenericSyntax>.Empty;
-    public GenericSyntaxKind GenericSyntaxKind => GenericSyntaxKind.StringLiteral;
+    public GenericSyntaxKind GenericSyntaxKind => GenericSyntaxKind.DeliminationExtended;
 }
