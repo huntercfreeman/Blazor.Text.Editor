@@ -10,6 +10,7 @@ public class GenericSyntaxWalker
     public List<GenericCommentMultiLineSyntax> GenericCommentMultiLineSyntaxes { get; } = new();
     public List<GenericKeywordSyntax> GenericKeywordSyntaxes { get; } = new();
     public List<GenericFunctionSyntax> GenericFunctionSyntaxes { get; } = new();
+    public List<GenericPreprocessorDirectiveSyntax> GenericPreprocessorDirectiveSyntaxes { get; } = new();
 
     public void Visit(IGenericSyntax node)
     {
@@ -34,6 +35,9 @@ public class GenericSyntaxWalker
                 break;
             case GenericSyntaxKind.Function:
                 VisitGenericFunctionSyntax((GenericFunctionSyntax)node);
+                break;
+            case GenericSyntaxKind.PreprocessorDirective:
+                VisitGenericPreprocessorDirectiveSyntax((GenericPreprocessorDirectiveSyntax)node);
                 break;
         }
     }
@@ -61,5 +65,10 @@ public class GenericSyntaxWalker
     private void VisitGenericFunctionSyntax(GenericFunctionSyntax node)
     {
         GenericFunctionSyntaxes.Add(node);
+    }
+    
+    private void VisitGenericPreprocessorDirectiveSyntax(GenericPreprocessorDirectiveSyntax node)
+    {
+        GenericPreprocessorDirectiveSyntaxes.Add(node);
     }
 }

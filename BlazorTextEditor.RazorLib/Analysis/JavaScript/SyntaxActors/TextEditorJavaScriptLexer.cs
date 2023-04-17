@@ -8,6 +8,9 @@ namespace BlazorTextEditor.RazorLib.Analysis.JavaScript.SyntaxActors;
 
 public class TextEditorJavaScriptLexer : ILexer
 {
+    public static readonly GenericPreprocessorDefinition JavaScriptPreprocessorDefinition = new(
+        "#",
+        ImmutableArray<DeliminationExtendedSyntax>.Empty);
     
     public static readonly GenericLanguageDefinition JavaScriptLanguageDefinition = new GenericLanguageDefinition(
         "\"",
@@ -23,7 +26,8 @@ public class TextEditorJavaScriptLexer : ILexer
         }.ToImmutableArray(),
         "/*",
         "*/",
-        JavaScriptKeywords.ALL);
+        JavaScriptKeywords.ALL,
+        JavaScriptPreprocessorDefinition);
 
     private readonly GenericSyntaxTree _javaScriptSyntaxTree;
 

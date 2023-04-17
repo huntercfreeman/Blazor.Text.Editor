@@ -7,5 +7,6 @@ public enum GenericSyntaxKind
     String,
     Keyword,
     Function,
-    Document
+    Document,
+    PreprocessorDirective
 }

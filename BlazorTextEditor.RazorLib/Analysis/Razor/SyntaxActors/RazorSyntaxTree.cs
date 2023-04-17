@@ -1227,7 +1227,7 @@ public class RazorSyntaxTree
                     //
                     //     break;
                 }
-                case GenericDecorationKind.String:
+                case GenericDecorationKind.StringLiteral:
                 {
                     var razorStringLiteralTextSpan = lexedTokenTextSpan with
                     {

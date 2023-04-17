@@ -7,6 +7,7 @@ public enum GenericDecorationKind
     CommentSingleLine,
     CommentMultiLine,
     Error,
-    String,
-    Function
+    StringLiteral,
+    Function,
+    PreprocessorDirective
 }

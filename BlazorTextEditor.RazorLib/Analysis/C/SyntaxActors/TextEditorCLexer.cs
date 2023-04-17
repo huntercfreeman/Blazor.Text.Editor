@@ -1,13 +1,27 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.Analysis.C.Facts;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxEnums;
+using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.C.SyntaxActors;
 
 public class TextEditorCLexer : ILexer
 {
+    public static readonly GenericPreprocessorDefinition CPreprocessorDefinition = new(
+        "#",
+        new []
+        {
+            new DeliminationExtendedSyntax(
+                "<",
+                ">",
+                textSpan => new GenericStringSyntax(textSpan),
+                GenericDecorationKind.StringLiteral)
+        }.ToImmutableArray());
+    
     public static readonly GenericLanguageDefinition CLanguageDefinition = new GenericLanguageDefinition(
         "\"",
         "\"",
@@ -22,7 +36,8 @@ public class TextEditorCLexer : ILexer
         }.ToImmutableArray(),
         "/*",
         "*/",
-        CKeywords.ALL);
+        CKeywords.ALL,
+        CPreprocessorDefinition);
 
     private readonly GenericSyntaxTree _cSyntaxTree;
 
@@ -33,33 +48,37 @@ public class TextEditorCLexer : ILexer
     
     public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
     {
-        var cSharpSyntaxUnit = _cSyntaxTree
+        var cSyntaxUnit = _cSyntaxTree
             .ParseText(text);
 
-        var cSharpSyntaxWalker = new GenericSyntaxWalker();
+        var cSyntaxWalker = new GenericSyntaxWalker();
 
-        cSharpSyntaxWalker.Visit(cSharpSyntaxUnit.GenericDocumentSyntax);
+        cSyntaxWalker.Visit(cSyntaxUnit.GenericDocumentSyntax);
 
         var textEditorTextSpans = new List<TextEditorTextSpan>();
 
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericStringSyntaxes
+            .AddRange(cSyntaxWalker.GenericStringSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericCommentSingleLineSyntaxes
+            .AddRange(cSyntaxWalker.GenericCommentSingleLineSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericCommentMultiLineSyntaxes
+            .AddRange(cSyntaxWalker.GenericCommentMultiLineSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericKeywordSyntaxes
+            .AddRange(cSyntaxWalker.GenericKeywordSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         textEditorTextSpans
-            .AddRange(cSharpSyntaxWalker.GenericFunctionSyntaxes
+            .AddRange(cSyntaxWalker.GenericFunctionSyntaxes
+                .Select(x => x.TextEditorTextSpan));
+        
+        textEditorTextSpans
+            .AddRange(cSyntaxWalker.GenericPreprocessorDirectiveSyntaxes
                 .Select(x => x.TextEditorTextSpan));
         
         return Task.FromResult(textEditorTextSpans.ToImmutableArray());
