@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorCommon.RazorLib.Keyboard;
+using BlazorTextEditor.RazorLib.Analysis;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;
@@ -403,6 +404,17 @@ public partial class TextEditorModel
         return startOfRowPositionIndex + columnIndex;
     }
 
+    public char GetTextAt(int positionIndex)
+    {
+        if (positionIndex < 0 || 
+            positionIndex >= _content.Count)
+        {
+            return ParserFacts.END_OF_FILE;
+        }
+
+        return _content[positionIndex].Value;
+    }
+    
     public string GetTextRange(int startingPositionIndex, int count)
     {
         return new string(_content

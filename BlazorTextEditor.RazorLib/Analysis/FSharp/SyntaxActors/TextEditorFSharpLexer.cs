@@ -8,6 +8,10 @@ namespace BlazorTextEditor.RazorLib.Analysis.FSharp.SyntaxActors;
 
 public class TextEditorFSharpLexer : ILexer
 {
+    public static readonly GenericPreprocessorDefinition FSharpPreprocessorDefinition = new(
+        "#",
+        ImmutableArray<DeliminationExtendedSyntaxDefinition>.Empty);
+    
     public static readonly GenericLanguageDefinition FSharpLanguageDefinition = new GenericLanguageDefinition(
         "\"",
         "\"",
@@ -22,7 +26,8 @@ public class TextEditorFSharpLexer : ILexer
         }.ToImmutableArray(),
         "(*",
         "*)",
-        FSharpKeywords.ALL);
+        FSharpKeywords.ALL,
+        FSharpPreprocessorDefinition);
 
     private readonly GenericSyntaxTree _fSharpSyntaxTree;
 

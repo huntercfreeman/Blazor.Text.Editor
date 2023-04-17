@@ -14,7 +14,8 @@ public class GenericLanguageDefinition
         ImmutableArray<string> commentSingleLineEndings,
         string commentMultiLineStart,
         string commentMultiLineEnd,
-        ImmutableArray<string> keywords)
+        ImmutableArray<string> keywords,
+        GenericPreprocessorDefinition preprocessorDefinition)
     {
         StringStart = stringStart;
         StringEnd = stringEnd;
@@ -26,6 +27,7 @@ public class GenericLanguageDefinition
         CommentMultiLineStart = commentMultiLineStart;
         CommentMultiLineEnd = commentMultiLineEnd;
         Keywords = keywords;
+        PreprocessorDefinition = preprocessorDefinition;
     }
     
     public string StringStart { get; }
@@ -38,4 +40,5 @@ public class GenericLanguageDefinition
     public string CommentMultiLineStart { get; }
     public string CommentMultiLineEnd { get; }
     public ImmutableArray<string> Keywords { get; }
+    public GenericPreprocessorDefinition PreprocessorDefinition { get; }
 }

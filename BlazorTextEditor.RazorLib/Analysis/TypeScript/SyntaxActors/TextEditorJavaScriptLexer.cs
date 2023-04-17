@@ -8,6 +8,9 @@ namespace BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 
 public class TextEditorTypeScriptLexer : ILexer
 {
+    public static readonly GenericPreprocessorDefinition TypeScriptPreprocessorDefinition = new(
+        "#",
+        ImmutableArray<DeliminationExtendedSyntaxDefinition>.Empty);
     
     public static readonly GenericLanguageDefinition TypeScriptLanguageDefinition = new GenericLanguageDefinition(
         "\"",
@@ -23,7 +26,8 @@ public class TextEditorTypeScriptLexer : ILexer
         }.ToImmutableArray(),
         "/*",
         "*/",
-        TypeScriptKeywords.ALL);
+        TypeScriptKeywords.ALL,
+        TypeScriptPreprocessorDefinition);
 
     private readonly GenericSyntaxTree _typeScriptSyntaxTree;
 

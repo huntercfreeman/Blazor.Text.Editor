@@ -60,6 +60,12 @@ public class GenericSyntaxTree
                     documentChildren.Add(genericKeywordSyntax);
                 }
             }
+            else if (stringWalker.CheckForSubstring(GenericLanguageDefinition.PreprocessorDefinition.TransitionSubstring))
+            {
+                var genericCommentMultiLineSyntax = ParsePreprocessorDirective(stringWalker, diagnosticBag);
+                
+                documentChildren.Add(genericCommentMultiLineSyntax);
+            }
             
             _ = stringWalker.ReadCharacter();
         }
@@ -170,7 +176,7 @@ public class GenericSyntaxTree
         var stringTextEditorTextSpan = new TextEditorTextSpan(
             startingPositionIndex,
             stringWalker.PositionIndex + 1,
-            (byte)GenericDecorationKind.String);
+            (byte)GenericDecorationKind.StringLiteral);
         
         return new GenericStringSyntax(
             stringTextEditorTextSpan);
@@ -300,5 +306,121 @@ public class GenericSyntaxTree
             rememberPositionIndex - stringWalker.PositionIndex);
         
         return true;
+    }
+    
+    private GenericPreprocessorDirectiveSyntax ParsePreprocessorDirective(
+        StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag)
+    {
+        var startingPositionIndex = stringWalker.PositionIndex;
+
+        _ = stringWalker.ReadRange(
+            GenericLanguageDefinition.PreprocessorDefinition.TransitionSubstring.Length);
+        
+        while (!stringWalker.IsEof)
+        {
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+            {
+                _ = stringWalker.ReadCharacter();
+                continue;
+            }
+
+            break;
+        }
+
+        var identifierBuilder = new StringBuilder();
+        
+        while (!stringWalker.IsEof)
+        {
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+                break;
+
+            identifierBuilder.Append(stringWalker.CurrentCharacter);
+            
+            _ = stringWalker.ReadCharacter();
+        }
+
+        var textSpan = new TextEditorTextSpan(
+            startingPositionIndex,
+            stringWalker.PositionIndex,
+            (byte)GenericDecorationKind.PreprocessorDirective);
+        
+        var success = TryParsePreprocessorDirectiveDeliminationExtendedSyntaxes(
+            stringWalker,
+            diagnosticBag,
+            out var genericSyntax);
+
+        var children = success && genericSyntax is not null 
+            ? new[] { genericSyntax }.ToImmutableArray()
+            : ImmutableArray<IGenericSyntax>.Empty;
+        
+        var genericPreprocessorDirectiveSyntax = new GenericPreprocessorDirectiveSyntax(
+            textSpan,
+            children);
+        
+        return genericPreprocessorDirectiveSyntax;
+    }
+    
+    private bool TryParsePreprocessorDirectiveDeliminationExtendedSyntaxes(
+        StringWalker stringWalker,
+        TextEditorDiagnosticBag diagnosticBag,
+        out IGenericSyntax? genericSyntax)
+    {
+        var entryPositionIndex = stringWalker.PositionIndex;
+        
+        while (!stringWalker.IsEof)
+        {
+            if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
+            {
+                _ = stringWalker.ReadCharacter();
+                continue;
+            }
+
+            break;
+        }
+
+        DeliminationExtendedSyntaxDefinition? matchedDeliminationExtendedSyntax = null;
+        
+        foreach (var deliminationExtendedSyntax in GenericLanguageDefinition.PreprocessorDefinition.DeliminationExtendedSyntaxes)
+        {
+            if (stringWalker.CheckForSubstring(deliminationExtendedSyntax.SyntaxStart))
+            {
+                matchedDeliminationExtendedSyntax = deliminationExtendedSyntax;
+                break;
+            }
+        }
+
+        if (matchedDeliminationExtendedSyntax is not null)
+        {
+            var deliminationExtendedSyntaxStartingInclusiveIndex = stringWalker.PositionIndex;
+            var deliminationExtendedSyntaxBuilder = new StringBuilder();
+        
+            while (!stringWalker.IsEof)
+            {
+                if (stringWalker.CheckForSubstring(matchedDeliminationExtendedSyntax.SyntaxEnd))
+                {
+                    _ = stringWalker.ReadCharacter();
+                    break;
+                }
+
+                deliminationExtendedSyntaxBuilder.Append(stringWalker.CurrentCharacter);
+            
+                _ = stringWalker.ReadCharacter();
+            }
+
+            var textSpan = new TextEditorTextSpan(
+                deliminationExtendedSyntaxStartingInclusiveIndex,
+                stringWalker.PositionIndex,
+                (byte)matchedDeliminationExtendedSyntax.GenericDecorationKind);
+            
+            genericSyntax = new GenericDeliminationExtendedSyntax(textSpan);
+            
+            return true;
+        }
+        
+        stringWalker.BacktrackRange(stringWalker.PositionIndex - entryPositionIndex);
+        
+        genericSyntax = null;
+        return false;
     }
 }
