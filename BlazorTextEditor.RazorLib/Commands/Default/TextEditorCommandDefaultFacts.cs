@@ -3,9 +3,10 @@ using BlazorCommon.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
+using BlazorTextEditor.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Commands.Default;
@@ -143,7 +144,7 @@ public static class TextEditorCommandDefaultFacts
                     textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
-                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                     });
             }
             
@@ -168,7 +169,7 @@ public static class TextEditorCommandDefaultFacts
                 textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
-                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                 });
             
             return Task.CompletedTask;
@@ -206,14 +207,14 @@ public static class TextEditorCommandDefaultFacts
                 previousViewModel => previousViewModel with
                 {
                     ShouldMeasureDimensions = true,
-                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                 });
             
             textEditorCommandParameter.TextEditorService.ViewModelWith(
                 textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
-                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                 });
             
             return Task.CompletedTask;

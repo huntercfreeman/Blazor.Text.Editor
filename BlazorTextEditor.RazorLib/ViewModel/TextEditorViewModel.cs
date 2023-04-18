@@ -3,8 +3,8 @@ using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Virtualization;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
@@ -21,10 +21,12 @@ public record TextEditorViewModel(
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
     
     public TextEditorCursor PrimaryCursor { get; } = new(true);
-    
-    public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
     public Action<TextEditorModel>? OnSaveRequested { get; init; }
     public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }
+    
+    public TextEditorStateChangedKey TextEditorStateChangedKey { get; init; } = 
+        TextEditorStateChangedKey.NewTextEditorStateChangedKey();
+    
 
     /// <summary>
     /// <see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.
@@ -341,7 +343,7 @@ public record TextEditorViewModel(
                 previousViewModel => previousViewModel with
                 {
                     VirtualizationResult = virtualizationResult,
-                    TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                    TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                 });
     }
 }

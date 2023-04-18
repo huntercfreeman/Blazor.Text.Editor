@@ -10,9 +10,11 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Store.Model;
+using BlazorTextEditor.RazorLib.Store.Options;
+using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -21,8 +23,16 @@ using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
 
-public partial class TextEditorViewModelDisplay : TextEditorView
+public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 {
+    [Inject]
+    protected IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
+    [Inject]
+    protected IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
+    [Inject]
+    protected IState<TextEditorOptionsState> TextEditorGlobalOptionsWrap { get; set; } = null!;
+    [Inject]
+    protected ITextEditorService TextEditorService { get; set; } = null!;
     [Inject]
     private IAutocompleteIndexer AutocompleteIndexer { get; set; } = null!;
     [Inject]
@@ -34,6 +44,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     [Inject]
     private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
     
+    [Parameter, EditorRequired]
+    public TextEditorViewModelKey TextEditorViewModelKey { get; set; } = null!;
     [Parameter]
     public string WrapperStyleCssString { get; set; } = string.Empty;
     [Parameter]
@@ -82,8 +94,16 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private int? _previousGlobalFontSizeInPixels;
 
     private TextEditorViewModelKey _previousTextEditorViewModelKey = TextEditorViewModelKey.Empty;
+    private TextEditorStateChangedKey _previousTextEditorStateChangedKey = TextEditorStateChangedKey.Empty;
     private ElementReference _textEditorDisplayElementReference;
     
+    public TextEditorModel? MutableReferenceToModel => TextEditorService
+        .ViewModelGetModelOrDefault(TextEditorViewModelKey);
+    
+    public TextEditorViewModel? MutableReferenceToViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
+        .FirstOrDefault(x => 
+            x.ViewModelKey == TextEditorViewModelKey);
+
     /// <summary>
     /// Accounts for one who might hold down Left Mouse Button from outside the TextEditorDisplay's content div
     /// then move their mouse over the content div while holding the Left Mouse Button down.
@@ -98,7 +118,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
-    private bool _disposed;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
     private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => 
@@ -111,7 +130,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         $"bte_text-editor-content_{_componentHtmlElementId}";
 
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
-    
+
     protected override async Task OnParametersSetAsync()
     {
         var safeTextEditorViewModel = MutableReferenceToViewModel;
@@ -138,7 +157,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                     previousViewModel => previousViewModel with
                     {
                         ShouldMeasureDimensions = true,
-                        TextEditorRenderStateKey = TextEditorRenderStateKey.NewTextEditorRenderStateKey()
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                     });
             }
         }
@@ -157,10 +176,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
         await base.OnParametersSetAsync();
     }
-
+    
     protected override void OnInitialized()
     {
         TextEditorModelsCollectionWrap.StateChanged += TextEditorModelsCollectionWrapOnStateChanged;
+        TextEditorViewModelsCollectionWrap.StateChanged += TextEditorViewModelsCollectionWrapOnStateChanged;
+        TextEditorGlobalOptionsWrap.StateChanged += TextEditorGlobalOptionsWrapOnStateChanged;
         
         base.OnInitialized();
     }
@@ -232,6 +253,24 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             await viewModel.CalculateVirtualizationResultAsync(
                 viewModel.VirtualizationResult.ElementMeasurementsInPixels,
                 _textEditorModelChangedCancellationTokenSource.Token);
+        }
+    }
+    
+    private void TextEditorGlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
+    {
+    }
+
+    private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        var viewModel = MutableReferenceToViewModel;
+        var viewModelTextEditorStateChangedKey = viewModel?.TextEditorStateChangedKey ??
+                                                 TextEditorStateChangedKey.Empty;
+        
+        if (_previousTextEditorStateChangedKey != viewModelTextEditorStateChangedKey)
+        {
+            _previousTextEditorStateChangedKey = viewModelTextEditorStateChangedKey;
+
+            await InvokeAsync(StateHasChanged);
         }
     }
     
@@ -874,21 +913,12 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         }
     }
 
-    protected override void Dispose(bool disposing)
+    public void Dispose()
     {
-        if (_disposed)
-        {
-            return;
-        }
-    
-        if (disposing)
-        {
-            TextEditorModelsCollectionWrap.StateChanged -= TextEditorModelsCollectionWrapOnStateChanged;
-            _textEditorModelChangedCancellationTokenSource.Cancel();
-        }
-    
-        _disposed = true;
+        TextEditorModelsCollectionWrap.StateChanged -= TextEditorModelsCollectionWrapOnStateChanged;
+        TextEditorViewModelsCollectionWrap.StateChanged -= TextEditorViewModelsCollectionWrapOnStateChanged;
+        TextEditorGlobalOptionsWrap.StateChanged -= TextEditorGlobalOptionsWrapOnStateChanged;
         
-        base.Dispose(disposing);
+        _textEditorModelChangedCancellationTokenSource.Cancel();
     }
 }

@@ -50,6 +50,7 @@ public partial class TextEditorModel
         
         var startOfRowTupleInclusive = GetStartOfRowTuple(rowIndex);
 
+        // TODO: Index was out of range exception on 2023-04-18
         var endOfRowTupleExclusive = _rowEndingPositions[rowIndex];
 
         var lengthOfRowWithLineEndings = endOfRowTupleExclusive.positionIndex

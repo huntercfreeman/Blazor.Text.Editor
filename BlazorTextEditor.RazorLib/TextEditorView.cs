@@ -1,5 +1,4 @@
 ﻿using BlazorTextEditor.RazorLib.Model;
-using BlazorTextEditor.RazorLib.Store.Misc;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
