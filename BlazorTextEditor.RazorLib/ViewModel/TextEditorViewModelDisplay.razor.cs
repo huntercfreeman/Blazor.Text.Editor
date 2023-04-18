@@ -4,6 +4,7 @@ using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorCommon.RazorLib.Keyboard;
+using BlazorCommon.RazorLib.Reactive;
 using BlazorTextEditor.RazorLib.Autocomplete;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
@@ -67,8 +68,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromMilliseconds(750);
     private int _skippedSyntaxHighlightingEventCount;
 
-    private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
-    private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
+    private readonly IThrottle<MouseEventArgs> _onMouseMoveThrottle = new Throttle<MouseEventArgs>(
+        TimeSpan.FromMilliseconds(25));
     
     private readonly SemaphoreSlim _onTouchMoveSemaphoreSlim = new(1, 1);
     private readonly TimeSpan _onTouchMoveDelay = TimeSpan.FromMilliseconds(25);
@@ -530,54 +531,52 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// <summary>
     ///     OnMouseUp is unnecessary
     /// </summary>
-    /// <param name="mouseEventArgs"></param>
     private async Task HandleContentOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
     {
-        var success = await _onMouseMoveSemaphoreSlim
-            .WaitAsync(TimeSpan.Zero);
+        var mostRecentEventArgs = await _onMouseMoveThrottle.FireAsync(
+            mouseEventArgs,
+            CancellationToken.None);
 
-        if (!success)
+        if (mostRecentEventArgs.isCancellationRequested ||
+            mostRecentEventArgs.tEventArgs is null)
+        {
+            return;
+        }
+
+        mouseEventArgs = mostRecentEventArgs.tEventArgs;
+        
+        var safeTextEditorReference = MutableReferenceToModel;
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
+
+        if (safeTextEditorReference is null ||
+            safeTextEditorViewModel is null)
             return;
 
-        try
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
+
+        // Buttons is a bit flag
+        // '& 1' gets if left mouse button is held
+        if (_thinksLeftMouseButtonIsDown &&
+            (mouseEventArgs.Buttons & 1) == 1)
         {
-            var safeTextEditorReference = MutableReferenceToModel;
-            var safeTextEditorViewModel = MutableReferenceToViewModel;
+            var rowAndColumnIndex =
+                await DetermineRowAndColumnIndex(mouseEventArgs);
 
-            if (safeTextEditorReference is null ||
-                safeTextEditorViewModel is null)
-                return;
+            primaryCursorSnapshot.UserCursor.IndexCoordinates =
+                (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+            primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
+                rowAndColumnIndex.columnIndex;
 
-            var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
+            TextEditorCursorDisplay?.PauseBlinkAnimation();
 
-            // Buttons is a bit flag
-            // '& 1' gets if left mouse button is held
-            if (_thinksLeftMouseButtonIsDown &&
-                (mouseEventArgs.Buttons & 1) == 1)
-            {
-                var rowAndColumnIndex =
-                    await DetermineRowAndColumnIndex(mouseEventArgs);
-
-                primaryCursorSnapshot.UserCursor.IndexCoordinates =
-                    (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-                primaryCursorSnapshot.UserCursor.PreferredColumnIndex =
-                    rowAndColumnIndex.columnIndex;
-
-                TextEditorCursorDisplay?.PauseBlinkAnimation();
-
-                primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
-                    safeTextEditorReference
-                        .GetCursorPositionIndex(
-                            new TextEditorCursor(rowAndColumnIndex, false));
-            }
-            else
-                _thinksLeftMouseButtonIsDown = false;
-
-            await Task.Delay(_onMouseMoveDelay);
+            primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
+                safeTextEditorReference
+                    .GetCursorPositionIndex(
+                        new TextEditorCursor(rowAndColumnIndex, false));
         }
-        finally
+        else
         {
-            _onMouseMoveSemaphoreSlim.Release();
+            _thinksLeftMouseButtonIsDown = false;
         }
     }
 
