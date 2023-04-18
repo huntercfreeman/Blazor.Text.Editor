@@ -4,7 +4,7 @@
      style="@CssStyleString">
     @{
         var textEditorGroup = TextEditorGroupsCollectionWrap.Value.GroupsList
-            .FirstOrDefault();
+            .FirstOrDefault(x => x.GroupKey == TextEditorGroupKey);
     }
     
     @if (textEditorGroup is not null)
@@ -23,7 +23,7 @@
         
                 if (textEditorModel is null)
                 {
-                    <text>textEditorModel was null</text>
+                    <text>No editors are open currently</text>
                 }
                 else
                 {
@@ -38,7 +38,7 @@
     else
     {
         <div>
-            textEditorGroup was null
+            Group not found
         </div>
     }
 </div>

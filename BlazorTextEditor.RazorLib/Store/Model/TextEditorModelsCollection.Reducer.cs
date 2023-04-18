@@ -172,6 +172,10 @@ public partial class TextEditorModelsCollection
 
             var nextTextEditor = new TextEditorModel(textEditor);
             nextTextEditor.SetContent(reloadAction.Content);
+            
+            nextTextEditor = textEditor.SetResourceData(
+                nextTextEditor.ResourceUri,
+                reloadAction.ResourceLastWriteTime);
 
             var nextList = inModelsCollection.TextEditorList
                 .Replace(textEditor, nextTextEditor);

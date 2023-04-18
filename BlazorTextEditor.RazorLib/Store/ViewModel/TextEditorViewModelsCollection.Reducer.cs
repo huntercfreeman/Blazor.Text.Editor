@@ -1,4 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Character;
+using BlazorTextEditor.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.ViewModel;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
@@ -26,7 +27,11 @@ public partial class TextEditorViewModelsCollection
                 registerAction.TextEditorService,
                 VirtualizationResult<List<RichCharacter>>.GetEmptyRichCharacters(),
                 true,
-                false);
+                false)
+            {
+                TextEditorStateChangedKey = 
+                    TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+            };
 
             var nextViewModelsList = inViewModelsCollection.ViewModelsList
                 .Add(viewModel);

@@ -40,7 +40,10 @@ public partial class TextEditorModelsCollection
 
     public record RegisterAction(TextEditorModel TextEditorModel);
 
-    public record ReloadAction(TextEditorModelKey TextEditorModelKey, string Content);
+    public record ReloadAction(
+        TextEditorModelKey TextEditorModelKey,
+        string Content,
+        DateTime ResourceLastWriteTime);
 
     public record SetResourceDataAction(
         TextEditorModelKey TextEditorModelKey,

@@ -1,5 +1,6 @@
 using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Dimensions;
+using BlazorCommon.RazorLib.Reactive;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
@@ -55,10 +56,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
     private TimeSpan _blinkingCursorTaskDelay = TimeSpan.FromMilliseconds(1000);
     private bool _hasBlinkAnimation = true;
-    
-    private CancellationTokenSource _checkCursorIsInViewCancellationTokenSource = new();
-    private SemaphoreSlim _checkCursorIsInViewSemaphoreSlim = new(1, 1);
-    private readonly TimeSpan _checkCursorIsInViewDelay = TimeSpan.FromMilliseconds(25);
 
     private ElementReference? _textEditorCursorDisplayElementReference;
     private TextEditorMenuKind _textEditorMenuKind;
@@ -332,14 +329,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
         return _blinkingCursorCancellationTokenSource.Token;
     }
-    
-    private CancellationToken CancelCheckCursorInViewSourceAndCreateNewThenReturnToken()
-    {
-        _checkCursorIsInViewCancellationTokenSource.Cancel();
-        _checkCursorIsInViewCancellationTokenSource = new CancellationTokenSource();
-
-        return _checkCursorIsInViewCancellationTokenSource.Token;
-    }
 
     public async Task SetShouldDisplayMenuAsync(
         TextEditorMenuKind textEditorMenuKind,
@@ -385,7 +374,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public void Dispose()
     {
         _blinkingCursorCancellationTokenSource.Cancel();
-        _checkCursorIsInViewCancellationTokenSource.Cancel();
         
         if (IsFocusTarget)
         {

@@ -24,6 +24,7 @@ using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.Row;
@@ -512,7 +513,8 @@ public class TextEditorService : ITextEditorService
 
                         return inViewModel with
                         {
-                            FirstPresentationLayer = outPresentationLayer
+                            FirstPresentationLayer = outPresentationLayer,
+                            TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                         };
                     }));
         }
@@ -617,12 +619,14 @@ public class TextEditorService : ITextEditorService
     
     public void ModelReload(
         TextEditorModelKey textEditorModelKey,
-        string content)
+        string content,
+        DateTime resourceLastWriteTime)
     {
         _dispatcher.Dispatch(
             new TextEditorModelsCollection.ReloadAction(
                 textEditorModelKey,
-                content));
+                content,
+                resourceLastWriteTime));
     }
     
     public TextEditorModel? ModelFindOrDefault(TextEditorModelKey textEditorModelKey)

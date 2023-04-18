@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Store.Misc;
+using BlazorTextEditor.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib.Group;
@@ -10,5 +10,6 @@ public record TextEditorGroup(
     TextEditorViewModelKey ActiveViewModelKey,
     ImmutableList<TextEditorViewModelKey> ViewModelKeys)
 {
-    public TextEditorRenderStateKey TextEditorRenderStateKey { get; init; } = TextEditorRenderStateKey.NewTextEditorRenderStateKey();
+    public TextEditorStateChangedKey TextEditorStateChangedKey { get; init; } = 
+        TextEditorStateChangedKey.NewTextEditorStateChangedKey();
 }
