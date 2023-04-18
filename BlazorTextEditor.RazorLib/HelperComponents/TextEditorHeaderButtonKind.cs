@@ -8,5 +8,7 @@ public enum TextEditorHeaderButtonKind
     Copy,
     Paste,
     Save,
-    SelectAll
+    SelectAll,
+    PeekWindowDisplay,
+    SemanticModelDisplay,
 }

@@ -1,4 +1,6 @@
-﻿using BlazorTextEditor.RazorLib.Store.Group;
+﻿using System.Collections.Immutable;
+using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Store.Group;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
@@ -37,6 +39,9 @@ public partial class TextEditorGroupDisplay : IDisposable
     /// <summary>TabIndex is used for the html attribute named: 'tabindex'</summary>
     [Parameter]
     public int TabIndex { get; set; } = -1;
+    /// <summary><see cref="HeaderButtonKinds"/> contains the enum value that represents a button displayed in the optional component: <see cref="TextEditorHeader"/>.</summary>
+    [Parameter]
+    public ImmutableArray<TextEditorHeaderButtonKind>? HeaderButtonKinds { get; set; }
 
     protected override void OnInitialized()
     {
