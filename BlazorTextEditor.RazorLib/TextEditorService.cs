@@ -149,6 +149,7 @@ public class TextEditorService : ITextEditorService
             lexer,
             decorationMapper,
             null,
+            null,
             textEditorModelKey);
         
         // IBackgroundTaskQueue does not work well here because

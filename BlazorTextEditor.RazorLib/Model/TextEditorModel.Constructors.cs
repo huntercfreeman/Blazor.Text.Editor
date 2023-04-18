@@ -3,6 +3,7 @@ using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Keymap.Default;
 using BlazorTextEditor.RazorLib.Lexing;
+using BlazorTextEditor.RazorLib.Semantics;
 
 namespace BlazorTextEditor.RazorLib.Model;
 
@@ -16,6 +17,7 @@ public partial class TextEditorModel
         string content,
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
+        ISemanticModel? semanticModel,
         ITextEditorKeymap? textEditorKeymap)
     {
         ResourceUri = resourceUri;
@@ -23,6 +25,7 @@ public partial class TextEditorModel
         FileExtension = fileExtension;
         Lexer = lexer ?? new TextEditorLexerDefault();
         DecorationMapper = decorationMapper ?? new TextEditorDecorationMapperDefault();
+        SemanticModel = semanticModel ?? new SemanticModelDefault();
         TextEditorKeymap = textEditorKeymap ?? new TextEditorKeymapDefault();
         
         SetContent(content);
@@ -35,6 +38,7 @@ public partial class TextEditorModel
         string content,
         ILexer? lexer,
         IDecorationMapper? decorationMapper,
+        ISemanticModel? semanticModel,
         ITextEditorKeymap? textEditorKeymap,
         TextEditorModelKey modelKey)
         : this(
@@ -44,6 +48,7 @@ public partial class TextEditorModel
             content,
             lexer,
             decorationMapper,
+            semanticModel,
             textEditorKeymap)
     {
         ModelKey = modelKey;

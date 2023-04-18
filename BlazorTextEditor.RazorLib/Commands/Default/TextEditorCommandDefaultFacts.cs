@@ -743,4 +743,31 @@ public static class TextEditorCommandDefaultFacts
         true,
         "GoToMatchingCharacter",
         "defaults_go-to-matching-character");
+    
+    public static readonly TextEditorCommand GoToDefinition = new(
+        textEditorCommandParameter =>
+        {
+            if (textEditorCommandParameter.TextEditorModel.SemanticModel is null)
+                return Task.CompletedTask;
+
+            var positionIndex = textEditorCommandParameter.TextEditorModel
+                .GetCursorPositionIndex(
+                    textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor);
+            
+            var textSpanOfWordAtPositionIndex = textEditorCommandParameter.TextEditorModel
+                .GetWordAt(positionIndex);
+            
+            if (textSpanOfWordAtPositionIndex is null)
+                return Task.CompletedTask;
+
+            var symbolDefinition = textEditorCommandParameter.TextEditorModel.SemanticModel
+                .GoToDefinition(
+                    textEditorCommandParameter.TextEditorModel,
+                    textSpanOfWordAtPositionIndex);
+
+            return Task.CompletedTask;
+        },
+        false,
+        "GoToDefinition",
+        "defaults_go-to-definition");
 }

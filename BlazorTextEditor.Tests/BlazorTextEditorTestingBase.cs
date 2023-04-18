@@ -91,6 +91,7 @@ public class BlazorTextEditorTestingBase
             null,
             null,
             null,
+            null,
             TextEditorModelKey);
         
         TextEditorService.ModelRegisterCustomModel(textEditor);

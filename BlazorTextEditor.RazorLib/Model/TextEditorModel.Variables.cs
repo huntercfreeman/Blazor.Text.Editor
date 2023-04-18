@@ -7,6 +7,7 @@ using BlazorTextEditor.RazorLib.Keymap;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.Row;
+using BlazorTextEditor.RazorLib.Semantics;
 using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib.Model;
@@ -71,6 +72,7 @@ public partial class TextEditorModel
     /// </summary>
     public string FileExtension { get; private set; }
     public IDecorationMapper DecorationMapper { get; private set; }
+    public ISemanticModel? SemanticModel { get; }
     public ITextEditorKeymap TextEditorKeymap { get; }
     public int EditBlockIndex { get; private set; }
 
