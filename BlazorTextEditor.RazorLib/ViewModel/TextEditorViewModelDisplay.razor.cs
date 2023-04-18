@@ -98,7 +98,6 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private Guid _componentHtmlElementId = Guid.NewGuid();
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
-    private int _rerenderCount;
     private bool _disposed;
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
@@ -135,7 +134,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
 
                 TextEditorService.ViewModelWith(
-                    TextEditorViewModelKey,
+                    safeTextEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
                         ShouldMeasureDimensions = true,
@@ -145,9 +144,9 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         }
         
         if (safeTextEditorViewModel is not null &&
-            _previousTextEditorViewModelKey != TextEditorViewModelKey)
+            _previousTextEditorViewModelKey != safeTextEditorViewModel.ViewModelKey)
         {
-            _previousTextEditorViewModelKey = TextEditorViewModelKey;
+            _previousTextEditorViewModelKey = safeTextEditorViewModel.ViewModelKey;
 
             safeTextEditorViewModel.PrimaryCursor.ShouldRevealCursor = true;
             
@@ -168,21 +167,14 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _rerenderCount++;
-        
-        var textEditorViewModel = MutableReferenceToViewModel;
-        
-        if (firstRender && 
-            textEditorViewModel is not null)
+        if (firstRender)
         {
-            await textEditorViewModel.CalculateVirtualizationResultAsync(
-                null, 
-                CancellationToken.None);
-
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditor.preventDefaultOnWheelEvents",
                 ContentElementId);
         }
+
+        var textEditorViewModel = MutableReferenceToViewModel;
 
         if (textEditorViewModel is not null)
         {
@@ -193,9 +185,10 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                         "blazorTextEditor.measureCharacterWidthAndRowHeight",
                         MeasureCharacterWidthAndRowHeightElementId,
                         MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
-                
+            
+                // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
                 TextEditorService.ViewModelWith(
-                    TextEditorViewModelKey,
+                    textEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
                         ShouldMeasureDimensions = false,
@@ -290,7 +283,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 TextEditorCursorDisplay.TextEditorMenuKind ==
                 TextEditorMenuKind.AutoCompleteMenu)
             {
-                TextEditorCursorDisplay.SetFocusToActiveMenuAsync();
+                await TextEditorCursorDisplay.SetFocusToActiveMenuAsync();
             }
             else
             {

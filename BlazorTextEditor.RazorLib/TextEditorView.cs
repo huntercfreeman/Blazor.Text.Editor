@@ -39,6 +39,4 @@ public class TextEditorView : FluxorComponent
     public TextEditorViewModel? MutableReferenceToViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
         .FirstOrDefault(x => 
             x.ViewModelKey == TextEditorViewModelKey);
-
-    private TextEditorRenderStateKey _previousViewModelRenderStateKey = TextEditorRenderStateKey.Empty;
 }

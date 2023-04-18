@@ -9,7 +9,7 @@
         
         if (viewModel is null)
         {
-            <text>viewModel was null</text>
+            <text>ViewModel not found</text>
         }
         else
         {
@@ -20,11 +20,14 @@
 
             if (textEditorModel is null)
             {
-                <div>textEditorModel was null</div>
+                <div>Model not found</div>
             }
             else
             {
-                <text>@(viewModel.GetTabDisplayNameFunc?.Invoke(textEditorModel) ?? textEditorModel.ResourceUri)</text>
+                <text>
+                    @(viewModel.GetTabDisplayNameFunc?
+                        .Invoke(textEditorModel) ?? textEditorModel.ResourceUri)
+                </text>
             }
         }
     }

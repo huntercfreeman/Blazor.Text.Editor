@@ -617,12 +617,14 @@ public class TextEditorService : ITextEditorService
     
     public void ModelReload(
         TextEditorModelKey textEditorModelKey,
-        string content)
+        string content,
+        DateTime resourceLastWriteTime)
     {
         _dispatcher.Dispatch(
             new TextEditorModelsCollection.ReloadAction(
                 textEditorModelKey,
-                content));
+                content,
+                resourceLastWriteTime));
     }
     
     public TextEditorModel? ModelFindOrDefault(TextEditorModelKey textEditorModelKey)

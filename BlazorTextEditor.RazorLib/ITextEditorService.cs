@@ -74,7 +74,7 @@ public interface ITextEditorService
     public void ModelRegisterCustomModel(TextEditorModel model);
     /// <summary>As an example, for a C# Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.CSharp" />.<br /><br />For a Plain Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.Plain" />.</summary>
     public void ModelRegisterTemplatedModel(TextEditorModelKey textEditorModelKey, WellKnownModelKind wellKnownModelKind, string resourceUri, DateTime resourceLastWriteTime, string fileExtension, string initialContent);
-    public void ModelReload(TextEditorModelKey textEditorModelKey, string content);
+    public void ModelReload(TextEditorModelKey textEditorModelKey, string content, DateTime resourceLastWriteTime);
     public void ModelSetResourceData(TextEditorModelKey textEditorModelKey, string resourceUri, DateTime resourceLastWriteTime);
     public void ModelSetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind);
     public void ModelUndoEdit(TextEditorModelKey textEditorModelKey);
