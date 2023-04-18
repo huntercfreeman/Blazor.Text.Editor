@@ -67,11 +67,17 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private readonly IThrottle<byte> _afterOnKeyDownSyntaxHighlightingThrottle = new Throttle<byte>(
         TimeSpan.FromMilliseconds(750));
 
-    private readonly IThrottle<MouseEventArgs> _onMouseMoveThrottle = new Throttle<MouseEventArgs>(
-        TimeSpan.FromMilliseconds(25));
+    // TODO: The ValueTuple being used here needs to be made into a class likely as this is not nice to read
+    private readonly IThrottle<(MouseEventArgs, bool thinksLeftMouseButtonIsDown)>
+        _onMouseMoveThrottle =
+            new Throttle<(MouseEventArgs, bool thinksLeftMouseButtonIsDown)>(
+                TimeSpan.FromMilliseconds(25));
     
-    private readonly IThrottle<TouchEventArgs> _onTouchMoveThrottle = new Throttle<TouchEventArgs>(
-        TimeSpan.FromMilliseconds(25));
+    // TODO: The ValueTuple being used here needs to be made into a class likely as this is not nice to read
+    private readonly IThrottle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>
+        _onTouchMoveThrottle =
+            new Throttle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>(
+                TimeSpan.FromMilliseconds(25));
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -532,17 +538,20 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     /// </summary>
     private async Task HandleContentOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
     {
+        var localThinksLeftMouseButtonIsDown = _thinksLeftMouseButtonIsDown;
+        
+        if (!_thinksLeftMouseButtonIsDown)
+            return;
+        
         var mostRecentEventArgs = await _onMouseMoveThrottle.FireAsync(
-            mouseEventArgs,
+            (mouseEventArgs, localThinksLeftMouseButtonIsDown),
             CancellationToken.None);
 
-        if (mostRecentEventArgs.isCancellationRequested ||
-            mostRecentEventArgs.tEventArgs is null)
-        {
+        if (mostRecentEventArgs.isCancellationRequested)
             return;
-        }
 
-        mouseEventArgs = mostRecentEventArgs.tEventArgs;
+        localThinksLeftMouseButtonIsDown = mostRecentEventArgs.tEventArgs.thinksLeftMouseButtonIsDown;
+        mouseEventArgs = mostRecentEventArgs.tEventArgs.Item1;
         
         var safeTextEditorReference = MutableReferenceToModel;
         var safeTextEditorViewModel = MutableReferenceToViewModel;
@@ -555,7 +564,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
         // Buttons is a bit flag
         // '& 1' gets if left mouse button is held
-        if (_thinksLeftMouseButtonIsDown &&
+        if (localThinksLeftMouseButtonIsDown &&
             (mouseEventArgs.Buttons & 1) == 1)
         {
             var rowAndColumnIndex =
@@ -800,20 +809,20 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     
     private async Task HandleOnTouchMoveAsync(TouchEventArgs touchEventArgs)
     {
+        var localThinksTouchIsOccurring = _thinksTouchIsOccurring;
+        
         if (!_thinksTouchIsOccurring)
             return;
         
         var mostRecentEventArgs = await _onTouchMoveThrottle.FireAsync(
-            touchEventArgs,
+            (touchEventArgs, localThinksTouchIsOccurring),
             CancellationToken.None);
 
-        if (mostRecentEventArgs.isCancellationRequested ||
-            mostRecentEventArgs.tEventArgs is null)
-        {
+        if (mostRecentEventArgs.isCancellationRequested)
             return;
-        }
 
-        touchEventArgs = mostRecentEventArgs.tEventArgs;
+        localThinksTouchIsOccurring = mostRecentEventArgs.tEventArgs.thinksLeftMouseButtonIsDown;
+        touchEventArgs = mostRecentEventArgs.tEventArgs.Item1;
 
         var previousTouchPoint = _previousTouchEventArgs?.ChangedTouches
             .FirstOrDefault(x => x.Identifier == 0);

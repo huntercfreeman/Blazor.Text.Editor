@@ -1,5 +1,6 @@
 ﻿using BlazorCommon.RazorLib.Dimensions;
 using BlazorCommon.RazorLib.JavaScriptObjects;
+using BlazorCommon.RazorLib.Reactive;
 using BlazorCommon.RazorLib.Store.DragCase;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Model;
@@ -26,8 +27,11 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     
-    private readonly SemaphoreSlim _onMouseMoveSemaphoreSlim = new(1, 1);
-    private readonly TimeSpan _onMouseMoveDelay = TimeSpan.FromMilliseconds(25);
+    // TODO: The ValueTuple being used here needs to be made into a class likely as this is not nice to read
+    private readonly IThrottle<((MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs), bool thinksLeftMouseButtonIsDown)> 
+        _onMouseMoveThrottle = 
+            new Throttle<((MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs), bool thinksLeftMouseButtonIsDown)>(
+                TimeSpan.FromMilliseconds(25));
     
     private bool _thinksLeftMouseButtonIsDown;
 
@@ -117,17 +121,24 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
     private async Task DragEventHandlerScrollAsync(
         (MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs) mouseEventArgsTuple)
     {
-        var success = await _onMouseMoveSemaphoreSlim
-            .WaitAsync(TimeSpan.Zero);
-    
-        if (!success)
+        var localThinksLeftMouseButtonIsDown = _thinksLeftMouseButtonIsDown;
+
+        if (!localThinksLeftMouseButtonIsDown)
             return;
+        
+        var mostRecentEventArgs = await _onMouseMoveThrottle.FireAsync(
+            (mouseEventArgsTuple, localThinksLeftMouseButtonIsDown),
+            CancellationToken.None);
+
+        if (mostRecentEventArgs.isCancellationRequested)
+            return;
+
+        localThinksLeftMouseButtonIsDown = mostRecentEventArgs.tEventArgs.thinksLeftMouseButtonIsDown;
+        mouseEventArgsTuple = mostRecentEventArgs.tEventArgs.Item1;
     
-        try
-        {
-            // Buttons is a bit flag
+        // Buttons is a bit flag
             // '& 1' gets if left mouse button is held
-            if (_thinksLeftMouseButtonIsDown &&
+            if (localThinksLeftMouseButtonIsDown &&
                 (mouseEventArgsTuple.secondMouseEventArgs.Buttons & 1) == 1)
             {
                 var relativeCoordinates = await JsRuntime
@@ -162,13 +173,6 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
             {
                 _thinksLeftMouseButtonIsDown = false;
             }
-    
-            await Task.Delay(_onMouseMoveDelay);
-        }
-        finally
-        {
-            _onMouseMoveSemaphoreSlim.Release();
-        }
     }
     
     public void Dispose()

@@ -124,7 +124,7 @@ public partial class RowSection : ComponentBase
             {           
                 await TextEditorViewModel.CalculateVirtualizationResultAsync(
                     null,
-                    CancellationToken.None);
+                    virtualizationRequest.CancellationToken);
             }
             catch (Exception e)
             {
