@@ -64,15 +64,14 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     [Parameter]
     public bool IncludeContextMenuHelperComponent { get; set; } = true;
 
-    private readonly SemaphoreSlim _afterOnKeyDownSyntaxHighlightingSemaphoreSlim = new(1, 1);
-    private readonly TimeSpan _afterOnKeyDownSyntaxHighlightingDelay = TimeSpan.FromMilliseconds(750);
-    private int _skippedSyntaxHighlightingEventCount;
+    private readonly IThrottle<byte> _afterOnKeyDownSyntaxHighlightingThrottle = new Throttle<byte>(
+        TimeSpan.FromMilliseconds(750));
 
     private readonly IThrottle<MouseEventArgs> _onMouseMoveThrottle = new Throttle<MouseEventArgs>(
         TimeSpan.FromMilliseconds(25));
     
-    private readonly SemaphoreSlim _onTouchMoveSemaphoreSlim = new(1, 1);
-    private readonly TimeSpan _onTouchMoveDelay = TimeSpan.FromMilliseconds(25);
+    private readonly IThrottle<TouchEventArgs> _onTouchMoveThrottle = new Throttle<TouchEventArgs>(
+        TimeSpan.FromMilliseconds(25));
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -698,51 +697,26 @@ public partial class TextEditorViewModelDisplay : TextEditorView
         }
         else if (IsSyntaxHighlightingInvoker(keyboardEventArgs))
         {
-            var success = await _afterOnKeyDownSyntaxHighlightingSemaphoreSlim
-                .WaitAsync(TimeSpan.Zero);
+            var mostRecentEventArgs = await _afterOnKeyDownSyntaxHighlightingThrottle
+                .FireAsync(
+                    0,
+                    CancellationToken.None);
 
-            if (!success)
-            {
-                _skippedSyntaxHighlightingEventCount++;
+            if (mostRecentEventArgs.isCancellationRequested)
                 return;
-            }
 
-            try
+            // The TextEditorModel may have been changed by the time this logic is ran and
+            // thus the local variable must be updated accordingly.
+            var temporaryTextEditor = MutableReferenceToModel;
+
+            if (temporaryTextEditor is not null)
             {
-                do
-                {
-                    // The TextEditorModel may have been changed by the time this logic is ran and
-                    // thus the local variable must be updated accordingly.
-                    var temporaryTextEditor = MutableReferenceToModel;
+                textEditor = temporaryTextEditor;
 
-                    if (temporaryTextEditor is not null)
-                    {
-                        textEditor = temporaryTextEditor;
+                await textEditor.ApplySyntaxHighlightingAsync();
 
-                        await textEditor.ApplySyntaxHighlightingAsync();
-
-                        await InvokeAsync(StateHasChanged);
-
-                        await Task.Delay(_afterOnKeyDownSyntaxHighlightingDelay);
-                    }
-                } while (StartSyntaxHighlightEventIfHasSkipped());
+                await InvokeAsync(StateHasChanged);
             }
-            finally
-            {
-                _afterOnKeyDownSyntaxHighlightingSemaphoreSlim.Release();
-            }
-        }
-
-        bool StartSyntaxHighlightEventIfHasSkipped()
-        {
-            if (_skippedSyntaxHighlightingEventCount > 0)
-            {
-                _skippedSyntaxHighlightingEventCount = 0;
-
-                return true;
-            }
-
-            return false;
         }
     }
 
@@ -828,53 +802,43 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     {
         if (!_thinksTouchIsOccurring)
             return;
-            
-        var success = await _onTouchMoveSemaphoreSlim
-            .WaitAsync(TimeSpan.Zero);
+        
+        var mostRecentEventArgs = await _onTouchMoveThrottle.FireAsync(
+            touchEventArgs,
+            CancellationToken.None);
 
-        if (!success)
+        if (mostRecentEventArgs.isCancellationRequested ||
+            mostRecentEventArgs.tEventArgs is null)
+        {
+            return;
+        }
+
+        touchEventArgs = mostRecentEventArgs.tEventArgs;
+
+        var previousTouchPoint = _previousTouchEventArgs?.ChangedTouches
+            .FirstOrDefault(x => x.Identifier == 0);
+        
+        var currentTouchPoint = touchEventArgs.ChangedTouches
+            .FirstOrDefault(x => x.Identifier == 0);
+
+        if (previousTouchPoint is null || currentTouchPoint is null)
             return;
 
-        try
-        {
-            var previousTouchPoint = _previousTouchEventArgs?.ChangedTouches
-                .FirstOrDefault(x => x.Identifier == 0);
+        var viewModel = MutableReferenceToViewModel;
+
+        if (viewModel is null)
+            return;
         
-            var currentTouchPoint = touchEventArgs.ChangedTouches
-                .FirstOrDefault(x => x.Identifier == 0);
+        // Natural scrolling for touch devices
+        var diffX = previousTouchPoint.ClientX - currentTouchPoint.ClientX;
+        var diffY = previousTouchPoint.ClientY - currentTouchPoint.ClientY;
 
-            if (previousTouchPoint is null || currentTouchPoint is null)
-                return;
+        await viewModel.MutateScrollHorizontalPositionByPixelsAsync(diffX);
+        await viewModel.MutateScrollVerticalPositionByPixelsAsync(diffY);
 
-            var viewModel = MutableReferenceToViewModel;
+        await Task.Yield();
 
-            if (viewModel is null)
-                return;
-        
-            // Natural scrolling for touch devices
-            var diffX = previousTouchPoint.ClientX - currentTouchPoint.ClientX;
-            var diffY = previousTouchPoint.ClientY - currentTouchPoint.ClientY;
-
-            await viewModel.MutateScrollHorizontalPositionByPixelsAsync(diffX);
-            await viewModel.MutateScrollVerticalPositionByPixelsAsync(diffY);
-
-            await Task.Yield();
-
-            _previousTouchEventArgs = touchEventArgs;
-            
-            // _textEditorModelChangedCancellationTokenSource.Cancel();
-            // _textEditorModelChangedCancellationTokenSource = new CancellationTokenSource();
-            //
-            // await viewModel.CalculateVirtualizationResultAsync(
-            //     viewModel.VirtualizationResult.ElementMeasurementsInPixels,
-            //     _textEditorModelChangedCancellationTokenSource.Token);
-
-            await Task.Delay(_onTouchMoveDelay);
-        }
-        finally
-        {
-            _onTouchMoveSemaphoreSlim.Release();
-        }
+        _previousTouchEventArgs = touchEventArgs;
     }
     
     private async Task ClearTouchAsync(TouchEventArgs touchEventArgs)
