@@ -1,6 +1,4 @@
 ﻿using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
-using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxEnums;
-using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 
