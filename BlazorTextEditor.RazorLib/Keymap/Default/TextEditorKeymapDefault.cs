@@ -29,6 +29,12 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
     
     public TextEditorCommand? Map(KeyboardEventArgs keyboardEventArgs, bool hasTextSelection)
     {
+        switch (keyboardEventArgs.Code)
+        {
+            case "F12":
+                return TextEditorCommandDefaultFacts.GoToDefinition;
+        }
+        
         if (keyboardEventArgs.CtrlKey)
         {
             return DefaultCtrlModifiedKeymap(

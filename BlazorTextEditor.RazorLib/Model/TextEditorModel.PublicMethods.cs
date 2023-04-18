@@ -394,6 +394,13 @@ public partial class TextEditorModel
             textEditorCursor.IndexCoordinates.rowIndex,
             textEditorCursor.IndexCoordinates.columnIndex);
     }
+    
+    public int GetCursorPositionIndex(ImmutableTextEditorCursor immutableTextEditorCursor)
+    {
+        return GetPositionIndex(
+            immutableTextEditorCursor.RowIndex,
+            immutableTextEditorCursor.ColumnIndex);
+    }
 
     public int GetPositionIndex(int rowIndex, int columnIndex)
     {
@@ -439,6 +446,98 @@ public partial class TextEditorModel
         return GetTextRange(
             startingPositionIndexInclusive,
             endingPositionIndexExclusive - startingPositionIndexInclusive);
+    }
+    
+    /// <summary>
+    /// Given a <see cref="TextEditorModel"/> with a preference for the right side
+    /// of the cursor, the following conditional branch will play out.
+    /// <br/><br/>
+    /// -IF the cursor is amongst a word, that word will be returned.
+    /// <br/><br/>
+    /// -ELSE IF the start of the word is to the right of the cursor that word will be returned.
+    /// <br/><br/>
+    /// -ELSE IF the end of the word is to the left of the cursor that word will be returned.
+    /// </summary>
+    public TextEditorTextSpan? GetWordAt(int positionIndex)
+    {
+        var previousCharacter = GetTextAt(
+            positionIndex - 1);
+            
+        var currentCharacter = GetTextAt(
+            positionIndex);
+        
+        var previousCharacterKind = CharacterKindHelper.CharToCharacterKind(
+            previousCharacter);
+            
+        var currentCharacterKind = CharacterKindHelper.CharToCharacterKind(
+            currentCharacter);
+        
+        var rowInformation =
+            FindRowInformation(positionIndex);
+
+        var columnIndex = positionIndex -
+                          rowInformation.rowStartPositionIndex;
+        
+        if (previousCharacterKind == CharacterKind.LetterOrDigit &&
+            currentCharacterKind == CharacterKind.LetterOrDigit)
+        {
+            var wordColumnIndexStartInclusive =
+                GetColumnIndexOfCharacterWithDifferingKind(
+                    rowInformation.rowIndex,
+                    columnIndex,
+                    true);
+
+            if (wordColumnIndexStartInclusive == -1)
+                wordColumnIndexStartInclusive = 0;
+            
+            var wordColumnIndexEndExclusive =
+                GetColumnIndexOfCharacterWithDifferingKind(
+                    rowInformation.rowIndex,
+                    columnIndex,
+                    false);
+
+            if (wordColumnIndexEndExclusive == -1)
+                wordColumnIndexEndExclusive = GetLengthOfRow(rowInformation.rowIndex);
+
+            return new TextEditorTextSpan(
+                wordColumnIndexStartInclusive + rowInformation.rowStartPositionIndex,
+                wordColumnIndexEndExclusive + rowInformation.rowStartPositionIndex,
+                0);
+        }
+        else if (currentCharacterKind == CharacterKind.LetterOrDigit)
+        {
+            var wordColumnIndexEndExclusive =
+                GetColumnIndexOfCharacterWithDifferingKind(
+                    rowInformation.rowIndex,
+                    columnIndex,
+                    false);
+
+            if (wordColumnIndexEndExclusive == -1)
+                wordColumnIndexEndExclusive = GetLengthOfRow(rowInformation.rowIndex);
+                
+            return new TextEditorTextSpan(
+                columnIndex + rowInformation.rowStartPositionIndex,
+                wordColumnIndexEndExclusive + rowInformation.rowStartPositionIndex,
+                0);
+        }
+        else if (previousCharacterKind == CharacterKind.LetterOrDigit)
+        {
+            var wordColumnIndexStartInclusive =
+                GetColumnIndexOfCharacterWithDifferingKind(
+                    rowInformation.rowIndex,
+                    columnIndex,
+                    true);
+
+            if (wordColumnIndexStartInclusive == -1)
+                wordColumnIndexStartInclusive = 0;
+                
+            return new TextEditorTextSpan(
+                wordColumnIndexStartInclusive + rowInformation.rowStartPositionIndex,
+                columnIndex + rowInformation.rowStartPositionIndex,
+                0);
+        }
+
+        return null;
     }
 
     public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple)
@@ -638,12 +737,12 @@ public partial class TextEditorModel
     }
 
     public string? ReadPreviousWordOrDefault(
-        int rowIndexInclusive,
-        int columnIndexExclusive)
+        int rowIndex,
+        int columnIndex)
     {
         var wordPositionIndexEndExclusive = GetPositionIndex(
-            rowIndexInclusive,
-            columnIndexExclusive);
+            rowIndex,
+            columnIndex);
 
         var wordCharacterKind = GetCharacterKindAt(
             wordPositionIndexEndExclusive - 1);
@@ -652,18 +751,51 @@ public partial class TextEditorModel
         {
             var wordColumnIndexStartInclusive =
                 GetColumnIndexOfCharacterWithDifferingKind(
-                    rowIndexInclusive,
-                    columnIndexExclusive,
+                    rowIndex,
+                    columnIndex,
                     true);
 
             if (wordColumnIndexStartInclusive == -1)
                 wordColumnIndexStartInclusive = 0;
 
-            var wordLength = columnIndexExclusive -
+            var wordLength = columnIndex -
                              wordColumnIndexStartInclusive;
 
             var wordPositionIndexStartInclusive =
                 wordPositionIndexEndExclusive - wordLength;
+
+            return GetTextRange(
+                wordPositionIndexStartInclusive,
+                wordLength);
+        }
+
+        return null;
+    }
+    
+    public string? ReadNextWordOrDefault(
+        int rowIndex,
+        int columnIndex)
+    {
+        var wordPositionIndexStartInclusive = GetPositionIndex(
+            rowIndex,
+            columnIndex);
+            
+        var wordCharacterKind = GetCharacterKindAt(
+            wordPositionIndexStartInclusive);
+
+        if (wordCharacterKind == CharacterKind.LetterOrDigit)
+        {
+            var wordColumnIndexEndExclusive =
+                GetColumnIndexOfCharacterWithDifferingKind(
+                    rowIndex,
+                    columnIndex,
+                    false);
+
+            if (wordColumnIndexEndExclusive == -1)
+                wordColumnIndexEndExclusive = GetLengthOfRow(rowIndex);
+
+            var wordLength = wordColumnIndexEndExclusive - 
+                             columnIndex;
 
             return GetTextRange(
                 wordPositionIndexStartInclusive,

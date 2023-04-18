@@ -109,7 +109,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     
     protected override async Task OnParametersSetAsync()
     {
-        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
 
         var currentGlobalFontSizeInPixels = TextEditorService
             .OptionsWrap
@@ -164,7 +164,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     {
         _rerenderCount++;
         
-        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        var textEditorViewModel = MutableReferenceToViewModel;
         
         if (firstRender && 
             textEditorViewModel is not null)
@@ -201,7 +201,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
                 // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
                 // thus the local variable must be updated accordingly.
-                textEditorViewModel = ReplaceableTextEditorViewModel;
+                textEditorViewModel = MutableReferenceToViewModel;
 
                 if (textEditorViewModel is not null)
                 {
@@ -223,7 +223,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     // TODO: When the underlying "TextEditorModel" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
     private async void TextEditorModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
-        var viewModel = ReplaceableTextEditorViewModel;
+        var viewModel = MutableReferenceToViewModel;
 
         if (viewModel is not null)
         {
@@ -244,8 +244,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+        var safeTextEditorReference = MutableReferenceToModel;
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
 
         if (safeTextEditorReference is null ||
             safeTextEditorViewModel is null)
@@ -284,7 +284,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 TextEditorCursorDisplay.TextEditorMenuKind ==
                 TextEditorMenuKind.AutoCompleteMenu)
             {
-                TextEditorCursorDisplay.SetFocusToActiveMenu();
+                TextEditorCursorDisplay.SetFocusToActiveMenuAsync();
             }
             else
             {
@@ -355,11 +355,19 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             // this Task does not need to be tracked.
             _ = Task.Run(async () =>
             {
-                await afterOnKeyDownAsync.Invoke(
-                    textEditor,
-                    cursorSnapshots,
-                    keyboardEventArgs,
-                    cursorDisplay.SetShouldDisplayMenuAsync);
+                try
+                {           
+                    await afterOnKeyDownAsync.Invoke(
+                        textEditor,
+                        cursorSnapshots,
+                        keyboardEventArgs,
+                        cursorDisplay.SetShouldDisplayMenuAsync);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }, CancellationToken.None);
         }
     }
@@ -371,8 +379,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     private async Task HandleContentOnDoubleClickAsync(MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+        var safeTextEditorReference = MutableReferenceToModel;
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
 
         if (safeTextEditorReference is null ||
             safeTextEditorViewModel is null)
@@ -453,8 +461,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+        var safeTextEditorReference = MutableReferenceToModel;
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
 
         if (safeTextEditorReference is null ||
             safeTextEditorViewModel is null)
@@ -533,8 +541,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
 
         try
         {
-            var safeTextEditorReference = MutableReferenceToTextEditor;
-            var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+            var safeTextEditorReference = MutableReferenceToModel;
+            var safeTextEditorViewModel = MutableReferenceToViewModel;
 
             if (safeTextEditorReference is null ||
                 safeTextEditorViewModel is null)
@@ -576,8 +584,8 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(
         MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToTextEditor;
-        var safeTextEditorViewModel = ReplaceableTextEditorViewModel;
+        var safeTextEditorReference = MutableReferenceToModel;
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
 
         if (safeTextEditorReference is null ||
             safeTextEditorViewModel is null)
@@ -706,7 +714,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 {
                     // The TextEditorModel may have been changed by the time this logic is ran and
                     // thus the local variable must be updated accordingly.
-                    var temporaryTextEditor = MutableReferenceToTextEditor;
+                    var temporaryTextEditor = MutableReferenceToModel;
 
                     if (temporaryTextEditor is not null)
                     {
@@ -773,7 +781,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
     
     private async Task HandleOnWheelAsync(WheelEventArgs wheelEventArgs)
     {
-        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        var textEditorViewModel = MutableReferenceToViewModel;
 
         if (textEditorViewModel is null)
             return;
@@ -839,7 +847,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             if (previousTouchPoint is null || currentTouchPoint is null)
                 return;
 
-            var viewModel = ReplaceableTextEditorViewModel;
+            var viewModel = MutableReferenceToViewModel;
 
             if (viewModel is null)
                 return;

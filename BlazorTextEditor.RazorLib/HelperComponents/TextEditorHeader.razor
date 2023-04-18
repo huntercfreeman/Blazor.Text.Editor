@@ -17,6 +17,9 @@
                 localHeaderButtonKinds = Enum
                     .GetValues(typeof(TextEditorHeaderButtonKind))
                     .Cast<TextEditorHeaderButtonKind>()
+                    .Where(x => 
+                        x != TextEditorHeaderButtonKind.SemanticModelDisplay && 
+                        x != TextEditorHeaderButtonKind.PeekWindowDisplay)
                     .ToImmutableArray();
             }
             
@@ -74,6 +77,20 @@
                                     class="bte_button"
                                     @onclick="DoSelectAllOnClick">
                                 <IconListSelection/>
+                            </button>
+                            break;
+                        case TextEditorHeaderButtonKind.PeekWindowDisplay:
+                            <button title="@headerButtonKind.ToString()"
+                                    class="bte_button"
+                                    @onclick="ShowWatchWindowDisplayDialogOnClick">
+                                <IconSymbolInterface/>
+                            </button>
+                            break;
+                        case TextEditorHeaderButtonKind.SemanticModelDisplay:
+                            <button title="@headerButtonKind.ToString()"
+                                    class="bte_button"
+                                    @onclick="ShowSemanticModelDisplayDialogOnClick">
+                                <IconProjectDependencies/>
                             </button>
                             break;
                     }

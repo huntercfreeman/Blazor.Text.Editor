@@ -11,8 +11,8 @@
 @inherits TextEditorView
 
 @{
-    var textEditorModel = MutableReferenceToTextEditor;
-    var textEditorViewModel = ReplaceableTextEditorViewModel;
+    var textEditorModel = MutableReferenceToModel;
+    var textEditorViewModel = MutableReferenceToViewModel;
     var globalTextEditorOptions = TextEditorService.OptionsWrap.Value.Options;
 
     var fontSizeInPixelsCssStyleString = string.Empty;

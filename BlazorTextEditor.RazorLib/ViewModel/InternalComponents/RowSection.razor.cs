@@ -120,9 +120,17 @@ public partial class RowSection : ComponentBase
         // this Task does not need to be tracked.
         _ = Task.Run(async () =>
         {
-            await TextEditorViewModel.CalculateVirtualizationResultAsync(
-                null,
-                CancellationToken.None);
+            try
+            {           
+                await TextEditorViewModel.CalculateVirtualizationResultAsync(
+                    null,
+                    CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }, CancellationToken.None);
     }
 }

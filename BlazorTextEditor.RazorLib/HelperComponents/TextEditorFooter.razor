@@ -6,8 +6,8 @@
 
 <div class="bte_text-editor-footer @TextEditorService.ThemeCssClassString">
     @{
-        var textEditorModel = MutableReferenceToTextEditor;
-        var textEditorViewModel = ReplaceableTextEditorViewModel;
+        var textEditorModel = MutableReferenceToModel;
+        var textEditorViewModel = MutableReferenceToViewModel;
         
         if (textEditorModel is not null &&
             textEditorViewModel is not null)

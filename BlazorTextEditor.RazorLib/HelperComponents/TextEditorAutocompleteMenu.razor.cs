@@ -40,7 +40,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
     {
         if (TextEditorMenuShouldTakeFocusFunc.Invoke())
         {
-            _autocompleteMenuDisplay?.SetFocusToFirstOptionInMenu();
+            _autocompleteMenuDisplay?.SetFocusToFirstOptionInMenuAsync();
         }
         
         return base.OnAfterRenderAsync(firstRender);
@@ -52,15 +52,18 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
             await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
     }
     
-    private void ReturnFocusToThis()
+    private async Task ReturnFocusToThisAsync()
     {
-        // IBackgroundTaskQueue does not work well here because
-        // this Task does not need to be tracked.
-        _ = Task.Run(async () =>
-        {
+        try
+        {           
             await SetShouldDisplayMenuAsync
                 .Invoke(TextEditorMenuKind.None, true);
-        }, CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private MenuRecord GetMenuRecord()
@@ -125,8 +128,16 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
         // this Task does not need to be tracked.
         _ = Task.Run(async () =>
         {
-            await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
-            await menuOptionAction();
+            try
+            {           
+                await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
+                await menuOptionAction();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }, CancellationToken.None);
     }
 

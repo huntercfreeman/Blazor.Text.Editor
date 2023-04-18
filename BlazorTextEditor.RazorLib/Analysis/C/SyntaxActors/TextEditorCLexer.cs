@@ -3,8 +3,6 @@ using BlazorTextEditor.RazorLib.Analysis.C.Facts;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
-using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxEnums;
-using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxObjects;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.C.SyntaxActors;

@@ -10,7 +10,7 @@ public partial class TextEditorFooter : TextEditorView
     private void SelectRowEndingKindOnChange(ChangeEventArgs changeEventArgs)
     {
         var textEditor = TextEditorModelsCollectionWrap.Value;
-        var localTextEditorViewModel = ReplaceableTextEditorViewModel;
+        var localTextEditorViewModel = MutableReferenceToViewModel;
 
         if (textEditor is null ||
             localTextEditorViewModel is null)

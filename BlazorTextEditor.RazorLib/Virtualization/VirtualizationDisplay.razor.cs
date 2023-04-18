@@ -116,10 +116,18 @@ public partial class VirtualizationDisplay : ComponentBase, IDisposable
         // this Task does not need to be tracked.
         _ = Task.Run(async () =>
         {
-            await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.disposeVirtualizationIntersectionObserver",
-                CancellationToken.None,
-                _virtualizationDisplayGuid.ToString());
+            try
+            {           
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.disposeVirtualizationIntersectionObserver",
+                    CancellationToken.None,
+                    _virtualizationDisplayGuid.ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }, CancellationToken.None);
     }
 }

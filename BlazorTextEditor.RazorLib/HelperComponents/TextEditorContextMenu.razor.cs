@@ -46,11 +46,12 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
                     await _textEditorContextMenuElementReference.Value
                         .FocusAsync();
                 }
-                catch (JSException)
+                catch (Exception e)
                 {
-                    // Caused when calling:
-                    // await (ElementReference).FocusAsync();
-                    // After component is no longer rendered
+                    // 2023-04-18: The app has had a bug where it "freezes" and must be restarted.
+                    //             This bug is seemingly happening randomly. I have a suspicion
+                    //             that there are race-condition exceptions occurring with "FocusAsync"
+                    //             on an ElementReference.
                 }
             }
         }
@@ -74,15 +75,19 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
             await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
     }
     
-    private void ReturnFocusToThis()
+    private async Task ReturnFocusToThisAsync()
     {
-        // IBackgroundTaskQueue does not work well here because
-        // this Task does not need to be tracked.
-        _ = Task.Run(async () =>
+        try
+        {           
+            await SetShouldDisplayMenuAsync.Invoke(
+                TextEditorMenuKind.None,
+                true);
+        }
+        catch (Exception e)
         {
-            await SetShouldDisplayMenuAsync
-                .Invoke(TextEditorMenuKind.None, true);
-        }, CancellationToken.None);
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private MenuRecord GetMenuRecord()
@@ -128,8 +133,16 @@ public partial class TextEditorContextMenu : ComponentBase // TODO: Is this inhe
         // this Task does not need to be tracked.
         _ = Task.Run(async () =>
         {
-            await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
-            await menuOptionAction();
+            try
+            {           
+                await SetShouldDisplayMenuAsync.Invoke(TextEditorMenuKind.None, true);
+                await menuOptionAction();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }, CancellationToken.None);
     }
 
