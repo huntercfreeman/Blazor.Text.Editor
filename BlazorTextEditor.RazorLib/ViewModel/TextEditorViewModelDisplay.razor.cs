@@ -284,7 +284,7 @@ public partial class TextEditorViewModelDisplay : TextEditorView
                 TextEditorCursorDisplay.TextEditorMenuKind ==
                 TextEditorMenuKind.AutoCompleteMenu)
             {
-                TextEditorCursorDisplay.SetFocusToActiveMenu();
+                TextEditorCursorDisplay.SetFocusToActiveMenuAsync();
             }
             else
             {
@@ -355,11 +355,19 @@ public partial class TextEditorViewModelDisplay : TextEditorView
             // this Task does not need to be tracked.
             _ = Task.Run(async () =>
             {
-                await afterOnKeyDownAsync.Invoke(
-                    textEditor,
-                    cursorSnapshots,
-                    keyboardEventArgs,
-                    cursorDisplay.SetShouldDisplayMenuAsync);
+                try
+                {           
+                    await afterOnKeyDownAsync.Invoke(
+                        textEditor,
+                        cursorSnapshots,
+                        keyboardEventArgs,
+                        cursorDisplay.SetShouldDisplayMenuAsync);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }, CancellationToken.None);
         }
     }

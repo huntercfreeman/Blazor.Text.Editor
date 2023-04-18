@@ -226,20 +226,23 @@ public partial class TextEditorHeader : TextEditorView
     
     private void ShowWatchWindowDisplayDialogOnClick()
     {
-        var textEditor = MutableReferenceToModel;
+        var model = MutableReferenceToModel;
         
-        if (textEditor is null)
+        if (model is null)
             return;
 
+        if (model.SemanticModel is not null)
+            model.SemanticModel.ManuallyRefreshSemanticModel(model);
+
         var watchWindowObjectWrap = new WatchWindowObjectWrap(
-            textEditor,
+            model,
             typeof(TextEditorModel),
             "TextEditorModel",
             true);
         
         var dialogRecord = new DialogRecord(
             DialogKey.NewDialogKey(), 
-            $"WatchWindow: {textEditor.ResourceUri}",
+            $"WatchWindow: {model.ResourceUri}",
             typeof(WatchWindowDisplay),
             new Dictionary<string, object?>
             {

@@ -50,9 +50,9 @@ public partial class TextEditorGroupDisplay : IDisposable
         base.OnInitialized();
     }
 
-    private void TextEditorGroupWrapOnStateChanged(object? sender, EventArgs e)
+    private async void TextEditorGroupWrapOnStateChanged(object? sender, EventArgs e)
     {
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()

@@ -21,14 +21,25 @@ public partial class CommandBarDisplay : FluxorComponent
 
     private ElementReference? _commandBarDisplayElementReference;
     
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _commandBarDisplayElementReference?.FocusAsync();
+            try
+            {
+                if (_commandBarDisplayElementReference is not null)
+                    await _commandBarDisplayElementReference.Value.FocusAsync();
+            }
+            catch (Exception e)
+            {
+                // 2023-04-18: The app has had a bug where it "freezes" and must be restarted.
+                //             This bug is seemingly happening randomly. I have a suspicion
+                //             that there are race-condition exceptions occurring with "FocusAsync"
+                //             on an ElementReference.
+            }
         }
         
-        return base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task HandleOnKeyDown(KeyboardEventArgs keyboardEventArgs)

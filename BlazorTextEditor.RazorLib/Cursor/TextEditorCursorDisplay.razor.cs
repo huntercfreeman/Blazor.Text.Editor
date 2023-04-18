@@ -274,8 +274,18 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     public async Task FocusAsync()
     {
-        if (_textEditorCursorDisplayElementReference is not null)
-            await _textEditorCursorDisplayElementReference.Value.FocusAsync();
+        try
+        {
+            if (_textEditorCursorDisplayElementReference is not null)
+                await _textEditorCursorDisplayElementReference.Value.FocusAsync();
+        }
+        catch (Exception e)
+        {
+            // 2023-04-18: The app has had a bug where it "freezes" and must be restarted.
+            //             This bug is seemingly happening randomly. I have a suspicion
+            //             that there are race-condition exceptions occurring with "FocusAsync"
+            //             on an ElementReference.
+        }
     }
 
     public void PauseBlinkAnimation()
@@ -288,12 +298,24 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         // of how often this Task is started and stopped.
         _ = Task.Run(async () =>
         {
-            await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
-
-            if (!cancellationToken.IsCancellationRequested)
+            try
             {
-                _hasBlinkAnimation = true;
-                await InvokeAsync(StateHasChanged);
+                await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
+
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    _hasBlinkAnimation = true;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch (TaskCanceledException e)
+            {
+                // This exception will constantly be raised so ignore it
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }, cancellationToken);
     }
@@ -334,10 +356,10 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             await FocusAsync();
     }
 
-    public void SetFocusToActiveMenu()
+    public async Task SetFocusToActiveMenuAsync()
     {
         _textEditorMenuShouldGetFocusRequestCount++;
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
     private bool TextEditorMenuShouldTakeFocus()
@@ -371,10 +393,18 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             // this Task does not need to be tracked.
             _ = Task.Run(async () =>
             {
-                await JsRuntime.InvokeVoidAsync(
-                    "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
-                    CancellationToken.None,
-                    _intersectionObserverMapKey.ToString());
+                try
+                {
+                    await JsRuntime.InvokeVoidAsync(
+                        "blazorTextEditor.disposeTextEditorCursorIntersectionObserver",
+                        CancellationToken.None,
+                        _intersectionObserverMapKey.ToString());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }, CancellationToken.None);
         }
     }

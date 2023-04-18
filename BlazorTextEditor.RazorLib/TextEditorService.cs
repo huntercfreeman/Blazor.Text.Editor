@@ -156,11 +156,19 @@ public class TextEditorService : ITextEditorService
         // this Task does not need to be tracked.
         _ = Task.Run(async () =>
         {
-            await textEditorModel.ApplySyntaxHighlightingAsync();
-            
-            _dispatcher.Dispatch(
-                new TextEditorModelsCollection.ForceRerenderAction(
-                    textEditorModel.ModelKey));
+            try
+            {           
+                await textEditorModel.ApplySyntaxHighlightingAsync();
+                
+                _dispatcher.Dispatch(
+                    new TextEditorModelsCollection.ForceRerenderAction(
+                        textEditorModel.ModelKey));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }, CancellationToken.None);
         
         _dispatcher.Dispatch(

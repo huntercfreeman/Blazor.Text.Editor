@@ -11,4 +11,9 @@ public class SemanticModelDefault : ISemanticModel
     {
         return null;
     }
+
+    public void ManuallyRefreshSemanticModel(
+        TextEditorModel model)
+    {
+    }
 }
