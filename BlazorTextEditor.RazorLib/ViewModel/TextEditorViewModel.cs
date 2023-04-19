@@ -27,7 +27,6 @@ public record TextEditorViewModel(
     public TextEditorStateChangedKey TextEditorStateChangedKey { get; init; } = 
         TextEditorStateChangedKey.NewTextEditorStateChangedKey();
     
-
     /// <summary>
     /// <see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.
     /// <br/><br/>

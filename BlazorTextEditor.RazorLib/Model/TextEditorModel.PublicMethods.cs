@@ -44,9 +44,12 @@ public partial class TextEditorModel
     {
         if (!_rowEndingPositions.Any())
             return 0;
-
+        
         if (rowIndex > _rowEndingPositions.Count - 1)
             rowIndex = _rowEndingPositions.Count - 1;
+        
+        if (rowIndex < 0)
+            rowIndex = 0;
         
         var startOfRowTupleInclusive = GetStartOfRowTuple(rowIndex);
 
