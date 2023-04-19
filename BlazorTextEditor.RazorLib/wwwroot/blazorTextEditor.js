@@ -73,6 +73,19 @@ window.blazorTextEditor = {
             HeightInPixels: element.offsetHeight
         }
     },
+    measureLeftRelativeToParentInPixels: function (parentElementId, targetElementId) {
+        let parentElement = document.getElementById(parentElementId);
+        let targetElement = document.getElementById(targetElementId);
+
+        if (!parentElement || !targetElement) {
+            return 0;
+        }
+        
+        let parentBoundingClientRect = parentElement.getBoundingClientRect();
+        let targetBoundingClientRect = targetElement.getBoundingClientRect();
+        
+        return parentBoundingClientRect.left - targetBoundingClientRect.left;
+    },
     getRelativePosition: function (elementId, clientX, clientY) {
         let element = document.getElementById(elementId);
 

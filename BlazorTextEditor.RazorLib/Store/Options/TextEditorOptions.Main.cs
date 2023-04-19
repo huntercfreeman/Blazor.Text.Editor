@@ -25,7 +25,8 @@ public partial class TextEditorOptionsState
             false,
             null,
             DEFAULT_CURSOR_WIDTH_IN_PIXELS,
-            KeymapFacts.DefaultKeymapDefinition);
+            KeymapFacts.DefaultKeymapDefinition,
+            false);
     }
     
     public const int DEFAULT_FONT_SIZE_IN_PIXELS = 20;

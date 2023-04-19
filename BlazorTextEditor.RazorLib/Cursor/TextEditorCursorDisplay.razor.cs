@@ -26,6 +26,10 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorOptions GlobalTextEditorOptions { get; set; } = null!;
+    [CascadingParameter(Name="ProportionalFontMeasurementsParentElementId")]
+    public string ProportionalFontMeasurementsParentElementId { get; set; } = null!;
+    [CascadingParameter(Name="ProportionalFontMeasurementsTargetElementId")]
+    public string ProportionalFontMeasurementsTargetElementId { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
@@ -62,6 +66,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     private int _textEditorMenuShouldGetFocusRequestCount;
 
     private string _previouslyObservedTextEditorCursorDisplayId = string.Empty;
+    private double _leftRelativeToParentInPixels;
 
     public string TextEditorCursorDisplayId => TextEditorCursor.IsPrimaryCursor
         ? TextEditorViewModel.PrimaryCursorContentId
@@ -78,16 +83,29 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!GlobalTextEditorOptions.UseMonospaceOptimizations)
+        {
+            var nextLeftRelativeToParentInPixels = await JsRuntime.InvokeAsync<double>(
+                "blazorTextEditor.measureLeftRelativeToParentInPixels",
+                ProportionalFontMeasurementsParentElementId,
+                ProportionalFontMeasurementsTargetElementId);
+
+            var previousLeftRelativeToParentInPixels = _leftRelativeToParentInPixels;
+            
+            _leftRelativeToParentInPixels = nextLeftRelativeToParentInPixels;
+            
+            if ((int)nextLeftRelativeToParentInPixels != (int)previousLeftRelativeToParentInPixels)
+                await InvokeAsync(StateHasChanged);
+        }
+        
         if (_previouslyObservedTextEditorCursorDisplayId != TextEditorCursorDisplayId)
         {
             if (IsFocusTarget)
             {
                 await JsRuntime.InvokeVoidAsync(
                     "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
-                    _intersectionObserverMapKey.ToString(),
-                    DotNetObjectReference.Create(this),
-                    ScrollableContainerId,
-                    TextEditorCursorDisplayId);
+                    ProportionalFontMeasurementsParentElementId,
+                    ProportionalFontMeasurementsTargetElementId);
                 
                 _previouslyObservedTextEditorCursorDisplayId = TextEditorCursorDisplayId;
             }

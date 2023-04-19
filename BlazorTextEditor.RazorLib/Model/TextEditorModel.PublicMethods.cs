@@ -808,4 +808,25 @@ public partial class TextEditorModel
 
         return null;
     }
+    
+    /// <summary>
+    /// This method returns the text to the left of the cursor in most cases.
+    /// The method name is such because of right to left written texts.
+    /// <br/><br/>
+    /// One uses this method most often to measure the position of the cursor
+    /// when rendering the UI for a font-family which is proportional
+    /// (i.e. not monospace).
+    /// </summary>
+    public string GetTextOffsettingCursor(
+        TextEditorCursor textEditorCursor)
+    {
+        var cursorPositionIndex = GetCursorPositionIndex(textEditorCursor);
+
+        var startOfRowTuple = GetStartOfRowTuple(
+            textEditorCursor.IndexCoordinates.rowIndex);
+
+        return GetTextRange(
+            startOfRowTuple.positionIndex,
+            cursorPositionIndex - startOfRowTuple.positionIndex);
+    }
 }

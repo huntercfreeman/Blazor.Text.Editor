@@ -52,6 +52,7 @@ public interface ITextEditorService
     public void OptionsSetHeight(int? heightInPixels);
     public void OptionsSetKeymap(KeymapDefinition foundKeymap);
     public void OptionsSetShowNewlines(bool showNewlines);
+    public void OptionsSetUseMonospaceOptimizations(bool useMonospaceOptimizations);
     public void OptionsSetShowWhitespace(bool showWhitespace);
     /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the AppOptions Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
     public void OptionsSetTheme(ThemeRecord theme);

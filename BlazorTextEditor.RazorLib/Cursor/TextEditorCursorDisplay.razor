@@ -1,11 +1,23 @@
 @using BlazorTextEditor.RazorLib.HelperComponents
+@using BlazorCommon.RazorLib.Dimensions
+
+@{ var leftRelativeToParentInPixelsCssStyle = string.Empty; }
+
+@if (!GlobalTextEditorOptions.UseMonospaceOptimizations)
+{
+    var leftRelativeToParentInPixelsCssValue = _leftRelativeToParentInPixels
+        .ToCssValue();
+    
+    leftRelativeToParentInPixelsCssStyle =
+        $"left: {leftRelativeToParentInPixelsCssValue}px !important;";
+}
 
 <textarea @ref="_textEditorCursorDisplayElementReference"
           @onkeydown="HandleOnKeyDown"
           id="@TextEditorCursorDisplayId"
           tabindex="@GetTabIndex()"
           class="bte_text-editor-cursor @BlinkAnimationCssClass @GlobalTextEditorOptions.KeymapDefinition!.Keymap.GetCursorCssClassString()"
-          style="@CursorStyleCss">
+          style="@CursorStyleCss @leftRelativeToParentInPixelsCssStyle">
 </textarea>
 
 <div class="bte_text-editor-caret-row"

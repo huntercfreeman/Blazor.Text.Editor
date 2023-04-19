@@ -20,4 +20,5 @@ public partial class TextEditorOptionsState
     public record SetKeymapAction(KeymapDefinition KeymapDefinition);
     public record SetShowWhitespaceAction(bool ShowWhitespace);
     public record SetShowNewlinesAction(bool ShowNewlines);
+    public record SetUseMonospaceOptimizationsAction(bool UseMonospaceOptimizations);
 }

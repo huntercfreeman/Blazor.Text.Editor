@@ -305,6 +305,15 @@ public class TextEditorService : ITextEditorService
 
         OptionsWriteToStorage();
     }
+    
+    public void OptionsSetUseMonospaceOptimizations(bool useMonospaceOptimizations)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorOptionsState.SetUseMonospaceOptimizationsAction(
+                useMonospaceOptimizations));
+
+        OptionsWriteToStorage();
+    }
 
     public void ModelSetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind)
     {
@@ -710,6 +719,8 @@ public class TextEditorService : ITextEditorService
         
         if (options.ShowNewlines is not null)
             OptionsSetShowNewlines(options.ShowNewlines.Value);
+        
+        OptionsSetUseMonospaceOptimizations(options.UseMonospaceOptimizations);
         
         if (options.ShowWhitespace is not null)
             OptionsSetShowWhitespace(options.ShowWhitespace.Value);

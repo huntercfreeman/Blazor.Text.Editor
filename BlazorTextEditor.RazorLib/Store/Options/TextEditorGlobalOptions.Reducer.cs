@@ -126,5 +126,20 @@ public partial class TextEditorOptionsState
                 },
             };
         }
+        
+        [ReducerMethod]
+        public static TextEditorOptionsState ReduceSetUseMonospaceOptimizationsAction(
+            TextEditorOptionsState inOptionsState,
+            SetUseMonospaceOptimizationsAction setUseMonospaceOptimizationsAction)
+        {
+            return new TextEditorOptionsState
+            {
+                Options = inOptionsState.Options with
+                {
+                    UseMonospaceOptimizations = 
+                        setUseMonospaceOptimizationsAction.UseMonospaceOptimizations
+                },
+            };
+        }
     }
 }

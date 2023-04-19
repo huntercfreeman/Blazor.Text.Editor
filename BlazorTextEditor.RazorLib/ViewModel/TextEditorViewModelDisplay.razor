@@ -4,6 +4,7 @@
 @using BlazorTextEditor.RazorLib.Commands
 @using System.Collections.Immutable
 @using BlazorCommon.RazorLib.Dimensions
+@using BlazorTextEditor.RazorLib.Html
 @using BlazorTextEditor.RazorLib.Model
 @using BlazorTextEditor.RazorLib.ViewModel
 @using BlazorTextEditor.RazorLib.ViewModel.InternalComponents
@@ -39,9 +40,59 @@
 <div style="@fontSizeInPixelsCssStyleString @fontFamilyCssStyleString @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.ThemeCssClassString @WrapperClassCssString">
 
+    @if (textEditorModel is not null &&
+         textEditorViewModel is not null &&
+         !globalTextEditorOptions.UseMonospaceOptimizations)
+    {
+        // All the logic in this if is for debugging while implementing
+        // proportional font logic.
+        
+        string GetGutterSectionStyleCss()
+        {
+            var mostDigitsInARowLineNumber = textEditorModel.RowCount
+                .ToString()
+                .Length;
+
+            var widthInPixels = mostDigitsInARowLineNumber *
+                                textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+            widthInPixels += TextEditorModel.GUTTER_PADDING_LEFT_IN_PIXELS +
+                             TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS;
+        
+            var widthInPixelsInvariantCulture = widthInPixels.ToCssValue();
+
+            var width = $"width: {widthInPixelsInvariantCulture}px;";
+
+            return width;
+        }
+        
+        var textOffsettingCursor = textEditorModel
+            .GetTextOffsettingCursor(textEditorViewModel.PrimaryCursor)
+            .EscapeHtml();
+    
+        <div style="display: flex;">
+            <div class="bte_psuedo-gutter"
+                 style="@GetGutterSectionStyleCss()">
+                @(textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1)
+            </div>
+            <div class="bte_psuedo-row"
+                 style="min-height:1ch;">
+
+                <span style="display: inline-block;">
+                    @((MarkupString)textOffsettingCursor)
+                </span><!--
+                --><span style="display: inline-block;">
+                    z
+                </span>
+            </div>
+        </div>
+    }
+    
     <CascadingValue Value="textEditorModel">
         <CascadingValue Value="textEditorViewModel">
             <CascadingValue Value="globalTextEditorOptions">
+                <CascadingValue Name="ProportionalFontMeasurementsParentElementId" Value="ProportionalFontMeasurementsParentElementId">
+                    <CascadingValue Name="ProportionalFontMeasurementsTargetElementId" Value="ProportionalFontMeasurementsTargetElementId">
 
                 @if (IncludeHeaderHelperComponent &&
                      textEditorModel is not null &&
@@ -109,6 +160,8 @@
                 {
                     <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
                 }
+                    </CascadingValue>
+                </CascadingValue>
             </CascadingValue>
         </CascadingValue>
     </CascadingValue>
