@@ -34,8 +34,6 @@ public partial class RowSection : ComponentBase
     [Parameter, EditorRequired]
     public int TabIndex { get; set; } = -1;
     [Parameter, EditorRequired]
-    public string HtmlElementId { get; set; } = null!;
-    [Parameter, EditorRequired]
     public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
     [Parameter]
     public bool IncludeContextMenuHelperComponent { get; set; }
@@ -45,7 +43,6 @@ public partial class RowSection : ComponentBase
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
     
     public TextEditorCursorDisplay? TextEditorCursorDisplay { get; private set; }
-    public MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent { get; private set; }
 
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {

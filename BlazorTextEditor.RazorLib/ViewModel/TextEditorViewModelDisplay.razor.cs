@@ -83,13 +83,13 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private readonly IThrottle<(MouseEventArgs, bool thinksLeftMouseButtonIsDown)>
         _onMouseMoveThrottle =
             new Throttle<(MouseEventArgs, bool thinksLeftMouseButtonIsDown)>(
-                TimeSpan.FromMilliseconds(25));
+                TimeSpan.FromMilliseconds(30));
     
     // TODO: The ValueTuple being used here needs to be made into a class likely as this is not nice to read
     private readonly IThrottle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>
         _onTouchMoveThrottle =
             new Throttle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>(
-                TimeSpan.FromMilliseconds(25));
+                TimeSpan.FromMilliseconds(30));
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -120,8 +120,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
-    private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => 
-        _bodySection?.MeasureCharacterWidthAndRowHeightComponent;
+    private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent { get; set; }
     
     private string MeasureCharacterWidthAndRowHeightElementId =>
         $"bte_measure-character-width-and-row-height_{_componentHtmlElementId}";
@@ -216,7 +215,8 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                         VirtualizationResult = previousViewModel.VirtualizationResult with
                         {
                             CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                        }
+                        },
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                     });
 
                 // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and

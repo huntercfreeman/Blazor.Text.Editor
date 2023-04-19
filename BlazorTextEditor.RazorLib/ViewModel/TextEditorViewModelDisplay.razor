@@ -17,79 +17,85 @@
 
     if (globalTextEditorOptions.CommonOptions?.FontSizeInPixels is not null)
     {
-        fontSizeInPixelsCssStyleString = 
+        fontSizeInPixelsCssStyleString =
             $"font-size: {globalTextEditorOptions.CommonOptions.FontSizeInPixels.Value.ToCssValue()}px;";
     }
 }
 
 <div style="@fontSizeInPixelsCssStyleString @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.ThemeCssClassString @WrapperClassCssString">
+
+    <CascadingValue Value="textEditorModel">
+        <CascadingValue Value="textEditorViewModel">
+            <CascadingValue Value="globalTextEditorOptions">
+
+                @if (IncludeHeaderHelperComponent &&
+                     textEditorModel is not null &&
+                     textEditorViewModel is not null)
+                {
+                    <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
+                                      HeaderButtonKinds="HeaderButtonKinds"/>
+                }
+
+                <div @ref="_textEditorDisplayElementReference"
+                     @onclick="FocusTextEditorAsync"
+                     @onkeydown="HandleOnKeyDownAsync"
+                     @onkeydown:preventDefault="true"
+                     @oncontextmenu="HandleOnContextMenuAsync"
+                     @oncontextmenu:preventDefault="true"
+                     @onmousedown="HandleContentOnMouseDownAsync"
+                     @onmousemove="HandleContentOnMouseMoveAsync"
+                     @ondblclick="HandleContentOnDoubleClickAsync"
+                     @onwheel="HandleOnWheelAsync"
+                     @ontouchstart="HandleOnTouchStartAsync"
+                     @ontouchmove="HandleOnTouchMoveAsync"
+                     @ontouchend="ClearTouchAsync"
+                     @ontouchcancel="ClearTouchAsync"
+                     @ontouchleave="ClearTouchAsync"
+                     id="@ContentElementId"
+                     style="@TextEditorStyleCssString"
+                     class="bte_text-editor bcrl_unselectable @TextEditorClassCssString"
+                     tabindex="-1">
+                    
+                    <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
+                                                       HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
     
-    @if (textEditorModel is not null &&
-         textEditorViewModel is not null)
-    {
-        <CascadingValue Value="textEditorModel">
-            <CascadingValue Value="textEditorViewModel">
-                <CascadingValue Value="globalTextEditorOptions">
-
-                    @if (IncludeHeaderHelperComponent)
+                    @if (textEditorModel is not null &&
+                         textEditorViewModel is not null)
                     {
-                        <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
-                                          HeaderButtonKinds="HeaderButtonKinds"/>
-                    }
-
-                    <div @ref="_textEditorDisplayElementReference"
-                         @onclick="FocusTextEditorAsync"
-                         @onkeydown="HandleOnKeyDownAsync"
-                         @onkeydown:preventDefault="true"
-                         @oncontextmenu="HandleOnContextMenuAsync"
-                         @oncontextmenu:preventDefault="true"
-                         @onmousedown="HandleContentOnMouseDownAsync"
-                         @onmousemove="HandleContentOnMouseMoveAsync"
-                         @ondblclick="HandleContentOnDoubleClickAsync"
-                         @onwheel="HandleOnWheelAsync"
-                         @ontouchstart="HandleOnTouchStartAsync"
-                         @ontouchmove="HandleOnTouchMoveAsync"
-                         @ontouchend="ClearTouchAsync"
-                         @ontouchcancel="ClearTouchAsync"
-                         @ontouchleave="ClearTouchAsync"
-                         id="@ContentElementId"
-                         style="@TextEditorStyleCssString"
-                         class="bte_text-editor bcrl_unselectable @TextEditorClassCssString"
-                         tabindex="-1">
-                        
                         <GutterSection/>
-
+                        
                         <BodySection @ref="_bodySection"
                                      TabIndex="TabIndex"
-                                     HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"
                                      ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
                                      IncludeContextMenuHelperComponent="IncludeContextMenuHelperComponent"
                                      AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
                         
-                        @if (textEditorViewModel.DisplayCommandBar)
+                        if (textEditorViewModel.DisplayCommandBar)
                         {
                             <CommandBarDisplay RestoreFocusToTextEditor="FocusTextEditorAsync"/>
                         }
-                    </div>
-
-                    @if (IncludeFooterHelperComponent)
-                    {
-                        <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
                     }
-                </CascadingValue>
+                    else
+                    {
+                        if (textEditorModel is null)
+                        {
+                            <div>The @nameof(TextEditorModel) was null</div>
+                        }
+                        else if (textEditorViewModel is null)
+                        {
+                            <div>The @nameof(TextEditorViewModel) was null</div>
+                        }
+                    }
+                </div>
+
+                @if (IncludeFooterHelperComponent &&
+                     textEditorModel is not null &&
+                     textEditorViewModel is not null)
+                {
+                    <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                }
             </CascadingValue>
         </CascadingValue>
-    }
-    else
-    {
-        if (textEditorModel is null)
-        {
-            <div>The @nameof(TextEditorModel) was null</div>
-        }
-        else if (textEditorViewModel is not null)
-        {
-            <div>The @nameof(TextEditorViewModel) was null</div>
-        }
-    }
+    </CascadingValue>
 </div>
