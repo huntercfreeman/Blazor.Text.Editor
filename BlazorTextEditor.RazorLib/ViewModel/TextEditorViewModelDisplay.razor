@@ -70,7 +70,7 @@
             .GetTextOffsettingCursor(textEditorViewModel.PrimaryCursor)
             .EscapeHtml();
     
-        <div style="display: flex;">
+        <div style="display: flex; position: absolute; visibility: hidden;">
             <div class="bte_psuedo-gutter"
                  style="@GetGutterSectionStyleCss()">
                 @(textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1)
