@@ -46,6 +46,7 @@ public interface ITextEditorService
     public void DiffRegister(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
     public Task<ElementMeasurementsInPixels> ElementMeasurementsInPixelsAsync(string elementId);
     public void OptionsSetCursorWidth(double cursorWidthInPixels);
+    public void OptionsSetFontFamily(string? fontFamily);
     public void OptionsSetFontSize(int fontSizeInPixels);
     public Task OptionsSetFromLocalStorageAsync();
     public void OptionsSetHeight(int? heightInPixels);

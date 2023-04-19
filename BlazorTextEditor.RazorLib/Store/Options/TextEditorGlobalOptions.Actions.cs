@@ -5,6 +5,7 @@ namespace BlazorTextEditor.RazorLib.Store.Options;
 
 public partial class TextEditorOptionsState
 {
+    public record SetFontFamilyAction(string? FontFamily);
     public record SetFontSizeAction(int FontSizeInPixels);
     public record SetCursorWidthAction(double CursorWidthInPixels);
     public record SetHeightAction(int? HeightInPixels);

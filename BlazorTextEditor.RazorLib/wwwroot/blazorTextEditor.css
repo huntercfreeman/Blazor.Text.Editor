@@ -10,7 +10,6 @@
     cursor: text;
     position: relative;
     display: flex;
-    font-family: monospace;
 }
 
 .bte_text-editor-group {

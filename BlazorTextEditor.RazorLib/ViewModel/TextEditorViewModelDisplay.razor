@@ -13,6 +13,20 @@
     var textEditorViewModel = MutableReferenceToViewModel;
     var globalTextEditorOptions = TextEditorService.OptionsWrap.Value.Options;
 
+    string fontFamily;
+
+    if (string.IsNullOrWhiteSpace(globalTextEditorOptions.CommonOptions?.FontFamily))
+    {
+        fontFamily = "monospace";
+    }
+    else
+    {
+        fontFamily = globalTextEditorOptions.CommonOptions.FontFamily;
+    }
+
+    var fontFamilyCssStyleString = 
+        $"font-family: {fontFamily};"; 
+    
     var fontSizeInPixelsCssStyleString = string.Empty;
 
     if (globalTextEditorOptions.CommonOptions?.FontSizeInPixels is not null)
@@ -22,7 +36,7 @@
     }
 }
 
-<div style="@fontSizeInPixelsCssStyleString @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
+<div style="@fontSizeInPixelsCssStyleString @fontFamilyCssStyleString @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.ThemeCssClassString @WrapperClassCssString">
 
     <CascadingValue Value="textEditorModel">

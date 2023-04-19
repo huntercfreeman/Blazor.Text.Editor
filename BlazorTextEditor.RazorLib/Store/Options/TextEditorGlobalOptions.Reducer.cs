@@ -7,6 +7,23 @@ public partial class TextEditorOptionsState
     private class Reducer
     {
         [ReducerMethod]
+        public static TextEditorOptionsState ReduceSetFontFamilyAction(
+            TextEditorOptionsState inOptionsState,
+            SetFontFamilyAction setFontFamilyAction)
+        {
+            return new TextEditorOptionsState
+            {
+                Options = inOptionsState.Options with
+                {
+                    CommonOptions = inOptionsState.Options.CommonOptions with
+                    {
+                        FontFamily = setFontFamilyAction.FontFamily
+                    }
+                },
+            };
+        }
+        
+        [ReducerMethod]
         public static TextEditorOptionsState ReduceSetFontSizeAction(
             TextEditorOptionsState inOptionsState,
             SetFontSizeAction setFontSizeAction)
