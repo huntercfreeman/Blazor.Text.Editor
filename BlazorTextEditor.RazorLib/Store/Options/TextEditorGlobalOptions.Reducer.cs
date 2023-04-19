@@ -7,6 +7,23 @@ public partial class TextEditorOptionsState
     private class Reducer
     {
         [ReducerMethod]
+        public static TextEditorOptionsState ReduceSetFontFamilyAction(
+            TextEditorOptionsState inOptionsState,
+            SetFontFamilyAction setFontFamilyAction)
+        {
+            return new TextEditorOptionsState
+            {
+                Options = inOptionsState.Options with
+                {
+                    CommonOptions = inOptionsState.Options.CommonOptions with
+                    {
+                        FontFamily = setFontFamilyAction.FontFamily
+                    }
+                },
+            };
+        }
+        
+        [ReducerMethod]
         public static TextEditorOptionsState ReduceSetFontSizeAction(
             TextEditorOptionsState inOptionsState,
             SetFontSizeAction setFontSizeAction)
@@ -106,6 +123,21 @@ public partial class TextEditorOptionsState
                 Options = inOptionsState.Options with
                 {
                     ShowNewlines = setShowNewlinesAction.ShowNewlines
+                },
+            };
+        }
+        
+        [ReducerMethod]
+        public static TextEditorOptionsState ReduceSetUseMonospaceOptimizationsAction(
+            TextEditorOptionsState inOptionsState,
+            SetUseMonospaceOptimizationsAction setUseMonospaceOptimizationsAction)
+        {
+            return new TextEditorOptionsState
+            {
+                Options = inOptionsState.Options with
+                {
+                    UseMonospaceOptimizations = 
+                        setUseMonospaceOptimizationsAction.UseMonospaceOptimizations
                 },
             };
         }

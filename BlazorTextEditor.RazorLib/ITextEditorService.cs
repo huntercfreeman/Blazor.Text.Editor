@@ -46,11 +46,13 @@ public interface ITextEditorService
     public void DiffRegister(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
     public Task<ElementMeasurementsInPixels> ElementMeasurementsInPixelsAsync(string elementId);
     public void OptionsSetCursorWidth(double cursorWidthInPixels);
+    public void OptionsSetFontFamily(string? fontFamily);
     public void OptionsSetFontSize(int fontSizeInPixels);
     public Task OptionsSetFromLocalStorageAsync();
     public void OptionsSetHeight(int? heightInPixels);
     public void OptionsSetKeymap(KeymapDefinition foundKeymap);
     public void OptionsSetShowNewlines(bool showNewlines);
+    public void OptionsSetUseMonospaceOptimizations(bool useMonospaceOptimizations);
     public void OptionsSetShowWhitespace(bool showWhitespace);
     /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the AppOptions Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
     public void OptionsSetTheme(ThemeRecord theme);

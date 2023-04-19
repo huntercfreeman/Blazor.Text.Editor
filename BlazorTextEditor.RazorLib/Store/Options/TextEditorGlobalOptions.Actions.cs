@@ -5,6 +5,7 @@ namespace BlazorTextEditor.RazorLib.Store.Options;
 
 public partial class TextEditorOptionsState
 {
+    public record SetFontFamilyAction(string? FontFamily);
     public record SetFontSizeAction(int FontSizeInPixels);
     public record SetCursorWidthAction(double CursorWidthInPixels);
     public record SetHeightAction(int? HeightInPixels);
@@ -19,4 +20,5 @@ public partial class TextEditorOptionsState
     public record SetKeymapAction(KeymapDefinition KeymapDefinition);
     public record SetShowWhitespaceAction(bool ShowWhitespace);
     public record SetShowNewlinesAction(bool ShowNewlines);
+    public record SetUseMonospaceOptimizationsAction(bool UseMonospaceOptimizations);
 }

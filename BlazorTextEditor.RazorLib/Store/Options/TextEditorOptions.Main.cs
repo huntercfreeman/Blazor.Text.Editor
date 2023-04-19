@@ -19,12 +19,14 @@ public partial class TextEditorOptionsState
             new CommonOptions(
                 DEFAULT_FONT_SIZE_IN_PIXELS,
                 DEFAULT_ICON_SIZE_IN_PIXELS,
-                ThemeFacts.VisualStudioDarkThemeClone.ThemeKey),
+                ThemeFacts.VisualStudioDarkThemeClone.ThemeKey,
+                null),
             false,
             false,
             null,
             DEFAULT_CURSOR_WIDTH_IN_PIXELS,
-            KeymapFacts.DefaultKeymapDefinition);
+            KeymapFacts.DefaultKeymapDefinition,
+            false);
     }
     
     public const int DEFAULT_FONT_SIZE_IN_PIXELS = 20;

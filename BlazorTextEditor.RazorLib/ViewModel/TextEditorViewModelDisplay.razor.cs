@@ -130,6 +130,12 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     
     private string ContentElementId =>
         $"bte_text-editor-content_{_componentHtmlElementId}";
+    
+    private string ProportionalFontMeasurementsParentElementId =>
+        $"bte_text-editor-proportional-font-measurement-parent_{_componentHtmlElementId}";
+    
+    private string ProportionalFontMeasurementsTargetElementId =>
+        $"bte_text-editor-proportional-font-measurement-target_{_componentHtmlElementId}";
 
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
 

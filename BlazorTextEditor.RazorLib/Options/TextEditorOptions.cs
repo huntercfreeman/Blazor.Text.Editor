@@ -9,4 +9,5 @@ public record TextEditorOptions(
     bool? ShowNewlines,
     int? TextEditorHeightInPixels,
     double? CursorWidthInPixels,
-    KeymapDefinition? KeymapDefinition);
+    KeymapDefinition? KeymapDefinition,
+    bool UseMonospaceOptimizations);

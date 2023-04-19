@@ -234,6 +234,15 @@ public class TextEditorService : ITextEditorService
                 textEditorModelKey));
     }
 
+    public void OptionsSetFontFamily(string? fontFamily)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorOptionsState.SetFontFamilyAction(
+                fontFamily));
+        
+        OptionsWriteToStorage();
+    }
+
     public void OptionsSetFontSize(int fontSizeInPixels)
     {
         _dispatcher.Dispatch(
@@ -293,6 +302,15 @@ public class TextEditorService : ITextEditorService
         _dispatcher.Dispatch(
             new TextEditorOptionsState.SetShowNewlinesAction(
                 showNewlines));
+
+        OptionsWriteToStorage();
+    }
+    
+    public void OptionsSetUseMonospaceOptimizations(bool useMonospaceOptimizations)
+    {
+        _dispatcher.Dispatch(
+            new TextEditorOptionsState.SetUseMonospaceOptimizationsAction(
+                useMonospaceOptimizations));
 
         OptionsWriteToStorage();
     }
@@ -701,6 +719,8 @@ public class TextEditorService : ITextEditorService
         
         if (options.ShowNewlines is not null)
             OptionsSetShowNewlines(options.ShowNewlines.Value);
+        
+        OptionsSetUseMonospaceOptimizations(options.UseMonospaceOptimizations);
         
         if (options.ShowWhitespace is not null)
             OptionsSetShowWhitespace(options.ShowWhitespace.Value);
