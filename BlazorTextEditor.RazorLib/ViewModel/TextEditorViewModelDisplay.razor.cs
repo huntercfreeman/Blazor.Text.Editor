@@ -91,7 +91,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             new Throttle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>(
                 TimeSpan.FromMilliseconds(30));
     
-    private readonly IThrottle<byte> _validateFontSizeThrottle = new Throttle<byte>(
+    private readonly IThrottle<byte> _globalOptionsWrapOnStateChangedThrottle = new Throttle<byte>(
         TimeSpan.FromMilliseconds(100));
 
     private int? _previousGlobalFontSizeInPixels;
@@ -237,14 +237,17 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private async void TextEditorGlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
     {
         var mostRecentGlobalOptionsWrapOnStateChanged =
-            await _validateFontSizeThrottle.FireAsync(
+            await _globalOptionsWrapOnStateChangedThrottle.FireAsync(
                 0,
                 CancellationToken.None);
 
         if (mostRecentGlobalOptionsWrapOnStateChanged.isCancellationRequested)
             return;
         
-        ValidateFontSize();
+        var alreadyReRenderedForFontSize = ValidateFontSize();
+
+        if (!alreadyReRenderedForFontSize)
+            await InvokeAsync(StateHasChanged);
     }
 
     private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
@@ -261,7 +264,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         }
     }
     
-    private void ValidateFontSize()
+    private bool ValidateFontSize()
     {
         var safeTextEditorViewModel = MutableReferenceToViewModel;
 
@@ -289,8 +292,12 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                         ShouldMeasureDimensions = true,
                         TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                     });
+
+                return true;
             }
         }
+
+        return false;
     }
     
     public async Task FocusTextEditorAsync()
