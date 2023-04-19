@@ -19,8 +19,6 @@ public partial class BodySection : ComponentBase
     [Parameter, EditorRequired]
     public int TabIndex { get; set; } = -1;
     [Parameter, EditorRequired]
-    public string HtmlElementId { get; set; } = null!;
-    [Parameter, EditorRequired]
     public RenderFragment? ContextMenuRenderFragmentOverride { get; set; }
     [Parameter]
     public bool IncludeContextMenuHelperComponent { get; set; }
@@ -30,7 +28,6 @@ public partial class BodySection : ComponentBase
     private RowSection? _rowSection;
 
     public TextEditorCursorDisplay? TextEditorCursorDisplay => _rowSection?.TextEditorCursorDisplay;
-    public MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => _rowSection?.MeasureCharacterWidthAndRowHeightComponent;
 
     private string GetBodyStyleCss()
     {

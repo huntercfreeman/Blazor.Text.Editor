@@ -83,13 +83,16 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private readonly IThrottle<(MouseEventArgs, bool thinksLeftMouseButtonIsDown)>
         _onMouseMoveThrottle =
             new Throttle<(MouseEventArgs, bool thinksLeftMouseButtonIsDown)>(
-                TimeSpan.FromMilliseconds(25));
+                TimeSpan.FromMilliseconds(30));
     
     // TODO: The ValueTuple being used here needs to be made into a class likely as this is not nice to read
     private readonly IThrottle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>
         _onTouchMoveThrottle =
             new Throttle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>(
-                TimeSpan.FromMilliseconds(25));
+                TimeSpan.FromMilliseconds(30));
+    
+    private readonly IThrottle<byte> _globalOptionsWrapOnStateChangedThrottle = new Throttle<byte>(
+        TimeSpan.FromMilliseconds(100));
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -120,8 +123,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
 
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
-    private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent => 
-        _bodySection?.MeasureCharacterWidthAndRowHeightComponent;
+    private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent { get; set; }
     
     private string MeasureCharacterWidthAndRowHeightElementId =>
         $"bte_measure-character-width-and-row-height_{_componentHtmlElementId}";
@@ -135,32 +137,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     {
         var safeTextEditorViewModel = MutableReferenceToViewModel;
 
-        var currentGlobalFontSizeInPixels = TextEditorService
-            .OptionsWrap
-            .Value
-            .Options
-            .CommonOptions.FontSizeInPixels!
-            .Value;
-
-        var dirtyGlobalFontSizeInPixels =
-            _previousGlobalFontSizeInPixels is null ||
-            _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
-
-        if (safeTextEditorViewModel is not null)
-        {
-            if (dirtyGlobalFontSizeInPixels)
-            {
-                _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
-
-                TextEditorService.ViewModelWith(
-                    safeTextEditorViewModel.ViewModelKey,
-                    previousViewModel => previousViewModel with
-                    {
-                        ShouldMeasureDimensions = true,
-                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                    });
-            }
-        }
+        ValidateFontSize();
         
         if (safeTextEditorViewModel is not null &&
             _previousTextEditorViewModelKey != safeTextEditorViewModel.ViewModelKey)
@@ -216,7 +193,8 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                         VirtualizationResult = previousViewModel.VirtualizationResult with
                         {
                             CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                        }
+                        },
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                     });
 
                 // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
@@ -256,8 +234,33 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         }
     }
     
-    private void TextEditorGlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
+    private async void TextEditorGlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
     {
+        var mostRecentGlobalOptionsWrapOnStateChanged =
+            await _globalOptionsWrapOnStateChangedThrottle.FireAsync(
+                0,
+                CancellationToken.None);
+
+        if (mostRecentGlobalOptionsWrapOnStateChanged.isCancellationRequested)
+            return;
+        
+        var alreadyReRenderedForFontSize = ValidateFontSize();
+
+        if (!alreadyReRenderedForFontSize)
+        {
+            var safeTextEditorViewModel = MutableReferenceToViewModel;
+
+            if (safeTextEditorViewModel is not null)
+            {
+                TextEditorService.ViewModelWith(
+                    safeTextEditorViewModel.ViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        ShouldMeasureDimensions = true,
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                    });
+            }
+        }
     }
 
     private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
@@ -272,6 +275,42 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
             await InvokeAsync(StateHasChanged);
         }
+    }
+    
+    private bool ValidateFontSize()
+    {
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
+
+        var currentGlobalFontSizeInPixels = TextEditorService
+            .OptionsWrap
+            .Value
+            .Options
+            .CommonOptions.FontSizeInPixels!
+            .Value;
+
+        var dirtyGlobalFontSizeInPixels =
+            _previousGlobalFontSizeInPixels is null ||
+            _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
+
+        if (safeTextEditorViewModel is not null)
+        {
+            if (dirtyGlobalFontSizeInPixels)
+            {
+                _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
+
+                TextEditorService.ViewModelWith(
+                    safeTextEditorViewModel.ViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        ShouldMeasureDimensions = true,
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                    });
+
+                return true;
+            }
+        }
+
+        return false;
     }
     
     public async Task FocusTextEditorAsync()
