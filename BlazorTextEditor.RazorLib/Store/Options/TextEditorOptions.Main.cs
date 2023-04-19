@@ -19,7 +19,8 @@ public partial class TextEditorOptionsState
             new CommonOptions(
                 DEFAULT_FONT_SIZE_IN_PIXELS,
                 DEFAULT_ICON_SIZE_IN_PIXELS,
-                ThemeFacts.VisualStudioDarkThemeClone.ThemeKey),
+                ThemeFacts.VisualStudioDarkThemeClone.ThemeKey,
+                null),
             false,
             false,
             null,
