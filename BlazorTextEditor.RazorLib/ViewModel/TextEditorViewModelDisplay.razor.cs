@@ -247,7 +247,20 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         var alreadyReRenderedForFontSize = ValidateFontSize();
 
         if (!alreadyReRenderedForFontSize)
-            await InvokeAsync(StateHasChanged);
+        {
+            var safeTextEditorViewModel = MutableReferenceToViewModel;
+
+            if (safeTextEditorViewModel is not null)
+            {
+                TextEditorService.ViewModelWith(
+                    safeTextEditorViewModel.ViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        ShouldMeasureDimensions = true,
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                    });
+            }
+        }
     }
 
     private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
