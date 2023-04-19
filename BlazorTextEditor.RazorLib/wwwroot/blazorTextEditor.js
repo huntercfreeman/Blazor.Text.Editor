@@ -84,7 +84,7 @@ window.blazorTextEditor = {
         let parentBoundingClientRect = parentElement.getBoundingClientRect();
         let targetBoundingClientRect = targetElement.getBoundingClientRect();
         
-        return parentBoundingClientRect.left - targetBoundingClientRect.left;
+        return targetBoundingClientRect.left - parentBoundingClientRect.left;
     },
     getRelativePosition: function (elementId, clientX, clientY) {
         let element = document.getElementById(elementId);
