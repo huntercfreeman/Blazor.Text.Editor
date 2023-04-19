@@ -90,6 +90,9 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         _onTouchMoveThrottle =
             new Throttle<(TouchEventArgs, bool thinksLeftMouseButtonIsDown)>(
                 TimeSpan.FromMilliseconds(30));
+    
+    private readonly IThrottle<byte> _validateFontSizeThrottle = new Throttle<byte>(
+        TimeSpan.FromMilliseconds(100));
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -134,32 +137,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     {
         var safeTextEditorViewModel = MutableReferenceToViewModel;
 
-        var currentGlobalFontSizeInPixels = TextEditorService
-            .OptionsWrap
-            .Value
-            .Options
-            .CommonOptions.FontSizeInPixels!
-            .Value;
-
-        var dirtyGlobalFontSizeInPixels =
-            _previousGlobalFontSizeInPixels is null ||
-            _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
-
-        if (safeTextEditorViewModel is not null)
-        {
-            if (dirtyGlobalFontSizeInPixels)
-            {
-                _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
-
-                TextEditorService.ViewModelWith(
-                    safeTextEditorViewModel.ViewModelKey,
-                    previousViewModel => previousViewModel with
-                    {
-                        ShouldMeasureDimensions = true,
-                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                    });
-            }
-        }
+        ValidateFontSize();
         
         if (safeTextEditorViewModel is not null &&
             _previousTextEditorViewModelKey != safeTextEditorViewModel.ViewModelKey)
@@ -256,8 +234,17 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         }
     }
     
-    private void TextEditorGlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
+    private async void TextEditorGlobalOptionsWrapOnStateChanged(object? sender, EventArgs e)
     {
+        var mostRecentGlobalOptionsWrapOnStateChanged =
+            await _validateFontSizeThrottle.FireAsync(
+                0,
+                CancellationToken.None);
+
+        if (mostRecentGlobalOptionsWrapOnStateChanged.isCancellationRequested)
+            return;
+        
+        ValidateFontSize();
     }
 
     private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
@@ -271,6 +258,38 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             _previousTextEditorStateChangedKey = viewModelTextEditorStateChangedKey;
 
             await InvokeAsync(StateHasChanged);
+        }
+    }
+    
+    private void ValidateFontSize()
+    {
+        var safeTextEditorViewModel = MutableReferenceToViewModel;
+
+        var currentGlobalFontSizeInPixels = TextEditorService
+            .OptionsWrap
+            .Value
+            .Options
+            .CommonOptions.FontSizeInPixels!
+            .Value;
+
+        var dirtyGlobalFontSizeInPixels =
+            _previousGlobalFontSizeInPixels is null ||
+            _previousGlobalFontSizeInPixels != currentGlobalFontSizeInPixels;
+
+        if (safeTextEditorViewModel is not null)
+        {
+            if (dirtyGlobalFontSizeInPixels)
+            {
+                _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
+
+                TextEditorService.ViewModelWith(
+                    safeTextEditorViewModel.ViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        ShouldMeasureDimensions = true,
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                    });
+            }
         }
     }
     
