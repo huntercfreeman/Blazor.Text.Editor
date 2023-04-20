@@ -2,6 +2,7 @@ using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorCommon.RazorLib.Reactive;
 using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Html;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.ViewModel;
@@ -26,10 +27,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorOptions GlobalTextEditorOptions { get; set; } = null!;
-    [CascadingParameter(Name="ProportionalFontMeasurementsParentElementId")]
-    public string ProportionalFontMeasurementsParentElementId { get; set; } = null!;
-    [CascadingParameter(Name="ProportionalFontMeasurementsTargetElementId")]
-    public string ProportionalFontMeasurementsTargetElementId { get; set; } = null!;
+    [CascadingParameter(Name="ProportionalFontMeasurementsContainerElementId")]
+    public string ProportionalFontMeasurementsContainerElementId { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
@@ -83,13 +82,25 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var model = TextEditorModel;
+        var viewModel = TextEditorViewModel;
+        
         if (!GlobalTextEditorOptions.UseMonospaceOptimizations)
         {
+            var textOffsettingCursor = model
+                .GetTextOffsettingCursor(TextEditorCursor)
+                .EscapeHtml();
+            
+            var guid = Guid.NewGuid();
+            
             var nextLeftRelativeToParentInPixels = await JsRuntime.InvokeAsync<double>(
-                "blazorTextEditor.measureLeftRelativeToParentInPixels",
-                ProportionalFontMeasurementsParentElementId,
-                ProportionalFontMeasurementsTargetElementId);
-
+                "blazorTextEditor.calculateProportionalLeftOffset",
+                ProportionalFontMeasurementsContainerElementId,
+                $"bte_proportional-font-measurement-parent_{viewModel.ViewModelKey.Guid}_cursor_{guid}",
+                $"bte_proportional-font-measurement-cursor_{viewModel.ViewModelKey.Guid}_cursor_{guid}",
+                textOffsettingCursor,
+                true);
+            
             var previousLeftRelativeToParentInPixels = _leftRelativeToParentInPixels;
             
             _leftRelativeToParentInPixels = nextLeftRelativeToParentInPixels;
@@ -104,24 +115,24 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             {
                 await JsRuntime.InvokeVoidAsync(
                     "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
-                    ProportionalFontMeasurementsParentElementId,
-                    ProportionalFontMeasurementsTargetElementId);
+                    _intersectionObserverMapKey.ToString(),
+                    DotNetObjectReference.Create(this),
+                    ScrollableContainerId,
+                    TextEditorCursorDisplayId);
                 
                 _previouslyObservedTextEditorCursorDisplayId = TextEditorCursorDisplayId;
             }
         }
         
-        var textEditor = TextEditorModel;
-        
         var rowIndex = TextEditorCursor.IndexCoordinates.rowIndex;
 
         // Ensure cursor stays within the row count index range
-        if (rowIndex > textEditor.RowCount - 1)
-            rowIndex = textEditor.RowCount - 1;
+        if (rowIndex > model.RowCount - 1)
+            rowIndex = model.RowCount - 1;
         
         var columnIndex = TextEditorCursor.IndexCoordinates.columnIndex;
 
-        var rowLength = textEditor.GetLengthOfRow(rowIndex);
+        var rowLength = model.GetLengthOfRow(rowIndex);
 
         // Ensure cursor stays within the column count index range for the current row
         if (columnIndex > rowLength)

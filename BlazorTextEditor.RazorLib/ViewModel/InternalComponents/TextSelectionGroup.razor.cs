@@ -1,7 +1,10 @@
 ﻿using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Html;
 using BlazorTextEditor.RazorLib.Model;
+using BlazorTextEditor.RazorLib.Options;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
 
@@ -11,6 +14,8 @@ public partial class TextSelectionGroup : ComponentBase
     public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
+    [CascadingParameter]
+    public TextEditorOptions GlobalTextEditorOptions { get; set; } = null!;
     
     [Parameter, EditorRequired]
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
@@ -20,11 +25,14 @@ public partial class TextSelectionGroup : ComponentBase
         int upperPositionIndexExclusive,
         int rowIndex)
     {
-        if (rowIndex >= TextEditorModel.RowEndingPositions.Length)
+        var model = TextEditorModel;
+        var viewModel = TextEditorViewModel;
+        
+        if (rowIndex >= model.RowEndingPositions.Length)
             return string.Empty;
 
-        var startOfRowTuple = TextEditorModel.GetStartOfRowTuple(rowIndex);
-        var endOfRowTuple = TextEditorModel.RowEndingPositions[rowIndex];
+        var startOfRowTuple = model.GetStartOfRowTuple(rowIndex);
+        var endOfRowTuple = model.RowEndingPositions[rowIndex];
 
         var selectionStartingColumnIndex = 0;
         var selectionEndingColumnIndex =
@@ -49,24 +57,24 @@ public partial class TextSelectionGroup : ComponentBase
         }
 
         var topInPixelsInvariantCulture =
-            (rowIndex * TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            (rowIndex * viewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
             .ToCssValue();
         
         var top = $"top: {topInPixelsInvariantCulture}px;";
 
         var heightInPixelsInvariantCulture =
-            (TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
+            (viewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels)
             .ToCssValue();
         
         var height = $"height: {heightInPixelsInvariantCulture}px;";
 
         var selectionStartInPixels =
             selectionStartingColumnIndex *
-            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            viewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         // selectionStartInPixels offset from Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditorModel
+            var tabsOnSameRowBeforeCursor = model
                 .GetTabsCountOnSameRowBeforeCursor(
                     rowIndex,
                     selectionStartingColumnIndex);
@@ -77,7 +85,7 @@ public partial class TextSelectionGroup : ComponentBase
 
             selectionStartInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                      viewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         var selectionStartInPixelsInvariantCulture = selectionStartInPixels
@@ -87,12 +95,12 @@ public partial class TextSelectionGroup : ComponentBase
 
         var selectionWidthInPixels =
             selectionEndingColumnIndex *
-            TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels -
+            viewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels -
             selectionStartInPixels;
 
         // Tab keys a width of many characters
         {
-            var tabsOnSameRowBeforeCursor = TextEditorModel
+            var tabsOnSameRowBeforeCursor = model
                 .GetTabsCountOnSameRowBeforeCursor(
                     rowIndex,
                     selectionEndingColumnIndex);
@@ -103,18 +111,18 @@ public partial class TextSelectionGroup : ComponentBase
 
             selectionWidthInPixels += extraWidthPerTabKey *
                                       tabsOnSameRowBeforeCursor *
-                                      TextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+                                      viewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
         }
 
         var widthCssStyleString = "width: ";
 
-        var fullWidthValue = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
+        var fullWidthValue = viewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth;
 
-        if (TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width >
-            TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
+        if (viewModel.VirtualizationResult.ElementMeasurementsInPixels.Width >
+            viewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollWidth)
         {
             // If content does not fill the viewable width of the Text Editor User Interface
-            fullWidthValue = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
+            fullWidthValue = viewModel.VirtualizationResult.ElementMeasurementsInPixels.Width;
         }
         
         var fullWidthValueInPixelsInvariantCulture = fullWidthValue

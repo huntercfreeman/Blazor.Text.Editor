@@ -73,16 +73,183 @@ window.blazorTextEditor = {
             HeightInPixels: element.offsetHeight
         }
     },
-    measureLeftRelativeToParentInPixels: function (parentElementId, targetElementId) {
-        let parentElement = document.getElementById(parentElementId);
-        let targetElement = document.getElementById(targetElementId);
+    escapeHtml: function(input)
+    {
+        return input
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
+            .replaceAll(" ", "&nbsp;")
+            .replaceAll("\r\n", "<br/>")
+            .replaceAll("\n", "<br/>")
+            .replaceAll("\r", "<br/>")
+            .replaceAll("\"", "&quot;")
+            .replaceAll("'", "&#39;");
+    },
+    calculateProportionalColumnIndex:
+        function (
+            containerElementId,
+            parentElementId,
+            cursorElementId,
+            positionXInPixels,
+            characterWidthInPixels,
+            textOnRow) {
+        
+        let containerElement = document
+            .getElementById(containerElementId);
 
-        if (!parentElement || !targetElement) {
+        if (!containerElement) {
             return 0;
         }
         
+        let parentElement = document
+            .createElement("div");
+
+        parentElement.id = parentElementId;
+        parentElement.style.minHeight = "1ch";
+
+        containerElement.append(parentElement);
+
+        let cursorElement = document
+            .createElement("span");
+        
+        cursorElement.id = cursorElementId;
+
+        parentElement.append(cursorElement);
+            
+        let columnIndex = Math.trunc(
+            positionXInPixels / characterWidthInPixels);
+        
+        let columnIndexWasOutOfBoundsTooBig = false;
+        let columnIndexWasOutOfBoundsTooSmall = false;
+        
+        if (columnIndex > textOnRow.length) {
+            columnIndexWasOutOfBoundsTooBig = true;
+            columnIndex = textOnRow.length;
+        }
+        else if (columnIndex < 0) {
+            columnIndexWasOutOfBoundsTooSmall = true;
+            columnIndex = 0;
+        }
+
+        let lowerBoundColumnIndex = null;
+        let lowerBoundLeftOffset = null;
+        
+        let upperBoundColumnIndex = null;
+        let upperBoundLeftOffset = null;
+        
+        let maxLoopCount = textOnRow.length + 1;
+        let loopCount = 0;
+        
+        while(loopCount++ < maxLoopCount) {
+            if (lowerBoundColumnIndex && upperBoundColumnIndex) {
+                break;
+            }
+            
+            let escapedText = this.escapeHtml(
+                textOnRow.substring(
+                    0,
+                    columnIndex));
+
+            let leftOffset = this.calculateProportionalLeftOffset(
+                containerElementId,
+                parentElementId,
+                cursorElementId,
+                escapedText,
+                false
+            );
+            
+            if (leftOffset < positionXInPixels) {
+                if (columnIndexWasOutOfBoundsTooBig) {
+                    return columnIndex;
+                }
+                
+                lowerBoundColumnIndex = columnIndex++;
+                lowerBoundLeftOffset = leftOffset; 
+            }
+            else {
+                if (columnIndexWasOutOfBoundsTooSmall) {
+                    return columnIndex;
+                }
+                
+                upperBoundColumnIndex = columnIndex--;
+                upperBoundLeftOffset = leftOffset;
+            }
+        }
+
+        parentElement.removeChild(cursorElement);
+        containerElement.removeChild(parentElement);
+
+        if (!lowerBoundColumnIndex || !upperBoundColumnIndex) {
+            return -1;
+        }
+        
+        let lowerBoundMissingBy = positionXInPixels - lowerBoundLeftOffset;
+        let upperBoundMissingBy = upperBoundLeftOffset - positionXInPixels;
+        
+        return lowerBoundMissingBy < upperBoundMissingBy
+            ? lowerBoundColumnIndex
+            : upperBoundColumnIndex;
+    },
+    calculateProportionalLeftOffset:
+        function (
+            containerElementId,
+            parentElementId,
+            cursorElementId,
+            textOffsettingCursor,
+            shouldCreateElements) {
+
+        let containerElement = document
+            .getElementById(containerElementId);
+
+        if (!containerElement) {
+            return 0;
+        }
+        
+        if (shouldCreateElements) {
+            let parentElement = document
+                .createElement("div");
+
+            parentElement.id = parentElementId;
+            parentElement.style.minHeight = "1ch";
+
+            containerElement.append(parentElement);
+
+            let cursorElement = document
+                .createElement("span");
+
+            cursorElement.id = cursorElementId;
+
+            parentElement.append(cursorElement);
+        }
+        
+        let parentElement = document.getElementById(parentElementId);
+        let cursorElement = document.getElementById(cursorElementId);
+
+        if (!parentElement || !cursorElement) {
+            return 0;
+        }
+
+        let span = document
+            .createElement("span");
+
+        span.innerHTML = textOffsettingCursor;
+        span.style.display = "inline-block";
+
+        parentElement.insertBefore(
+            span,
+            parentElement.children[0]);
+
         let parentBoundingClientRect = parentElement.getBoundingClientRect();
-        let targetBoundingClientRect = targetElement.getBoundingClientRect();
+        let targetBoundingClientRect = cursorElement.getBoundingClientRect();
+        
+        parentElement.removeChild(span);
+
+        if (shouldCreateElements) {
+            parentElement.removeChild(cursorElement);
+            containerElement.removeChild(parentElement);
+        }
         
         return targetBoundingClientRect.left - parentBoundingClientRect.left;
     },
@@ -316,6 +483,10 @@ window.blazorTextEditor = {
 
         let intersectionObserverMapValue = this.cursorIntersectionObserverMap
             .get(intersectionObserverMapKey);
+        
+        if (!intersectionObserverMapValue) {
+            return;
+        }
 
         let intersectionObserver = intersectionObserverMapValue.IntersectionObserver;
 

@@ -829,4 +829,16 @@ public partial class TextEditorModel
             startOfRowTuple.positionIndex,
             cursorPositionIndex - startOfRowTuple.positionIndex);
     }
+    
+    public string GetTextOnRow(
+        int rowIndex)
+    {
+        var startOfRowTuple = GetStartOfRowTuple(rowIndex);
+
+        var lengthOfRow = GetLengthOfRow(rowIndex);
+
+        return GetTextRange(
+            startOfRowTuple.positionIndex,
+            lengthOfRow);
+    }
 }
