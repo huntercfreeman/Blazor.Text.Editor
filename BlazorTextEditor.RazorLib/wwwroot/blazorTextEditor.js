@@ -89,19 +89,35 @@ window.blazorTextEditor = {
     },
     calculateProportionalColumnIndex:
         function (
+            containerElementId,
             parentElementId,
-            targetElementId,
+            cursorElementId,
             positionXInPixels,
             characterWidthInPixels,
             textOnRow) {
         
-        let parentElement = document.getElementById(parentElementId);
-        let targetElement = document.getElementById(targetElementId);
+        let containerElement = document
+            .getElementById(containerElementId);
 
-        if (!parentElement || !targetElement) {
+        if (!containerElement) {
             return 0;
         }
+        
+        let parentElement = document
+            .createElement("div");
 
+        parentElement.id = parentElementId;
+        parentElement.style.minHeight = "1ch";
+
+        containerElement.append(parentElement);
+
+        let cursorElement = document
+            .createElement("span");
+        
+        cursorElement.id = cursorElementId;
+
+        parentElement.append(cursorElement);
+            
         let columnIndex = Math.trunc(
             positionXInPixels / characterWidthInPixels);
         
@@ -123,7 +139,10 @@ window.blazorTextEditor = {
         let upperBoundColumnIndex = null;
         let upperBoundLeftOffset = null;
         
-        while(true) {
+        let maxLoopCount = textOnRow.length + 1;
+        let loopCount = 0;
+        
+        while(loopCount++ < maxLoopCount) {
             if (lowerBoundColumnIndex && upperBoundColumnIndex) {
                 break;
             }
@@ -134,9 +153,11 @@ window.blazorTextEditor = {
                     columnIndex));
 
             let leftOffset = this.calculateProportionalLeftOffset(
+                containerElementId,
                 parentElementId,
-                targetElementId,
-                escapedText
+                cursorElementId,
+                escapedText,
+                false
             );
             
             if (leftOffset < positionXInPixels) {
@@ -156,6 +177,13 @@ window.blazorTextEditor = {
                 upperBoundLeftOffset = leftOffset;
             }
         }
+
+        parentElement.removeChild(cursorElement);
+        containerElement.removeChild(parentElement);
+
+        if (!lowerBoundColumnIndex || !upperBoundColumnIndex) {
+            return -1;
+        }
         
         let lowerBoundMissingBy = positionXInPixels - lowerBoundLeftOffset;
         let upperBoundMissingBy = upperBoundLeftOffset - positionXInPixels;
@@ -166,18 +194,44 @@ window.blazorTextEditor = {
     },
     calculateProportionalLeftOffset:
         function (
+            containerElementId,
             parentElementId,
-            targetElementId,
-            textOffsettingCursor) {
+            cursorElementId,
+            textOffsettingCursor,
+            shouldCreateElements) {
+
+        let containerElement = document
+            .getElementById(containerElementId);
+
+        if (!containerElement) {
+            return 0;
+        }
+        
+        if (shouldCreateElements) {
+            let parentElement = document
+                .createElement("div");
+
+            parentElement.id = parentElementId;
+            parentElement.style.minHeight = "1ch";
+
+            containerElement.append(parentElement);
+
+            let cursorElement = document
+                .createElement("span");
+
+            cursorElement.id = cursorElementId;
+
+            parentElement.append(cursorElement);
+        }
         
         let parentElement = document.getElementById(parentElementId);
-        let targetElement = document.getElementById(targetElementId);
+        let cursorElement = document.getElementById(cursorElementId);
 
-        if (!parentElement || !targetElement) {
+        if (!parentElement || !cursorElement) {
             return 0;
         }
 
-        var span = document
+        let span = document
             .createElement("span");
 
         span.innerHTML = textOffsettingCursor;
@@ -188,9 +242,14 @@ window.blazorTextEditor = {
             parentElement.children[0]);
 
         let parentBoundingClientRect = parentElement.getBoundingClientRect();
-        let targetBoundingClientRect = targetElement.getBoundingClientRect();
+        let targetBoundingClientRect = cursorElement.getBoundingClientRect();
         
         parentElement.removeChild(span);
+
+        if (shouldCreateElements) {
+            parentElement.removeChild(cursorElement);
+            containerElement.removeChild(parentElement);
+        }
         
         return targetBoundingClientRect.left - parentBoundingClientRect.left;
     },

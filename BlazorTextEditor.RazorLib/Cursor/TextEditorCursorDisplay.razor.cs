@@ -27,10 +27,8 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
     [CascadingParameter]
     public TextEditorOptions GlobalTextEditorOptions { get; set; } = null!;
-    [CascadingParameter(Name="ProportionalFontMeasurementsParentElementId")]
-    public string ProportionalFontMeasurementsParentElementId { get; set; } = null!;
-    [CascadingParameter(Name="ProportionalFontMeasurementsTargetElementId")]
-    public string ProportionalFontMeasurementsTargetElementId { get; set; } = null!;
+    [CascadingParameter(Name="ProportionalFontMeasurementsContainerElementId")]
+    public string ProportionalFontMeasurementsContainerElementId { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public TextEditorCursor TextEditorCursor { get; set; } = null!;
@@ -93,12 +91,16 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                 .GetTextOffsettingCursor(TextEditorCursor)
                 .EscapeHtml();
             
+            var guid = Guid.NewGuid();
+            
             var nextLeftRelativeToParentInPixels = await JsRuntime.InvokeAsync<double>(
                 "blazorTextEditor.calculateProportionalLeftOffset",
-                ProportionalFontMeasurementsParentElementId,
-                ProportionalFontMeasurementsTargetElementId,
-                textOffsettingCursor);
-
+                ProportionalFontMeasurementsContainerElementId,
+                $"bte_proportional-font-measurement-parent_{viewModel.ViewModelKey.Guid}_cursor_{guid}",
+                $"bte_proportional-font-measurement-cursor_{viewModel.ViewModelKey.Guid}_cursor_{guid}",
+                textOffsettingCursor,
+                true);
+            
             var previousLeftRelativeToParentInPixels = _leftRelativeToParentInPixels;
             
             _leftRelativeToParentInPixels = nextLeftRelativeToParentInPixels;
@@ -113,8 +115,10 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
             {
                 await JsRuntime.InvokeVoidAsync(
                     "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
-                    ProportionalFontMeasurementsParentElementId,
-                    ProportionalFontMeasurementsTargetElementId);
+                    _intersectionObserverMapKey.ToString(),
+                    DotNetObjectReference.Create(this),
+                    ScrollableContainerId,
+                    TextEditorCursorDisplayId);
                 
                 _previouslyObservedTextEditorCursorDisplayId = TextEditorCursorDisplayId;
             }

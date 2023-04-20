@@ -47,19 +47,8 @@
         // All the logic in this if is for debugging while implementing
         // proportional font logic.
         
-        <div style="display: flex; position: absolute; visibility: hidden;">
-            <div class="bte_psuedo-gutter"
-                 style="@GetGutterSectionStyleCss()">
-                @(textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1)
-            </div>
-            <div class="bte_psuedo-row"
-                 id="@ProportionalFontMeasurementsParentElementId"
-                 style="min-height:1ch;">
-                
-                <span style="display: inline-block;"
-                      id="@ProportionalFontMeasurementsTargetElementId">
-                </span>
-            </div>
+        <div style="display: flex; position: absolute; visibility: hidden;"
+             id="@ProportionalFontMeasurementsContainerElementId">
         </div>
         
         string GetGutterSectionStyleCss()
@@ -85,8 +74,7 @@
     <CascadingValue Value="textEditorModel">
         <CascadingValue Value="textEditorViewModel">
             <CascadingValue Value="globalTextEditorOptions">
-                <CascadingValue Name="ProportionalFontMeasurementsParentElementId" Value="ProportionalFontMeasurementsParentElementId">
-                    <CascadingValue Name="ProportionalFontMeasurementsTargetElementId" Value="ProportionalFontMeasurementsTargetElementId">
+                <CascadingValue Name="ProportionalFontMeasurementsContainerElementId" Value="ProportionalFontMeasurementsContainerElementId">
 
                 @if (IncludeHeaderHelperComponent &&
                      textEditorModel is not null &&
@@ -154,7 +142,7 @@
                 {
                     <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
                 }
-                    </CascadingValue>
+                
                 </CascadingValue>
             </CascadingValue>
         </CascadingValue>

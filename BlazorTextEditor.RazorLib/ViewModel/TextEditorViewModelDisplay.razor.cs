@@ -132,11 +132,8 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private string ContentElementId =>
         $"bte_text-editor-content_{_componentHtmlElementId}";
     
-    private string ProportionalFontMeasurementsParentElementId =>
-        $"bte_text-editor-proportional-font-measurement-parent_{_componentHtmlElementId}";
-    
-    private string ProportionalFontMeasurementsTargetElementId =>
-        $"bte_text-editor-proportional-font-measurement-target_{_componentHtmlElementId}";
+    private string ProportionalFontMeasurementsContainerElementId =>
+        $"bte_text-editor-proportional-font-measurement-container_{_componentHtmlElementId}";
 
     public RelativeCoordinates? RelativeCoordinatesOnClick { get; private set; }
 
@@ -704,13 +701,26 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         
         if (!globalTextEditorOptions.UseMonospaceOptimizations)
         {
+            var guid = Guid.NewGuid();
+            
             columnIndexInt = await JsRuntime.InvokeAsync<int>(
                 "blazorTextEditor.calculateProportionalColumnIndex",
-                ProportionalFontMeasurementsParentElementId,
-                ProportionalFontMeasurementsTargetElementId,
+                ProportionalFontMeasurementsContainerElementId,
+                $"bte_proportional-font-measurement-parent_{_componentHtmlElementId}_{guid}",
+                $"bte_proportional-font-measurement-cursor_{_componentHtmlElementId}_{guid}",
                 positionX,
                 safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels,
                 safeRefModel.GetTextOnRow(rowIndex));
+
+            if (columnIndexInt == -1)
+            {
+                var columnIndexDouble = positionX / 
+                                        safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+                columnIndexInt = (int)Math.Round(
+                    columnIndexDouble,
+                    MidpointRounding.AwayFromZero);
+            }
         }
         else
         {
