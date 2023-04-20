@@ -73,27 +73,27 @@ window.blazorTextEditor = {
             HeightInPixels: element.offsetHeight
         }
     },
-    setTextThenMeasureLeftRelativeToParentInPixels: function (text, parentElementId, targetElementId) {
-
-        // TODO: I'm looking into making "setTextThenMeasureLeftRelativeToParentInPixels" over the previously used "measureLeftRelativeToParentInPixels". Perhaps if one is best used than the other. The unused one be deleted.
-
-        let parentElement = document.getElementById(parentElementId);
-        let targetElement = document.getElementById(targetElementId);
-
-        if (!parentElement || !targetElement) {
-            return 0;
-        }
-        
-        targetElement.innerHTML = text;
-        
-        let parentBoundingClientRect = parentElement.getBoundingClientRect();
-        let targetBoundingClientRect = targetElement.getBoundingClientRect();
-        
-        return targetBoundingClientRect.left - parentBoundingClientRect.left;
+    escapeHtml: function(input)
+    {
+        return input
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")
+            .replaceAll(" ", "&nbsp;")
+            .replaceAll("\r\n", "<br/>")
+            .replaceAll("\n", "<br/>")
+            .replaceAll("\r", "<br/>")
+            .replaceAll("\"", "&quot;")
+            .replaceAll("'", "&#39;");
     },
-    measureLeftRelativeToParentInPixels: function (parentElementId, targetElementId) {
-
-        // TODO: I'm looking into making "setTextThenMeasureLeftRelativeToParentInPixels" over the previously used "measureLeftRelativeToParentInPixels". Perhaps if one is best used than the other. The unused one be deleted.
+    calculateProportionalColumnIndex:
+        function (
+            parentElementId,
+            targetElementId,
+            positionXInPixels,
+            characterWidthInPixels,
+            textOnRow) {
         
         let parentElement = document.getElementById(parentElementId);
         let targetElement = document.getElementById(targetElementId);
@@ -101,9 +101,96 @@ window.blazorTextEditor = {
         if (!parentElement || !targetElement) {
             return 0;
         }
+
+        let columnIndex = Math.trunc(
+            positionXInPixels / characterWidthInPixels);
         
+        let columnIndexWasOutOfBoundsTooBig = false;
+        let columnIndexWasOutOfBoundsTooSmall = false;
+        
+        if (columnIndex > textOnRow.length) {
+            columnIndexWasOutOfBoundsTooBig = true;
+            columnIndex = textOnRow.length;
+        }
+        else if (columnIndex < 0) {
+            columnIndexWasOutOfBoundsTooSmall = true;
+            columnIndex = 0;
+        }
+
+        let lowerBoundColumnIndex = null;
+        let lowerBoundLeftOffset = null;
+        
+        let upperBoundColumnIndex = null;
+        let upperBoundLeftOffset = null;
+        
+        while(true) {
+            if (lowerBoundColumnIndex && upperBoundColumnIndex) {
+                break;
+            }
+            
+            let escapedText = this.escapeHtml(
+                textOnRow.substring(
+                    0,
+                    columnIndex));
+
+            let leftOffset = this.calculateProportionalLeftOffset(
+                parentElementId,
+                targetElementId,
+                escapedText
+            );
+            
+            if (leftOffset < positionXInPixels) {
+                if (columnIndexWasOutOfBoundsTooBig) {
+                    return columnIndex;
+                }
+                
+                lowerBoundColumnIndex = columnIndex++;
+                lowerBoundLeftOffset = leftOffset; 
+            }
+            else {
+                if (columnIndexWasOutOfBoundsTooSmall) {
+                    return columnIndex;
+                }
+                
+                upperBoundColumnIndex = columnIndex--;
+                upperBoundLeftOffset = leftOffset;
+            }
+        }
+        
+        let lowerBoundMissingBy = positionXInPixels - lowerBoundLeftOffset;
+        let upperBoundMissingBy = upperBoundLeftOffset - positionXInPixels;
+        
+        return lowerBoundMissingBy < upperBoundMissingBy
+            ? lowerBoundColumnIndex
+            : upperBoundColumnIndex;
+    },
+    calculateProportionalLeftOffset:
+        function (
+            parentElementId,
+            targetElementId,
+            textOffsettingCursor) {
+        
+        let parentElement = document.getElementById(parentElementId);
+        let targetElement = document.getElementById(targetElementId);
+
+        if (!parentElement || !targetElement) {
+            return 0;
+        }
+
+        var span = document
+            .createElement("span");
+
+        span.innerHTML = textOffsettingCursor;
+        span.style.display = "inline-block";
+
+        parentElement.insertBefore(
+            span,
+            parentElement.children[0]);
+
         let parentBoundingClientRect = parentElement.getBoundingClientRect();
         let targetBoundingClientRect = targetElement.getBoundingClientRect();
+        
+        parentElement.removeChild(span);
         
         return targetBoundingClientRect.left - parentBoundingClientRect.left;
     },
@@ -337,6 +424,10 @@ window.blazorTextEditor = {
 
         let intersectionObserverMapValue = this.cursorIntersectionObserverMap
             .get(intersectionObserverMapKey);
+        
+        if (!intersectionObserverMapValue) {
+            return;
+        }
 
         let intersectionObserver = intersectionObserverMapValue.IntersectionObserver;
 

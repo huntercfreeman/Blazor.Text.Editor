@@ -484,7 +484,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             return;
 
         var rowAndColumnIndex =
-            await DetermineRowAndColumnIndex(mouseEventArgs);
+            await CalculateRowAndColumnIndex(mouseEventArgs);
 
         var lowerColumnIndexExpansion = safeRefModel
             .GetColumnIndexOfCharacterWithDifferingKind(
@@ -566,7 +566,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             false);
 
         var rowAndColumnIndex =
-            await DetermineRowAndColumnIndex(mouseEventArgs);
+            await CalculateRowAndColumnIndex(mouseEventArgs);
 
         primaryCursorSnapshot.UserCursor.IndexCoordinates =
             (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
@@ -646,7 +646,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             (mouseEventArgs.Buttons & 1) == 1)
         {
             var rowAndColumnIndex =
-                await DetermineRowAndColumnIndex(mouseEventArgs);
+                await CalculateRowAndColumnIndex(mouseEventArgs);
 
             primaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
@@ -666,22 +666,16 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         }
     }
 
-    private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(
+    private async Task<(int rowIndex, int columnIndex)> CalculateRowAndColumnIndex(
         MouseEventArgs mouseEventArgs)
     {
         var safeRefModel = MutableRefModel;
         var safeRefViewModel = MutableRefViewModel;
+        var globalTextEditorOptions = TextEditorService.OptionsWrap.Value.Options;
 
         if (safeRefModel is null ||
             safeRefViewModel is null)
             return (0, 0);
-
-        // Working on proportional font mouse events
-        {
-            var textOffsettingCursor = safeRefModel
-                .GetTextOffsettingCursor(safeRefViewModel.PrimaryCursor)
-                .EscapeHtml();
-        }
 
         RelativeCoordinatesOnClick = await JsRuntime
             .InvokeAsync<RelativeCoordinates>(
@@ -698,20 +692,35 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             positionX += RelativeCoordinatesOnClick.RelativeScrollLeft;
             positionY += RelativeCoordinatesOnClick.RelativeScrollTop;
         }
-
-        var columnIndexDouble = positionX / 
-            safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-        var columnIndexInt = (int)Math.Round(
-            columnIndexDouble,
-            MidpointRounding.AwayFromZero);
-
+        
         var rowIndex = (int)(positionY / 
-            safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
+                             safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
 
         rowIndex = rowIndex > safeRefModel.RowCount - 1
             ? safeRefModel.RowCount - 1
             : rowIndex;
+
+        int columnIndexInt;
+        
+        if (!globalTextEditorOptions.UseMonospaceOptimizations)
+        {
+            columnIndexInt = await JsRuntime.InvokeAsync<int>(
+                "blazorTextEditor.calculateProportionalColumnIndex",
+                ProportionalFontMeasurementsParentElementId,
+                ProportionalFontMeasurementsTargetElementId,
+                positionX,
+                safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels,
+                safeRefModel.GetTextOnRow(rowIndex));
+        }
+        else
+        {
+            var columnIndexDouble = positionX / 
+                                    safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+
+            columnIndexInt = (int)Math.Round(
+                columnIndexDouble,
+                MidpointRounding.AwayFromZero);
+        }
 
         var lengthOfRow = safeRefModel.GetLengthOfRow(rowIndex);
 

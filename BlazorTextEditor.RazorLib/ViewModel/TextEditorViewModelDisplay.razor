@@ -47,6 +47,21 @@
         // All the logic in this if is for debugging while implementing
         // proportional font logic.
         
+        <div style="display: flex; position: absolute; visibility: hidden;">
+            <div class="bte_psuedo-gutter"
+                 style="@GetGutterSectionStyleCss()">
+                @(textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1)
+            </div>
+            <div class="bte_psuedo-row"
+                 id="@ProportionalFontMeasurementsParentElementId"
+                 style="min-height:1ch;">
+                
+                <span style="display: inline-block;"
+                      id="@ProportionalFontMeasurementsTargetElementId">
+                </span>
+            </div>
+        </div>
+        
         string GetGutterSectionStyleCss()
         {
             var mostDigitsInARowLineNumber = textEditorModel.RowCount
@@ -65,29 +80,6 @@
 
             return width;
         }
-        
-        var textOffsettingCursor = textEditorModel
-            .GetTextOffsettingCursor(textEditorViewModel.PrimaryCursor)
-            .EscapeHtml();
-    
-        <div style="display: flex; position: absolute; visibility: hidden;">
-            <div class="bte_psuedo-gutter"
-                 style="@GetGutterSectionStyleCss()">
-                @(textEditorViewModel.PrimaryCursor.IndexCoordinates.rowIndex + 1)
-            </div>
-            <div class="bte_psuedo-row"
-                 style="min-height:1ch;">
-
-                <span style="display: inline-block;"
-                      id="@ProportionalFontMeasurementsParentElementId">
-                    @((MarkupString)textOffsettingCursor)
-                </span><!--
-                --><span style="display: inline-block;"
-                         id="@ProportionalFontMeasurementsTargetElementId">
-                    z
-                </span>
-            </div>
-        </div>
     }
     
     <CascadingValue Value="textEditorModel">
