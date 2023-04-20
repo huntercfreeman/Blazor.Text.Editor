@@ -73,7 +73,28 @@ window.blazorTextEditor = {
             HeightInPixels: element.offsetHeight
         }
     },
+    setTextThenMeasureLeftRelativeToParentInPixels: function (text, parentElementId, targetElementId) {
+
+        // TODO: I'm looking into making "setTextThenMeasureLeftRelativeToParentInPixels" over the previously used "measureLeftRelativeToParentInPixels". Perhaps if one is best used than the other. The unused one be deleted.
+
+        let parentElement = document.getElementById(parentElementId);
+        let targetElement = document.getElementById(targetElementId);
+
+        if (!parentElement || !targetElement) {
+            return 0;
+        }
+        
+        targetElement.innerHTML = text;
+        
+        let parentBoundingClientRect = parentElement.getBoundingClientRect();
+        let targetBoundingClientRect = targetElement.getBoundingClientRect();
+        
+        return targetBoundingClientRect.left - parentBoundingClientRect.left;
+    },
     measureLeftRelativeToParentInPixels: function (parentElementId, targetElementId) {
+
+        // TODO: I'm looking into making "setTextThenMeasureLeftRelativeToParentInPixels" over the previously used "measureLeftRelativeToParentInPixels". Perhaps if one is best used than the other. The unused one be deleted.
+        
         let parentElement = document.getElementById(parentElementId);
         let targetElement = document.getElementById(targetElementId);
 

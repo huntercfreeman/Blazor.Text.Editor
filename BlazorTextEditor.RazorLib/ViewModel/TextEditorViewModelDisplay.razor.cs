@@ -10,6 +10,7 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Html;
 using BlazorTextEditor.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Model;
@@ -100,10 +101,10 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private TextEditorStateChangedKey _previousTextEditorStateChangedKey = TextEditorStateChangedKey.Empty;
     private ElementReference _textEditorDisplayElementReference;
     
-    public TextEditorModel? MutableReferenceToModel => TextEditorService
+    public TextEditorModel? MutableRefModel => TextEditorService
         .ViewModelGetModelOrDefault(TextEditorViewModelKey);
     
-    public TextEditorViewModel? MutableReferenceToViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
+    public TextEditorViewModel? MutableRefViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
         .FirstOrDefault(x => 
             x.ViewModelKey == TextEditorViewModelKey);
 
@@ -141,7 +142,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
     protected override async Task OnParametersSetAsync()
     {
-        var safeTextEditorViewModel = MutableReferenceToViewModel;
+        var safeTextEditorViewModel = MutableRefViewModel;
 
         ValidateFontSize();
         
@@ -178,7 +179,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                 ContentElementId);
         }
 
-        var textEditorViewModel = MutableReferenceToViewModel;
+        var textEditorViewModel = MutableRefViewModel;
 
         if (textEditorViewModel is not null)
         {
@@ -205,7 +206,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
                 // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
                 // thus the local variable must be updated accordingly.
-                textEditorViewModel = MutableReferenceToViewModel;
+                textEditorViewModel = MutableRefViewModel;
 
                 if (textEditorViewModel is not null)
                 {
@@ -227,7 +228,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     // TODO: When the underlying "TextEditorModel" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
     private async void TextEditorModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
-        var viewModel = MutableReferenceToViewModel;
+        var viewModel = MutableRefViewModel;
 
         if (viewModel is not null)
         {
@@ -254,7 +255,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         if (!alreadyReRenderedForFontSize)
         {
-            var safeTextEditorViewModel = MutableReferenceToViewModel;
+            var safeTextEditorViewModel = MutableRefViewModel;
 
             if (safeTextEditorViewModel is not null)
             {
@@ -271,7 +272,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
     private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
-        var viewModel = MutableReferenceToViewModel;
+        var viewModel = MutableRefViewModel;
         var viewModelTextEditorStateChangedKey = viewModel?.TextEditorStateChangedKey ??
                                                  TextEditorStateChangedKey.Empty;
         
@@ -285,7 +286,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     
     private bool ValidateFontSize()
     {
-        var safeTextEditorViewModel = MutableReferenceToViewModel;
+        var safeTextEditorViewModel = MutableRefViewModel;
 
         var currentGlobalFontSizeInPixels = TextEditorService
             .OptionsWrap
@@ -327,16 +328,16 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToModel;
-        var safeTextEditorViewModel = MutableReferenceToViewModel;
+        var safeRefModel = MutableRefModel;
+        var safeRefViewModel = MutableRefViewModel;
 
-        if (safeTextEditorReference is null ||
-            safeTextEditorViewModel is null)
+        if (safeRefModel is null ||
+            safeRefViewModel is null)
         {
             return;
         }
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeRefViewModel.PrimaryCursor);
 
         var cursorSnapshots = new TextEditorCursorSnapshot[]
         {
@@ -374,7 +375,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                 TextEditorCursor.MoveCursor(
                     keyboardEventArgs,
                     primaryCursorSnapshot.UserCursor,
-                    safeTextEditorReference);
+                    safeRefModel);
 
                 TextEditorCursorDisplay?.SetShouldDisplayMenuAsync(TextEditorMenuKind.None);
             }
@@ -389,11 +390,11 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             {
                 await command.DoAsyncFunc.Invoke(
                     new TextEditorCommandParameter(
-                        safeTextEditorReference,
+                        safeRefModel,
                         cursorSnapshots,
                         ClipboardService,
                         TextEditorService,
-                        safeTextEditorViewModel));
+                        safeRefViewModel));
             }
             else
             {
@@ -410,7 +411,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
                 Dispatcher.Dispatch(
                     new TextEditorModelsCollection.KeyboardEventAction(
-                        safeTextEditorViewModel.ModelKey,
+                        safeRefViewModel.ModelKey,
                         cursorSnapshots,
                         keyboardEventArgs,
                         CancellationToken.None));
@@ -432,7 +433,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         if (cursorDisplay is not null)
         {
-            var textEditor = safeTextEditorReference;
+            var textEditor = safeRefModel;
             
             // IBackgroundTaskQueue does not work well here because
             // this Task does not need to be tracked.
@@ -462,14 +463,14 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
     private async Task HandleContentOnDoubleClickAsync(MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToModel;
-        var safeTextEditorViewModel = MutableReferenceToViewModel;
+        var safeRefModel = MutableRefModel;
+        var safeRefViewModel = MutableRefViewModel;
 
-        if (safeTextEditorReference is null ||
-            safeTextEditorViewModel is null)
+        if (safeRefModel is null ||
+            safeRefViewModel is null)
             return;
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeRefViewModel.PrimaryCursor);
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
             TextEditorSelectionHelper.HasSelectedText(
@@ -485,7 +486,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         var rowAndColumnIndex =
             await DetermineRowAndColumnIndex(mouseEventArgs);
 
-        var lowerColumnIndexExpansion = safeTextEditorReference
+        var lowerColumnIndexExpansion = safeRefModel
             .GetColumnIndexOfCharacterWithDifferingKind(
                 rowAndColumnIndex.rowIndex,
                 rowAndColumnIndex.columnIndex,
@@ -496,7 +497,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                 ? 0
                 : lowerColumnIndexExpansion;
 
-        var higherColumnIndexExpansion = safeTextEditorReference
+        var higherColumnIndexExpansion = safeRefModel
             .GetColumnIndexOfCharacterWithDifferingKind(
                 rowAndColumnIndex.rowIndex,
                 rowAndColumnIndex.columnIndex,
@@ -504,7 +505,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         higherColumnIndexExpansion =
             higherColumnIndexExpansion == -1
-                ? safeTextEditorReference.GetLengthOfRow(
+                ? safeRefModel.GetLengthOfRow(
                     rowAndColumnIndex.rowIndex)
                 : higherColumnIndexExpansion;
 
@@ -519,7 +520,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         // Set text selection ending to higher expansion
         {
-            var cursorPositionOfHigherExpansion = safeTextEditorReference
+            var cursorPositionOfHigherExpansion = safeRefModel
                 .GetPositionIndex(
                     rowAndColumnIndex.rowIndex,
                     higherColumnIndexExpansion);
@@ -531,7 +532,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         // Set text selection anchor to lower expansion
         {
-            var cursorPositionOfLowerExpansion = safeTextEditorReference
+            var cursorPositionOfLowerExpansion = safeRefModel
                 .GetPositionIndex(
                     rowAndColumnIndex.rowIndex,
                     lowerColumnIndexExpansion);
@@ -544,14 +545,14 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
     private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToModel;
-        var safeTextEditorViewModel = MutableReferenceToViewModel;
+        var safeRefModel = MutableRefModel;
+        var safeRefViewModel = MutableRefViewModel;
 
-        if (safeTextEditorReference is null ||
-            safeTextEditorViewModel is null)
+        if (safeRefModel is null ||
+            safeRefViewModel is null)
             return;
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeRefViewModel.PrimaryCursor);
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
             TextEditorSelectionHelper.HasSelectedText(
@@ -574,7 +575,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         TextEditorCursorDisplay?.PauseBlinkAnimation();
 
-        var cursorPositionIndex = safeTextEditorReference
+        var cursorPositionIndex = safeRefModel
             .GetCursorPositionIndex(
                 new TextEditorCursor(rowAndColumnIndex, false));
 
@@ -586,7 +587,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                 // If user does not yet have a selection
                 // then place the text selection anchor were they were
 
-                var cursorPositionPriorToMovementOccurring = safeTextEditorReference
+                var cursorPositionPriorToMovementOccurring = safeRefModel
                     .GetPositionIndex(
                         primaryCursorSnapshot.ImmutableCursor.RowIndex,
                         primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
@@ -630,14 +631,14 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         localThinksLeftMouseButtonIsDown = mostRecentEventArgs.tEventArgs.thinksLeftMouseButtonIsDown;
         mouseEventArgs = mostRecentEventArgs.tEventArgs.Item1;
         
-        var safeTextEditorReference = MutableReferenceToModel;
-        var safeTextEditorViewModel = MutableReferenceToViewModel;
+        var safeRefModel = MutableRefModel;
+        var safeRefViewModel = MutableRefViewModel;
 
-        if (safeTextEditorReference is null ||
-            safeTextEditorViewModel is null)
+        if (safeRefModel is null ||
+            safeRefViewModel is null)
             return;
 
-        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeTextEditorViewModel.PrimaryCursor);
+        var primaryCursorSnapshot = new TextEditorCursorSnapshot(safeRefViewModel.PrimaryCursor);
 
         // Buttons is a bit flag
         // '& 1' gets if left mouse button is held
@@ -655,7 +656,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             TextEditorCursorDisplay?.PauseBlinkAnimation();
 
             primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
-                safeTextEditorReference
+                safeRefModel
                     .GetCursorPositionIndex(
                         new TextEditorCursor(rowAndColumnIndex, false));
         }
@@ -668,17 +669,24 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(
         MouseEventArgs mouseEventArgs)
     {
-        var safeTextEditorReference = MutableReferenceToModel;
-        var safeTextEditorViewModel = MutableReferenceToViewModel;
+        var safeRefModel = MutableRefModel;
+        var safeRefViewModel = MutableRefViewModel;
 
-        if (safeTextEditorReference is null ||
-            safeTextEditorViewModel is null)
+        if (safeRefModel is null ||
+            safeRefViewModel is null)
             return (0, 0);
+
+        // Working on proportional font mouse events
+        {
+            var textOffsettingCursor = safeRefModel
+                .GetTextOffsettingCursor(safeRefViewModel.PrimaryCursor)
+                .EscapeHtml();
+        }
 
         RelativeCoordinatesOnClick = await JsRuntime
             .InvokeAsync<RelativeCoordinates>(
                 "blazorTextEditor.getRelativePosition",
-                safeTextEditorViewModel.BodyElementId,
+                safeRefViewModel.BodyElementId,
                 mouseEventArgs.ClientX,
                 mouseEventArgs.ClientY);
 
@@ -692,20 +700,20 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         }
 
         var columnIndexDouble = positionX / 
-            safeTextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
+            safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
 
         var columnIndexInt = (int)Math.Round(
             columnIndexDouble,
             MidpointRounding.AwayFromZero);
 
         var rowIndex = (int)(positionY / 
-            safeTextEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
+            safeRefViewModel.VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
 
-        rowIndex = rowIndex > safeTextEditorReference.RowCount - 1
-            ? safeTextEditorReference.RowCount - 1
+        rowIndex = rowIndex > safeRefModel.RowCount - 1
+            ? safeRefModel.RowCount - 1
             : rowIndex;
 
-        var lengthOfRow = safeTextEditorReference.GetLengthOfRow(rowIndex);
+        var lengthOfRow = safeRefModel.GetLengthOfRow(rowIndex);
 
         // Tab key column offset
         {
@@ -714,7 +722,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                     ? lengthOfRow
                     : columnIndexInt;
 
-            var tabsOnSameRowBeforeCursor = safeTextEditorReference
+            var tabsOnSameRowBeforeCursor = safeRefModel
                 .GetTabsCountOnSameRowBeforeCursor(
                     rowIndex,
                     parameterForGetTabsCountOnSameRowBeforeCursor);
@@ -793,7 +801,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
             // The TextEditorModel may have been changed by the time this logic is ran and
             // thus the local variable must be updated accordingly.
-            var temporaryTextEditor = MutableReferenceToModel;
+            var temporaryTextEditor = MutableRefModel;
 
             if (temporaryTextEditor is not null)
             {
@@ -840,7 +848,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     
     private async Task HandleOnWheelAsync(WheelEventArgs wheelEventArgs)
     {
-        var textEditorViewModel = MutableReferenceToViewModel;
+        var textEditorViewModel = MutableRefViewModel;
 
         if (textEditorViewModel is null)
             return;
@@ -910,7 +918,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         if (previousTouchPoint is null || currentTouchPoint is null)
             return;
 
-        var viewModel = MutableReferenceToViewModel;
+        var viewModel = MutableRefViewModel;
 
         if (viewModel is null)
             return;

@@ -10,8 +10,8 @@
 @using BlazorTextEditor.RazorLib.ViewModel.InternalComponents
 
 @{
-    var textEditorModel = MutableReferenceToModel;
-    var textEditorViewModel = MutableReferenceToViewModel;
+    var textEditorModel = MutableRefModel;
+    var textEditorViewModel = MutableRefViewModel;
     var globalTextEditorOptions = TextEditorService.OptionsWrap.Value.Options;
 
     string fontFamily;
