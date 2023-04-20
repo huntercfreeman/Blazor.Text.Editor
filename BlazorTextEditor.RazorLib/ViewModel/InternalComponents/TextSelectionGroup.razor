@@ -19,9 +19,20 @@
         {
             var rowIndex = i;
 
-            <div class="bte_text-selection"
-                 style="@GetTextSelectionStyleCss(selectionBoundsInPositionIndexUnits.lowerPositionIndexInclusive, selectionBoundsInPositionIndexUnits.upperPositionIndexExclusive, rowIndex)">
-            </div>
+            string textSelectionStyleCss = string.Empty;
+
+            if (GlobalTextEditorOptions.UseMonospaceOptimizations)
+            {
+                textSelectionStyleCss = GetTextSelectionStyleCss(
+                    selectionBoundsInPositionIndexUnits.lowerPositionIndexInclusive,
+                    selectionBoundsInPositionIndexUnits.upperPositionIndexExclusive,
+                    rowIndex);
+            }
+            
+            <TextSelectionRow TextSelectionStyleCss="@textSelectionStyleCss"
+                              LowerPositionIndexInclusive="selectionBoundsInPositionIndexUnits.lowerPositionIndexInclusive"
+                              UpperPositionIndexExclusive="selectionBoundsInPositionIndexUnits.upperPositionIndexExclusive"
+                              RowIndex="rowIndex"/>
         }
     }
 </div>
