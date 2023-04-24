@@ -7,7 +7,7 @@
         <Product>Blazor Text Editor</Product>
         <Description>A text editor written using Blazor. Contains API for syntax highlighting.</Description>
         <PackageId>Blazor.Text.Editor</PackageId>
-        <Version>7.0.0</Version>
+        <Version>7.1.0</Version>
         <Authors>Hunter Freeman</Authors>
         <Company />
         <PackageTags>DotNet CSharp Blazor RazorComponents</PackageTags>
@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazor.Common" Version="1.0.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />
     </ItemGroup>
 
@@ -33,10 +34,6 @@
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\BlazorCommon\BlazorCommon.RazorLib\BlazorCommon.RazorLib.csproj" />
     </ItemGroup>
 
 </Project>
