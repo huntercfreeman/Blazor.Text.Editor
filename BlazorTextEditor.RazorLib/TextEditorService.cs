@@ -720,7 +720,12 @@ public class TextEditorService : ITextEditorService
         if (options.ShowNewlines is not null)
             OptionsSetShowNewlines(options.ShowNewlines.Value);
         
-        OptionsSetUseMonospaceOptimizations(options.UseMonospaceOptimizations);
+        // TODO: OptionsSetUseMonospaceOptimizations will always get set to false (default for bool)
+        // for a first time user. This leads to a bad user experience since the proportional
+        // font logic is still being optimized. Therefore don't read in UseMonospaceOptimizations
+        // from local storage.
+        //
+        // OptionsSetUseMonospaceOptimizations(options.UseMonospaceOptimizations);
         
         if (options.ShowWhitespace is not null)
             OptionsSetShowWhitespace(options.ShowWhitespace.Value);
