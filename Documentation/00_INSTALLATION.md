@@ -5,10 +5,11 @@
 ### Goal
 
 - Reference the `Blazor.Text.Editor` Nuget Package
-- Register the Services
-- Reference the CSS
-- Reference the JavaScript
-- In App.razor render the <BlazorTextEditor.RazorLib.BlazorTextEditorInitializer/> Blazor component
+- Register the `Services`
+- Reference the `CSS`
+- Reference the `JavaScript`
+- In App.razor render the &lt;`Fluxor.Blazor.Web.StoreInitializer`/&gt;
+- In MainLayout.razor render both &lt;`BlazorCommon.RazorLib.BlazorCommonInitializer`/&gt; and &lt;`BlazorTextEditor.RazorLib.BlazorTextEditorInitializer`/&gt;.
 
 ### Steps
 - Reference the `Blazor.Text.Editor` NuGet Package
