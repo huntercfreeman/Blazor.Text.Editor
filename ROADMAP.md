@@ -13,27 +13,22 @@
 - Call tips is to be finished
 - Brace highlighting is to be finished
 - User lists is to be finished
-
 ### ?.?.?
 - Folding
 - Line Wrapping
 - Long lines
-
 ### ?.?.?
 - Notifications
 - Searching and replacing
-
 ### ?.?.?
 - Proportional fonts
 - Change tab-width
 - End of Line Annotations
 - Above line annotation (code lens?)
-
 ### ?.?.?
 - Insertion of 'widgets?' in the margin.
 - An example widget would be the quick actions lightbulb icon.
 - Popup edit menu. If I hit F2 perhaps it brings up a rename popup edit menu.
-
 ### ?.?.?
 - Multi Cursor logic
 - Virtual Space logic
