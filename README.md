@@ -1,8 +1,7 @@
 # Blazor.Text.Editor
 
 Demo website:
-(Clear your cache if you see an older version as the site uses WebAssembly)
-- https://hunter-freeman-dev.azurewebsites.net/
+The demo website was taken down to save money.
 
 ![Example GIF](/Images/Gifs/root-readme-gif.gif)
 
