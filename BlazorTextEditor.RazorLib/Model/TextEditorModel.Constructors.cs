@@ -82,5 +82,6 @@ public partial class TextEditorModel
         EditBlockIndex = original.EditBlockIndex;
         MostCharactersOnASingleRowTuple = original.MostCharactersOnASingleRowTuple;
         TextEditorOptions = original.TextEditorOptions;
+        SemanticModel = original.SemanticModel;
     }
 }
