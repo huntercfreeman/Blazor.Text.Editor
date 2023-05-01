@@ -766,6 +766,16 @@ public static class TextEditorCommandDefaultFacts
                     textEditorCommandParameter.TextEditorModel,
                     textSpanOfWordAtPositionIndex);
 
+            if (symbolDefinition is not null)
+            {
+                var rowInformation = textEditorCommandParameter.TextEditorModel
+                    .FindRowInformation(symbolDefinition.PositionIndex);
+                
+                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                    (rowInformation.rowIndex, 
+                        symbolDefinition.PositionIndex - rowInformation.rowStartPositionIndex);
+            }
+
             return Task.CompletedTask;
         },
         false,
