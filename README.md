@@ -1,8 +1,5 @@
 # Blazor.Text.Editor
 
-Demo website:
-The demo website was taken down to save money.
-
 ![Example GIF](/Images/Gifs/root-readme-gif.gif)
 
 ***Blazor.Text.Editor*** is a Text Editor component library using
