@@ -123,7 +123,7 @@ public record TextEditorViewModel(
 
     public async Task FocusAsync()
     {
-        await TextEditorService.CursorPrimaryFocusAsync(
+        await TextEditorService.ViewModel.FocusPrimaryCursorAsync(
             PrimaryCursorContentId);
     }
     
@@ -142,8 +142,8 @@ public record TextEditorViewModel(
 
         if (bodyMeasurementsInPixels is null)
         {
-            bodyMeasurementsInPixels = await TextEditorService
-                .ElementMeasurementsInPixelsAsync(BodyElementId);
+            bodyMeasurementsInPixels = await TextEditorService.ViewModel
+                .MeasureElementInPixelsAsync(BodyElementId);
         }
 
         _mostRecentBodyMeasurementsInPixels = bodyMeasurementsInPixels; 

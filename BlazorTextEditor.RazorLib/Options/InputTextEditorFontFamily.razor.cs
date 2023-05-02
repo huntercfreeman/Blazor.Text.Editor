@@ -19,9 +19,9 @@ public partial class InputTextEditorFontFamily : ComponentBase, IDisposable
         set
         {
             if (string.IsNullOrWhiteSpace(value))
-                TextEditorService.OptionsSetFontFamily(null);
+                TextEditorService.Options.OptionsSetFontFamily(null);
             
-            TextEditorService.OptionsSetFontFamily(value.Trim());
+            TextEditorService.Options.OptionsSetFontFamily(value.Trim());
         }
     }
 

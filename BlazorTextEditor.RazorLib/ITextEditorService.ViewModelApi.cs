@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Model;
+﻿using BlazorTextEditor.RazorLib.Measurement;
+using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
@@ -11,7 +12,9 @@ public partial interface ITextEditorService
     public interface IViewModelApi
     {
         public void Dispose(TextEditorViewModelKey textEditorViewModelKey);
+        public Task<ElementMeasurementsInPixels> MeasureElementInPixelsAsync(string elementId);
         public TextEditorViewModel? FindOrDefault(TextEditorViewModelKey textEditorViewModelKey);
+        public Task FocusPrimaryCursorAsync(string primaryCursorContentId);
         public string? GetAllText(TextEditorViewModelKey textEditorViewModelKey);
         public TextEditorModel? FindBackingModelOrDefault(TextEditorViewModelKey textEditorViewModelKey);
         public Task MutateScrollHorizontalPositionAsync(string bodyElementId, string gutterElementId, double pixels);
@@ -153,12 +156,27 @@ public partial interface ITextEditorService
                 : _textEditorService.Model.ModelGetAllText(textEditorModel.ModelKey);
         }
 
+        public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)
+        {
+            await _jsRuntime.InvokeVoidAsync(
+                "blazorTextEditor.focusHtmlElementById",
+                primaryCursorContentId);
+        }
+
         public TextEditorViewModel? FindOrDefault(
             TextEditorViewModelKey textEditorViewModelKey)
         {
             return _textEditorService.ViewModelsCollectionWrap.Value.ViewModelsList
                 .FirstOrDefault(x =>
                     x.ViewModelKey == textEditorViewModelKey);
+        }
+
+        public async Task<ElementMeasurementsInPixels> MeasureElementInPixelsAsync(
+            string elementId)
+        {
+            return await _jsRuntime.InvokeAsync<ElementMeasurementsInPixels>(
+                "blazorTextEditor.getElementMeasurementsInPixelsById",
+                elementId);
         }
 
         public void Dispose(TextEditorViewModelKey textEditorViewModelKey)
