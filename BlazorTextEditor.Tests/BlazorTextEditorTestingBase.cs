@@ -20,10 +20,10 @@ public class BlazorTextEditorTestingBase
     protected readonly TextEditorViewModelKey TextEditorViewModelKey = TextEditorViewModelKey.NewTextEditorViewModelKey();
 
     protected TextEditorModel TextEditorModel => TextEditorService.Model
-        .ModelFindOrDefault(TextEditorModelKey)
+        .FindOrDefault(TextEditorModelKey)
             ?? throw new ApplicationException(
                 $"{nameof(TextEditorService)}" +
-                $".{nameof(TextEditorService.Model.ModelFindOrDefault)}" +
+                $".{nameof(TextEditorService.Model.FindOrDefault)}" +
                 " returned null.");
     
     protected TextEditorViewModel TextEditorViewModel => TextEditorService.ViewModel
@@ -94,7 +94,7 @@ public class BlazorTextEditorTestingBase
             null,
             TextEditorModelKey);
         
-        TextEditorService.Model.ModelRegisterCustomModel(textEditor);
+        TextEditorService.Model.RegisterCustom(textEditor);
         
         TextEditorService.ViewModel.Register(
             TextEditorViewModelKey,

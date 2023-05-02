@@ -28,6 +28,6 @@ public partial class InputTextEditorUseMonospaceOptimizations : FluxorComponent
     public bool UseMonospaceOptimizations
     {
         get => TextEditorService.OptionsWrap.Value.Options.UseMonospaceOptimizations;
-        set => TextEditorService.Options.OptionsSetUseMonospaceOptimizations(value);
+        set => TextEditorService.Options.SetUseMonospaceOptimizations(value);
     }
 }

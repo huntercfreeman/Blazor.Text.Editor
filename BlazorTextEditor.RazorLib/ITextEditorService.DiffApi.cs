@@ -1,9 +1,7 @@
 ﻿using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Diff;
-using BlazorTextEditor.RazorLib.Group;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Store.Diff;
-using BlazorTextEditor.RazorLib.Store.Group;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
@@ -15,10 +13,10 @@ public partial interface ITextEditorService
 {
     public interface IDiffApi
     {
-        public TextEditorDiffResult? DiffCalculate(TextEditorDiffKey diffKey, CancellationToken cancellationToken);
-        public void DiffDispose(TextEditorDiffKey diffKey);
-        public TextEditorDiffModel? DiffModelFindOrDefault(TextEditorDiffKey diffKey);
-        public void DiffRegister(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
+        public TextEditorDiffResult? Calculate(TextEditorDiffKey diffKey, CancellationToken cancellationToken);
+        public void Dispose(TextEditorDiffKey diffKey);
+        public TextEditorDiffModel? FindOrDefault(TextEditorDiffKey diffKey);
+        public void Register(TextEditorDiffKey diffKey, TextEditorViewModelKey beforeViewModelKey, TextEditorViewModelKey afterViewModelKey);
     }
 
     public class DiffApi : IDiffApi
@@ -34,7 +32,7 @@ public partial interface ITextEditorService
             _textEditorService = textEditorService;
         }
 
-        public void DiffRegister(
+        public void Register(
             TextEditorDiffKey diffKey,
             TextEditorViewModelKey beforeViewModelKey,
             TextEditorViewModelKey afterViewModelKey)
@@ -46,7 +44,7 @@ public partial interface ITextEditorService
                     afterViewModelKey));
         }
 
-        public TextEditorDiffModel? DiffModelFindOrDefault(
+        public TextEditorDiffModel? FindOrDefault(
             TextEditorDiffKey diffKey)
         {
             return _textEditorService.DiffsCollectionWrap.Value.DiffModelsList
@@ -54,7 +52,7 @@ public partial interface ITextEditorService
                     x.DiffKey == diffKey);
         }
 
-        public void DiffDispose(
+        public void Dispose(
             TextEditorDiffKey diffKey)
         {
             _dispatcher.Dispatch(
@@ -62,13 +60,13 @@ public partial interface ITextEditorService
                     diffKey));
         }
 
-        public TextEditorDiffResult? DiffCalculate(TextEditorDiffKey textEditorDiffKey,
+        public TextEditorDiffResult? Calculate(TextEditorDiffKey textEditorDiffKey,
         CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            var textEditorDiff = DiffModelFindOrDefault(textEditorDiffKey);
+            var textEditorDiff = FindOrDefault(textEditorDiffKey);
 
             if (textEditorDiff is null)
                 return null;
@@ -86,10 +84,10 @@ public partial interface ITextEditorService
             }
 
             var beforeModel = _textEditorService.Model
-                .ModelFindOrDefault(beforeViewModel.ModelKey);
+                .FindOrDefault(beforeViewModel.ModelKey);
 
             var afterModel = _textEditorService.Model
-                .ModelFindOrDefault(afterViewModel.ModelKey);
+                .FindOrDefault(afterViewModel.ModelKey);
 
             if (beforeModel is null ||
                 afterModel is null)

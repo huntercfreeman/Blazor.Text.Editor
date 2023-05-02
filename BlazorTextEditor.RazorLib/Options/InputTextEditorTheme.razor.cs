@@ -40,11 +40,11 @@ public partial class InputTextEditorTheme : FluxorComponent
             var foundTheme = themeRecordsCollection.FirstOrDefault(x => x.ThemeKey == chosenThemeKey);
             
             if (foundTheme is not null)
-                TextEditorService.Options.OptionsSetTheme(foundTheme);
+                TextEditorService.Options.SetTheme(foundTheme);
         }
         else
         {
-            TextEditorService.Options.OptionsSetTheme(ThemeFacts.VisualStudioDarkThemeClone);
+            TextEditorService.Options.SetTheme(ThemeFacts.VisualStudioDarkThemeClone);
         }
     }
 }

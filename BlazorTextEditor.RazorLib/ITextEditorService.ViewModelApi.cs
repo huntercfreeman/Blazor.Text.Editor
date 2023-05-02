@@ -143,7 +143,7 @@ public partial interface ITextEditorService
             if (viewModel is null)
                 return null;
 
-            return _textEditorService.Model.ModelFindOrDefault(viewModel.ModelKey);
+            return _textEditorService.Model.FindOrDefault(viewModel.ModelKey);
         }
 
         public string? GetAllText(
@@ -153,7 +153,7 @@ public partial interface ITextEditorService
 
             return textEditorModel is null
                 ? null
-                : _textEditorService.Model.ModelGetAllText(textEditorModel.ModelKey);
+                : _textEditorService.Model.GetAllText(textEditorModel.ModelKey);
         }
 
         public async Task FocusPrimaryCursorAsync(string primaryCursorContentId)

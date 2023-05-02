@@ -152,7 +152,7 @@ public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this
             option.Substring(word.Length),
             CancellationToken.None);
 
-        TextEditorService.Model.ModelInsertText(insertTextTextEditorModelAction);
+        TextEditorService.Model.InsertText(insertTextTextEditorModelAction);
 
         return Task.CompletedTask;
     }

@@ -28,20 +28,20 @@ public partial interface ITextEditorService
         public void DeleteTextByMotion(TextEditorModelsCollection.DeleteTextByMotionAction deleteTextByMotionAction);
         public void DeleteTextByRange(TextEditorModelsCollection.DeleteTextByRangeAction deleteTextByRangeAction);
         public void Dispose(TextEditorModelKey textEditorModelKey);
-        public TextEditorModel? ModelFindOrDefault(TextEditorModelKey textEditorModelKey);
-        public string? ModelGetAllText(TextEditorModelKey textEditorModelKey);
-        public ImmutableArray<TextEditorViewModel> ModelGetViewModelsOrEmpty(TextEditorModelKey textEditorModelKey);
-        public void ModelHandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction);
-        public void ModelInsertText(TextEditorModelsCollection.InsertTextAction insertTextAction);
-        public void ModelRedoEdit(TextEditorModelKey textEditorModelKey);
-        /// <summary>It is recommended to use the <see cref="ModelRegisterTemplatedModel" /> method as it will internally reference the <see cref="ILexer" /> and <see cref="IDecorationMapper" /> that correspond to the desired text editor.</summary>
-        public void ModelRegisterCustomModel(TextEditorModel model);
+        public TextEditorModel? FindOrDefault(TextEditorModelKey textEditorModelKey);
+        public string? GetAllText(TextEditorModelKey textEditorModelKey);
+        public ImmutableArray<TextEditorViewModel> GetViewModelsOrEmpty(TextEditorModelKey textEditorModelKey);
+        public void HandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction);
+        public void InsertText(TextEditorModelsCollection.InsertTextAction insertTextAction);
+        public void RedoEdit(TextEditorModelKey textEditorModelKey);
+        /// <summary>It is recommended to use the <see cref="RegisterTemplated" /> method as it will internally reference the <see cref="ILexer" /> and <see cref="IDecorationMapper" /> that correspond to the desired text editor.</summary>
+        public void RegisterCustom(TextEditorModel model);
         /// <summary>As an example, for a C# Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.CSharp" />.<br /><br />For a Plain Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.Plain" />.</summary>
-        public void ModelRegisterTemplatedModel(TextEditorModelKey textEditorModelKey, WellKnownModelKind wellKnownModelKind, string resourceUri, DateTime resourceLastWriteTime, string fileExtension, string initialContent);
-        public void ModelReload(TextEditorModelKey textEditorModelKey, string content, DateTime resourceLastWriteTime);
-        public void ModelSetResourceData(TextEditorModelKey textEditorModelKey, string resourceUri, DateTime resourceLastWriteTime);
-        public void ModelSetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind);
-        public void ModelUndoEdit(TextEditorModelKey textEditorModelKey);
+        public void RegisterTemplated(TextEditorModelKey textEditorModelKey, WellKnownModelKind wellKnownModelKind, string resourceUri, DateTime resourceLastWriteTime, string fileExtension, string initialContent);
+        public void Reload(TextEditorModelKey textEditorModelKey, string content, DateTime resourceLastWriteTime);
+        public void SetResourceData(TextEditorModelKey textEditorModelKey, string resourceUri, DateTime resourceLastWriteTime);
+        public void SetUsingRowEndingKind(TextEditorModelKey textEditorModelKey, RowEndingKind rowEndingKind);
+        public void UndoEdit(TextEditorModelKey textEditorModelKey);
         public TextEditorModel? FindOrDefaultByResourceUri(string resourceUri);
     }
 
@@ -66,7 +66,7 @@ public partial interface ITextEditorService
                     x.ResourceUri == resourceUri);
         }
 
-        public void ModelUndoEdit(
+        public void UndoEdit(
             TextEditorModelKey textEditorModelKey)
         {
             var undoEditAction = new TextEditorModelsCollection.UndoEditAction(
@@ -75,7 +75,7 @@ public partial interface ITextEditorService
             _dispatcher.Dispatch(undoEditAction);
         }
 
-        public void ModelSetUsingRowEndingKind(
+        public void SetUsingRowEndingKind(
             TextEditorModelKey textEditorModelKey,
             RowEndingKind rowEndingKind)
         {
@@ -85,7 +85,7 @@ public partial interface ITextEditorService
                     rowEndingKind));
         }
 
-        public void ModelSetResourceData(
+        public void SetResourceData(
             TextEditorModelKey textEditorModelKey,
             string resourceUri,
             DateTime resourceLastWriteTime)
@@ -97,7 +97,7 @@ public partial interface ITextEditorService
                     resourceLastWriteTime));
         }
 
-        public void ModelReload(
+        public void Reload(
             TextEditorModelKey textEditorModelKey,
             string content,
             DateTime resourceLastWriteTime)
@@ -109,7 +109,7 @@ public partial interface ITextEditorService
                     resourceLastWriteTime));
         }
 
-        public void ModelRegisterTemplatedModel(
+        public void RegisterTemplated(
             TextEditorModelKey textEditorModelKey,
             WellKnownModelKind wellKnownModelKind,
             string resourceUri,
@@ -191,7 +191,7 @@ public partial interface ITextEditorService
                     textEditorModel));
         }
 
-        public void ModelRegisterCustomModel(
+        public void RegisterCustom(
             TextEditorModel model)
         {
             _dispatcher.Dispatch(
@@ -199,7 +199,7 @@ public partial interface ITextEditorService
                     model));
         }
 
-        public void ModelRedoEdit(
+        public void RedoEdit(
             TextEditorModelKey textEditorModelKey)
         {
             var redoEditAction = new TextEditorModelsCollection.RedoEditAction(
@@ -208,19 +208,19 @@ public partial interface ITextEditorService
             _dispatcher.Dispatch(redoEditAction);
         }
 
-        public void ModelInsertText(
+        public void InsertText(
             TextEditorModelsCollection.InsertTextAction insertTextAction)
         {
             _dispatcher.Dispatch(insertTextAction);
         }
 
-        public void ModelHandleKeyboardEvent(
+        public void HandleKeyboardEvent(
             TextEditorModelsCollection.KeyboardEventAction keyboardEventAction)
         {
             _dispatcher.Dispatch(keyboardEventAction);
         }
 
-        public ImmutableArray<TextEditorViewModel> ModelGetViewModelsOrEmpty(
+        public ImmutableArray<TextEditorViewModel> GetViewModelsOrEmpty(
             TextEditorModelKey textEditorModelKey)
         {
             return _textEditorService.ViewModelsCollectionWrap.Value.ViewModelsList
@@ -228,7 +228,7 @@ public partial interface ITextEditorService
                 .ToImmutableArray();
         }
 
-        public string? ModelGetAllText(
+        public string? GetAllText(
             TextEditorModelKey textEditorModelKey)
         {
             return _textEditorService.ModelsCollectionWrap.Value.TextEditorList
@@ -236,7 +236,7 @@ public partial interface ITextEditorService
                 ?.GetAllText();
         }
 
-        public TextEditorModel? ModelFindOrDefault(
+        public TextEditorModel? FindOrDefault(
             TextEditorModelKey textEditorModelKey)
         {
             return _textEditorService.ModelsCollectionWrap.Value.TextEditorList

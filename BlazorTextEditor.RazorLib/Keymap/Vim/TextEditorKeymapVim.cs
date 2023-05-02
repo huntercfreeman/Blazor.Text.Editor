@@ -314,7 +314,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 command = new TextEditorCommand(
                     async textEditorCommandParameter =>
                     {
-                        textEditorCommandParameter.TextEditorService.Model.ModelUndoEdit(
+                        textEditorCommandParameter.TextEditorService.Model.UndoEdit(
                             textEditorCommandParameter.Model.ModelKey);
 
                         await textEditorCommandParameter.Model
@@ -333,7 +333,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     command = new TextEditorCommand(
                         async textEditorCommandParameter =>
                         {
-                            textEditorCommandParameter.TextEditorService.Model.ModelRedoEdit(
+                            textEditorCommandParameter.TextEditorService.Model.RedoEdit(
                                 textEditorCommandParameter.Model.ModelKey);
                             
                             await textEditorCommandParameter.Model

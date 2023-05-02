@@ -26,7 +26,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             keyAKeyboardEventArg,
             CancellationToken.None);
 
-        TextEditorService.Model.ModelHandleKeyboardEvent(keyboardEventAction);
+        TextEditorService.Model.HandleKeyboardEvent(keyboardEventAction);
         
         var endingText = TextEditorModel.GetAllText();
         
@@ -50,7 +50,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.Model.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -81,7 +81,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.Model.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -118,7 +118,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.Model.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -179,7 +179,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.Model.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -236,7 +236,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.Model.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -350,7 +350,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "A";
         
-        TextEditorService.Model.ModelInsertText(
+        TextEditorService.Model.InsertText(
             new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -385,7 +385,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "Abcdefg";
         
-        TextEditorService.Model.ModelInsertText(
+        TextEditorService.Model.InsertText(
             new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),

@@ -14,19 +14,19 @@ public partial interface ITextEditorService
 {
     public interface IOptionsApi
     {
-        public void OptionsSetCursorWidth(double cursorWidthInPixels);
-        public void OptionsSetFontFamily(string? fontFamily);
-        public void OptionsSetFontSize(int fontSizeInPixels);
-        public Task OptionsSetFromLocalStorageAsync();
-        public void OptionsSetHeight(int? heightInPixels);
-        public void OptionsSetKeymap(KeymapDefinition foundKeymap);
-        public void OptionsSetShowNewlines(bool showNewlines);
-        public void OptionsSetUseMonospaceOptimizations(bool useMonospaceOptimizations);
-        public void OptionsSetShowWhitespace(bool showWhitespace);
+        public void SetCursorWidth(double cursorWidthInPixels);
+        public void SetFontFamily(string? fontFamily);
+        public void SetFontSize(int fontSizeInPixels);
+        public Task SetFromLocalStorageAsync();
+        public void SetHeight(int? heightInPixels);
+        public void SetKeymap(KeymapDefinition foundKeymap);
+        public void SetShowNewlines(bool showNewlines);
+        public void SetUseMonospaceOptimizations(bool useMonospaceOptimizations);
+        public void SetShowWhitespace(bool showWhitespace);
         /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the AppOptions Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
-        public void OptionsSetTheme(ThemeRecord theme);
-        public void OptionsShowSettingsDialog(bool isResizable = false, string? cssClassString = null);
-        public void OptionsWriteToStorage();
+        public void SetTheme(ThemeRecord theme);
+        public void ShowSettingsDialog(bool isResizable = false, string? cssClassString = null);
+        public void WriteToStorage();
     }
 
     public class OptionsApi : IOptionsApi
@@ -45,7 +45,7 @@ public partial interface ITextEditorService
             _textEditorService = textEditorService;
         }
 
-        public void OptionsWriteToStorage()
+        public void WriteToStorage()
         {
             _dispatcher.Dispatch(
                 new StorageEffects.WriteToStorageAction(
@@ -53,7 +53,7 @@ public partial interface ITextEditorService
                     _textEditorService.OptionsWrap.Value.Options));
         }
 
-        public void OptionsShowSettingsDialog(
+        public void ShowSettingsDialog(
             bool isResizable = false,
             string? cssClassString = null)
         {
@@ -72,67 +72,67 @@ public partial interface ITextEditorService
                     settingsDialog));
         }
 
-        public void OptionsSetTheme(
+        public void SetTheme(
             ThemeRecord theme)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetThemeAction(
                     theme));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public void OptionsSetShowWhitespace(
+        public void SetShowWhitespace(
             bool showWhitespace)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetShowWhitespaceAction(
                     showWhitespace));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public void OptionsSetUseMonospaceOptimizations(
+        public void SetUseMonospaceOptimizations(
             bool useMonospaceOptimizations)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetUseMonospaceOptimizationsAction(
                     useMonospaceOptimizations));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public void OptionsSetShowNewlines(
+        public void SetShowNewlines(
             bool showNewlines)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetShowNewlinesAction(
                     showNewlines));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public void OptionsSetKeymap(
+        public void SetKeymap(
             KeymapDefinition foundKeymap)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetKeymapAction(
                     foundKeymap));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public void OptionsSetHeight(
+        public void SetHeight(
             int? heightInPixels)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetHeightAction(
                     heightInPixels));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public async Task OptionsSetFromLocalStorageAsync()
+        public async Task SetFromLocalStorageAsync()
         {
             var optionsJsonString = await _storageService
                     .GetValue(_textEditorService.StorageKey)
@@ -154,7 +154,7 @@ public partial interface ITextEditorService
                         .FirstOrDefault(x =>
                             x.ThemeKey == options.CommonOptions.ThemeKey);
 
-                OptionsSetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
+                SetTheme(matchedTheme ?? ThemeFacts.VisualStudioDarkThemeClone);
             }
 
             if (options.KeymapDefinition is not null)
@@ -163,20 +163,20 @@ public partial interface ITextEditorService
                     .FirstOrDefault(x =>
                         x.KeymapKey == options.KeymapDefinition.KeymapKey);
 
-                OptionsSetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
+                SetKeymap(matchedKeymapDefinition ?? KeymapFacts.DefaultKeymapDefinition);
             }
 
             if (options.CommonOptions?.FontSizeInPixels is not null)
-                OptionsSetFontSize(options.CommonOptions.FontSizeInPixels.Value);
+                SetFontSize(options.CommonOptions.FontSizeInPixels.Value);
 
             if (options.CursorWidthInPixels is not null)
-                OptionsSetCursorWidth(options.CursorWidthInPixels.Value);
+                SetCursorWidth(options.CursorWidthInPixels.Value);
 
             if (options.TextEditorHeightInPixels is not null)
-                OptionsSetHeight(options.TextEditorHeightInPixels.Value);
+                SetHeight(options.TextEditorHeightInPixels.Value);
 
             if (options.ShowNewlines is not null)
-                OptionsSetShowNewlines(options.ShowNewlines.Value);
+                SetShowNewlines(options.ShowNewlines.Value);
 
             // TODO: OptionsSetUseMonospaceOptimizations will always get set to false (default for bool)
             // for a first time user. This leads to a bad user experience since the proportional
@@ -186,37 +186,37 @@ public partial interface ITextEditorService
             // OptionsSetUseMonospaceOptimizations(options.UseMonospaceOptimizations);
 
             if (options.ShowWhitespace is not null)
-                OptionsSetShowWhitespace(options.ShowWhitespace.Value);
+                SetShowWhitespace(options.ShowWhitespace.Value);
         }
 
-        public void OptionsSetFontSize(
+        public void SetFontSize(
             int fontSizeInPixels)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetFontSizeAction(
                     fontSizeInPixels));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public void OptionsSetFontFamily(
+        public void SetFontFamily(
             string? fontFamily)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetFontFamilyAction(
                     fontFamily));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
 
-        public void OptionsSetCursorWidth(
+        public void SetCursorWidth(
             double cursorWidthInPixels)
         {
             _dispatcher.Dispatch(
                 new TextEditorOptionsState.SetCursorWidthAction(
                     cursorWidthInPixels));
 
-            OptionsWriteToStorage();
+            WriteToStorage();
         }
     }
 }

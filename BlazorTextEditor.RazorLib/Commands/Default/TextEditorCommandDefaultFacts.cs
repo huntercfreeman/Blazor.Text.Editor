@@ -90,7 +90,7 @@ public static class TextEditorCommandDefaultFacts
             await commandParameter.ViewModel.FocusAsync();
             
             commandParameter.TextEditorService.Model
-                .ModelHandleKeyboardEvent(new TextEditorModelsCollection.KeyboardEventAction(
+                .HandleKeyboardEvent(new TextEditorModelsCollection.KeyboardEventAction(
                     commandParameter.Model.ModelKey,
                     cursorSnapshots,
                     new KeyboardEventArgs
@@ -110,7 +110,7 @@ public static class TextEditorCommandDefaultFacts
                 .ClipboardService
                 .ReadClipboard();
 
-            commandParameter.TextEditorService.Model.ModelInsertText(
+            commandParameter.TextEditorService.Model.InsertText(
                 new TextEditorModelsCollection.InsertTextAction(
                     commandParameter.Model.ModelKey,
                     new[]
@@ -181,7 +181,7 @@ public static class TextEditorCommandDefaultFacts
         commandParameter =>
         {
             commandParameter.TextEditorService.Model
-                .ModelUndoEdit(commandParameter.Model.ModelKey);
+                .UndoEdit(commandParameter.Model.ModelKey);
             
             return Task.CompletedTask;
         },
@@ -193,7 +193,7 @@ public static class TextEditorCommandDefaultFacts
         commandParameter =>
         {
             commandParameter.TextEditorService.Model
-                .ModelRedoEdit(commandParameter.Model.ModelKey);
+                .RedoEdit(commandParameter.Model.ModelKey);
 
             return Task.CompletedTask;
         },
@@ -328,7 +328,7 @@ public static class TextEditorCommandDefaultFacts
                 CancellationToken.None);
                 
             commandParameter.TextEditorService.Model
-                .ModelInsertText(insertTextAction);
+                .InsertText(insertTextAction);
 
             return Task.CompletedTask;
         },
@@ -366,7 +366,7 @@ public static class TextEditorCommandDefaultFacts
                     CancellationToken.None);
                 
                 commandParameter.TextEditorService.Model
-                    .ModelInsertText(insertTextAction);
+                    .InsertText(insertTextAction);
             }
 
             var lowerBoundPositionIndexChange = 1;
@@ -569,7 +569,7 @@ public static class TextEditorCommandDefaultFacts
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (temporaryIndexCoordinates.rowIndex, lengthOfRow);
             
-            textEditorCommandParameter.TextEditorService.Model.ModelInsertText(
+            textEditorCommandParameter.TextEditorService.Model.InsertText(
                 new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.Model.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
@@ -596,7 +596,7 @@ public static class TextEditorCommandDefaultFacts
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (temporaryIndexCoordinates.rowIndex, 0);
             
-            textEditorCommandParameter.TextEditorService.Model.ModelInsertText(
+            textEditorCommandParameter.TextEditorService.Model.InsertText(
                 new TextEditorModelsCollection.InsertTextAction(
                     textEditorCommandParameter.Model.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
