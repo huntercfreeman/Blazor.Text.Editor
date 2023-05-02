@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using BlazorTextEditor.RazorLib.Misc;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib.Group;

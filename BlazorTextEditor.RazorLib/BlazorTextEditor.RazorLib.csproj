@@ -20,7 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazor.Common" Version="1.0.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />
     </ItemGroup>
 
@@ -34,6 +33,10 @@
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\BlazorCommon\BlazorCommon.RazorLib\BlazorCommon.RazorLib.csproj" />
     </ItemGroup>
 
 </Project>

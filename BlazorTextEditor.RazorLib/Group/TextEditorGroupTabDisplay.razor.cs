@@ -26,14 +26,14 @@ public partial class TextEditorGroupTabDisplay : ComponentBase
 
     private void OnClickSetActiveTextEditorViewModel()
     {
-        TextEditorService.GroupSetActiveViewModel(
+        TextEditorService.Group.SetActiveViewModel(
             TextEditorGroup.GroupKey,
             TextEditorViewModelKey);
     }
 
     private void CloseTabOnClick()
     {
-        TextEditorService.GroupRemoveViewModel(
+        TextEditorService.Group.RemoveViewModel(
             TextEditorGroup.GroupKey,
             TextEditorViewModelKey);
     }

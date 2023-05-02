@@ -96,7 +96,7 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                         TextEditorCursor.MoveCursor(
                             keyboardEventArgs,
                             textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                            textEditorCommandParameter.TextEditorModel);
+                            textEditorCommandParameter.Model);
 
                         return Task.CompletedTask;
                     },
@@ -233,14 +233,14 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     textEditorCommandParameter =>
                     {
                         var positionIndex =
-                            textEditorCommandParameter.TextEditorModel.GetPositionIndex(
+                            textEditorCommandParameter.Model.GetPositionIndex(
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex =
                             positionIndex;
 
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection
                                 .EndingPositionIndex =
                             positionIndex + 1;
                     
@@ -268,18 +268,18 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     textEditorCommandParameter =>
                     {
                         var startOfRowPositionIndexInclusive =
-                            textEditorCommandParameter.TextEditorModel.GetPositionIndex(
+                            textEditorCommandParameter.Model.GetPositionIndex(
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex,
                                 0);
 
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex =
                             startOfRowPositionIndexInclusive;
 
-                        var endOfRowPositionIndexExclusive = textEditorCommandParameter.TextEditorModel.RowEndingPositions[
+                        var endOfRowPositionIndexExclusive = textEditorCommandParameter.Model.RowEndingPositions[
                                 textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor.RowIndex]
                             .positionIndex;
                         
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection
                                 .EndingPositionIndex =
                             endOfRowPositionIndexExclusive;
                     
@@ -295,8 +295,8 @@ public class TextEditorKeymapVim : ITextEditorKeymap
             {
                 command = new TextEditorCommand(textEditorCommandParameter =>
                     {
-                        textEditorCommandParameter.TextEditorService.ViewModelWith(
-                            textEditorCommandParameter.TextEditorViewModel.ViewModelKey,
+                        textEditorCommandParameter.TextEditorService.ViewModel.With(
+                            textEditorCommandParameter.ViewModel.ViewModelKey,
                             previousViewModel => previousViewModel with
                             {
                                 DisplayCommandBar = true
@@ -314,10 +314,10 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                 command = new TextEditorCommand(
                     async textEditorCommandParameter =>
                     {
-                        textEditorCommandParameter.TextEditorService.ModelUndoEdit(
-                            textEditorCommandParameter.TextEditorModel.ModelKey);
+                        textEditorCommandParameter.TextEditorService.Model.ModelUndoEdit(
+                            textEditorCommandParameter.Model.ModelKey);
 
-                        await textEditorCommandParameter.TextEditorModel
+                        await textEditorCommandParameter.Model
                             .ApplySyntaxHighlightingAsync();
                     },
                     false,
@@ -333,10 +333,10 @@ public class TextEditorKeymapVim : ITextEditorKeymap
                     command = new TextEditorCommand(
                         async textEditorCommandParameter =>
                         {
-                            textEditorCommandParameter.TextEditorService.ModelRedoEdit(
-                                textEditorCommandParameter.TextEditorModel.ModelKey);
+                            textEditorCommandParameter.TextEditorService.Model.ModelRedoEdit(
+                                textEditorCommandParameter.Model.ModelKey);
                             
-                            await textEditorCommandParameter.TextEditorModel
+                            await textEditorCommandParameter.Model
                                 .ApplySyntaxHighlightingAsync();
                         },
                         false,

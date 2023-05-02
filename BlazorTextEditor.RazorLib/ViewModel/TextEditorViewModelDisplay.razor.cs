@@ -11,7 +11,7 @@ using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Html;
-using BlazorTextEditor.RazorLib.Misc;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
@@ -101,15 +101,15 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private TextEditorStateChangedKey _previousTextEditorStateChangedKey = TextEditorStateChangedKey.Empty;
     private ElementReference _textEditorDisplayElementReference;
     
-    public TextEditorModel? MutableRefModel => TextEditorService
-        .ViewModelGetModelOrDefault(TextEditorViewModelKey);
+    public TextEditorModel? MutableRefModel => TextEditorService.ViewModel
+        .FindBackingModelOrDefault(TextEditorViewModelKey);
     
     public TextEditorViewModel? MutableRefViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
         .FirstOrDefault(x => 
             x.ViewModelKey == TextEditorViewModelKey);
 
     /// <summary>
-    /// Accounts for one who might hold down Left Mouse Button from outside the TextEditorDisplay's content div
+    /// This accounts for one who might hold down Left Mouse Button from outside the TextEditorDisplay's content div
     /// then move their mouse over the content div while holding the Left Mouse Button down.
     /// </summary>
     private bool _thinksLeftMouseButtonIsDown;
@@ -189,7 +189,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                         MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
             
                 // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
-                TextEditorService.ViewModelWith(
+                TextEditorService.ViewModel.With(
                     textEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
@@ -256,7 +256,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
             if (safeTextEditorViewModel is not null)
             {
-                TextEditorService.ViewModelWith(
+                TextEditorService.ViewModel.With(
                     safeTextEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
@@ -302,7 +302,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             {
                 _previousGlobalFontSizeInPixels = currentGlobalFontSizeInPixels;
 
-                TextEditorService.ViewModelWith(
+                TextEditorService.ViewModel.With(
                     safeTextEditorViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
@@ -343,7 +343,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         var hasSelection = TextEditorSelectionHelper
                 .HasSelectedText(
-                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
+                    primaryCursorSnapshot.ImmutableCursor.ImmutableSelection);
         
         var command = TextEditorService
             .OptionsWrap.Value.Options.KeymapDefinition!.Keymap.Map(
@@ -471,7 +471,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
             TextEditorSelectionHelper.HasSelectedText(
-                primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+                primaryCursorSnapshot.ImmutableCursor.ImmutableSelection))
             // Not pressing the left mouse button
             // so assume ContextMenu is desired result.
             return;
@@ -523,7 +523,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                     higherColumnIndexExpansion);
 
             primaryCursorSnapshot
-                    .UserCursor.TextEditorSelection.EndingPositionIndex =
+                    .UserCursor.Selection.EndingPositionIndex =
                 cursorPositionOfHigherExpansion;
         }
 
@@ -535,7 +535,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                     lowerColumnIndexExpansion);
 
             primaryCursorSnapshot
-                    .UserCursor.TextEditorSelection.AnchorPositionIndex =
+                    .UserCursor.Selection.AnchorPositionIndex =
                 cursorPositionOfLowerExpansion;
         }
     }
@@ -553,7 +553,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         if ((mouseEventArgs.Buttons & 1) != 1 &&
             TextEditorSelectionHelper.HasSelectedText(
-                primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+                primaryCursorSnapshot.ImmutableCursor.ImmutableSelection))
             // Not pressing the left mouse button
             // so assume ContextMenu is desired result.
             return;
@@ -579,7 +579,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         if (mouseEventArgs.ShiftKey)
         {
             if (!TextEditorSelectionHelper.HasSelectedText(
-                    primaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+                    primaryCursorSnapshot.ImmutableCursor.ImmutableSelection))
             {
                 // If user does not yet have a selection
                 // then place the text selection anchor were they were
@@ -589,7 +589,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                         primaryCursorSnapshot.ImmutableCursor.RowIndex,
                         primaryCursorSnapshot.ImmutableCursor.ColumnIndex);
 
-                primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                primaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex =
                     cursorPositionPriorToMovementOccurring;
             }
 
@@ -598,11 +598,11 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         }
         else
         {
-            primaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+            primaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex =
                 cursorPositionIndex;
         }
 
-        primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
+        primaryCursorSnapshot.UserCursor.Selection.EndingPositionIndex =
             cursorPositionIndex;
 
         _thinksLeftMouseButtonIsDown = true;
@@ -652,7 +652,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
             TextEditorCursorDisplay?.PauseBlinkAnimation();
 
-            primaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex =
+            primaryCursorSnapshot.UserCursor.Selection.EndingPositionIndex =
                 safeRefModel
                     .GetCursorPositionIndex(
                         new TextEditorCursor(rowAndColumnIndex, false));

@@ -48,11 +48,11 @@ public static partial class TextEditorCommandVimFacts
                     true);
 
                 var textEditorCommandParameterForMotion = new TextEditorCommandParameter(
-                    textEditorCommandParameter.TextEditorModel,
+                    textEditorCommandParameter.Model,
                     TextEditorCursorSnapshot.TakeSnapshots(textEditorCursorForMotion),
                     textEditorCommandParameter.ClipboardService,
                     textEditorCommandParameter.TextEditorService,
-                    textEditorCommandParameter.TextEditorViewModel);
+                    textEditorCommandParameter.ViewModel);
 
                 var motionResult = await VimMotionResult
                     .GetResultAsync(
@@ -68,14 +68,14 @@ public static partial class TextEditorCommandVimFacts
                     true);
 
                 var deleteTextTextEditorModelAction = new TextEditorModelsCollection.DeleteTextByRangeAction(
-                    textEditorCommandParameter.TextEditorModel.ModelKey,
+                    textEditorCommandParameter.Model.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(cursorForDeletion),
                     motionResult.PositionIndexDisplacement,
                     CancellationToken.None);
 
                 textEditorCommandParameter
-                    .TextEditorService
-                    .ModelDeleteTextByRange(deleteTextTextEditorModelAction);
+                    .TextEditorService.Model
+                    .DeleteTextByRange(deleteTextTextEditorModelAction);
             },
             true,
             $"Vim::Delete({innerTextEditorCommand.DisplayName})",
