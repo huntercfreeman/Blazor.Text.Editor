@@ -163,7 +163,7 @@ public partial class TextEditorModel
 
             if (TextEditorSelectionHelper.HasSelectedText(
                     primaryCursorSnapshot
-                        .ImmutableCursor.ImmutableTextEditorSelection))
+                        .ImmutableCursor.ImmutableSelection))
             {
                 PerformDeletions(new TextEditorModelsCollection.KeyboardEventAction(
                     keyboardEventAction.TextEditorModelKey,
@@ -229,7 +229,7 @@ public partial class TextEditorModel
 
         if (TextEditorSelectionHelper.HasSelectedText(
                 primaryCursorSnapshot
-                    .ImmutableCursor.ImmutableTextEditorSelection))
+                    .ImmutableCursor.ImmutableSelection))
         {
             PerformDeletions(new TextEditorModelsCollection.KeyboardEventAction(
                 insertTextAction.TextEditorModelKey,

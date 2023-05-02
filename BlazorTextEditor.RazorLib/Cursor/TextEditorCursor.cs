@@ -20,7 +20,7 @@ public class TextEditorCursor
 
     public (int rowIndex, int columnIndex) IndexCoordinates { get; set; }
     public int PreferredColumnIndex { get; set; }
-    public TextEditorSelection TextEditorSelection { get; } = new();
+    public TextEditorSelection Selection { get; } = new();
     public bool ShouldRevealCursor { get; set; }
     public bool IsPrimaryCursor { get; }
     /// <summary>
@@ -38,8 +38,8 @@ public class TextEditorCursor
 
         var rememberTextEditorSelection = new TextEditorSelection
         {
-            AnchorPositionIndex = textEditorCursor.TextEditorSelection.AnchorPositionIndex,
-            EndingPositionIndex = textEditorCursor.TextEditorSelection.EndingPositionIndex,
+            AnchorPositionIndex = textEditorCursor.Selection.AnchorPositionIndex,
+            EndingPositionIndex = textEditorCursor.Selection.EndingPositionIndex,
         };
 
         void MutateIndexCoordinatesAndPreferredColumnIndex(int columnIndex)
@@ -50,19 +50,19 @@ public class TextEditorCursor
 
         if (keyboardEventArgs.ShiftKey)
         {
-            if (textEditorCursor.TextEditorSelection.AnchorPositionIndex is null ||
-                textEditorCursor.TextEditorSelection.EndingPositionIndex ==
-                textEditorCursor.TextEditorSelection.AnchorPositionIndex)
+            if (textEditorCursor.Selection.AnchorPositionIndex is null ||
+                textEditorCursor.Selection.EndingPositionIndex ==
+                textEditorCursor.Selection.AnchorPositionIndex)
             {
                 var positionIndex = textEditorModel.GetPositionIndex(
                     localIndexCoordinates.rowIndex,
                     localIndexCoordinates.columnIndex);
 
-                textEditorCursor.TextEditorSelection.AnchorPositionIndex = positionIndex;
+                textEditorCursor.Selection.AnchorPositionIndex = positionIndex;
             }
         }
         else
-            textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
+            textEditorCursor.Selection.AnchorPositionIndex = null;
 
         switch (keyboardEventArgs.Key)
         {
@@ -251,7 +251,7 @@ public class TextEditorCursor
                 localIndexCoordinates.rowIndex,
                 localIndexCoordinates.columnIndex);
 
-            textEditorCursor.TextEditorSelection.EndingPositionIndex = positionIndex;
+            textEditorCursor.Selection.EndingPositionIndex = positionIndex;
         }
     }
 }

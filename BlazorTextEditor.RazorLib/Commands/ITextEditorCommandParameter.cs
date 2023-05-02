@@ -8,10 +8,10 @@ namespace BlazorTextEditor.RazorLib.Commands;
 
 public interface ITextEditorCommandParameter
 {
-    public TextEditorModel TextEditorModel { get; }
+    public TextEditorModel Model { get; }
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; }
     public ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots { get; }
     public IClipboardService ClipboardService { get; }
     public ITextEditorService TextEditorService { get; }
-    public TextEditorViewModel TextEditorViewModel { get; }
+    public TextEditorViewModel ViewModel { get; }
 }

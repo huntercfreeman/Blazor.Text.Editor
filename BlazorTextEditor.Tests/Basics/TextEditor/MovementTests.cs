@@ -39,7 +39,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -76,7 +76,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -113,7 +113,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -150,7 +150,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -187,7 +187,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -224,7 +224,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -261,7 +261,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -298,7 +298,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -356,7 +356,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -393,7 +393,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -430,7 +430,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -467,7 +467,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -504,7 +504,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 
@@ -541,7 +541,7 @@ public class MovementTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
         
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var text = TextEditorModel.GetAllText();
 

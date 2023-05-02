@@ -12,7 +12,7 @@ public static partial class TextEditorCommandVimFacts
         public static readonly TextEditorCommand Word = new(textEditorCommandParameter =>
             {
                 var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
-                var textEditorModel = textEditorCommandParameter.TextEditorModel;
+                var textEditorModel = textEditorCommandParameter.Model;
 
                 var localIndexCoordinates = textEditorCursor.IndexCoordinates;
                 var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
@@ -51,9 +51,9 @@ public static partial class TextEditorCommandVimFacts
                 textEditorCursor.IndexCoordinates = localIndexCoordinates;
                 textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
 
-                if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
+                if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.Selection))
                 {
-                    textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                    textEditorCursor.Selection.EndingPositionIndex =
                         textEditorModel.GetCursorPositionIndex(textEditorCursor);
                 }
                 
@@ -76,7 +76,7 @@ public static partial class TextEditorCommandVimFacts
             bool isRecursiveCall = false)
         {
             var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
-            var textEditorModel = textEditorCommandParameter.TextEditorModel;
+            var textEditorModel = textEditorCommandParameter.Model;
 
             var localIndexCoordinates = textEditorCursor.IndexCoordinates;
             var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
@@ -161,9 +161,9 @@ public static partial class TextEditorCommandVimFacts
             textEditorCursor.IndexCoordinates = localIndexCoordinates;
             textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
             
-            if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
+            if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.Selection))
             {
-                textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                textEditorCursor.Selection.EndingPositionIndex =
                     textEditorModel.GetCursorPositionIndex(textEditorCursor);
             }
         }
@@ -171,7 +171,7 @@ public static partial class TextEditorCommandVimFacts
         public static readonly TextEditorCommand Back = new(textEditorCommandParameter =>
             {
                 var textEditorCursor = textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor;
-                var textEditorModel = textEditorCommandParameter.TextEditorModel;
+                var textEditorModel = textEditorCommandParameter.Model;
 
                 var localIndexCoordinates = textEditorCursor.IndexCoordinates;
                 var localPreferredColumnIndex = textEditorCursor.PreferredColumnIndex;
@@ -213,9 +213,9 @@ public static partial class TextEditorCommandVimFacts
                 textEditorCursor.IndexCoordinates = localIndexCoordinates;
                 textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
                 
-                if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.TextEditorSelection))
+                if (TextEditorSelectionHelper.HasSelectedText(textEditorCursor.Selection))
                 {
-                    textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                    textEditorCursor.Selection.EndingPositionIndex =
                         textEditorModel.GetCursorPositionIndex(textEditorCursor);
                 }
 
@@ -238,42 +238,42 @@ public static partial class TextEditorCommandVimFacts
                         return;
 
                     var previousAnchorPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex;
+                        .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex;
 
                     var previousEndingPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+                        .PrimaryCursorSnapshot.UserCursor.Selection.EndingPositionIndex;
 
                     await textEditorCommandMotion.DoAsyncFunc.Invoke(textEditorCommandParameter);
                     
                     var nextEndingPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+                        .PrimaryCursorSnapshot.UserCursor.Selection.EndingPositionIndex;
                     
                     Console.WriteLine($"previousEndingPositionIndex: {previousEndingPositionIndex}");
                     Console.WriteLine($"nextEndingPositionIndex: {nextEndingPositionIndex}");
 
                     if (nextEndingPositionIndex < textEditorCommandParameter
-                            .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                            .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex)
                     {
                         if (previousAnchorPositionIndex < previousEndingPositionIndex)
                         {
                             // Anchor went from being the lower bound to the upper bound.
 
                             textEditorCommandParameter
-                                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex += 1;
+                                .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex += 1;
                         }
                     }
                     else if (nextEndingPositionIndex >= textEditorCommandParameter
-                                 .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                                 .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex)
                     {
                         if (previousAnchorPositionIndex > previousEndingPositionIndex)
                         {
                             // Anchor went from being the upper bound to the lower bound.
 
                             textEditorCommandParameter
-                                .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex -= 1;
+                                .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex -= 1;
                         }
 
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection
                             .EndingPositionIndex += 1;
                     }
                 },
@@ -295,66 +295,66 @@ public static partial class TextEditorCommandVimFacts
                         return;
 
                     var previousAnchorPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex;
+                        .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex;
 
                     var previousEndingPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+                        .PrimaryCursorSnapshot.UserCursor.Selection.EndingPositionIndex;
 
                     await textEditorCommandMotion.DoAsyncFunc.Invoke(textEditorCommandParameter);
 
                     var nextEndingPositionIndex = textEditorCommandParameter
-                        .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.EndingPositionIndex;
+                        .PrimaryCursorSnapshot.UserCursor.Selection.EndingPositionIndex;
 
                     if (nextEndingPositionIndex < textEditorCommandParameter
-                            .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                            .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex)
                     {
                         if (previousAnchorPositionIndex < previousEndingPositionIndex)
                         {
                             // Anchor went from being the lower bound to the upper bound.
 
-                            var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorModel
+                            var rowDataAnchorIsOn = textEditorCommandParameter.Model
                                 .FindRowInformation(
                                     previousAnchorPositionIndex.Value);
 
                             textEditorCommandParameter
-                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
+                                    .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex =
                                 textEditorCommandParameter
-                                    .TextEditorModel.RowEndingPositions[rowDataAnchorIsOn.rowIndex]
+                                    .Model.RowEndingPositions[rowDataAnchorIsOn.rowIndex]
                                     .positionIndex;
                         }
 
-                        var startingPositionOfRow = textEditorCommandParameter.TextEditorModel
+                        var startingPositionOfRow = textEditorCommandParameter.Model
                             .GetStartOfRowTuple(textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor
                                 .IndexCoordinates.rowIndex)
                             .positionIndex;
 
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection
                             .EndingPositionIndex = startingPositionOfRow;
                     }
                     else if (nextEndingPositionIndex >= textEditorCommandParameter
-                                 .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex)
+                                 .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex)
                     {
                         if (previousAnchorPositionIndex > previousEndingPositionIndex)
                         {
                             // Anchor went from being the upper bound to the lower bound.
 
-                            var rowDataAnchorIsOn = textEditorCommandParameter.TextEditorModel
+                            var rowDataAnchorIsOn = textEditorCommandParameter.Model
                                 .FindRowInformation(
                                     previousAnchorPositionIndex.Value);
 
                             textEditorCommandParameter
-                                    .PrimaryCursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex =
-                                textEditorCommandParameter.TextEditorModel.GetStartOfRowTuple(
+                                    .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex =
+                                textEditorCommandParameter.Model.GetStartOfRowTuple(
                                         rowDataAnchorIsOn.rowIndex - 1)
                                     .positionIndex;
                         }
 
                         var endingPositionOfRow = textEditorCommandParameter
-                            .TextEditorModel.RowEndingPositions[
+                            .Model.RowEndingPositions[
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex]
                             .positionIndex;
 
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.TextEditorSelection
+                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection
                             .EndingPositionIndex = endingPositionOfRow;
                     }
                 },

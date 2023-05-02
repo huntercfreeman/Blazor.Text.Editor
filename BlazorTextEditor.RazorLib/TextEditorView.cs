@@ -32,8 +32,8 @@ public class TextEditorView : FluxorComponent
     [Parameter, EditorRequired]
     public TextEditorViewModelKey TextEditorViewModelKey { get; set; } = null!;
     
-    public TextEditorModel? MutableReferenceToModel => TextEditorService
-        .ViewModelGetModelOrDefault(TextEditorViewModelKey);
+    public TextEditorModel? MutableReferenceToModel => TextEditorService.ViewModel
+        .FindBackingModelOrDefault(TextEditorViewModelKey);
     
     public TextEditorViewModel? MutableReferenceToViewModel => TextEditorViewModelsCollectionWrap.Value.ViewModelsList
         .FirstOrDefault(x => 

@@ -15,14 +15,14 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
         ITextEditorService textEditorService,
         TextEditorViewModel textEditorViewModel)
     {
-        TextEditorModel = textEditor;
+        Model = textEditor;
         CursorSnapshots = cursorSnapshots;
         ClipboardService = clipboardService;
         TextEditorService = textEditorService;
-        TextEditorViewModel = textEditorViewModel;
+        ViewModel = textEditorViewModel;
     }
 
-    public TextEditorModel TextEditorModel { get; }
+    public TextEditorModel Model { get; }
 
     public TextEditorCursorSnapshot PrimaryCursorSnapshot => CursorSnapshots
         .First(x => x.UserCursor.IsPrimaryCursor);
@@ -30,5 +30,5 @@ public class TextEditorCommandParameter : ITextEditorCommandParameter
     public ImmutableArray<TextEditorCursorSnapshot> CursorSnapshots { get; }
     public IClipboardService ClipboardService { get; }
     public ITextEditorService TextEditorService { get; }
-    public TextEditorViewModel TextEditorViewModel { get; }
+    public TextEditorViewModel ViewModel { get; }
 }

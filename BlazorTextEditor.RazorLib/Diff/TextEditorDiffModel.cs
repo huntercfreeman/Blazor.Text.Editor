@@ -1,4 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Misc;
+﻿using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.ViewModel;
 
 namespace BlazorTextEditor.RazorLib.Diff;

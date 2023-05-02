@@ -2,11 +2,11 @@
 
 <div class="bte_text-selection-group">
     @if (TextEditorSelectionHelper.HasSelectedText(
-        PrimaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+        PrimaryCursorSnapshot.ImmutableCursor.ImmutableSelection))
     {
         var selectionBoundsInPositionIndexUnits = TextEditorSelectionHelper
             .GetSelectionBounds(
-                PrimaryCursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
+                PrimaryCursorSnapshot.ImmutableCursor.ImmutableSelection);
 
         var selectionBoundsInRowIndexUnits = TextEditorSelectionHelper
             .ConvertSelectionOfPositionIndexUnitsToRowIndexUnits(

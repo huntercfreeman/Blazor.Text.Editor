@@ -26,7 +26,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             keyAKeyboardEventArg,
             CancellationToken.None);
 
-        TextEditorService.ModelHandleKeyboardEvent(keyboardEventAction);
+        TextEditorService.Model.HandleKeyboardEvent(keyboardEventAction);
         
         var endingText = TextEditorModel.GetAllText();
         
@@ -50,7 +50,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -81,7 +81,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -118,7 +118,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -179,7 +179,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -236,7 +236,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             CancellationToken.None);
 
-        TextEditorService.ModelInsertText(insertTextAction);
+        TextEditorService.Model.InsertText(insertTextAction);
         
         var endingText = TextEditorModel.GetAllText();
 
@@ -350,7 +350,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "A";
         
-        TextEditorService.ModelInsertText(
+        TextEditorService.Model.InsertText(
             new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -361,7 +361,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
             content,
             TextEditorModel.GetAllText());
         
-        TextEditorService.ModelDeleteTextByRange(
+        TextEditorService.Model.DeleteTextByRange(
             new TextEditorModelsCollection.DeleteTextByRangeAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -385,7 +385,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
 
         var content = "Abcdefg";
         
-        TextEditorService.ModelInsertText(
+        TextEditorService.Model.InsertText(
             new TextEditorModelsCollection.InsertTextAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),
@@ -398,7 +398,7 @@ public class TextManipulationTests : BlazorTextEditorTestingBase
         
         cursor.IndexCoordinates = (0, startingPositionIndex);
 
-        TextEditorService.ModelDeleteTextByRange(
+        TextEditorService.Model.DeleteTextByRange(
             new TextEditorModelsCollection.DeleteTextByRangeAction(
                 TextEditorModelKey,
                 TextEditorCursorSnapshot.TakeSnapshots(cursor),

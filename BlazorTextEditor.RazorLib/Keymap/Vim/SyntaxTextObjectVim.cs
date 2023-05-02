@@ -82,7 +82,7 @@ public static class SyntaxTextObjectVim
                                     ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorModel);
+                                textEditorCommandParameter.Model);
 
                             return Task.CompletedTask;
                         },
@@ -106,7 +106,7 @@ public static class SyntaxTextObjectVim
                                     ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorModel);
+                                textEditorCommandParameter.Model);
 
                             return Task.CompletedTask;
                         },
@@ -130,7 +130,7 @@ public static class SyntaxTextObjectVim
                                     ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorModel);
+                                textEditorCommandParameter.Model);
 
                             return Task.CompletedTask;
                         },
@@ -154,7 +154,7 @@ public static class SyntaxTextObjectVim
                                     ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorModel);
+                                textEditorCommandParameter.Model);
 
                             return Task.CompletedTask;
                         },
@@ -178,7 +178,7 @@ public static class SyntaxTextObjectVim
                                     ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorModel);
+                                textEditorCommandParameter.Model);
 
                             return Task.CompletedTask;
                         },
@@ -202,7 +202,7 @@ public static class SyntaxTextObjectVim
                                     ShiftKey = shiftKey
                                 },
                                 textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor,
-                                textEditorCommandParameter.TextEditorModel);
+                                textEditorCommandParameter.Model);
 
                             return Task.CompletedTask;
                         },

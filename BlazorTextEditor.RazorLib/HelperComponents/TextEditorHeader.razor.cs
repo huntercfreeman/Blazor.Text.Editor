@@ -51,7 +51,7 @@ public partial class TextEditorHeader : TextEditorView
         var rowEndingKindString = (string)(changeEventArgs.Value ?? string.Empty);
 
         if (Enum.TryParse<RowEndingKind>(rowEndingKindString, out var rowEndingKind))
-            TextEditorService.ModelSetUsingRowEndingKind(
+            TextEditorService.Model.SetUsingRowEndingKind(
                 localTextEditorViewModel.ModelKey,
                 rowEndingKind);
     }

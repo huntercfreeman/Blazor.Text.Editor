@@ -3,7 +3,7 @@ using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Measurement;
-using BlazorTextEditor.RazorLib.Misc;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Virtualization;
 
@@ -66,7 +66,8 @@ public record TextEditorViewModel(
     public void CursorMovePageBottom()
     {
         var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
-        var textEditor = TextEditorService.ViewModelGetModelOrDefault(
+
+        var textEditor = TextEditorService.ViewModel.FindBackingModelOrDefault(
             ViewModelKey);
 
         if (textEditor is not null &&
@@ -82,7 +83,7 @@ public record TextEditorViewModel(
     
     public async Task MutateScrollHorizontalPositionByPixelsAsync(double pixels)
     {
-        await TextEditorService.ViewModelMutateScrollHorizontalPositionAsync(
+        await TextEditorService.ViewModel.MutateScrollHorizontalPositionAsync(
             BodyElementId,
             GutterElementId,
             pixels);
@@ -90,7 +91,7 @@ public record TextEditorViewModel(
     
     public async Task MutateScrollVerticalPositionByPixelsAsync(double pixels)
     {
-        await TextEditorService.ViewModelMutateScrollVerticalPositionAsync(
+        await TextEditorService.ViewModel.MutateScrollVerticalPositionAsync(
             BodyElementId,
             GutterElementId,
             pixels);
@@ -113,16 +114,16 @@ public record TextEditorViewModel(
     /// </summary>
     public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
     {
-        await TextEditorService.ViewModelSetScrollPositionAsync(
+        await TextEditorService.ViewModel.SetScrollPositionAsync(
             BodyElementId,
             GutterElementId,
             scrollLeft,
             scrollTop);
     }
 
-    public async Task FocusTextEditorAsync()
+    public async Task FocusAsync()
     {
-        await TextEditorService.CursorPrimaryFocusAsync(
+        await TextEditorService.ViewModel.FocusPrimaryCursorAsync(
             PrimaryCursorContentId);
     }
     
@@ -136,12 +137,13 @@ public record TextEditorViewModel(
         
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
-        var textEditorModel = TextEditorService.ViewModelGetModelOrDefault(ViewModelKey);
+        var textEditorModel = TextEditorService.ViewModel
+            .FindBackingModelOrDefault(ViewModelKey);
 
         if (bodyMeasurementsInPixels is null)
         {
-            bodyMeasurementsInPixels = await TextEditorService
-                .ElementMeasurementsInPixelsAsync(BodyElementId);
+            bodyMeasurementsInPixels = await TextEditorService.ViewModel
+                .MeasureElementInPixelsAsync(BodyElementId);
         }
 
         _mostRecentBodyMeasurementsInPixels = bodyMeasurementsInPixels; 
@@ -337,7 +339,7 @@ public record TextEditorViewModel(
             },
             localCharacterWidthAndRowHeight);
         
-        TextEditorService.ViewModelWith(
+        TextEditorService.ViewModel.With(
                 ViewModelKey,
                 previousViewModel => previousViewModel with
                 {

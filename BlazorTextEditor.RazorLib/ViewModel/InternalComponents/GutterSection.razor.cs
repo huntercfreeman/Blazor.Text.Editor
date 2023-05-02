@@ -1,5 +1,5 @@
 ﻿using BlazorCommon.RazorLib.Dimensions;
-using BlazorTextEditor.RazorLib.Misc;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Microsoft.AspNetCore.Components;
@@ -25,7 +25,7 @@ public partial class GutterSection : ComponentBase
         if (TextEditorViewModel.TextEditorStateChangedKey != _previousTextEditorStateChangedKey)
         {
             _previousTextEditorStateChangedKey = TextEditorViewModel.TextEditorStateChangedKey;
-            TextEditorService.ViewModelSetGutterScrollTopAsync(
+            TextEditorService.ViewModel.SetGutterScrollTopAsync(
                 viewModel.GutterElementId,
                 viewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollTop);
         }

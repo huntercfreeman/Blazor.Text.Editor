@@ -59,12 +59,12 @@ public partial class TextEditorModel
         foreach (var cursorSnapshot in keyboardEventAction.CursorSnapshots)
         {
             if (TextEditorSelectionHelper.HasSelectedText(
-                    cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+                    cursorSnapshot.ImmutableCursor.ImmutableSelection))
             {
                 PerformDeletions(keyboardEventAction);
 
                 var selectionBounds = TextEditorSelectionHelper.GetSelectionBounds(
-                    cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection);
+                    cursorSnapshot.ImmutableCursor.ImmutableSelection);
 
                 var lowerRowData = 
                     FindRowInformation(
@@ -261,12 +261,12 @@ public partial class TextEditorModel
 
             // TODO: The deletion logic should be the same whether it be 'Delete' 'Backspace' 'CtrlModified' or 'DeleteSelection'. What should change is one needs to calculate the starting and ending index appropriately foreach case.
             if (TextEditorSelectionHelper.HasSelectedText(
-                    cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection))
+                    cursorSnapshot.ImmutableCursor.ImmutableSelection))
             {
-                var lowerPositionIndexInclusiveBound = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
+                var lowerPositionIndexInclusiveBound = cursorSnapshot.ImmutableCursor.ImmutableSelection
                     .AnchorPositionIndex ?? 0;
 
-                var upperPositionIndexExclusive = cursorSnapshot.ImmutableCursor.ImmutableTextEditorSelection
+                var upperPositionIndexExclusive = cursorSnapshot.ImmutableCursor.ImmutableSelection
                     .EndingPositionIndex;
 
                 if (lowerPositionIndexInclusiveBound > upperPositionIndexExclusive)
@@ -294,7 +294,7 @@ public partial class TextEditorModel
                 countToRemove = upperPositionIndexExclusive - lowerPositionIndexInclusiveBound;
                 moveBackwards = true;
 
-                cursorSnapshot.UserCursor.TextEditorSelection.AnchorPositionIndex = null;
+                cursorSnapshot.UserCursor.Selection.AnchorPositionIndex = null;
             }
             else if (KeyboardKeyFacts.MetaKeys.BACKSPACE == keyboardEventAction.KeyboardEventArgs.Key)
             {

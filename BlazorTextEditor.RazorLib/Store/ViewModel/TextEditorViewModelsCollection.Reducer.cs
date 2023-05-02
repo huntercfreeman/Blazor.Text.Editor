@@ -1,5 +1,5 @@
 ﻿using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Misc;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.ViewModel;
 using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;

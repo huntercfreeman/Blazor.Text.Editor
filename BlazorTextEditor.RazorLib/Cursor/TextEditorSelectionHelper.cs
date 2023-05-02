@@ -91,8 +91,8 @@ public static class TextEditorSelectionHelper
             (startingRowIndex, 0),
             false);
 
-        textEditorCursor.TextEditorSelection.AnchorPositionIndex = startingPositionIndexInclusive;
-        textEditorCursor.TextEditorSelection.EndingPositionIndex = endingPositionIndexExclusive;
+        textEditorCursor.Selection.AnchorPositionIndex = startingPositionIndexInclusive;
+        textEditorCursor.Selection.EndingPositionIndex = endingPositionIndexExclusive;
 
         return textEditorCursor;
     }
