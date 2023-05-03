@@ -3,6 +3,7 @@ using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.Group;
 
@@ -29,6 +30,12 @@ public partial class TextEditorGroupTabDisplay : ComponentBase
         TextEditorService.Group.SetActiveViewModel(
             TextEditorGroup.GroupKey,
             TextEditorViewModelKey);
+    }
+    
+    private void OnMouseDown(MouseEventArgs mouseEventArgs)
+    {
+        if (mouseEventArgs.Button == 1)
+            CloseTabOnClick();
     }
 
     private void CloseTabOnClick()

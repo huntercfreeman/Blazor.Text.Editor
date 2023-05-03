@@ -180,7 +180,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         if (textEditorViewModel is not null)
         {
-            if (textEditorViewModel.ShouldMeasureDimensions)
+            if (MutableRefViewModel?.ShouldMeasureDimensions ?? false)
             {
                 var characterWidthAndRowHeight = await JsRuntime
                     .InvokeAsync<CharacterWidthAndRowHeight>(
@@ -198,7 +198,6 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                         {
                             CharacterWidthAndRowHeight = characterWidthAndRowHeight,
                         },
-                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                     });
 
                 // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
