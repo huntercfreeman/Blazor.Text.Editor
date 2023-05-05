@@ -35,7 +35,10 @@ public partial class TextEditorModelsCollection
             ForceRerenderAction forceRerenderAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == forceRerenderAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == forceRerenderAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.PerformForceRerenderAction(forceRerenderAction);
 
@@ -54,7 +57,10 @@ public partial class TextEditorModelsCollection
             InsertTextAction insertTextAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == insertTextAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == insertTextAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.PerformEditTextEditorAction(insertTextAction);
 
@@ -73,7 +79,10 @@ public partial class TextEditorModelsCollection
             KeyboardEventAction keyboardEventAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == keyboardEventAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == keyboardEventAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.PerformEditTextEditorAction(keyboardEventAction);
 
@@ -92,7 +101,10 @@ public partial class TextEditorModelsCollection
             DeleteTextByMotionAction deleteTextByMotionAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == deleteTextByMotionAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == deleteTextByMotionAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByMotionAction);
 
@@ -111,7 +123,10 @@ public partial class TextEditorModelsCollection
             DeleteTextByRangeAction deleteTextByRangeAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == deleteTextByRangeAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == deleteTextByRangeAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.PerformEditTextEditorAction(deleteTextByRangeAction);
 
@@ -130,7 +145,10 @@ public partial class TextEditorModelsCollection
             UndoEditAction undoEditAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == undoEditAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == undoEditAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.UndoEdit();
 
@@ -149,7 +167,10 @@ public partial class TextEditorModelsCollection
             RedoEditAction redoEditAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == redoEditAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == redoEditAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.RedoEdit();
 
@@ -168,7 +189,10 @@ public partial class TextEditorModelsCollection
             ReloadAction reloadAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == reloadAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == reloadAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = new TextEditorModel(textEditor);
             nextTextEditor.SetContent(reloadAction.Content);
@@ -192,7 +216,10 @@ public partial class TextEditorModelsCollection
             SetResourceDataAction setResourceDataAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == setResourceDataAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == setResourceDataAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor.SetResourceData(
                 setResourceDataAction.ResourceUri,
@@ -213,7 +240,10 @@ public partial class TextEditorModelsCollection
             DisposeAction disposeAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x => x.ModelKey == disposeAction.TextEditorModelKey);
+                .SingleOrDefault(x => x.ModelKey == disposeAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextList = inModelsCollection.TextEditorList
                 .Remove(textEditor);
@@ -230,8 +260,11 @@ public partial class TextEditorModelsCollection
             SetUsingRowEndingKindAction setUsingRowEndingKindAction)
         {
             var textEditor = inModelsCollection.TextEditorList
-                .Single(x =>
+                .SingleOrDefault(x =>
                     x.ModelKey == setUsingRowEndingKindAction.TextEditorModelKey);
+
+            if (textEditor is null)
+                return inModelsCollection;
 
             var nextTextEditor = textEditor
                 .SetUsingRowEndingKind(setUsingRowEndingKindAction.RowEndingKind);

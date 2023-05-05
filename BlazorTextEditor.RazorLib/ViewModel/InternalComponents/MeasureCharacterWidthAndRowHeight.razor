@@ -1,10 +1,12 @@
-﻿<div class="bte_measure-character-width-and-row-height bte_row"
-     id="@HtmlElementId">
+﻿<div class="bte_measure-character-width-and-row-height-wrapper bte_row">
+    <div class="bte_measure-character-width-and-row-height bte_row"
+         id="@HtmlElementId">
 
-    @for (var i = 0; i < _testStringRepeatCount; i++)
-    {
-        <text>
-            @_testStringForMeasurement
-        </text>
-    }
+        @for (var i = 0; i < _testStringRepeatCount; i++)
+        {
+            <text>
+                @_testStringForMeasurement
+            </text>
+        }
+    </div>
 </div>

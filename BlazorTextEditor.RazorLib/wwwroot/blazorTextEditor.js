@@ -411,6 +411,10 @@ window.blazorTextEditor = {
 
                 let entry = entries[i];
 
+                if (!intersectionObserverMapValue.CursorIsIntersectingTuples) {
+                    return;
+                }
+
                 let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
                     .find(x => x.CursorElementId === entry.target.id);
                 
