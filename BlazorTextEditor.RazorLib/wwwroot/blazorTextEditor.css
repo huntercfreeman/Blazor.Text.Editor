@@ -583,6 +583,7 @@
         The colors are custom
         dark themed so the Text Editor has its own theme
     */
+    /* control keywords get color #d6c541 perhaps? */
     --bte_primary-font-color: #D2D2D2;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
     --bte_text-selection-background-color: #1E557D;
@@ -607,9 +608,9 @@
     --bte_css-property-value-color: #E06C75;
     --bte_css-identifier-color: #E09C6C;
     --bte_attribute-name-color: #C8C864;
-    --bte_attribute-value-color : #E06C75;
-    --bte_json-property-key-color : #C8C864;
-    --bte_json-property-value-color : #E06C75;
+    --bte_attribute-value-color: #E06C75;
+    --bte_json-property-key-color: #C8C864;
+    --bte_json-property-value-color: #E06C75;
     --bte_text-editor-gutter-border-color: #273840;
     --bte_text-editor-gutter-background-color: #1f2229;
     --bte_secondary-font-color: #d1d2ca;
