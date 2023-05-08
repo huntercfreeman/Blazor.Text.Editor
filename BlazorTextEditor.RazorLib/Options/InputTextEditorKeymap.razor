@@ -11,7 +11,7 @@
             class="@InputElementCssClassString">
         @{
             var keymaps = KeymapFacts.AllKeymapDefinitions;
-            var chosenKeymap = TextEditorService.OptionsWrap.Value.Options.KeymapDefinition;
+            var chosenKeymap = TextEditorOptionsStateWrap.Value.Options.KeymapDefinition;
             
             foreach (var keymap in keymaps)
             {

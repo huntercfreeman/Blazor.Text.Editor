@@ -10,7 +10,7 @@
             class="@InputElementCssClassString">
         @{
             var themes = ThemeRecordsCollectionWrap.Value.ThemeRecordsList;
-            var chosenThemeKey = TextEditorService.OptionsWrap.Value.Options.CommonOptions.ThemeKey
+            var chosenThemeKey = TextEditorOptionsStateWrap.Value.Options.CommonOptions.ThemeKey
                 ?? ThemeFacts.VisualStudioDarkThemeClone.ThemeKey;
             
             foreach (var theme in themes)

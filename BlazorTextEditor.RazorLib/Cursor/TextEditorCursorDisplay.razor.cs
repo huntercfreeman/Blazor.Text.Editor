@@ -1,12 +1,9 @@
-using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Dimensions;
-using BlazorCommon.RazorLib.Reactive;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Html;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
 using BlazorTextEditor.RazorLib.ViewModel;
-using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -16,11 +13,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 {
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
-    [Inject]
-    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
-    
+
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
@@ -47,13 +40,6 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
     
     public const string BLINK_CURSOR_BACKGROUND_TASK_NAME = "BlinkCursor";
     public const string BLINK_CURSOR_BACKGROUND_TASK_DESCRIPTION = "This task blinks the cursor within the text editor.";
-    /// <summary>Scroll by 2 more rows than necessary to bring an out of view row into view.</summary>
-    private const int WHEN_ROW_OUT_OF_VIEW_OVERSCROLL_BY = 2;    
-    /// <summary>Determine if a row is out of view with the lower and upper boundaries each being 1 row narrower.</summary>
-    private const int SCROLL_MARGIN_FOR_ROW_OUT_OF_VIEW = 1;
-    /// <summary>Determine if a column is out of view with the lower and upper boundaries each being 1 column narrower.</summary>
-    private const int SCROLL_MARGIN_FOR_COLUMN_OUT_OF_VIEW = 1;
-    
     private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
     
     private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();

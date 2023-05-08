@@ -1,5 +1,4 @@
-﻿using BlazorTextEditor.RazorLib.Store.Options;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.Options;
 

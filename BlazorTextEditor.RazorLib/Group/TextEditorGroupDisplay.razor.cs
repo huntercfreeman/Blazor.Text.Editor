@@ -1,8 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Store.Group;
-using BlazorTextEditor.RazorLib.Store.Model;
-using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -12,12 +10,6 @@ public partial class TextEditorGroupDisplay : IDisposable
 {
     [Inject]
     private IState<TextEditorGroupsCollection> TextEditorGroupsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 

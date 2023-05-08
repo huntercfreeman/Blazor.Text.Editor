@@ -1,4 +1,3 @@
-using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -9,9 +8,7 @@ namespace BlazorTextEditor.RazorLib.Options;
 public partial class InputTextEditorShowWhitespace : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorOptionsState> TextEditorOptionsState { get; set; } = null!;
+    private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
@@ -27,7 +24,7 @@ public partial class InputTextEditorShowWhitespace : FluxorComponent
 
     public bool GlobalShowWhitespace
     {
-        get => TextEditorService.OptionsWrap.Value.Options.ShowWhitespace ?? default;
+        get => TextEditorOptionsStateWrap.Value.Options.ShowWhitespace ?? default;
         set => TextEditorService.Options.SetShowWhitespace(value);
     }
 }

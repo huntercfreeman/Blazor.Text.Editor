@@ -2,10 +2,8 @@
 using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorCommon.RazorLib.Reactive;
 using BlazorCommon.RazorLib.Store.DragCase;
-using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
-using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -34,14 +32,15 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
                 TimeSpan.FromMilliseconds(30));
     
     private bool _thinksLeftMouseButtonIsDown;
-
+    private RelativeCoordinates _relativeCoordinatesOnMouseDown;
     private readonly Guid _scrollbarGuid = Guid.NewGuid();
     
     private Func<(MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs), Task>? _dragEventHandler;
     private MouseEventArgs? _previousDragMouseEventArgs;
     
     private string ScrollbarElementId => $"bte_{_scrollbarGuid}";
-    
+    private string ScrollbarSliderElementId => $"bte_{_scrollbarGuid}-slider";
+
     protected override void OnInitialized()
     {
         DragStateWrap.StateChanged += DragStateWrapOnStateChanged;
@@ -92,12 +91,18 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         return $"{left} {width}";
     }
 
-    private Task HandleOnMouseDownAsync(MouseEventArgs arg)
+    private async Task HandleOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         _thinksLeftMouseButtonIsDown = true;
-        SubscribeToDragEventForScrolling();
 
-        return Task.CompletedTask;
+        _relativeCoordinatesOnMouseDown = await JsRuntime
+            .InvokeAsync<RelativeCoordinates>(
+                "blazorTextEditor.getRelativePosition",
+                ScrollbarSliderElementId,
+                mouseEventArgs.ClientX,
+                mouseEventArgs.ClientY);
+
+        SubscribeToDragEventForScrolling();
     }
 
     private async void DragStateWrapOnStateChanged(object? sender, EventArgs e)
@@ -154,14 +159,17 @@ public partial class ScrollbarHorizontal : ComponentBase, IDisposable
         if (localThinksLeftMouseButtonIsDown &&
             (mouseEventArgsTuple.secondMouseEventArgs.Buttons & 1) == 1)
         {
-            var relativeCoordinates = await JsRuntime
+            var relativeCoordinatesOfDragEvent = await JsRuntime
                 .InvokeAsync<RelativeCoordinates>(
                     "blazorTextEditor.getRelativePosition",
                     ScrollbarElementId,
                     mouseEventArgsTuple.secondMouseEventArgs.ClientX,
                     mouseEventArgsTuple.secondMouseEventArgs.ClientY);
-            
-            var xPosition = Math.Max(0, relativeCoordinates.RelativeX);
+
+            var xPosition = relativeCoordinatesOfDragEvent.RelativeX -
+                _relativeCoordinatesOnMouseDown.RelativeX;
+
+            xPosition = Math.Max(0, xPosition);
 
             if (xPosition > TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
                 xPosition = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;

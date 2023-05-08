@@ -25,9 +25,9 @@
         fontFamily = globalTextEditorOptions.CommonOptions.FontFamily;
     }
 
-    var fontFamilyCssStyleString = 
-        $"font-family: {fontFamily};"; 
-    
+    var fontFamilyCssStyleString =
+        $"font-family: {fontFamily};";
+
     var fontSizeInPixelsCssStyleString = string.Empty;
 
     if (globalTextEditorOptions.CommonOptions?.FontSizeInPixels is not null)
@@ -41,110 +41,109 @@
      class="bte_text-editor-css-wrapper @TextEditorService.ThemeCssClassString @WrapperClassCssString">
 
     @if (textEditorModel is not null &&
-         textEditorViewModel is not null &&
-         !globalTextEditorOptions.UseMonospaceOptimizations)
+    textEditorViewModel is not null &&
+    !globalTextEditorOptions.UseMonospaceOptimizations)
     {
-        // All the logic in this if is for debugging while implementing
-        // proportional font logic.
-        
         <div style="display: flex; position: absolute; visibility: hidden;"
              id="@ProportionalFontMeasurementsContainerElementId">
         </div>
-        
-        string GetGutterSectionStyleCss()
-        {
-            var mostDigitsInARowLineNumber = textEditorModel.RowCount
-                .ToString()
-                .Length;
-
-            var widthInPixels = mostDigitsInARowLineNumber *
-                                textEditorViewModel.VirtualizationResult.CharacterWidthAndRowHeight.CharacterWidthInPixels;
-
-            widthInPixels += TextEditorModel.GUTTER_PADDING_LEFT_IN_PIXELS +
-                             TextEditorModel.GUTTER_PADDING_RIGHT_IN_PIXELS;
-        
-            var widthInPixelsInvariantCulture = widthInPixels.ToCssValue();
-
-            var width = $"width: {widthInPixelsInvariantCulture}px;";
-
-            return width;
-        }
     }
-    
-    <CascadingValue Value="textEditorModel">
-        <CascadingValue Value="textEditorViewModel">
-            <CascadingValue Value="globalTextEditorOptions">
-                <CascadingValue Name="ProportionalFontMeasurementsContainerElementId" Value="ProportionalFontMeasurementsContainerElementId">
 
-                @if (IncludeHeaderHelperComponent &&
-                     textEditorModel is not null &&
-                     textEditorViewModel is not null)
+
+    <CascadingValue Value="globalTextEditorOptions">
+        <CascadingValue Name="ProportionalFontMeasurementsContainerElementId" Value="ProportionalFontMeasurementsContainerElementId">
+
+            @if (IncludeHeaderHelperComponent &&
+            textEditorModel is not null &&
+            textEditorViewModel is not null)
+            {
+                @*
+            The CascadingValue for textEditorModel and textEditorViewModel need to be here.
+            If outside the if not null checks they can cascade a null value to a component which expects a non null.
+            *@
+                <CascadingValue Value="textEditorModel">
+                    <CascadingValue Value="textEditorViewModel">
+                        <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
+                                      HeaderButtonKinds="HeaderButtonKinds" />
+                    </CascadingValue>
+                </CascadingValue>
+            }
+
+            <div @ref="_textEditorDisplayElementReference"
+                 @onclick="FocusTextEditorAsync"
+                 @onkeydown="HandleOnKeyDownAsync"
+                 @onkeydown:preventDefault="true"
+                 @oncontextmenu="HandleOnContextMenuAsync"
+                 @oncontextmenu:preventDefault="true"
+                 @onmousedown="HandleContentOnMouseDownAsync"
+                 @onmousemove="HandleContentOnMouseMoveAsync"
+                 @ondblclick="HandleContentOnDoubleClickAsync"
+                 @onwheel="HandleOnWheelAsync"
+                 @ontouchstart="HandleOnTouchStartAsync"
+                 @ontouchmove="HandleOnTouchMoveAsync"
+                 @ontouchend="ClearTouchAsync"
+                 @ontouchcancel="ClearTouchAsync"
+                 @ontouchleave="ClearTouchAsync"
+                 id="@ContentElementId"
+                 style="@TextEditorStyleCssString"
+                 class="bte_text-editor bcrl_unselectable @TextEditorClassCssString"
+                 tabindex="-1">
+
+                <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
+                                                   HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId" />
+
+                @if (textEditorModel is not null &&
+                textEditorViewModel is not null)
                 {
-                    <TextEditorHeader TextEditorViewModelKey="TextEditorViewModelKey"
-                                      HeaderButtonKinds="HeaderButtonKinds"/>
-                }
+                    @*
+                The CascadingValue for textEditorModel and textEditorViewModel need to be here.
+                If outside the if not null checks they can cascade a null value to a component which expects a non null.
+                *@
+                    <CascadingValue Value="textEditorModel">
+                        <CascadingValue Value="textEditorViewModel">
+                            <GutterSection />
 
-                <div @ref="_textEditorDisplayElementReference"
-                     @onclick="FocusTextEditorAsync"
-                     @onkeydown="HandleOnKeyDownAsync"
-                     @onkeydown:preventDefault="true"
-                     @oncontextmenu="HandleOnContextMenuAsync"
-                     @oncontextmenu:preventDefault="true"
-                     @onmousedown="HandleContentOnMouseDownAsync"
-                     @onmousemove="HandleContentOnMouseMoveAsync"
-                     @ondblclick="HandleContentOnDoubleClickAsync"
-                     @onwheel="HandleOnWheelAsync"
-                     @ontouchstart="HandleOnTouchStartAsync"
-                     @ontouchmove="HandleOnTouchMoveAsync"
-                     @ontouchend="ClearTouchAsync"
-                     @ontouchcancel="ClearTouchAsync"
-                     @ontouchleave="ClearTouchAsync"
-                     id="@ContentElementId"
-                     style="@TextEditorStyleCssString"
-                     class="bte_text-editor bcrl_unselectable @TextEditorClassCssString"
-                     tabindex="-1">
-                    
-                    <MeasureCharacterWidthAndRowHeight @ref="MeasureCharacterWidthAndRowHeightComponent"
-                                                       HtmlElementId="@MeasureCharacterWidthAndRowHeightElementId"/>
-    
-                    @if (textEditorModel is not null &&
-                         textEditorViewModel is not null)
-                    {
-                        <GutterSection/>
-                        
-                        <BodySection @ref="_bodySection"
+                            <BodySection @ref="_bodySection"
                                      TabIndex="TabIndex"
                                      ContextMenuRenderFragmentOverride="ContextMenuRenderFragmentOverride"
                                      IncludeContextMenuHelperComponent="IncludeContextMenuHelperComponent"
-                                     AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride"/>
-                        
-                        if (textEditorViewModel.DisplayCommandBar)
-                        {
-                            <CommandBarDisplay RestoreFocusToTextEditor="FocusTextEditorAsync"/>
-                        }
-                    }
-                    else
-                    {
-                        if (textEditorModel is null)
-                        {
-                            <div>The @nameof(TextEditorModel) was null</div>
-                        }
-                        else if (textEditorViewModel is null)
-                        {
-                            <div>The @nameof(TextEditorViewModel) was null</div>
-                        }
-                    }
-                </div>
+                                     AutoCompleteMenuRenderFragmentOverride="AutoCompleteMenuRenderFragmentOverride" />
 
-                @if (IncludeFooterHelperComponent &&
-                     textEditorModel is not null &&
-                     textEditorViewModel is not null)
-                {
-                    <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey"/>
+                            @if (textEditorViewModel.DisplayCommandBar)
+                            {
+                                <CommandBarDisplay RestoreFocusToTextEditor="FocusTextEditorAsync" />
+                            }
+                        </CascadingValue>
+                    </CascadingValue>
                 }
-                
+                else
+                {
+                    if (textEditorModel is null)
+                    {
+                        <div>The @nameof(TextEditorModel) was null</div>
+                    }
+                    else if (textEditorViewModel is null)
+                    {
+                        <div>The @nameof(TextEditorViewModel) was null</div>
+                    }
+                }
+            </div>
+
+            @if (IncludeFooterHelperComponent &&
+            textEditorModel is not null &&
+            textEditorViewModel is not null)
+            {
+                @*
+            The CascadingValue for textEditorModel and textEditorViewModel need to be here.
+            If outside the if not null checks they can cascade a null value to a component which expects a non null.
+            *@
+                <CascadingValue Value="textEditorModel">
+                    <CascadingValue Value="textEditorViewModel">
+                        <TextEditorFooter TextEditorViewModelKey="TextEditorViewModelKey" />
+                    </CascadingValue>
                 </CascadingValue>
-            </CascadingValue>
+            }
+
         </CascadingValue>
     </CascadingValue>
 </div>

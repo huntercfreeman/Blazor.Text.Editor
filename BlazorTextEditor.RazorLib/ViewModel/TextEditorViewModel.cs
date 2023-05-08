@@ -19,7 +19,7 @@ public record TextEditorViewModel(
     bool DisplayCommandBar)
 {
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
-    
+
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     public Action<TextEditorModel>? OnSaveRequested { get; init; }
     public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }
@@ -131,10 +131,6 @@ public record TextEditorViewModel(
         ElementMeasurementsInPixels? bodyMeasurementsInPixels,
         CancellationToken cancellationToken)
     {
-        // Blazor WebAssembly as of this comment is single threaded and
-        // the UI freezes without this await Task.Yield
-        await Task.Yield();
-        
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
         var textEditorModel = TextEditorService.ViewModel
@@ -337,12 +333,14 @@ public record TextEditorViewModel(
                 ScrollHeight = totalHeight,
                 MarginScrollHeight = marginScrollHeight
             },
-            localCharacterWidthAndRowHeight);
+            localCharacterWidthAndRowHeight,
+            true);
         
         TextEditorService.ViewModel.With(
                 ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
+                    ShouldMeasureDimensions = false,
                     VirtualizationResult = virtualizationResult,
                     TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                 });

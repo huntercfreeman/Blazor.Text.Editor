@@ -1,4 +1,3 @@
-using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -9,9 +8,7 @@ namespace BlazorTextEditor.RazorLib.Options;
 public partial class InputTextEditorCursorWidth : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorOptionsState> TextEditorOptionsState { get; set; } = null!;
+    private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
@@ -29,7 +26,7 @@ public partial class InputTextEditorCursorWidth : FluxorComponent
     
     private double TextEditorCursorWidth
     {
-        get => TextEditorService.OptionsWrap.Value.Options.CursorWidthInPixels 
+        get => TextEditorOptionsStateWrap.Value.Options.CursorWidthInPixels 
                ?? MINIMUM_CURSOR_SIZE_IN_PIXELS;
         set
         {

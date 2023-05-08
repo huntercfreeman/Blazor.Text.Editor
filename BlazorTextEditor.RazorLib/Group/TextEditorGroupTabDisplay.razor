@@ -1,5 +1,6 @@
 ﻿<button class="bcrl_button bte_text-editor-group-tab bcrl_tab @IsActiveCssClass"
-        @onclick="OnClickSetActiveTextEditorViewModel">
+        @onclick="OnClickSetActiveTextEditorViewModel"
+        @onmousedown="OnMouseDown">
     
     @{
         var textEditorViewModelsCollection = TextEditorViewModelsCollectionWrap.Value;

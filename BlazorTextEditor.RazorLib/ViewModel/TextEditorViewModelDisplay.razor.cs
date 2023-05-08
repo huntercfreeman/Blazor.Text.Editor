@@ -10,7 +10,6 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
-using BlazorTextEditor.RazorLib.Html;
 using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Model;
@@ -21,6 +20,7 @@ using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using BlazorTextEditor.RazorLib.Measurement;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
 
@@ -94,6 +94,12 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     
     private readonly IThrottle<byte> _globalOptionsWrapOnStateChangedThrottle = new Throttle<byte>(
         TimeSpan.FromMilliseconds(100));
+    
+    private readonly IThrottle<byte> _calculateVirtualizationResultAsyncThrottle = new Throttle<byte>(
+        TimeSpan.FromMilliseconds(75));
+    
+    private readonly IThrottle<byte> _shouldMeasureDimensionsThrottle = new Throttle<byte>(
+        TimeSpan.FromMilliseconds(80));
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -123,6 +129,9 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
 
+    private int _renderCounter = 1;
+    private readonly List<TextEditorStateChangedKey> _textEditorStateChangedKeys = new();
+
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
     private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent { get; set; }
     
@@ -141,18 +150,29 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     {
         var safeTextEditorViewModel = MutableRefViewModel;
 
-        ValidateFontSize();
-        
         if (safeTextEditorViewModel is not null &&
             _previousTextEditorViewModelKey != safeTextEditorViewModel.ViewModelKey)
         {
             _previousTextEditorViewModelKey = safeTextEditorViewModel.ViewModelKey;
 
+            _textEditorStateChangedKeys.Clear();
+
             safeTextEditorViewModel.PrimaryCursor.ShouldRevealCursor = true;
-            
-            await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
-                null, 
-                CancellationToken.None);
+
+            if (!safeTextEditorViewModel.ShouldMeasureDimensions)
+            {
+                var calculateVirtualizationEvent =
+                    await _calculateVirtualizationResultAsyncThrottle.FireAsync(
+                        0,
+                        CancellationToken.None);
+
+                if (!calculateVirtualizationEvent.isCancellationRequested)
+                {
+                    await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
+                        null,
+                        CancellationToken.None);
+                }
+            }
         }
 
         await base.OnParametersSetAsync();
@@ -169,6 +189,8 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _renderCounter++;
+
         if (firstRender)
         {
             await JsRuntime.InvokeVoidAsync(
@@ -180,36 +202,55 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         if (textEditorViewModel is not null)
         {
+            _textEditorStateChangedKeys.Add(
+                textEditorViewModel.TextEditorStateChangedKey);
+
             if (textEditorViewModel.ShouldMeasureDimensions)
             {
-                var characterWidthAndRowHeight = await JsRuntime
+                var shouldMeasureDimensionsEvent =
+                    await _shouldMeasureDimensionsThrottle.FireAsync(
+                        0,
+                        CancellationToken.None);
+
+                if (!shouldMeasureDimensionsEvent.isCancellationRequested)
+                {
+                    var characterWidthAndRowHeight = await JsRuntime
                     .InvokeAsync<CharacterWidthAndRowHeight>(
                         "blazorTextEditor.measureCharacterWidthAndRowHeight",
                         MeasureCharacterWidthAndRowHeightElementId,
                         MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
-            
-                // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
-                TextEditorService.ViewModel.With(
-                    textEditorViewModel.ViewModelKey,
-                    previousViewModel => previousViewModel with
-                    {
-                        ShouldMeasureDimensions = false,
-                        VirtualizationResult = previousViewModel.VirtualizationResult with
+
+                    // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
+                    TextEditorService.ViewModel.With(
+                        textEditorViewModel.ViewModelKey,
+                        previousViewModel => previousViewModel with
                         {
-                            CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                        },
-                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                    });
+                            ShouldMeasureDimensions = false,
+                            VirtualizationResult = previousViewModel.VirtualizationResult with
+                            {
+                                CharacterWidthAndRowHeight = characterWidthAndRowHeight,
+                                HasValidVirtualizationResult = false
+                            },
+                            TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                        });
 
-                // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
-                // thus the local variable must be updated accordingly.
-                textEditorViewModel = MutableRefViewModel;
+                    textEditorViewModel = TextEditorService.ViewModel.FindOrDefault(
+                        textEditorViewModel.ViewModelKey);
 
-                if (textEditorViewModel is not null)
-                {
-                    await textEditorViewModel.CalculateVirtualizationResultAsync(
-                        null,
-                        CancellationToken.None);
+                    if (textEditorViewModel is not null)
+                    {
+                        var calculateVirtualizationEvent =
+                            await _calculateVirtualizationResultAsyncThrottle.FireAsync(
+                                0,
+                                CancellationToken.None);
+
+                        if (!calculateVirtualizationEvent.isCancellationRequested)
+                        {
+                            await textEditorViewModel.CalculateVirtualizationResultAsync(
+                                null,
+                                CancellationToken.None);
+                        }
+                    }
                 }
             }
             else if (textEditorViewModel.ShouldSetFocusAfterNextRender)
@@ -230,11 +271,13 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         if (viewModel is not null)
         {
             _textEditorModelChangedCancellationTokenSource.Cancel();
-            _textEditorModelChangedCancellationTokenSource = new CancellationTokenSource();
-            
+            _textEditorModelChangedCancellationTokenSource = new();
+
+            var cancellationToken = _textEditorModelChangedCancellationTokenSource.Token;
+
             await viewModel.CalculateVirtualizationResultAsync(
                 viewModel.VirtualizationResult.ElementMeasurementsInPixels,
-                _textEditorModelChangedCancellationTokenSource.Token);
+                cancellationToken);
         }
     }
     
@@ -270,10 +313,14 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
         var viewModel = MutableRefViewModel;
+        
+        var viewModelKey = viewModel?.ViewModelKey ?? TextEditorViewModelKey.Empty;
+        
         var viewModelTextEditorStateChangedKey = viewModel?.TextEditorStateChangedKey ??
                                                  TextEditorStateChangedKey.Empty;
         
-        if (_previousTextEditorStateChangedKey != viewModelTextEditorStateChangedKey)
+        if (_previousTextEditorViewModelKey == viewModelKey &&
+            _previousTextEditorStateChangedKey != viewModelTextEditorStateChangedKey)
         {
             _previousTextEditorStateChangedKey = viewModelTextEditorStateChangedKey;
 
@@ -948,8 +995,6 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         await viewModel.MutateScrollHorizontalPositionByPixelsAsync(diffX);
         await viewModel.MutateScrollVerticalPositionByPixelsAsync(diffY);
-
-        await Task.Yield();
 
         _previousTouchEventArgs = touchEventArgs;
     }

@@ -1,6 +1,4 @@
-﻿using BlazorTextEditor.RazorLib;
-using BlazorTextEditor.RazorLib.Row;
-using Fluxor;
+﻿using BlazorTextEditor.RazorLib.Row;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;

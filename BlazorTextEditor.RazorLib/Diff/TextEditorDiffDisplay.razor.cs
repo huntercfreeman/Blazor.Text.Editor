@@ -1,8 +1,6 @@
-﻿using BlazorCommon.RazorLib.Store.ApplicationOptions;
-using BlazorTextEditor.RazorLib.Store.Diff;
+﻿using BlazorTextEditor.RazorLib.Store.Diff;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
-using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -13,13 +11,9 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
     [Inject]
     private IState<TextEditorDiffsCollection> TextEditorDiffsCollectionWrap { get; set; } = null!;
     [Inject]
-    private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
-    [Inject]
     private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
