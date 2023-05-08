@@ -12,13 +12,6 @@ namespace BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
 
 public partial class RowSection : ComponentBase
 {
-    [Inject]
-    private ITextEditorService TextEditorService { get; set; } = null!;
-    [Inject]
-    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
-    
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;
     [CascadingParameter]
