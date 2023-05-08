@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Keyboard;
 using BlazorCommon.RazorLib.Menu;
@@ -8,10 +7,8 @@ using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
-using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 

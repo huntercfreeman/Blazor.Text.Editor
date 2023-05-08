@@ -67,10 +67,6 @@ public partial interface ITextEditorService
                 gutterElementId,
                 scrollLeftInPixels,
                 scrollTopInPixels);
-
-            // Blazor WebAssembly as of this comment is single threaded and
-            // the UI freezes without this await Task.Yield
-            await Task.Yield();
         }
 
         public async Task SetGutterScrollTopAsync(
@@ -81,10 +77,6 @@ public partial interface ITextEditorService
                 "blazorTextEditor.setGutterScrollTop",
                 gutterElementId,
                 scrollTopInPixels);
-
-            // Blazor WebAssembly as of this comment is single threaded and
-            // the UI freezes without this await Task.Yield
-            await Task.Yield();
         }
 
         public void Register(
@@ -108,10 +100,6 @@ public partial interface ITextEditorService
                 bodyElementId,
                 gutterElementId,
                 pixels);
-
-            // Blazor WebAssembly as of this comment is single threaded and
-            // the UI freezes without this await Task.Yield
-            await Task.Yield();
         }
 
         public async Task MutateScrollHorizontalPositionAsync(
@@ -124,10 +112,6 @@ public partial interface ITextEditorService
                 bodyElementId,
                 gutterElementId,
                 pixels);
-
-            // Blazor WebAssembly as of this comment is single threaded and
-            // the UI freezes without this await Task.Yield
-            await Task.Yield();
         }
 
         public TextEditorModel? FindBackingModelOrDefault(

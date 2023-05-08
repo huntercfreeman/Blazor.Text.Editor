@@ -1,4 +1,3 @@
-using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;

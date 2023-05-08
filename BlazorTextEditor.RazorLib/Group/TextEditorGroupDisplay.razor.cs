@@ -1,8 +1,6 @@
 ﻿using System.Collections.Immutable;
 using BlazorTextEditor.RazorLib.HelperComponents;
 using BlazorTextEditor.RazorLib.Store.Group;
-using BlazorTextEditor.RazorLib.Store.Model;
-using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 

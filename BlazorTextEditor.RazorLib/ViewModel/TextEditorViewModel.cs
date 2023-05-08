@@ -131,10 +131,6 @@ public record TextEditorViewModel(
         ElementMeasurementsInPixels? bodyMeasurementsInPixels,
         CancellationToken cancellationToken)
     {
-        // Blazor WebAssembly as of this comment is single threaded and
-        // the UI freezes without this await Task.Yield
-        await Task.Yield();
-        
         var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
         
         var textEditorModel = TextEditorService.ViewModel

@@ -10,7 +10,6 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
-using BlazorTextEditor.RazorLib.Html;
 using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Model;
@@ -947,8 +946,6 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         await viewModel.MutateScrollHorizontalPositionByPixelsAsync(diffX);
         await viewModel.MutateScrollVerticalPositionByPixelsAsync(diffY);
-
-        await Task.Yield();
 
         _previousTouchEventArgs = touchEventArgs;
     }

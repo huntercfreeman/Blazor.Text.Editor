@@ -1,8 +1,6 @@
-﻿using BlazorCommon.RazorLib.Store.ApplicationOptions;
-using BlazorTextEditor.RazorLib.Store.Diff;
+﻿using BlazorTextEditor.RazorLib.Store.Diff;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
-using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 

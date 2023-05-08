@@ -1,10 +1,8 @@
 ﻿using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.Cursor;
-using BlazorTextEditor.RazorLib.Html;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
 

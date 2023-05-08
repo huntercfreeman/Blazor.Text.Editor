@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Keyboard;
 using BlazorCommon.RazorLib.Menu;
 using BlazorTextEditor.RazorLib.Autocomplete;
@@ -7,7 +6,6 @@ using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.ViewModel;
-using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 

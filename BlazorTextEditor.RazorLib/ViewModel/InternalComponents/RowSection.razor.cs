@@ -1,11 +1,9 @@
 ﻿using System.Text;
-using BlazorCommon.RazorLib.BackgroundTaskCase;
 using BlazorCommon.RazorLib.Dimensions;
 using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Virtualization;
-using Fluxor;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.ViewModel.InternalComponents;
