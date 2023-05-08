@@ -154,7 +154,11 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             safeTextEditorViewModel.PrimaryCursor.ShouldRevealCursor = true;
 
             if (!safeTextEditorViewModel.ShouldMeasureDimensions)
-                FireAndForgetCalculateVirtualizationResult();
+            {
+                await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
+                    null,
+                    CancellationToken.None);
+            }
         }
 
         await base.OnParametersSetAsync();
@@ -195,26 +199,42 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                         MeasureCharacterWidthAndRowHeightElementId,
                         MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
-                _ = Task.Run(() =>
-                {
-                    // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
-                    TextEditorService.ViewModel.With(
-                        textEditorViewModel.ViewModelKey,
-                        previousViewModel => previousViewModel with
+                // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
+                TextEditorService.ViewModel.With(
+                    textEditorViewModel.ViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        ShouldMeasureDimensions = false,
+                        VirtualizationResult = previousViewModel.VirtualizationResult with
                         {
-                            ShouldMeasureDimensions = false,
-                            VirtualizationResult = previousViewModel.VirtualizationResult with
-                            {
-                                CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                                HasValidVirtualizationResult = false
-                            },
-                            TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                        });
-                });
+                            CharacterWidthAndRowHeight = characterWidthAndRowHeight,
+                            HasValidVirtualizationResult = false
+                        },
+                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                    });
+
+                //_ = Task.Run(() =>
+                //{
+                //    // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
+                //    TextEditorService.ViewModel.With(
+                //        textEditorViewModel.ViewModelKey,
+                //        previousViewModel => previousViewModel with
+                //        {
+                //            ShouldMeasureDimensions = false,
+                //            VirtualizationResult = previousViewModel.VirtualizationResult with
+                //            {
+                //                CharacterWidthAndRowHeight = characterWidthAndRowHeight,
+                //                HasValidVirtualizationResult = false
+                //            },
+                //            TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                //        });
+                //});
             }
             else if (!textEditorViewModel.VirtualizationResult.HasValidVirtualizationResult)
             {
-                FireAndForgetCalculateVirtualizationResult();
+                await textEditorViewModel.CalculateVirtualizationResultAsync(
+                    null,
+                    CancellationToken.None);
             }
             else if (textEditorViewModel.ShouldSetFocusAfterNextRender)
             {
@@ -294,20 +314,20 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
         }
     }
     
-    private void FireAndForgetCalculateVirtualizationResult()
-    {
-        _ = Task.Run(async () =>
-        {
-            var mostRecentViewModel = MutableRefViewModel;
+    //private void FireAndForgetCalculateVirtualizationResult()
+    //{
+    //    _ = Task.Run(async () =>
+    //    {
+    //        var mostRecentViewModel = MutableRefViewModel;
 
-            if (mostRecentViewModel is not null)
-            {
-                await mostRecentViewModel.CalculateVirtualizationResultAsync(
-                    null,
-                    CancellationToken.None);
-            }
-        });
-    }
+    //        if (mostRecentViewModel is not null)
+    //        {
+    //            await mostRecentViewModel.CalculateVirtualizationResultAsync(
+    //                null,
+    //                CancellationToken.None);
+    //        }
+    //    });
+    //}
     
     private bool ValidateFontSize()
     {
