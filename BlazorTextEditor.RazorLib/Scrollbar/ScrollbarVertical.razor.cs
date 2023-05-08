@@ -34,13 +34,14 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
                 TimeSpan.FromMilliseconds(30));
     
     private bool _thinksLeftMouseButtonIsDown;
-
+    private RelativeCoordinates _relativeCoordinatesOnMouseDown = new(0, 0, 0, 0);
     private readonly Guid _scrollbarGuid = Guid.NewGuid();
     
     private Func<(MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs), Task>? _dragEventHandler;
     private MouseEventArgs? _previousDragMouseEventArgs;
     
     private string ScrollbarElementId => $"bte_{_scrollbarGuid}";
+    private string ScrollbarSliderElementId => $"bte_{_scrollbarGuid}-slider";
     
     protected override void OnInitialized()
     {
@@ -79,12 +80,18 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
         return $"{top} {height}";
     }
 
-    private Task HandleOnMouseDownAsync(MouseEventArgs arg)
+    private async Task HandleOnMouseDownAsync(MouseEventArgs mouseEventArgs)
     {
         _thinksLeftMouseButtonIsDown = true;
-        SubscribeToDragEventForScrolling();
 
-        return Task.CompletedTask;
+        _relativeCoordinatesOnMouseDown = await JsRuntime
+            .InvokeAsync<RelativeCoordinates>(
+                "blazorTextEditor.getRelativePosition",
+                ScrollbarSliderElementId,
+                mouseEventArgs.ClientX,
+                mouseEventArgs.ClientY);
+
+        SubscribeToDragEventForScrolling();
     }
 
     private async void DragStateWrapOnStateChanged(object? sender, EventArgs e)
@@ -137,42 +144,45 @@ public partial class ScrollbarVertical : ComponentBase, IDisposable
         mouseEventArgsTuple = mostRecentEventArgs.tEventArgs.Item1;
     
         // Buttons is a bit flag
-            // '& 1' gets if left mouse button is held
-            if (localThinksLeftMouseButtonIsDown &&
-                (mouseEventArgsTuple.secondMouseEventArgs.Buttons & 1) == 1)
-            {
-                var relativeCoordinates = await JsRuntime
-                    .InvokeAsync<RelativeCoordinates>(
-                        "blazorTextEditor.getRelativePosition",
-                        ScrollbarElementId,
-                        mouseEventArgsTuple.secondMouseEventArgs.ClientX,
-                        mouseEventArgsTuple.secondMouseEventArgs.ClientY);
-             
-                var yPosition = Math.Max(0, relativeCoordinates.RelativeY);
+        // '& 1' gets if left mouse button is held
+        if (localThinksLeftMouseButtonIsDown &&
+            (mouseEventArgsTuple.secondMouseEventArgs.Buttons & 1) == 1)
+        {
+            var relativeCoordinatesOfDragEvent = await JsRuntime
+                .InvokeAsync<RelativeCoordinates>(
+                    "blazorTextEditor.getRelativePosition",
+                    ScrollbarElementId,
+                    mouseEventArgsTuple.secondMouseEventArgs.ClientX,
+                    mouseEventArgsTuple.secondMouseEventArgs.ClientY);
 
-                if (yPosition > TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
-                    yPosition = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
+            var yPosition = relativeCoordinatesOfDragEvent.RelativeY -
+                _relativeCoordinatesOnMouseDown.RelativeY;
+
+            yPosition = Math.Max(0, yPosition);
+
+            if (yPosition > TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height)
+                yPosition = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
                 
-                var scrollbarHeightInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height - 
-                                              ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
+            var scrollbarHeightInPixels = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height - 
+                                            ScrollbarFacts.SCROLLBAR_SIZE_IN_PIXELS;
     
-                var scrollTop = yPosition *
-                                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight /
-                                scrollbarHeightInPixels;
+            var scrollTop = yPosition *
+                            TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight /
+                            scrollbarHeightInPixels;
                 
-                if (scrollTop + TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height > 
-                    TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight)
-                {
-                    scrollTop = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight -
-                                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
-                }
-    
-                await TextEditorViewModel.SetScrollPositionAsync(null, scrollTop);
-            }
-            else
+            if (scrollTop + TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height > 
+                TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight)
             {
-                _thinksLeftMouseButtonIsDown = false;
+                scrollTop = TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollHeight -
+                            TextEditorViewModel.VirtualizationResult.ElementMeasurementsInPixels.Height;
             }
+    
+            await TextEditorViewModel.SetScrollPositionAsync(null, scrollTop);
+        }
+        else
+        {
+            _thinksLeftMouseButtonIsDown = false;
+        }
     }
     
     public void Dispose()
