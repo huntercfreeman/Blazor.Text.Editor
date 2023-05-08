@@ -19,7 +19,7 @@ public record TextEditorViewModel(
     bool DisplayCommandBar)
 {
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
-    
+
     public TextEditorCursor PrimaryCursor { get; } = new(true);
     public Action<TextEditorModel>? OnSaveRequested { get; init; }
     public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }

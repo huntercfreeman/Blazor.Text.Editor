@@ -94,6 +94,12 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     
     private readonly IThrottle<byte> _globalOptionsWrapOnStateChangedThrottle = new Throttle<byte>(
         TimeSpan.FromMilliseconds(100));
+    
+    private readonly IThrottle<byte> _calculateVirtualizationResultAsyncThrottle = new Throttle<byte>(
+        TimeSpan.FromMilliseconds(75));
+    
+    private readonly IThrottle<byte> _shouldMeasureDimensionsThrottle = new Throttle<byte>(
+        TimeSpan.FromMilliseconds(80));
 
     private int? _previousGlobalFontSizeInPixels;
 
@@ -155,9 +161,17 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
             if (!safeTextEditorViewModel.ShouldMeasureDimensions)
             {
-                await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
-                    null,
-                    CancellationToken.None);
+                var calculateVirtualizationEvent =
+                    await _calculateVirtualizationResultAsyncThrottle.FireAsync(
+                        0,
+                        CancellationToken.None);
+
+                if (!calculateVirtualizationEvent.isCancellationRequested)
+                {
+                    await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
+                        null,
+                        CancellationToken.None);
+                }
             }
         }
 
@@ -193,48 +207,51 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
             if (textEditorViewModel.ShouldMeasureDimensions)
             {
-                var characterWidthAndRowHeight = await JsRuntime
+                var shouldMeasureDimensionsEvent =
+                    await _shouldMeasureDimensionsThrottle.FireAsync(
+                        0,
+                        CancellationToken.None);
+
+                if (!shouldMeasureDimensionsEvent.isCancellationRequested)
+                {
+                    var characterWidthAndRowHeight = await JsRuntime
                     .InvokeAsync<CharacterWidthAndRowHeight>(
                         "blazorTextEditor.measureCharacterWidthAndRowHeight",
                         MeasureCharacterWidthAndRowHeightElementId,
                         MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
 
-                // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
-                TextEditorService.ViewModel.With(
-                    textEditorViewModel.ViewModelKey,
-                    previousViewModel => previousViewModel with
-                    {
-                        ShouldMeasureDimensions = false,
-                        VirtualizationResult = previousViewModel.VirtualizationResult with
+                    // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
+                    TextEditorService.ViewModel.With(
+                        textEditorViewModel.ViewModelKey,
+                        previousViewModel => previousViewModel with
                         {
-                            CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                            HasValidVirtualizationResult = false
-                        },
-                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                    });
+                            ShouldMeasureDimensions = false,
+                            VirtualizationResult = previousViewModel.VirtualizationResult with
+                            {
+                                CharacterWidthAndRowHeight = characterWidthAndRowHeight,
+                                HasValidVirtualizationResult = false
+                            },
+                            TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                        });
 
-                //_ = Task.Run(() =>
-                //{
-                //    // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
-                //    TextEditorService.ViewModel.With(
-                //        textEditorViewModel.ViewModelKey,
-                //        previousViewModel => previousViewModel with
-                //        {
-                //            ShouldMeasureDimensions = false,
-                //            VirtualizationResult = previousViewModel.VirtualizationResult with
-                //            {
-                //                CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                //                HasValidVirtualizationResult = false
-                //            },
-                //            TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                //        });
-                //});
-            }
-            else if (!textEditorViewModel.VirtualizationResult.HasValidVirtualizationResult)
-            {
-                await textEditorViewModel.CalculateVirtualizationResultAsync(
-                    null,
-                    CancellationToken.None);
+                    textEditorViewModel = TextEditorService.ViewModel.FindOrDefault(
+                        textEditorViewModel.ViewModelKey);
+
+                    if (textEditorViewModel is not null)
+                    {
+                        var calculateVirtualizationEvent =
+                            await _calculateVirtualizationResultAsyncThrottle.FireAsync(
+                                0,
+                                CancellationToken.None);
+
+                        if (!calculateVirtualizationEvent.isCancellationRequested)
+                        {
+                            await textEditorViewModel.CalculateVirtualizationResultAsync(
+                                null,
+                                CancellationToken.None);
+                        }
+                    }
+                }
             }
             else if (textEditorViewModel.ShouldSetFocusAfterNextRender)
             {
@@ -247,7 +264,7 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     }
     
     // TODO: When the underlying "TextEditorModel" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
-    private void TextEditorModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    private async void TextEditorModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
         var viewModel = MutableRefViewModel;
 
@@ -258,12 +275,9 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
             var cancellationToken = _textEditorModelChangedCancellationTokenSource.Token;
 
-            _ = Task.Run(async () =>
-            {
-                await viewModel.CalculateVirtualizationResultAsync(
-                    viewModel.VirtualizationResult.ElementMeasurementsInPixels,
-                    cancellationToken);
-            });
+            await viewModel.CalculateVirtualizationResultAsync(
+                viewModel.VirtualizationResult.ElementMeasurementsInPixels,
+                cancellationToken);
         }
     }
     
@@ -313,21 +327,6 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
             await InvokeAsync(StateHasChanged);
         }
     }
-    
-    //private void FireAndForgetCalculateVirtualizationResult()
-    //{
-    //    _ = Task.Run(async () =>
-    //    {
-    //        var mostRecentViewModel = MutableRefViewModel;
-
-    //        if (mostRecentViewModel is not null)
-    //        {
-    //            await mostRecentViewModel.CalculateVirtualizationResultAsync(
-    //                null,
-    //                CancellationToken.None);
-    //        }
-    //    });
-    //}
     
     private bool ValidateFontSize()
     {
