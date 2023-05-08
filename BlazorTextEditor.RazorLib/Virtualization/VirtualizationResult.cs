@@ -12,7 +12,8 @@ public record VirtualizationResult<T>(
         VirtualizationBoundary TopVirtualizationBoundary,
         VirtualizationBoundary BottomVirtualizationBoundary,
         ElementMeasurementsInPixels ElementMeasurementsInPixels,
-        CharacterWidthAndRowHeight CharacterWidthAndRowHeight)
+        CharacterWidthAndRowHeight CharacterWidthAndRowHeight,
+        bool HasValidVirtualizationResult)
     : IVirtualizationResultWithoutTypeMask
 {
     public static VirtualizationResult<List<RichCharacter>> GetEmptyRichCharacters() => new VirtualizationResult<List<RichCharacter>>(
@@ -22,5 +23,6 @@ public record VirtualizationResult<T>(
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
         new ElementMeasurementsInPixels(0, 0, 0, 0, 0, 0, 0, CancellationToken.None),
-        new CharacterWidthAndRowHeight(0, 0));
+        new CharacterWidthAndRowHeight(0, 0),
+        false);
 }

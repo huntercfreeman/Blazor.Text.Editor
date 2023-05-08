@@ -20,6 +20,7 @@ using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using BlazorTextEditor.RazorLib.Measurement;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
 
@@ -122,6 +123,9 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private BodySection? _bodySection;
     private CancellationTokenSource _textEditorModelChangedCancellationTokenSource = new();
 
+    private int _renderCounter = 1;
+    private readonly List<TextEditorStateChangedKey> _textEditorStateChangedKeys = new();
+
     private TextEditorCursorDisplay? TextEditorCursorDisplay => _bodySection?.TextEditorCursorDisplay;
     private MeasureCharacterWidthAndRowHeight? MeasureCharacterWidthAndRowHeightComponent { get; set; }
     
@@ -140,18 +144,17 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     {
         var safeTextEditorViewModel = MutableRefViewModel;
 
-        ValidateFontSize();
-        
         if (safeTextEditorViewModel is not null &&
             _previousTextEditorViewModelKey != safeTextEditorViewModel.ViewModelKey)
         {
             _previousTextEditorViewModelKey = safeTextEditorViewModel.ViewModelKey;
 
+            _textEditorStateChangedKeys.Clear();
+
             safeTextEditorViewModel.PrimaryCursor.ShouldRevealCursor = true;
-            
-            await safeTextEditorViewModel.CalculateVirtualizationResultAsync(
-                null, 
-                CancellationToken.None);
+
+            if (!safeTextEditorViewModel.ShouldMeasureDimensions)
+                FireAndForgetCalculateVirtualizationResult();
         }
 
         await base.OnParametersSetAsync();
@@ -168,6 +171,8 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _renderCounter++;
+
         if (firstRender)
         {
             await JsRuntime.InvokeVoidAsync(
@@ -179,36 +184,37 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
         if (textEditorViewModel is not null)
         {
-            if (MutableRefViewModel?.ShouldMeasureDimensions ?? false)
+            _textEditorStateChangedKeys.Add(
+                textEditorViewModel.TextEditorStateChangedKey);
+
+            if (textEditorViewModel.ShouldMeasureDimensions)
             {
                 var characterWidthAndRowHeight = await JsRuntime
                     .InvokeAsync<CharacterWidthAndRowHeight>(
                         "blazorTextEditor.measureCharacterWidthAndRowHeight",
                         MeasureCharacterWidthAndRowHeightElementId,
                         MeasureCharacterWidthAndRowHeightComponent?.CountOfTestCharacters ?? 0);
-            
-                // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
-                TextEditorService.ViewModel.With(
-                    textEditorViewModel.ViewModelKey,
-                    previousViewModel => previousViewModel with
-                    {
-                        ShouldMeasureDimensions = false,
-                        VirtualizationResult = previousViewModel.VirtualizationResult with
-                        {
-                            CharacterWidthAndRowHeight = characterWidthAndRowHeight,
-                        },
-                    });
 
-                // TextEditorService.SetViewModelWith() changed the underlying TextEditorViewModel and
-                // thus the local variable must be updated accordingly.
-                textEditorViewModel = MutableRefViewModel;
-
-                if (textEditorViewModel is not null)
+                _ = Task.Run(() =>
                 {
-                    await textEditorViewModel.CalculateVirtualizationResultAsync(
-                        null,
-                        CancellationToken.None);
-                }
+                    // TODO: This logic is suspect for why the app freezes. It triggers a re-render but then even further down a re-render is triggered once again?
+                    TextEditorService.ViewModel.With(
+                        textEditorViewModel.ViewModelKey,
+                        previousViewModel => previousViewModel with
+                        {
+                            ShouldMeasureDimensions = false,
+                            VirtualizationResult = previousViewModel.VirtualizationResult with
+                            {
+                                CharacterWidthAndRowHeight = characterWidthAndRowHeight,
+                                HasValidVirtualizationResult = false
+                            },
+                            TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                        });
+                });
+            }
+            else if (!textEditorViewModel.VirtualizationResult.HasValidVirtualizationResult)
+            {
+                FireAndForgetCalculateVirtualizationResult();
             }
             else if (textEditorViewModel.ShouldSetFocusAfterNextRender)
             {
@@ -221,18 +227,23 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     }
     
     // TODO: When the underlying "TextEditorModel" of a "TextEditorViewModel" changes. How does one efficiently rerender the "TextEditorViewModelDisplay". The issue I am thinking of is that one would have to recalculate the VirtualizationResult as the underlying contents changed. Is recalculating the VirtualizationResult the only way?
-    private async void TextEditorModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
+    private void TextEditorModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
         var viewModel = MutableRefViewModel;
 
         if (viewModel is not null)
         {
             _textEditorModelChangedCancellationTokenSource.Cancel();
-            _textEditorModelChangedCancellationTokenSource = new CancellationTokenSource();
-            
-            await viewModel.CalculateVirtualizationResultAsync(
-                viewModel.VirtualizationResult.ElementMeasurementsInPixels,
-                _textEditorModelChangedCancellationTokenSource.Token);
+            _textEditorModelChangedCancellationTokenSource = new();
+
+            var cancellationToken = _textEditorModelChangedCancellationTokenSource.Token;
+
+            _ = Task.Run(async () =>
+            {
+                await viewModel.CalculateVirtualizationResultAsync(
+                    viewModel.VirtualizationResult.ElementMeasurementsInPixels,
+                    cancellationToken);
+            });
         }
     }
     
@@ -268,15 +279,34 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     private async void TextEditorViewModelsCollectionWrapOnStateChanged(object? sender, EventArgs e)
     {
         var viewModel = MutableRefViewModel;
+        
+        var viewModelKey = viewModel?.ViewModelKey ?? TextEditorViewModelKey.Empty;
+        
         var viewModelTextEditorStateChangedKey = viewModel?.TextEditorStateChangedKey ??
                                                  TextEditorStateChangedKey.Empty;
         
-        if (_previousTextEditorStateChangedKey != viewModelTextEditorStateChangedKey)
+        if (_previousTextEditorViewModelKey == viewModelKey &&
+            _previousTextEditorStateChangedKey != viewModelTextEditorStateChangedKey)
         {
             _previousTextEditorStateChangedKey = viewModelTextEditorStateChangedKey;
 
             await InvokeAsync(StateHasChanged);
         }
+    }
+    
+    private void FireAndForgetCalculateVirtualizationResult()
+    {
+        _ = Task.Run(async () =>
+        {
+            var mostRecentViewModel = MutableRefViewModel;
+
+            if (mostRecentViewModel is not null)
+            {
+                await mostRecentViewModel.CalculateVirtualizationResultAsync(
+                    null,
+                    CancellationToken.None);
+            }
+        });
     }
     
     private bool ValidateFontSize()

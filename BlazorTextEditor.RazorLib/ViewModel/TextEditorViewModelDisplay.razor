@@ -37,6 +37,30 @@
     }
 }
 
+<div>
+    @* Debugging an infinite render loop *@
+
+    <div>@@_renderCounter:&nbsp;@_renderCounter</div>
+
+    @if (textEditorViewModel is not null)
+    {
+        <div>TextEditorStateChangedKey:&nbsp;@textEditorViewModel.TextEditorStateChangedKey.Guid</div>
+    }
+    else
+    {
+        <div>TextEditorStateChangedKey:&nbsp;null</div>
+    }
+
+    <hr/>
+
+    @*<div>
+        @foreach (var textEditorStateChangedKey in _textEditorStateChangedKeys)
+        {
+            <div>history:&nbsp;@textEditorStateChangedKey.Guid</div>
+        }
+    </div>*@
+</div>
+
 <div style="@fontSizeInPixelsCssStyleString @fontFamilyCssStyleString @GetGlobalHeightInPixelsStyling() @WrapperStyleCssString"
      class="bte_text-editor-css-wrapper @TextEditorService.ThemeCssClassString @WrapperClassCssString">
 

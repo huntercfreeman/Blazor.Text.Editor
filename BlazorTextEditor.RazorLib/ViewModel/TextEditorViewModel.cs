@@ -333,12 +333,14 @@ public record TextEditorViewModel(
                 ScrollHeight = totalHeight,
                 MarginScrollHeight = marginScrollHeight
             },
-            localCharacterWidthAndRowHeight);
+            localCharacterWidthAndRowHeight,
+            true);
         
         TextEditorService.ViewModel.With(
                 ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
+                    ShouldMeasureDimensions = false,
                     VirtualizationResult = virtualizationResult,
                     TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                 });
