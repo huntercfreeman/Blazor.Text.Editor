@@ -10,9 +10,7 @@ namespace BlazorTextEditor.RazorLib.Options;
 public partial class InputTextEditorKeymap : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorOptionsState> TextEditorOptionsState { get; set; } = null!;
+    private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 

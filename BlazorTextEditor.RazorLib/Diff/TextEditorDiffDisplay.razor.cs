@@ -13,13 +13,9 @@ public partial class TextEditorDiffDisplay : ComponentBase, IDisposable
     [Inject]
     private IState<TextEditorDiffsCollection> TextEditorDiffsCollectionWrap { get; set; } = null!;
     [Inject]
-    private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
-    [Inject]
     private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
     [Inject]
     private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 

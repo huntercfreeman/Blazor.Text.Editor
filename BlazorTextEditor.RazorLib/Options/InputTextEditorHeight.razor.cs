@@ -9,9 +9,7 @@ namespace BlazorTextEditor.RazorLib.Options;
 public partial class InputTextEditorHeight : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorOptionsState> TextEditorOptionsState { get; set; } = null!;
+    private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
@@ -31,7 +29,7 @@ public partial class InputTextEditorHeight : FluxorComponent
     
     private int TextEditorHeight
     {
-        get => TextEditorService.OptionsWrap.Value.Options.TextEditorHeightInPixels 
+        get => TextEditorOptionsStateWrap.Value.Options.TextEditorHeightInPixels 
                ?? MINIMUM_HEIGHT_IN_PIXELS;
         set
         {

@@ -11,11 +11,9 @@ namespace BlazorTextEditor.RazorLib.Options;
 public partial class InputTextEditorTheme : FluxorComponent
 {
     [Inject]
+    private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
+    [Inject]
     private IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorOptionsState> TextEditorOptionsState { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 

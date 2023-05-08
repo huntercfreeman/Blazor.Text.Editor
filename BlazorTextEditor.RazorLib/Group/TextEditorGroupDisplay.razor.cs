@@ -13,12 +13,6 @@ public partial class TextEditorGroupDisplay : IDisposable
     [Inject]
     private IState<TextEditorGroupsCollection> TextEditorGroupsCollectionWrap { get; set; } = null!;
     [Inject]
-    private IState<TextEditorViewModelsCollection> TextEditorViewModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
-    [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
     /// <summary>

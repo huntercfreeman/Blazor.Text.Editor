@@ -13,16 +13,12 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTextEditor.RazorLib.HelperComponents;
 
-public partial class TextEditorAutocompleteMenu : ComponentBase // TODO: Is this inheritance needed? It should cascade down from TextEditorViewModelDisplay.razor -> TextEditorView
+public partial class TextEditorAutocompleteMenu : ComponentBase
 {
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
     [Inject]
     private IAutocompleteService AutocompleteService { get; set; } = null!;
-    [Inject]
-    private IBackgroundTaskQueue BackgroundTaskQueue { get; set; } = null!;
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = null!;
 
     [CascadingParameter]
     public TextEditorModel TextEditorModel { get; set; } = null!;

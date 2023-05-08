@@ -9,9 +9,7 @@ namespace BlazorTextEditor.RazorLib.Options;
 public partial class InputTextEditorShowNewLines : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorModelsCollection> TextEditorModelsCollectionWrap { get; set; } = null!;
-    [Inject]
-    private IState<TextEditorOptionsState> TextEditorOptionsState { get; set; } = null!;
+    private IState<TextEditorOptionsState> TextEditorOptionsStateWrap { get; set; } = null!;
     [Inject]
     private ITextEditorService TextEditorService { get; set; } = null!;
 
@@ -27,7 +25,7 @@ public partial class InputTextEditorShowNewLines : FluxorComponent
 
     public bool GlobalShowNewlines
     {
-        get => TextEditorService.OptionsWrap.Value.Options.ShowNewlines ?? default;
+        get => TextEditorOptionsStateWrap.Value.Options.ShowNewlines ?? default;
         set => TextEditorService.Options.SetShowNewlines(value);
     }
 }
