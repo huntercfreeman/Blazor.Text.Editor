@@ -10,5 +10,4 @@ public interface IVirtualizationResultWithoutTypeMask
     public VirtualizationBoundary TopVirtualizationBoundary { get; init; }
     public VirtualizationBoundary BottomVirtualizationBoundary { get; init; }
     public ElementMeasurementsInPixels ElementMeasurementsInPixels { get; init; }
-    public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; init; }
 }
