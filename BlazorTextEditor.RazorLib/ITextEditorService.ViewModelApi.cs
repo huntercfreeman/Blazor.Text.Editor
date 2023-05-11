@@ -29,15 +29,19 @@ public partial interface ITextEditorService
     {
         private readonly ITextEditorService _textEditorService;
         private readonly IDispatcher _dispatcher;
+        private readonly BlazorTextEditorOptions _blazorTextEditorOptions;
+
         // TODO: Perhaps do not reference IJSRuntime but instead wrap it in a 'IUiProvider' or something like that. The 'IUiProvider' would then expose methods that allow the TextEditorViewModel to adjust the scrollbars. 
         private readonly IJSRuntime _jsRuntime;
 
         public ViewModelApi(
             IDispatcher dispatcher,
+            BlazorTextEditorOptions blazorTextEditorOptions,
             IJSRuntime jsRuntime,
             ITextEditorService textEditorService)
         {
             _dispatcher = dispatcher;
+            _blazorTextEditorOptions = blazorTextEditorOptions;
             _jsRuntime = jsRuntime;
             _textEditorService = textEditorService;
         }

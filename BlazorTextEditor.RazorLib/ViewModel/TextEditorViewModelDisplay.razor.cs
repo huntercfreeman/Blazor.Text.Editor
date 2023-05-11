@@ -20,7 +20,6 @@ using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using BlazorTextEditor.RazorLib.Measurement;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
 
@@ -312,13 +311,10 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
     {
         var viewModel = MutableRefViewModel;
         
-        var viewModelKey = viewModel?.ViewModelKey ?? TextEditorViewModelKey.Empty;
-        
         var viewModelTextEditorStateChangedKey = viewModel?.TextEditorStateChangedKey ??
                                                  TextEditorStateChangedKey.Empty;
         
-        if (_previousTextEditorViewModelKey == viewModelKey &&
-            _previousTextEditorStateChangedKey != viewModelTextEditorStateChangedKey)
+        if (_previousTextEditorStateChangedKey != viewModelTextEditorStateChangedKey)
         {
             _previousTextEditorStateChangedKey = viewModelTextEditorStateChangedKey;
 

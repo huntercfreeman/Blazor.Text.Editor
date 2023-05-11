@@ -25,22 +25,26 @@ public partial interface ITextEditorService
         public void SetShowWhitespace(bool showWhitespace);
         /// <summary>This is setting the TextEditor's theme specifically. This is not to be confused with the AppOptions Themes which get applied at an application level. <br /><br /> This allows for a "DarkTheme-Application" that has a "LightTheme-TextEditor"</summary>
         public void SetTheme(ThemeRecord theme);
-        public void ShowSettingsDialog(bool isResizable = false, string? cssClassString = null);
+        public void ShowSettingsDialog(bool? isResizableOverride = null, string? cssClassString = null);
+        public void ShowFindDialog(bool? isResizableOverride = null, string? cssClassString = null);
         public void WriteToStorage();
     }
 
     public class OptionsApi : IOptionsApi
     {
         private readonly IDispatcher _dispatcher;
+        private readonly BlazorTextEditorOptions _blazorTextEditorOptions;
         private readonly IStorageService _storageService;
         private readonly ITextEditorService _textEditorService;
 
         public OptionsApi(
             IDispatcher dispatcher,
+            BlazorTextEditorOptions blazorTextEditorOptions,
             IStorageService storageService,
             ITextEditorService textEditorService)
         {
             _dispatcher = dispatcher;
+            _blazorTextEditorOptions = blazorTextEditorOptions;
             _storageService = storageService;
             _textEditorService = textEditorService;
         }
@@ -54,22 +58,43 @@ public partial interface ITextEditorService
         }
 
         public void ShowSettingsDialog(
-            bool isResizable = false,
+            bool? isResizableOverride = null,
             string? cssClassString = null)
         {
             var settingsDialog = new DialogRecord(
                 DialogKey.NewDialogKey(),
                 "Text Editor Settings",
-                typeof(TextEditorSettings),
+                _blazorTextEditorOptions.SettingsComponentRendererType,
                 null,
                 cssClassString)
             {
-                IsResizable = isResizable
+                IsResizable = isResizableOverride ??
+                    _blazorTextEditorOptions.SettingsDialogComponentIsResizable
             };
 
             _dispatcher.Dispatch(
                 new DialogRecordsCollection.RegisterAction(
                     settingsDialog));
+        }
+
+        public void ShowFindDialog(
+            bool? isResizableOverride = null,
+            string? cssClassString = null)
+        {
+            var findDialog = new DialogRecord(
+                DialogKey.NewDialogKey(),
+                "Text Editor Find",
+                _blazorTextEditorOptions.FindComponentRendererType,
+                null,
+                cssClassString)
+            {
+                IsResizable = isResizableOverride ??
+                    _blazorTextEditorOptions.FindDialogComponentIsResizable
+            };
+
+            _dispatcher.Dispatch(
+                new DialogRecordsCollection.RegisterAction(
+                    findDialog));
         }
 
         public void SetTheme(

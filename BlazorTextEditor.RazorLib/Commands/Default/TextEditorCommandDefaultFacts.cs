@@ -540,9 +540,9 @@ public static class TextEditorCommandDefaultFacts
         "defaults_indent-less");
     
     public static readonly TextEditorCommand ClearTextSelection = new(
-        textEditorCommandParameter =>
+        commandParameter =>
         {
-            textEditorCommandParameter
+            commandParameter
                 .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex = null;
             
             return Task.CompletedTask;
@@ -552,27 +552,27 @@ public static class TextEditorCommandDefaultFacts
         "defaults_clear-text-selection");
     
     public static readonly TextEditorCommand NewLineBelow = new(
-        textEditorCommandParameter =>
+        commandParameter =>
         {
-            textEditorCommandParameter
+            commandParameter
                 .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex = null;
             
-            var lengthOfRow = textEditorCommandParameter.Model.GetLengthOfRow(
-                textEditorCommandParameter
+            var lengthOfRow = commandParameter.Model.GetLengthOfRow(
+                commandParameter
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex);
 
-            var temporaryIndexCoordinates = textEditorCommandParameter
+            var temporaryIndexCoordinates = commandParameter
                 .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
             
-            textEditorCommandParameter
+            commandParameter
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (temporaryIndexCoordinates.rowIndex, lengthOfRow);
             
-            textEditorCommandParameter.TextEditorService.Model.InsertText(
+            commandParameter.TextEditorService.Model.InsertText(
                 new TextEditorModelsCollection.InsertTextAction(
-                    textEditorCommandParameter.Model.ModelKey,
+                    commandParameter.Model.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),
+                        commandParameter.PrimaryCursorSnapshot.UserCursor),
                     "\n",
                     CancellationToken.None));
             
@@ -583,32 +583,32 @@ public static class TextEditorCommandDefaultFacts
         "defaults_new-line-below");
     
     public static readonly TextEditorCommand NewLineAbove = new(
-        textEditorCommandParameter =>
+        commandParameter =>
         {
-            textEditorCommandParameter
+            commandParameter
                 .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex = null;
             
-            var temporaryIndexCoordinates = textEditorCommandParameter
+            var temporaryIndexCoordinates = commandParameter
                 .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
             
-            textEditorCommandParameter
+            commandParameter
                     .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 (temporaryIndexCoordinates.rowIndex, 0);
             
-            textEditorCommandParameter.TextEditorService.Model.InsertText(
+            commandParameter.TextEditorService.Model.InsertText(
                 new TextEditorModelsCollection.InsertTextAction(
-                    textEditorCommandParameter.Model.ModelKey,
+                    commandParameter.Model.ModelKey,
                     TextEditorCursorSnapshot.TakeSnapshots(
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor),
+                        commandParameter.PrimaryCursorSnapshot.UserCursor),
                     "\n",
                     CancellationToken.None));
             
-            temporaryIndexCoordinates = textEditorCommandParameter
+            temporaryIndexCoordinates = commandParameter
                 .PrimaryCursorSnapshot.UserCursor.IndexCoordinates;
 
             if (temporaryIndexCoordinates.rowIndex > 1)
             {
-                textEditorCommandParameter
+                commandParameter
                         .PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                     (temporaryIndexCoordinates.rowIndex - 1, 0);
             }
@@ -620,31 +620,31 @@ public static class TextEditorCommandDefaultFacts
         "defaults_new-line-below");
     
     public static TextEditorCommand GoToMatchingCharacterFactory(bool shouldSelectText) => new(
-        textEditorCommandParameter =>
+        commandParameter =>
         {
-            var cursorPositionIndex = textEditorCommandParameter.Model.GetCursorPositionIndex(
-                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor);
+            var cursorPositionIndex = commandParameter.Model.GetCursorPositionIndex(
+                commandParameter.PrimaryCursorSnapshot.UserCursor);
             
             if (shouldSelectText)
             {
                 if (!TextEditorSelectionHelper.HasSelectedText(
-                        textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.Selection))
+                        commandParameter.PrimaryCursorSnapshot.UserCursor.Selection))
                 {
-                    textEditorCommandParameter
+                    commandParameter
                             .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex =
                         cursorPositionIndex;
                 }
             }
             else
             {
-                textEditorCommandParameter
+                commandParameter
                     .PrimaryCursorSnapshot.UserCursor.Selection.AnchorPositionIndex = null;
             }
             
-            var previousCharacter = textEditorCommandParameter.Model.GetTextAt(
+            var previousCharacter = commandParameter.Model.GetTextAt(
                 cursorPositionIndex - 1);
             
-            var currentCharacter = textEditorCommandParameter.Model.GetTextAt(
+            var currentCharacter = commandParameter.Model.GetTextAt(
                 cursorPositionIndex);
 
             char? characterToMatch = null;
@@ -688,9 +688,9 @@ public static class TextEditorCommandDefaultFacts
                 return Task.CompletedTask;
 
             var temporaryCursor = new TextEditorCursor(
-                (textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex,
-                    textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.columnIndex),
-                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
+                (commandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.rowIndex,
+                    commandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates.columnIndex),
+                commandParameter.PrimaryCursorSnapshot.UserCursor.IsPrimaryCursor);
 
             var unmatchedCharacters =
                 (fallbackToPreviousCharacter &&
@@ -720,13 +720,13 @@ public static class TextEditorCommandDefaultFacts
                 TextEditorCursor.MoveCursor(
                     keyboardEventArgs,
                     temporaryCursor,
-                    textEditorCommandParameter.Model);
+                    commandParameter.Model);
 
-                var temporaryCursorPositionIndex = textEditorCommandParameter.Model
+                var temporaryCursorPositionIndex = commandParameter.Model
                     .GetCursorPositionIndex(
                         temporaryCursor);
                 
-                var characterAt = textEditorCommandParameter.Model.GetTextAt(
+                var characterAt = commandParameter.Model.GetTextAt(
                     temporaryCursorPositionIndex);
                 
                 if (characterAt == match)
@@ -738,18 +738,18 @@ public static class TextEditorCommandDefaultFacts
                     break;
 
                 if (temporaryCursorPositionIndex <= 0 ||
-                    temporaryCursorPositionIndex >= textEditorCommandParameter.Model.DocumentLength)
+                    temporaryCursorPositionIndex >= commandParameter.Model.DocumentLength)
                     break;
             }
             
             if (shouldSelectText)
             {
-                textEditorCommandParameter
+                commandParameter
                         .PrimaryCursorSnapshot.UserCursor.Selection.EndingPositionIndex =
-                    textEditorCommandParameter.Model.GetCursorPositionIndex(temporaryCursor);
+                    commandParameter.Model.GetCursorPositionIndex(temporaryCursor);
             }
  
-            textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+            commandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                 temporaryCursor.IndexCoordinates;
             
             return Task.CompletedTask;
@@ -759,32 +759,32 @@ public static class TextEditorCommandDefaultFacts
         "defaults_go-to-matching-character");
     
     public static readonly TextEditorCommand GoToDefinition = new(
-        textEditorCommandParameter =>
+        commandParameter =>
         {
-            if (textEditorCommandParameter.Model.SemanticModel is null)
+            if (commandParameter.Model.SemanticModel is null)
                 return Task.CompletedTask;
 
-            var positionIndex = textEditorCommandParameter.Model
+            var positionIndex = commandParameter.Model
                 .GetCursorPositionIndex(
-                    textEditorCommandParameter.PrimaryCursorSnapshot.ImmutableCursor);
+                    commandParameter.PrimaryCursorSnapshot.ImmutableCursor);
             
-            var textSpanOfWordAtPositionIndex = textEditorCommandParameter.Model
+            var textSpanOfWordAtPositionIndex = commandParameter.Model
                 .GetWordAt(positionIndex);
             
             if (textSpanOfWordAtPositionIndex is null)
                 return Task.CompletedTask;
 
-            var symbolDefinition = textEditorCommandParameter.Model.SemanticModel
+            var symbolDefinition = commandParameter.Model.SemanticModel
                 .GoToDefinition(
-                    textEditorCommandParameter.Model,
+                    commandParameter.Model,
                     textSpanOfWordAtPositionIndex);
 
             if (symbolDefinition is not null)
             {
-                var rowInformation = textEditorCommandParameter.Model
+                var rowInformation = commandParameter.Model
                     .FindRowInformation(symbolDefinition.PositionIndex);
                 
-                textEditorCommandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
+                commandParameter.PrimaryCursorSnapshot.UserCursor.IndexCoordinates =
                     (rowInformation.rowIndex, 
                         symbolDefinition.PositionIndex - rowInformation.rowStartPositionIndex);
             }
@@ -794,4 +794,15 @@ public static class TextEditorCommandDefaultFacts
         false,
         "GoToDefinition",
         "defaults_go-to-definition");
+    
+    public static readonly TextEditorCommand ShowFindDialog = new(
+        commandParameter =>
+        {
+            commandParameter.TextEditorService.Options.ShowFindDialog();
+
+            return Task.CompletedTask;
+        },
+        false,
+        "OpenFindDialog",
+        "defaults_open-find-dialog");
 }

@@ -2,6 +2,8 @@
 using BlazorCommon.RazorLib;
 using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Autocomplete;
+using BlazorTextEditor.RazorLib.Find;
+using BlazorTextEditor.RazorLib.Options;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorTextEditor.RazorLib;
@@ -27,6 +29,14 @@ public record BlazorTextEditorOptions
     /// </summary>
     public Func<IServiceProvider, IAutocompleteIndexer> AutocompleteIndexerFactory { get; init; } = serviceProvider =>
         new AutocompleteIndexer(serviceProvider.GetRequiredService<ITextEditorService>());
+
+    public Type SettingsComponentRendererType { get; init; } = typeof(TextEditorSettings);
+    public bool SettingsDialogComponentIsResizable { get; init; } = true;
+    
+    public Type FindComponentRendererType { get; init; } = typeof(TextEditorFindDisplay);
+    public bool FindDialogComponentIsResizable { get; init; } = true;
+
+    public ImmutableArray<ITextEditorFindProvider> FindProviders { get; init; } = FindFacts.DefaultFindProviders;
 
     /// <summary>
     /// Provide null if one wishes to not have BlazorCommonServices initialized from within Blazor.Text.Editor
