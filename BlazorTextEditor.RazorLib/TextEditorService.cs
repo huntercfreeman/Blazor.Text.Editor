@@ -3,18 +3,21 @@ using BlazorCommon.RazorLib.Storage;
 using BlazorCommon.RazorLib.Store.ThemeCase;
 using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Store.Diff;
+using BlazorTextEditor.RazorLib.Store.Find;
 using BlazorTextEditor.RazorLib.Store.Group;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using Fluxor;
 using Microsoft.JSInterop;
+using static BlazorTextEditor.RazorLib.ITextEditorService;
 
 namespace BlazorTextEditor.RazorLib;
 
 public class TextEditorService : ITextEditorService
 {
     private readonly IDispatcher _dispatcher;
+    private readonly BlazorTextEditorOptions _blazorTextEditorOptions;
     private readonly IBackgroundTaskQueue _backgroundTaskQueue;
     private readonly IStorageService _storageService;
 
@@ -28,7 +31,9 @@ public class TextEditorService : ITextEditorService
         IState<TextEditorDiffsCollection> diffsCollectionWrap,
         IState<ThemeRecordsCollection> themeRecordsCollectionWrap,
         IState<TextEditorOptionsState> textEditorOptionsWrap,
+        IState<TextEditorFindProvidersCollection> textEditorFindProvidersCollectionWrap,
         IDispatcher dispatcher,
+        BlazorTextEditorOptions blazorTextEditorOptions,
         IBackgroundTaskQueue backgroundTaskQueue,
         IStorageService storageService,
         IJSRuntime jsRuntime)
@@ -39,31 +44,44 @@ public class TextEditorService : ITextEditorService
         DiffsCollectionWrap = diffsCollectionWrap;
         ThemeRecordsCollectionWrap = themeRecordsCollectionWrap;
         OptionsWrap = textEditorOptionsWrap;
+        TextEditorFindProvidersCollectionWrap = textEditorFindProvidersCollectionWrap;
+
         _dispatcher = dispatcher;
+        _blazorTextEditorOptions = blazorTextEditorOptions;
         _backgroundTaskQueue = backgroundTaskQueue;
         _storageService = storageService;
         _jsRuntime = jsRuntime;
 
-        Model = new ITextEditorService.ModelApi(
+        Model = new ModelApi(
             _dispatcher,
+            _blazorTextEditorOptions,
             this);
 
-        ViewModel = new ITextEditorService.ViewModelApi(
+        ViewModel = new ViewModelApi(
             _dispatcher,
+            _blazorTextEditorOptions,
             _jsRuntime,
             this);
 
-        Group = new ITextEditorService.GroupApi(
+        Group = new GroupApi(
             _dispatcher,
+            _blazorTextEditorOptions,
             this);
         
-        Diff = new ITextEditorService.DiffApi(
+        Diff = new DiffApi(
             _dispatcher,
+            _blazorTextEditorOptions,
             this);
 
-        Options = new ITextEditorService.OptionsApi(
+        Options = new OptionsApi(
             _dispatcher,
+            _blazorTextEditorOptions,
             _storageService,
+            this);
+
+        FindProvider = new FindProviderApi(
+            _dispatcher,
+            _blazorTextEditorOptions,
             this);
     }
     
@@ -73,6 +91,8 @@ public class TextEditorService : ITextEditorService
     public IState<TextEditorDiffsCollection> DiffsCollectionWrap { get; }
     public IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; }
     public IState<TextEditorOptionsState> OptionsWrap { get; }
+    public IState<TextEditorFindProvidersCollection> TextEditorFindProvidersCollectionWrap { get; }
+
     public string StorageKey => "bte_text-editor-options";
     
     public string ThemeCssClassString => ThemeRecordsCollectionWrap.Value.ThemeRecordsList
@@ -82,9 +102,10 @@ public class TextEditorService : ITextEditorService
             ?.CssClassString
         ?? ThemeFacts.VisualStudioDarkThemeClone.CssClassString;
 
-    public ITextEditorService.IModelApi Model { get; }
-    public ITextEditorService.IViewModelApi ViewModel { get; }
-    public ITextEditorService.IGroupApi Group { get; }
-    public ITextEditorService.IDiffApi Diff { get; }
-    public ITextEditorService.IOptionsApi Options { get; }
+    public IModelApi Model { get; }
+    public IViewModelApi ViewModel { get; }
+    public IGroupApi Group { get; }
+    public IDiffApi Diff { get; }
+    public IOptionsApi Options { get; }
+    public IFindProviderApi FindProvider { get; }
 }

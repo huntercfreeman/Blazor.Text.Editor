@@ -76,6 +76,15 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
     {
         if (keyboardEventArgs.AltKey)
             return DefaultCtrlAltModifiedKeymap(keyboardEventArgs, hasTextSelection);
+        
+        if (keyboardEventArgs.ShiftKey)
+        {
+            return keyboardEventArgs.Key switch
+            {
+                "F" => TextEditorCommandDefaultFacts.ShowFindDialog,
+                _ => null,
+            };
+        }
 
         var command = keyboardEventArgs.Key switch
         {

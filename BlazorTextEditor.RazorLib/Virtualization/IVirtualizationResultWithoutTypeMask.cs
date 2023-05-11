@@ -1,4 +1,3 @@
-using BlazorCommon.RazorLib.JavaScriptObjects;
 using BlazorTextEditor.RazorLib.Measurement;
 
 namespace BlazorTextEditor.RazorLib.Virtualization;

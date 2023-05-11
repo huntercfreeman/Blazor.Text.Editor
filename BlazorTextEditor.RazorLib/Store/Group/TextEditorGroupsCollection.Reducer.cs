@@ -163,5 +163,27 @@ public partial class TextEditorGroupsCollection
                 GroupsList = nextGroupList
             };
         }
+        
+        [ReducerMethod]
+        public static TextEditorGroupsCollection ReduceDisposeAction(
+            TextEditorGroupsCollection inGroupsCollection,
+            DisposeAction disposeAction)
+        {
+            var existingTextEditorGroup = inGroupsCollection.GroupsList
+                .FirstOrDefault(x =>
+                    x.GroupKey ==
+                    disposeAction.TextEditorGroupKey);
+
+            if (existingTextEditorGroup is null)
+                return inGroupsCollection;
+
+            var nextList = inGroupsCollection.GroupsList
+                .Remove(existingTextEditorGroup);
+
+            return new TextEditorGroupsCollection
+            {
+                GroupsList = nextList
+            };
+        }
     }
 }

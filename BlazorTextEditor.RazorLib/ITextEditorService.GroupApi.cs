@@ -13,6 +13,7 @@ public partial interface ITextEditorService
         public void AddViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
         public TextEditorGroup? FindOrDefault(TextEditorGroupKey textEditorGroupKey);
         public void Register(TextEditorGroupKey textEditorGroupKey);
+        public void Dispose(TextEditorGroupKey textEditorGroupKey);
         public void RemoveViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
         public void SetActiveViewModel(TextEditorGroupKey textEditorGroupKey, TextEditorViewModelKey textEditorViewModelKey);
     }
@@ -21,12 +22,15 @@ public partial interface ITextEditorService
     {
         private readonly ITextEditorService _textEditorService;
         private readonly IDispatcher _dispatcher;
+        private readonly BlazorTextEditorOptions _blazorTextEditorOptions;
 
         public GroupApi(
             IDispatcher dispatcher,
+            BlazorTextEditorOptions blazorTextEditorOptions,
             ITextEditorService textEditorService)
         {
             _dispatcher = dispatcher;
+            _blazorTextEditorOptions = blazorTextEditorOptions;
             _textEditorService = textEditorService;
         }
 
@@ -61,6 +65,14 @@ public partial interface ITextEditorService
             _dispatcher.Dispatch(
                 new TextEditorGroupsCollection.RegisterAction(
                     textEditorGroup));
+        }
+        
+        public void Dispose(
+            TextEditorGroupKey textEditorGroupKey)
+        {
+            _dispatcher.Dispatch(
+                new TextEditorGroupsCollection.DisposeAction(
+                    textEditorGroupKey));
         }
 
         public TextEditorGroup? FindOrDefault(

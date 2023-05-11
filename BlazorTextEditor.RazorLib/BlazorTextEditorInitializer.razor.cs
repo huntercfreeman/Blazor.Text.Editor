@@ -1,5 +1,6 @@
 ﻿using BlazorCommon.RazorLib.Store.ThemeCase;
 using BlazorCommon.RazorLib.Theme;
+using BlazorTextEditor.RazorLib.Store.Find;
 using BlazorTextEditor.RazorLib.Store.Options;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -36,7 +37,14 @@ public partial class BlazorTextEditorInitializer : ComponentBase
                 new TextEditorOptionsState.SetThemeAction(
                     initialThemeRecord));
         }
-        
+
+        foreach (var findProvider in BlazorTextEditorOptions.FindProviders)
+        {
+            Dispatcher.Dispatch(
+                new TextEditorFindProvidersCollection.RegisterAction(
+                    findProvider));
+        }
+
         base.OnInitialized();
     }
 }

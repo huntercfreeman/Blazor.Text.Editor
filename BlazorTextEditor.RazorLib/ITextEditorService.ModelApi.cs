@@ -49,12 +49,15 @@ public partial interface ITextEditorService
     {
         private readonly ITextEditorService _textEditorService;
         private readonly IDispatcher _dispatcher;
+        private readonly BlazorTextEditorOptions _blazorTextEditorOptions;
 
         public ModelApi(
             IDispatcher dispatcher,
+            BlazorTextEditorOptions blazorTextEditorOptions,
             ITextEditorService textEditorService)
         {
             _dispatcher = dispatcher;
+            _blazorTextEditorOptions = blazorTextEditorOptions;
             _textEditorService = textEditorService;
         }
 

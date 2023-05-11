@@ -1,0 +1,15 @@
+﻿@using Fluxor.Blazor.Web.Components;
+@using BlazorTextEditor.RazorLib.Find.InternalComponents
+@inherits FluxorComponent
+
+@{
+    var textEditorFindProvidersCollection = TextEditorFindProvidersCollectionWrap.Value;
+}
+
+<div class="bte_find">
+    @foreach (var findProvider in textEditorFindProvidersCollection.FindProvidersList)
+    {
+        <FindProviderDisplay TextEditorFindProvider="findProvider"
+                         IsActive="findProvider.FindProviderKey == textEditorFindProvidersCollection.ActiveTextEditorFindProviderKey" />
+    }
+</div>

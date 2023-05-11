@@ -20,7 +20,6 @@ using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using BlazorTextEditor.RazorLib.Measurement;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
 

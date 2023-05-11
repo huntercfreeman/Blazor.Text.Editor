@@ -1,6 +1,7 @@
 ﻿using BlazorCommon.RazorLib.Storage;
 using BlazorCommon.RazorLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.Store.Diff;
+using BlazorTextEditor.RazorLib.Store.Find;
 using BlazorTextEditor.RazorLib.Store.Group;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
@@ -20,6 +21,7 @@ public partial interface ITextEditorService
     public IGroupApi Group { get; }
     public IDiffApi Diff { get; }
     public IOptionsApi Options { get; }
+    public IFindProviderApi FindProvider { get; }
 
     public IState<TextEditorModelsCollection> ModelsCollectionWrap { get; }
     public IState<TextEditorViewModelsCollection> ViewModelsCollectionWrap { get; }
@@ -27,4 +29,5 @@ public partial interface ITextEditorService
     public IState<TextEditorDiffsCollection> DiffsCollectionWrap { get; }
     public IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; }
     public IState<TextEditorOptionsState> OptionsWrap { get; }
+    public IState<TextEditorFindProvidersCollection> TextEditorFindProvidersCollectionWrap { get; }
 }
