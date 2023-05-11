@@ -15,14 +15,15 @@
     
     <div class="bte_find-body">
 
-        Search:&nbsp;
+        SearchQuery:&nbsp;
         <input class="bcrl_input"
                @bind="SearchQuery"
                @bind:event="oninput"/>
 
-        <div>
-            SearchQuery:&nbsp;@findProviderState.SearchQuery
-        </div>
+        <button class="bcrl_button"
+                @onclick="() => DoSearchOnClickAsync(findProviderState)">
+            Do Search
+        </button>
 
         @{ var activeFindProvider = findProviderState.ActiveFindProviderOrDefault(); }
 
@@ -33,6 +34,17 @@
         else
         {
             @: @activeFindProvider.DisplayName
+        }
+
+        @if (_isSearching)
+        {
+            <IconLoading/>
+        }
+        else
+        {
+            <div>
+                Not Searching
+            </div>
         }
     </div>
 </div>

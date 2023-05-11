@@ -9,4 +9,11 @@ public class RegisteredViewModelsFindProvider : ITextEditorFindProvider
 
     public Type IconComponentRendererType { get; } = typeof(IconCopy);
     public string DisplayName { get; } = "Registered ViewModels";
+
+    public async Task SearchAsync(
+        string searchQuery,
+        CancellationToken cancellationToken = default)
+    {
+        await Task.Delay(5_000);
+    }
 }

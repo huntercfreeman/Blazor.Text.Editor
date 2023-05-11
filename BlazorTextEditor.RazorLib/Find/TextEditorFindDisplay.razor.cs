@@ -12,6 +12,10 @@ public partial class TextEditorFindDisplay : FluxorComponent
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
 
+    private CancellationTokenSource _doSearchCancellationTokenSource = new();
+    private bool _isSearching;
+    private bool _disposed;
+
     private string SearchQuery
     {
         get => FindProviderState.Value.SearchQuery;
@@ -24,5 +28,50 @@ public partial class TextEditorFindDisplay : FluxorComponent
                         value));
             }
         }
+    }
+
+    private async Task DoSearchOnClickAsync(TextEditorFindProviderState findProviderState)
+    {
+        var activeFindProvider = findProviderState.ActiveFindProviderOrDefault();
+        
+        if (activeFindProvider is null)
+            return;
+
+        try
+        {
+            _isSearching = true;
+            await InvokeAsync(StateHasChanged);
+
+            _doSearchCancellationTokenSource.Cancel();
+            _doSearchCancellationTokenSource = new();
+
+            var cancellationToken = _doSearchCancellationTokenSource.Token;
+
+            await activeFindProvider.SearchAsync(
+                findProviderState.SearchQuery,
+                cancellationToken);
+        }
+        finally
+        {
+            _isSearching = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _doSearchCancellationTokenSource.Cancel();
+        }
+
+        _disposed = true;
+
+        base.Dispose(disposing);
     }
 }

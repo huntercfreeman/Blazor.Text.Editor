@@ -76,15 +76,6 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
     {
         if (keyboardEventArgs.AltKey)
             return DefaultCtrlAltModifiedKeymap(keyboardEventArgs, hasTextSelection);
-        
-        if (keyboardEventArgs.ShiftKey)
-        {
-            return keyboardEventArgs.Key switch
-            {
-                "F" => TextEditorCommandDefaultFacts.ShowFindDialog,
-                _ => null,
-            };
-        }
 
         var command = keyboardEventArgs.Key switch
         {
@@ -98,6 +89,7 @@ public class TextEditorKeymapDefault : ITextEditorKeymap
             "d" => TextEditorCommandDefaultFacts.Duplicate,
             "]" => TextEditorCommandDefaultFacts.GoToMatchingCharacterFactory(false),
             "}" => TextEditorCommandDefaultFacts.GoToMatchingCharacterFactory(true),
+            "F" => TextEditorCommandDefaultFacts.ShowFindDialog,
             KeyboardKeyFacts.MovementKeys.ARROW_DOWN => TextEditorCommandDefaultFacts.ScrollLineDown,
             KeyboardKeyFacts.MovementKeys.ARROW_UP => TextEditorCommandDefaultFacts.ScrollLineUp,
             KeyboardKeyFacts.MetaKeys.PAGE_DOWN => TextEditorCommandDefaultFacts.CursorMovePageBottom,
