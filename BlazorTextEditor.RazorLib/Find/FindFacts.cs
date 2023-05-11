@@ -6,6 +6,7 @@ public static class FindFacts
 {
     public static readonly ImmutableArray<ITextEditorFindProvider> DefaultFindProviders = new ITextEditorFindProvider[]
     {
-        new RegisteredViewModelsFindProvider()
+        new RegisteredViewModelsFindProvider(),
+        new RenderedViewModelsFindProvider(),
     }.ToImmutableArray();
 }

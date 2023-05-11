@@ -1,4 +1,5 @@
-﻿<div class="bte_find-provider @IsActiveCssClassString">
+﻿<button class="bte_find-provider-tab bcrl_button bcrl_tab @IsActiveCssClassString"
+        @onclick="DispatchSetActiveFindProviderActionOnClick">
     <div class="bte_find-provider-icon">
         <DynamicComponent Type="@TextEditorFindProvider.IconComponentRendererType"/>
     </div>
@@ -6,4 +7,4 @@
     <div class="bte_find-provider-title">
         @TextEditorFindProvider.DisplayName
     </div>
-</div>
+</button>

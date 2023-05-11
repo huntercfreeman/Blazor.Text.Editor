@@ -28,4 +28,10 @@ public partial class TextEditorFindProvidersCollection
 
     public ImmutableList<ITextEditorFindProvider> FindProvidersList { get; init; }
     public TextEditorFindProviderKey ActiveTextEditorFindProviderKey { get; init; }
+
+    public ITextEditorFindProvider? ActiveFindProviderOrDefault()
+    {
+        return FindProvidersList.FirstOrDefault(x =>
+            x.FindProviderKey == ActiveTextEditorFindProviderKey);
+    }
 }

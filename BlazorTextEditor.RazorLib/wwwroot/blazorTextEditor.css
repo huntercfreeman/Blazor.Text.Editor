@@ -412,7 +412,11 @@
     width: calc(50% - var(--bte_diff-body-separator-width) / 2);
 }
 
-.bte_find-provider {
+.bte_find-tabs {
+    display: flex;
+}
+
+.bte_find-provider-tab {
     display: flex;
 }
 
