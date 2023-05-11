@@ -27,6 +27,7 @@ public partial class TextEditorViewModelsCollection
                 registerAction.TextEditorService,
                 VirtualizationResult<List<RichCharacter>>.GetEmptyRichCharacters(),
                 true,
+                false,
                 false)
             {
                 TextEditorStateChangedKey = 

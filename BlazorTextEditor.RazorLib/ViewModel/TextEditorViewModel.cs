@@ -18,6 +18,7 @@ public record TextEditorViewModel
         ITextEditorService textEditorService,
         VirtualizationResult<List<RichCharacter>> virtualizationResult,
         bool shouldMeasureDimensions,
+        bool shouldCalculateVirtualizationResult,
         bool displayCommandBar)
     {
         ViewModelKey = viewModelKey;
@@ -25,14 +26,11 @@ public record TextEditorViewModel
         TextEditorService = textEditorService;
         VirtualizationResult = virtualizationResult;
         ShouldMeasureDimensions = shouldMeasureDimensions;
+        ShouldCalculateVirtualizationResult = shouldCalculateVirtualizationResult;
         DisplayCommandBar = displayCommandBar;
     }
 
-    /// <summary>
-    /// If a request to calculate the virtualization result occurs, but the text editor
-    /// is currently being measured. Then, do not let the calculation to occur
-    /// until after the measurements are done.
-    /// </summary>
+    /// <summary>If a request to calculate the virtualization result occurs, but the text editor is currently being measured. Then, do not let the calculation occur until after the measurements are done.</summary>
     public readonly SemaphoreSlim TextEditorViewModelOperationSemaphoreSlim = new(1, 1);
 
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
@@ -50,24 +48,14 @@ public record TextEditorViewModel
     public TextEditorStateChangedKey TextEditorStateChangedKey { get; init; } = 
         TextEditorStateChangedKey.NewTextEditorStateChangedKey();
     
-    /// <summary>
-    /// <see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.
-    /// <br/><br/>
-    /// Therefore the selected text is rendered after anything in the <see cref="FirstPresentationLayer"/>.
-    /// <br/><br/>
-    /// When using the <see cref="FirstPresentationLayer"/> one might find their css overriden by for example, text being selected.
-    /// </summary>
+    /// <summary><see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.<br/><br/>Therefore the selected text background is rendered after anything in the <see cref="FirstPresentationLayer"/>.<br/><br/>When using the <see cref="FirstPresentationLayer"/> one might find their css overriden by for example, text being selected.</summary>
     public ImmutableList<TextEditorPresentationModel> FirstPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
-    /// <summary>
-    /// <see cref="LastPresentationLayer"/> is painted after any internal workings of the text editor.
-    /// <br/><br/>
-    /// Therefore the selected text is rendered before anything in the <see cref="LastPresentationLayer"/>.
-    /// <br/><br/>
-    /// When using the <see cref="LastPresentationLayer"/> one might selected text not being rendered with the text selection css if it were overriden by something in the <see cref="LastPresentationLayer"/>.
-    /// </summary>
+    /// <summary><see cref="LastPresentationLayer"/> is painted after any internal workings of the text editor.<br/><br/>Therefore the selected text background is rendered before anything in the <see cref="LastPresentationLayer"/>.<br/><br/>When using the <see cref="LastPresentationLayer"/> one might find the selected text background not being rendered with the text selection css if it were overriden by something in the <see cref="LastPresentationLayer"/>.</summary>
     public ImmutableList<TextEditorPresentationModel> LastPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
 
     public bool ShouldMeasureDimensions { get; set; } = true;
+    /// <summary>Default value is false because firstly one should measure dimensions, then set this value to true</summary>
+    public bool ShouldCalculateVirtualizationResult { get; set; }
     public string CommandBarValue { get; set; } = string.Empty;
     public bool ShouldSetFocusAfterNextRender { get; set; }
 
@@ -133,9 +121,7 @@ public record TextEditorViewModel
             lines * VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
     }
     
-    /// <summary>
-    /// If a parameter is null the JavaScript will not modify that value
-    /// </summary>
+    /// <summary>If a parameter is null the JavaScript will not modify that value</summary>
     public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
     {
         await TextEditorService.ViewModel.SetScrollPositionAsync(
@@ -364,14 +350,14 @@ public record TextEditorViewModel
                     ScrollHeight = totalHeight,
                     MarginScrollHeight = marginScrollHeight
                 },
-                localCharacterWidthAndRowHeight,
-                true);
+                localCharacterWidthAndRowHeight);
 
             TextEditorService.ViewModel.With(
                     ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
                         ShouldMeasureDimensions = false,
+                        ShouldCalculateVirtualizationResult = false,
                         VirtualizationResult = virtualizationResult,
                         TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
                     });
