@@ -8,5 +8,21 @@ namespace BlazorTextEditor.RazorLib.Find;
 public partial class TextEditorFindDisplay : FluxorComponent
 {
     [Inject]
-    private IState<TextEditorFindProvidersCollection> TextEditorFindProvidersCollectionWrap { get; set; } = null!;
+    private IState<TextEditorFindProviderState> FindProviderState { get; set; } = null!;
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
+
+    private string SearchQuery
+    {
+        get => FindProviderState.Value.SearchQuery;
+        set
+        {
+            if (value is not null)
+            {
+                Dispatcher.Dispatch(
+                    new TextEditorFindProviderState.SetSearchQueryAction(
+                        value));
+            }
+        }
+    }
 }

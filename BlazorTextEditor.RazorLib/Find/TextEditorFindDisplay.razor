@@ -2,19 +2,29 @@
 @using BlazorTextEditor.RazorLib.Find.InternalComponents
 @inherits FluxorComponent
 
-@{ var findProvidersCollection = TextEditorFindProvidersCollectionWrap.Value; }
+@{ var findProviderState = FindProviderState.Value; }
 
 <div class="bte_find">
     <div class="bte_find-tabs">
-        @foreach (var findProvider in findProvidersCollection.FindProvidersList)
+        @foreach (var findProvider in findProviderState.FindProvidersList)
         {
-            <FindProviderTabDisplay TextEditorFindProvider="findProvider"
-                             IsActive="findProvider.FindProviderKey == findProvidersCollection.ActiveTextEditorFindProviderKey" />
+            <FindProviderTabDisplay FindProvider="findProvider"
+                             IsActive="findProvider.FindProviderKey == findProviderState.ActiveFindProviderKey" />
         }
     </div>
     
     <div class="bte_find-body">
-        @{ var activeFindProvider = findProvidersCollection.ActiveFindProviderOrDefault(); }
+
+        Search:&nbsp;
+        <input class="bcrl_input"
+               @bind="SearchQuery"
+               @bind:event="oninput"/>
+
+        <div>
+            SearchQuery:&nbsp;@findProviderState.SearchQuery
+        </div>
+
+        @{ var activeFindProvider = findProviderState.ActiveFindProviderOrDefault(); }
 
         @if (activeFindProvider is null)
         {

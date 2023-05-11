@@ -13,10 +13,10 @@ public partial interface ITextEditorService
 {
     public interface IFindProviderApi
     {
-        public void Register(ITextEditorFindProvider textEditorFindProvider);
-        public void DisposeAction(TextEditorFindProviderKey textEditorFindProviderKey);
-        public void SetActiveFindProvider(TextEditorFindProviderKey textEditorFindProviderKey);
-        public ITextEditorFindProvider? FindOrDefault(TextEditorFindProviderKey textEditorFindProviderKey);
+        public void Register(ITextEditorFindProvider findProvider);
+        public void DisposeAction(TextEditorFindProviderKey findProviderKey);
+        public void SetActiveFindProvider(TextEditorFindProviderKey findProviderKey);
+        public ITextEditorFindProvider? FindOrDefault(TextEditorFindProviderKey findProviderKey);
     }
 
     public class FindProviderApi : IFindProviderApi
@@ -36,34 +36,34 @@ public partial interface ITextEditorService
         }
 
         public void DisposeAction(
-            TextEditorFindProviderKey textEditorFindProviderKey)
+            TextEditorFindProviderKey findProviderKey)
         {
             _dispatcher.Dispatch(
-                new TextEditorFindProvidersCollection.DisposeAction(
-                    textEditorFindProviderKey));
+                new TextEditorFindProviderState.DisposeAction(
+                    findProviderKey));
         }
 
         public ITextEditorFindProvider? FindOrDefault(
-            TextEditorFindProviderKey textEditorFindProviderKey)
+            TextEditorFindProviderKey findProviderKey)
         {
-            return _textEditorService.TextEditorFindProvidersCollectionWrap.Value.FindProvidersList
-                .FirstOrDefault(x => x.FindProviderKey == textEditorFindProviderKey);
+            return _textEditorService.FindProviderState.Value.FindProvidersList
+                .FirstOrDefault(x => x.FindProviderKey == findProviderKey);
         }
 
         public void Register(
-            ITextEditorFindProvider textEditorFindProvider)
+            ITextEditorFindProvider findProvider)
         {
             _dispatcher.Dispatch(
-                new TextEditorFindProvidersCollection.RegisterAction(
-                    textEditorFindProvider));
+                new TextEditorFindProviderState.RegisterAction(
+                    findProvider));
         }
 
         public void SetActiveFindProvider(
-            TextEditorFindProviderKey textEditorFindProviderKey)
+            TextEditorFindProviderKey findProviderKey)
         {
             _dispatcher.Dispatch(
-                new TextEditorFindProvidersCollection.SetActiveFindProviderAction(
-                    textEditorFindProviderKey));
+                new TextEditorFindProviderState.SetActiveFindProviderAction(
+                    findProviderKey));
         }
     }
 }

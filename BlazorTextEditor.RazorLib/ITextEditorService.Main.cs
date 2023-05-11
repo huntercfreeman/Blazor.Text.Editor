@@ -29,5 +29,5 @@ public partial interface ITextEditorService
     public IState<TextEditorDiffsCollection> DiffsCollectionWrap { get; }
     public IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; }
     public IState<TextEditorOptionsState> OptionsWrap { get; }
-    public IState<TextEditorFindProvidersCollection> TextEditorFindProvidersCollectionWrap { get; }
+    public IState<TextEditorFindProviderState> FindProviderState { get; }
 }

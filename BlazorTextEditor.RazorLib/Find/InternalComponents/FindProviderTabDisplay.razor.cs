@@ -10,7 +10,7 @@ public partial class FindProviderTabDisplay : ComponentBase
     private IDispatcher Dispatcher { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public ITextEditorFindProvider TextEditorFindProvider { get; set; } = null!;
+    public ITextEditorFindProvider FindProvider { get; set; } = null!;
     [Parameter, EditorRequired]
     public bool IsActive { get; set; }
 
@@ -21,7 +21,7 @@ public partial class FindProviderTabDisplay : ComponentBase
     private void DispatchSetActiveFindProviderActionOnClick()
     {
         Dispatcher.Dispatch(
-            new TextEditorFindProvidersCollection.SetActiveFindProviderAction(
-                TextEditorFindProvider.FindProviderKey));
+            new TextEditorFindProviderState.SetActiveFindProviderAction(
+                FindProvider.FindProviderKey));
     }
 }

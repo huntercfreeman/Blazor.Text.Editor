@@ -2,7 +2,7 @@
 
 namespace BlazorTextEditor.RazorLib.Store.Find;
 
-public partial class TextEditorFindProvidersCollection
+public partial class TextEditorFindProviderState
 {
     public record RegisterAction(
         ITextEditorFindProvider FindProvider);
@@ -12,4 +12,7 @@ public partial class TextEditorFindProvidersCollection
 
     public record SetActiveFindProviderAction(
         TextEditorFindProviderKey FindProviderKey);
+    
+    public record SetSearchQueryAction(
+        string SearchQuery);
 }

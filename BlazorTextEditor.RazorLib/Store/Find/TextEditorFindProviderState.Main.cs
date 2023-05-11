@@ -5,33 +5,37 @@ using System.Collections.Immutable;
 namespace BlazorTextEditor.RazorLib.Store.Find;
 
 /// <summary>
-/// Keep the <see cref="TextEditorFindProvidersCollection"/> as a class
+/// Keep the <see cref="TextEditorFindProviderState"/> as a class
 /// as to avoid record value comparisons when Fluxor checks
 /// if the <see cref="FeatureStateAttribute"/> has been replaced.
 /// </summary>
 [FeatureState]
-public partial class TextEditorFindProvidersCollection
+public partial class TextEditorFindProviderState
 {
-    private TextEditorFindProvidersCollection()
+    private TextEditorFindProviderState()
     {
         FindProvidersList = ImmutableList<ITextEditorFindProvider>.Empty;
-        ActiveTextEditorFindProviderKey = TextEditorFindProviderKey.Empty;
+        ActiveFindProviderKey = TextEditorFindProviderKey.Empty;
+        SearchQuery = string.Empty;
     }
 
-    public TextEditorFindProvidersCollection(
+    public TextEditorFindProviderState(
         ImmutableList<ITextEditorFindProvider> findProvidersList,
-        TextEditorFindProviderKey activeTextEditorFindProviderKey)
+        TextEditorFindProviderKey activeTextEditorFindProviderKey,
+        string searchQuery)
     {
         FindProvidersList = findProvidersList;
-        ActiveTextEditorFindProviderKey = activeTextEditorFindProviderKey;
+        ActiveFindProviderKey = activeTextEditorFindProviderKey;
+        SearchQuery = searchQuery;
     }
 
     public ImmutableList<ITextEditorFindProvider> FindProvidersList { get; init; }
-    public TextEditorFindProviderKey ActiveTextEditorFindProviderKey { get; init; }
+    public TextEditorFindProviderKey ActiveFindProviderKey { get; init; }
+    public string SearchQuery { get; init; }
 
     public ITextEditorFindProvider? ActiveFindProviderOrDefault()
     {
         return FindProvidersList.FirstOrDefault(x =>
-            x.FindProviderKey == ActiveTextEditorFindProviderKey);
+            x.FindProviderKey == ActiveFindProviderKey);
     }
 }

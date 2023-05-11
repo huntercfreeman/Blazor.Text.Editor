@@ -41,7 +41,7 @@ public partial class BlazorTextEditorInitializer : ComponentBase
         foreach (var findProvider in BlazorTextEditorOptions.FindProviders)
         {
             Dispatcher.Dispatch(
-                new TextEditorFindProvidersCollection.RegisterAction(
+                new TextEditorFindProviderState.RegisterAction(
                     findProvider));
         }
 

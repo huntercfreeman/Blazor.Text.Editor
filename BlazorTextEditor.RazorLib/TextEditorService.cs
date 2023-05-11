@@ -31,7 +31,7 @@ public class TextEditorService : ITextEditorService
         IState<TextEditorDiffsCollection> diffsCollectionWrap,
         IState<ThemeRecordsCollection> themeRecordsCollectionWrap,
         IState<TextEditorOptionsState> textEditorOptionsWrap,
-        IState<TextEditorFindProvidersCollection> textEditorFindProvidersCollectionWrap,
+        IState<TextEditorFindProviderState> textEditorFindProvidersCollectionWrap,
         IDispatcher dispatcher,
         BlazorTextEditorOptions blazorTextEditorOptions,
         IBackgroundTaskQueue backgroundTaskQueue,
@@ -44,7 +44,7 @@ public class TextEditorService : ITextEditorService
         DiffsCollectionWrap = diffsCollectionWrap;
         ThemeRecordsCollectionWrap = themeRecordsCollectionWrap;
         OptionsWrap = textEditorOptionsWrap;
-        TextEditorFindProvidersCollectionWrap = textEditorFindProvidersCollectionWrap;
+        FindProviderState = textEditorFindProvidersCollectionWrap;
 
         _dispatcher = dispatcher;
         _blazorTextEditorOptions = blazorTextEditorOptions;
@@ -91,7 +91,7 @@ public class TextEditorService : ITextEditorService
     public IState<TextEditorDiffsCollection> DiffsCollectionWrap { get; }
     public IState<ThemeRecordsCollection> ThemeRecordsCollectionWrap { get; }
     public IState<TextEditorOptionsState> OptionsWrap { get; }
-    public IState<TextEditorFindProvidersCollection> TextEditorFindProvidersCollectionWrap { get; }
+    public IState<TextEditorFindProviderState> FindProviderState { get; }
 
     public string StorageKey => "bte_text-editor-options";
     
