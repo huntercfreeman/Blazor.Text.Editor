@@ -141,7 +141,7 @@ public static class TextEditorCommandDefaultFacts
                     commandParameter.ViewModel.ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
-                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                        RenderStateKey = RenderStateKey.NewRenderStateKey()
                     });
             }
             
@@ -167,7 +167,7 @@ public static class TextEditorCommandDefaultFacts
                 commandParameter.ViewModel.ViewModelKey,
                 previousViewModel => previousViewModel with
                 {
-                    TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                    RenderStateKey = RenderStateKey.NewRenderStateKey()
                 });
             
             return Task.CompletedTask;
@@ -203,20 +203,8 @@ public static class TextEditorCommandDefaultFacts
     public static readonly TextEditorCommand Remeasure = new(
         commandParameter =>
         {
-            commandParameter.TextEditorService.ViewModel.With(
-                commandParameter.ViewModel.ViewModelKey,
-                previousViewModel => previousViewModel with
-                {
-                    ShouldMeasureDimensions = true,
-                    TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                });
-            
-            commandParameter.TextEditorService.ViewModel.With(
-                commandParameter.ViewModel.ViewModelKey,
-                previousViewModel => previousViewModel with
-                {
-                    TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
-                });
+            commandParameter.TextEditorService.Options.SetRenderStateKey(
+                RenderStateKey.NewRenderStateKey());
             
             return Task.CompletedTask;
         },

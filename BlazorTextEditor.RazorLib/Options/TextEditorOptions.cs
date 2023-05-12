@@ -1,4 +1,5 @@
-﻿using BlazorCommon.RazorLib.Options;
+﻿using BlazorCommon.RazorLib.Misc;
+using BlazorCommon.RazorLib.Options;
 using BlazorTextEditor.RazorLib.Keymap;
 
 namespace BlazorTextEditor.RazorLib.Options;
@@ -10,4 +11,7 @@ public record TextEditorOptions(
     int? TextEditorHeightInPixels,
     double? CursorWidthInPixels,
     KeymapDefinition? KeymapDefinition,
-    bool UseMonospaceOptimizations);
+    bool UseMonospaceOptimizations)
+{
+    public RenderStateKey RenderStateKey { get; init; } = RenderStateKey.NewRenderStateKey();
+}

@@ -1,4 +1,5 @@
 ﻿using BlazorCommon.RazorLib.Dialog;
+using BlazorCommon.RazorLib.Misc;
 using BlazorCommon.RazorLib.Storage;
 using BlazorCommon.RazorLib.Store.DialogCase;
 using BlazorCommon.RazorLib.Store.StorageCase;
@@ -28,6 +29,7 @@ public partial interface ITextEditorService
         public void ShowSettingsDialog(bool? isResizableOverride = null, string? cssClassString = null);
         public void ShowFindDialog(bool? isResizableOverride = null, string? cssClassString = null);
         public void WriteToStorage();
+        public void SetRenderStateKey(RenderStateKey renderStateKey);
     }
 
     public class OptionsApi : IOptionsApi
@@ -242,6 +244,14 @@ public partial interface ITextEditorService
                     cursorWidthInPixels));
 
             WriteToStorage();
+        }
+
+        public void SetRenderStateKey(
+            RenderStateKey renderStateKey)
+        {
+            _dispatcher.Dispatch(
+                new TextEditorOptionsState.SetRenderStateKeyAction(
+                    renderStateKey));
         }
     }
 }

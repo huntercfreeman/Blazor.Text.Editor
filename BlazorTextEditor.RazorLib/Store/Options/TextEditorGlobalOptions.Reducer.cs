@@ -1,4 +1,5 @@
-﻿using Fluxor;
+﻿using BlazorCommon.RazorLib.Misc;
+using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.Options;
 
@@ -18,7 +19,8 @@ public partial class TextEditorOptionsState
                     CommonOptions = inOptionsState.Options.CommonOptions with
                     {
                         FontFamily = setFontFamilyAction.FontFamily
-                    }
+                    },
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }
@@ -35,7 +37,22 @@ public partial class TextEditorOptionsState
                     CommonOptions = inOptionsState.Options.CommonOptions with
                     {
                         FontSizeInPixels = setFontSizeAction.FontSizeInPixels
-                    }
+                    },
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
+                },
+            };
+        }
+        
+        [ReducerMethod]
+        public static TextEditorOptionsState ReduceSetRenderStateKeyAction(
+            TextEditorOptionsState inOptionsState,
+            SetRenderStateKeyAction setRenderStateKeyAction)
+        {
+            return new TextEditorOptionsState
+            {
+                Options = inOptionsState.Options with
+                {
+                    RenderStateKey = setRenderStateKeyAction.RenderStateKey
                 },
             };
         }
@@ -49,7 +66,8 @@ public partial class TextEditorOptionsState
             {
                 Options = inOptionsState.Options with
                 {
-                    CursorWidthInPixels = setCursorWidthAction.CursorWidthInPixels
+                    CursorWidthInPixels = setCursorWidthAction.CursorWidthInPixels,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }
@@ -63,7 +81,8 @@ public partial class TextEditorOptionsState
             {
                 Options = inOptionsState.Options with
                 {
-                    TextEditorHeightInPixels = setHeightAction.HeightInPixels
+                    TextEditorHeightInPixels = setHeightAction.HeightInPixels,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }
@@ -80,7 +99,8 @@ public partial class TextEditorOptionsState
                     CommonOptions = inOptionsState.Options.CommonOptions with
                     {
                         ThemeKey = setThemeAction.Theme.ThemeKey
-                    }
+                    },
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }
@@ -94,7 +114,8 @@ public partial class TextEditorOptionsState
             {
                 Options = inOptionsState.Options with
                 {
-                    KeymapDefinition = setKeymapAction.KeymapDefinition
+                    KeymapDefinition = setKeymapAction.KeymapDefinition,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }
@@ -108,7 +129,8 @@ public partial class TextEditorOptionsState
             {
                 Options = inOptionsState.Options with
                 {
-                    ShowWhitespace = setShowWhitespaceAction.ShowWhitespace
+                    ShowWhitespace = setShowWhitespaceAction.ShowWhitespace,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }
@@ -122,7 +144,8 @@ public partial class TextEditorOptionsState
             {
                 Options = inOptionsState.Options with
                 {
-                    ShowNewlines = setShowNewlinesAction.ShowNewlines
+                    ShowNewlines = setShowNewlinesAction.ShowNewlines,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }
@@ -136,8 +159,8 @@ public partial class TextEditorOptionsState
             {
                 Options = inOptionsState.Options with
                 {
-                    UseMonospaceOptimizations = 
-                        setUseMonospaceOptimizationsAction.UseMonospaceOptimizations
+                    UseMonospaceOptimizations = setUseMonospaceOptimizationsAction.UseMonospaceOptimizations,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey(),
                 },
             };
         }

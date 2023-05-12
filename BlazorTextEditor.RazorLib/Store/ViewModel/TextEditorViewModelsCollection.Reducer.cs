@@ -30,8 +30,7 @@ public partial class TextEditorViewModelsCollection
                 false,
                 false)
             {
-                TextEditorStateChangedKey = 
-                    TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                RenderStateKey = RenderStateKey.NewRenderStateKey()
             };
 
             var nextViewModelsList = inViewModelsCollection.ViewModelsList
