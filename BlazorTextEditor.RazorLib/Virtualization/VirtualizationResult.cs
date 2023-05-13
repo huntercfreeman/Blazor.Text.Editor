@@ -14,8 +14,7 @@ public record VirtualizationResult<T> : IVirtualizationResultWithoutTypeMask
         VirtualizationBoundary topVirtualizationBoundary,
         VirtualizationBoundary bottomVirtualizationBoundary,
         ElementMeasurementsInPixels elementMeasurementsInPixels,
-        CharacterWidthAndRowHeight characterWidthAndRowHeight,
-        bool hasValidVirtualizationResult)
+        CharacterWidthAndRowHeight characterWidthAndRowHeight)
     {
         Entries = entries;
         LeftVirtualizationBoundary = leftVirtualizationBoundary;
@@ -24,7 +23,6 @@ public record VirtualizationResult<T> : IVirtualizationResultWithoutTypeMask
         BottomVirtualizationBoundary = bottomVirtualizationBoundary;
         ElementMeasurementsInPixels = elementMeasurementsInPixels;
         CharacterWidthAndRowHeight = characterWidthAndRowHeight;
-        HasValidVirtualizationResult = hasValidVirtualizationResult;
     }
 
     public static VirtualizationResult<List<RichCharacter>> GetEmptyRichCharacters() => new(
@@ -34,8 +32,7 @@ public record VirtualizationResult<T> : IVirtualizationResultWithoutTypeMask
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
         new ElementMeasurementsInPixels(0, 0, 0, 0, 0, 0, 0, CancellationToken.None),
-        new CharacterWidthAndRowHeight(0, 0),
-        false);
+        new CharacterWidthAndRowHeight(0, 0));
 
     public ImmutableArray<VirtualizationEntry<T>> Entries { get; init; }
     public VirtualizationBoundary LeftVirtualizationBoundary { get; init; }
@@ -43,8 +40,5 @@ public record VirtualizationResult<T> : IVirtualizationResultWithoutTypeMask
     public VirtualizationBoundary TopVirtualizationBoundary { get; init; }
     public VirtualizationBoundary BottomVirtualizationBoundary { get; init; }
     public ElementMeasurementsInPixels ElementMeasurementsInPixels { get; init; }
-
     public CharacterWidthAndRowHeight CharacterWidthAndRowHeight { get; set; }
-    public bool HasValidVirtualizationResult { get; set; }
-    
 }

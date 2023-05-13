@@ -1,4 +1,5 @@
-﻿using BlazorTextEditor.RazorLib.Measurement;
+﻿using BlazorCommon.RazorLib.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Measurement;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
@@ -13,6 +14,7 @@ public partial interface ITextEditorService
     {
         public void Dispose(TextEditorViewModelKey textEditorViewModelKey);
         public Task<ElementMeasurementsInPixels> MeasureElementInPixelsAsync(string elementId);
+        public Task<CharacterWidthAndRowHeight> MeasureCharacterWidthAndRowHeightAsync(string measureCharacterWidthAndRowHeightElementId, int countOfTestCharacters);
         public TextEditorViewModel? FindOrDefault(TextEditorViewModelKey textEditorViewModelKey);
         public Task FocusPrimaryCursorAsync(string primaryCursorContentId);
         public string? GetAllText(TextEditorViewModelKey textEditorViewModelKey);
@@ -165,6 +167,16 @@ public partial interface ITextEditorService
             return await _jsRuntime.InvokeAsync<ElementMeasurementsInPixels>(
                 "blazorTextEditor.getElementMeasurementsInPixelsById",
                 elementId);
+        }
+
+        public async Task<CharacterWidthAndRowHeight> MeasureCharacterWidthAndRowHeightAsync(
+            string measureCharacterWidthAndRowHeightElementId,
+            int countOfTestCharacters)
+        {
+            return await _jsRuntime.InvokeAsync<CharacterWidthAndRowHeight>(
+                    "blazorTextEditor.measureCharacterWidthAndRowHeight",
+                    measureCharacterWidthAndRowHeightElementId,
+                    countOfTestCharacters);
         }
 
         public void Dispose(TextEditorViewModelKey textEditorViewModelKey)

@@ -1,4 +1,5 @@
-﻿using BlazorCommon.RazorLib.Theme;
+﻿using BlazorCommon.RazorLib.Misc;
+using BlazorCommon.RazorLib.Theme;
 using BlazorTextEditor.RazorLib.Keymap;
 
 namespace BlazorTextEditor.RazorLib.Store.Options;
@@ -8,6 +9,7 @@ public partial class TextEditorOptionsState
     public record SetFontFamilyAction(string? FontFamily);
     public record SetFontSizeAction(int FontSizeInPixels);
     public record SetCursorWidthAction(double CursorWidthInPixels);
+    public record SetRenderStateKeyAction(RenderStateKey RenderStateKey);
     public record SetHeightAction(int? HeightInPixels);
     /// <summary>
     /// This is setting the TextEditor's theme specifically.

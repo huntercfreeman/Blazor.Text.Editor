@@ -25,9 +25,9 @@ public partial class BodySection : ComponentBase
     [Parameter, EditorRequired]
     public RenderFragment? AutoCompleteMenuRenderFragmentOverride { get; set; }
     
-    private RowSection? _rowSection;
+    private RowSection? _rowSectionComponent;
 
-    public TextEditorCursorDisplay? TextEditorCursorDisplay => _rowSection?.TextEditorCursorDisplay;
+    public TextEditorCursorDisplay? TextEditorCursorDisplayComponent => _rowSectionComponent?.TextEditorCursorDisplayComponent;
 
     private string GetBodyStyleCss()
     {

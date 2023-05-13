@@ -6,6 +6,11 @@ using BlazorTextEditor.RazorLib.Measurement;
 using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Virtualization;
+using BlazorTextEditor.RazorLib.Options;
+using System.Reflection;
+using BlazorCommon.RazorLib.JavaScriptObjects;
+using Microsoft.JSInterop;
+using BlazorCommon.RazorLib.Reactive;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;
 
@@ -18,24 +23,22 @@ public record TextEditorViewModel
         ITextEditorService textEditorService,
         VirtualizationResult<List<RichCharacter>> virtualizationResult,
         bool shouldMeasureDimensions,
+        bool shouldCalculateVirtualizationResult,
         bool displayCommandBar)
     {
         ViewModelKey = viewModelKey;
         ModelKey = modelKey;
         TextEditorService = textEditorService;
         VirtualizationResult = virtualizationResult;
-        ShouldMeasureDimensions = shouldMeasureDimensions;
         DisplayCommandBar = displayCommandBar;
     }
 
-    /// <summary>
-    /// If a request to calculate the virtualization result occurs, but the text editor
-    /// is currently being measured. Then, do not let the calculation to occur
-    /// until after the measurements are done.
-    /// </summary>
-    public readonly SemaphoreSlim TextEditorViewModelOperationSemaphoreSlim = new(1, 1);
+    /// <summary>If a request to calculate the virtualization result occurs, but the text editor is currently being measured. Then, do not let the calculation occur until after the measurements are done.</summary>
+    private readonly SemaphoreSlim GeneralOperationSemaphoreSlim = new(1, 1);
 
     private ElementMeasurementsInPixels _mostRecentBodyMeasurementsInPixels = new(0, 0, 0, 0, 0, 0, 0, CancellationToken.None);
+
+    private readonly IThrottle<byte> _generalOperationThrottle = new Throttle<byte>(TimeSpan.FromMilliseconds(300));
 
     public TextEditorCursor PrimaryCursor { get; } = new(true);
 
@@ -45,36 +48,25 @@ public record TextEditorViewModel
     public VirtualizationResult<List<RichCharacter>> VirtualizationResult { get; init; }
     public bool DisplayCommandBar { get; init; }
     public Action<TextEditorModel>? OnSaveRequested { get; init; }
-    public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }
-    
-    public TextEditorStateChangedKey TextEditorStateChangedKey { get; init; } = 
-        TextEditorStateChangedKey.NewTextEditorStateChangedKey();
-    
-    /// <summary>
-    /// <see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.
-    /// <br/><br/>
-    /// Therefore the selected text is rendered after anything in the <see cref="FirstPresentationLayer"/>.
-    /// <br/><br/>
-    /// When using the <see cref="FirstPresentationLayer"/> one might find their css overriden by for example, text being selected.
-    /// </summary>
+    public Func<TextEditorModel, string>? GetTabDisplayNameFunc { get; init; }    
+    /// <summary><see cref="FirstPresentationLayer"/> is painted prior to any internal workings of the text editor.<br/><br/>Therefore the selected text background is rendered after anything in the <see cref="FirstPresentationLayer"/>.<br/><br/>When using the <see cref="FirstPresentationLayer"/> one might find their css overriden by for example, text being selected.</summary>
     public ImmutableList<TextEditorPresentationModel> FirstPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
-    /// <summary>
-    /// <see cref="LastPresentationLayer"/> is painted after any internal workings of the text editor.
-    /// <br/><br/>
-    /// Therefore the selected text is rendered before anything in the <see cref="LastPresentationLayer"/>.
-    /// <br/><br/>
-    /// When using the <see cref="LastPresentationLayer"/> one might selected text not being rendered with the text selection css if it were overriden by something in the <see cref="LastPresentationLayer"/>.
-    /// </summary>
+    /// <summary><see cref="LastPresentationLayer"/> is painted after any internal workings of the text editor.<br/><br/>Therefore the selected text background is rendered before anything in the <see cref="LastPresentationLayer"/>.<br/><br/>When using the <see cref="LastPresentationLayer"/> one might find the selected text background not being rendered with the text selection css if it were overriden by something in the <see cref="LastPresentationLayer"/>.</summary>
     public ImmutableList<TextEditorPresentationModel> LastPresentationLayer { get; init; } = ImmutableList<TextEditorPresentationModel>.Empty;
 
-    public bool ShouldMeasureDimensions { get; set; } = true;
+    /// <summary>If the <see cref="RenderStateKey"/> value changes, then the <see cref="TextEditorViewModel"/> needs to be re-rendered.</summary>
+    public RenderStateKey RenderStateKey { get; set; } = RenderStateKey.Empty;
+    /// <summary>If the <see cref="ModelRenderStateKey"/> value changes, then the <see cref="TextEditorViewModel"/> needs to have its <see cref="VirtualizationResult{T}"/> re-calculated.<br/><br/>The value is mutated in the Blazor 'OnAfterRender(...)' lifecycle method.</summary>
+    public RenderStateKey ModelRenderStateKey { get; set; } = RenderStateKey.Empty;
+    /// <summary>If the <see cref="OptionsRenderStateKey"/> value changes, then the <see cref="TextEditorViewModel"/> needs to be re-measured.<br/><br/>The value is mutated in the Blazor 'OnAfterRender(...)' lifecycle method.</summary>
+    public RenderStateKey OptionsRenderStateKey { get; set; } = RenderStateKey.Empty;
     public string CommandBarValue { get; set; } = string.Empty;
     public bool ShouldSetFocusAfterNextRender { get; set; }
 
     public string BodyElementId => $"bte_text-editor-content_{ViewModelKey.Guid}";
     public string PrimaryCursorContentId => $"bte_text-editor-content_{ViewModelKey.Guid}_primary-cursor";
     public string GutterElementId => $"bte_text-editor-gutter_{ViewModelKey.Guid}";
-    
+
     public void CursorMovePageTop()
     {
         var localMostRecentlyRenderedVirtualizationResult = VirtualizationResult;
@@ -133,9 +125,7 @@ public record TextEditorViewModel
             lines * VirtualizationResult.CharacterWidthAndRowHeight.RowHeightInPixels);
     }
     
-    /// <summary>
-    /// If a parameter is null the JavaScript will not modify that value
-    /// </summary>
+    /// <summary>If a parameter is null the JavaScript will not modify that value</summary>
     public async Task SetScrollPositionAsync(double? scrollLeft, double? scrollTop)
     {
         await TextEditorService.ViewModel.SetScrollPositionAsync(
@@ -150,22 +140,74 @@ public record TextEditorViewModel
         await TextEditorService.ViewModel.FocusPrimaryCursorAsync(
             PrimaryCursorContentId);
     }
-    
-    public async Task CalculateVirtualizationResultAsync(
-        ElementMeasurementsInPixels? bodyMeasurementsInPixels,
-        CancellationToken cancellationToken)
+
+    public async Task RemeasureAsync(
+        TextEditorOptions options,
+        string measureCharacterWidthAndRowHeightElementId,
+        int countOfTestCharacters)
     {
+        var throttledRemeasureEvent =
+            await _generalOperationThrottle.FireAsync(
+                0,
+                CancellationToken.None);
+
+        if (throttledRemeasureEvent.isCancellationRequested)
+            return;
+
         try
         {
-            await TextEditorViewModelOperationSemaphoreSlim.WaitAsync();
+            await GeneralOperationSemaphoreSlim.WaitAsync();
+
+            var characterWidthAndRowHeight = await TextEditorService.ViewModel.MeasureCharacterWidthAndRowHeightAsync(
+                measureCharacterWidthAndRowHeightElementId,
+                countOfTestCharacters);
+
+            VirtualizationResult.CharacterWidthAndRowHeight = characterWidthAndRowHeight;
+
+            TextEditorService.ViewModel.With(
+                    ViewModelKey,
+                    previousViewModel => previousViewModel with
+                    {
+                        OptionsRenderStateKey = options.RenderStateKey,
+                        ModelRenderStateKey = RenderStateKey.Empty,
+                        VirtualizationResult = previousViewModel.VirtualizationResult with
+                        {
+                            CharacterWidthAndRowHeight = characterWidthAndRowHeight
+                        },
+                        RenderStateKey = RenderStateKey.NewRenderStateKey()
+                    });
+        }
+        finally
+        {
+            GeneralOperationSemaphoreSlim.Release();
+        }
+    }
+
+    public async Task CalculateVirtualizationResultAsync(
+        TextEditorModel? model,
+        ElementMeasurementsInPixels? bodyMeasurementsInPixels,
+        bool useThrottling,
+        CancellationToken cancellationToken)
+    {
+        if (useThrottling)
+        {
+            var throttledCalculateVirtualizationResultEvent =
+                await _generalOperationThrottle.FireAsync(
+                    0,
+                    CancellationToken.None);
+
+            if (throttledCalculateVirtualizationResultEvent.isCancellationRequested)
+                return;
+        }
+
+        try
+        {
+            await GeneralOperationSemaphoreSlim.WaitAsync();
 
             if (cancellationToken.IsCancellationRequested)
                 return;
 
             var localCharacterWidthAndRowHeight = VirtualizationResult.CharacterWidthAndRowHeight;
-
-            var textEditorModel = TextEditorService.ViewModel
-                .FindBackingModelOrDefault(ViewModelKey);
 
             if (bodyMeasurementsInPixels is null)
             {
@@ -180,7 +222,7 @@ public record TextEditorViewModel
                 MeasurementsExpiredCancellationToken = cancellationToken
             };
 
-            if (textEditorModel is null ||
+            if (model is null ||
                 bodyMeasurementsInPixels.MeasurementsExpiredCancellationToken.IsCancellationRequested)
             {
                 return;
@@ -205,9 +247,9 @@ public record TextEditorViewModel
 
 
                 if (verticalStartingIndex + verticalTake >
-                    textEditorModel.RowEndingPositions.Length)
+                    model.RowEndingPositions.Length)
                 {
-                    verticalTake = textEditorModel.RowEndingPositions.Length -
+                    verticalTake = model.RowEndingPositions.Length -
                                    verticalStartingIndex;
                 }
 
@@ -222,7 +264,7 @@ public record TextEditorViewModel
                 bodyMeasurementsInPixels.Width /
                 localCharacterWidthAndRowHeight.CharacterWidthInPixels);
 
-            var virtualizedEntries = textEditorModel
+            var virtualizedEntries = model
                 .GetRows(verticalStartingIndex, verticalTake)
                 .Select((row, index) =>
                 {
@@ -240,7 +282,7 @@ public record TextEditorViewModel
                                 ? maxValidColumnIndex
                                 : localHorizontalStartingIndex;
 
-                        var tabsOnSameRowBeforeCursor = textEditorModel
+                        var tabsOnSameRowBeforeCursor = model
                             .GetTabsCountOnSameRowBeforeCursor(
                                 index,
                                 parameterForGetTabsCountOnSameRowBeforeCursor);
@@ -284,11 +326,11 @@ public record TextEditorViewModel
                 }).ToImmutableArray();
 
             var totalWidth =
-                textEditorModel.MostCharactersOnASingleRowTuple.rowLength *
+                model.MostCharactersOnASingleRowTuple.rowLength *
                 localCharacterWidthAndRowHeight.CharacterWidthInPixels;
 
             var totalHeight =
-                textEditorModel.RowEndingPositions.Length *
+                model.RowEndingPositions.Length *
                 localCharacterWidthAndRowHeight.RowHeightInPixels;
 
             // Add vertical margin so the user can scroll beyond the final row of content
@@ -364,21 +406,36 @@ public record TextEditorViewModel
                     ScrollHeight = totalHeight,
                     MarginScrollHeight = marginScrollHeight
                 },
-                localCharacterWidthAndRowHeight,
-                true);
+                localCharacterWidthAndRowHeight);
 
             TextEditorService.ViewModel.With(
                     ViewModelKey,
                     previousViewModel => previousViewModel with
                     {
-                        ShouldMeasureDimensions = false,
+                        ModelRenderStateKey = model.RenderStateKey,
                         VirtualizationResult = virtualizationResult,
-                        TextEditorStateChangedKey = TextEditorStateChangedKey.NewTextEditorStateChangedKey()
+                        RenderStateKey = RenderStateKey.NewRenderStateKey()
                     });
         }
         finally
         {
-            TextEditorViewModelOperationSemaphoreSlim.Release();
+            GeneralOperationSemaphoreSlim.Release();
         }
+    }
+
+    public bool IsDirty(TextEditorOptions? options)
+    {
+        if (options is null)
+            return true;
+
+        return OptionsRenderStateKey != options.RenderStateKey;
+    }
+
+    public bool IsDirty(TextEditorModel? model)
+    {
+        if (model is null)
+            return true;
+
+        return ModelRenderStateKey != model.RenderStateKey;
     }
 }

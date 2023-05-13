@@ -33,7 +33,7 @@ public partial class RowSection : ComponentBase
     [Parameter, EditorRequired]
     public TextEditorCursorSnapshot PrimaryCursorSnapshot { get; set; } = null!;
     
-    public TextEditorCursorDisplay? TextEditorCursorDisplay { get; private set; }
+    public TextEditorCursorDisplay? TextEditorCursorDisplayComponent { get; private set; }
 
     private string GetRowStyleCss(int index, double? virtualizedRowLeftInPixels)
     {
@@ -111,7 +111,9 @@ public partial class RowSection : ComponentBase
             try
             {           
                 await TextEditorViewModel.CalculateVirtualizationResultAsync(
+                    TextEditorModel,
                     null,
+                    false,
                     virtualizationRequest.CancellationToken);
             }
             catch (Exception e)

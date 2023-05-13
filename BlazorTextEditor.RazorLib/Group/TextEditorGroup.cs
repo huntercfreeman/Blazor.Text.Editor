@@ -10,6 +10,6 @@ public record TextEditorGroup(
     TextEditorViewModelKey ActiveViewModelKey,
     ImmutableList<TextEditorViewModelKey> ViewModelKeys)
 {
-    public TextEditorStateChangedKey TextEditorStateChangedKey { get; init; } = 
-        TextEditorStateChangedKey.NewTextEditorStateChangedKey();
+    public RenderStateKey RenderStateKey { get; init; } =
+        RenderStateKey.NewRenderStateKey();
 }

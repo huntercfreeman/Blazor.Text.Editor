@@ -8,5 +8,5 @@ public record TextEditorDiffModel(
     TextEditorViewModelKey BeforeViewModelKey,
     TextEditorViewModelKey AfterViewModelKey)
 {
-    public TextEditorStateChangedKey TextEditorStateChangedKey { get; init; } = TextEditorStateChangedKey.NewTextEditorStateChangedKey();
+    public RenderStateKey RenderStateKey { get; init; } = RenderStateKey.NewRenderStateKey();
 }

@@ -16,15 +16,16 @@ public partial class GutterSection : ComponentBase
     [CascadingParameter]
     public TextEditorViewModel TextEditorViewModel { get; set; } = null!;
 
-    private TextEditorStateChangedKey _previousTextEditorStateChangedKey = TextEditorStateChangedKey.Empty;
+    private RenderStateKey _previousRenderStateKey = RenderStateKey.Empty;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
         var viewModel = TextEditorViewModel;
         
-        if (TextEditorViewModel.TextEditorStateChangedKey != _previousTextEditorStateChangedKey)
+        if (TextEditorViewModel.RenderStateKey != _previousRenderStateKey)
         {
-            _previousTextEditorStateChangedKey = TextEditorViewModel.TextEditorStateChangedKey;
+            _previousRenderStateKey = TextEditorViewModel.RenderStateKey;
+
             TextEditorService.ViewModel.SetGutterScrollTopAsync(
                 viewModel.GutterElementId,
                 viewModel.VirtualizationResult.ElementMeasurementsInPixels.ScrollTop);
