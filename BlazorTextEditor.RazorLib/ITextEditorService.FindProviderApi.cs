@@ -1,11 +1,6 @@
 ﻿using BlazorTextEditor.RazorLib.Find;
-using BlazorTextEditor.RazorLib.Group;
-using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Store.Find;
-using BlazorTextEditor.RazorLib.Store.Group;
-using BlazorTextEditor.RazorLib.ViewModel;
 using Fluxor;
-using System.Collections.Immutable;
 
 namespace BlazorTextEditor.RazorLib;
 

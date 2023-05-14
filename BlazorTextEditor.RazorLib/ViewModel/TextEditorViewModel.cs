@@ -7,9 +7,6 @@ using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Virtualization;
 using BlazorTextEditor.RazorLib.Options;
-using System.Reflection;
-using BlazorCommon.RazorLib.JavaScriptObjects;
-using Microsoft.JSInterop;
 using BlazorCommon.RazorLib.Reactive;
 
 namespace BlazorTextEditor.RazorLib.ViewModel;

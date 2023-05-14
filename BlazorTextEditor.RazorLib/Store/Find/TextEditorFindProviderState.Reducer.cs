@@ -1,10 +1,4 @@
-﻿using BlazorCommon.RazorLib.Misc;
-using BlazorTextEditor.RazorLib.Character;
-using BlazorTextEditor.RazorLib.Find;
-using BlazorTextEditor.RazorLib.Store.ViewModel;
-using BlazorTextEditor.RazorLib.ViewModel;
-using BlazorTextEditor.RazorLib.Virtualization;
-using Fluxor;
+﻿using Fluxor;
 
 namespace BlazorTextEditor.RazorLib.Store.Find;
 

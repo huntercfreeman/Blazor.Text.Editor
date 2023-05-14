@@ -591,7 +591,7 @@
         The colors are custom
         dark themed so the Text Editor has its own theme
     */
-    /* control keywords get color #dcd050 perhaps? */
+    /* control keywords get color #f982be perhaps? */
     --bte_primary-font-color: #D2D2D2;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
     --bte_text-selection-background-color: #1E557D;
@@ -668,7 +668,7 @@
        The colors are custom
        light themed so the Text Editor has its own theme
    */
-    /* control keywords get color #c80a13 perhaps? */
+    /* control keywords get color #ee37df perhaps? */
     --bte_primary-font-color: #0A0A0A;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
