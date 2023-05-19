@@ -276,6 +276,28 @@
     position: absolute;
 }
 
+.bte_semantic-diagnostic-error {
+    background-color: var(--bte_diff-deletion-background-color);
+    position: absolute;
+}
+
+.bte_semantic-diagnostic-hint {
+    background-color: var(--bte_diff-longest-common-subsequence-background-color);
+    position: absolute;
+}
+
+.bte_semantic-diagnostic-suggestion {
+    position: absolute;
+}
+
+.bte_semantic-diagnostic-warning {
+    position: absolute;
+}
+
+.bte_semantic-diagnostic-other {
+    position: absolute;
+}
+
 .bte_newline {
     color: var(--bte_newline-foreground-color);
     background-color: var(--bte_newline-background-color);
