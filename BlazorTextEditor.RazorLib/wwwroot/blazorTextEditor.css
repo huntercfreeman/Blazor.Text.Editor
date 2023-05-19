@@ -277,12 +277,12 @@
 }
 
 .bte_semantic-diagnostic-error {
-    background-color: var(--bte_diff-deletion-background-color);
+    border-bottom: 2px solid var(--bte_semantic-diagnostic-error-background-color);
     position: absolute;
 }
 
 .bte_semantic-diagnostic-hint {
-    background-color: var(--bte_diff-longest-common-subsequence-background-color);
+    border-bottom: 2px solid var(--bte_semantic-diagnostic-hint-background-color);
     position: absolute;
 }
 
@@ -468,6 +468,8 @@
     --bte_diff-insertion-background-color: green;
     --bte_diff-deletion-background-color: blue;
     --bte_diff-modification-background-color: yellow;
+    --bte_semantic-diagnostic-error-background-color: red;
+    --bte_semantic-diagnostic-hint-background-color: purple;
     --bte_body-background-color: #fdfdfd;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;
@@ -485,9 +487,9 @@
     --bte_css-property-value-color: #A31515;
     --bte_css-identifier-color: #ad01d0;
     --bte_attribute-name-color: #009678;
-    --bte_attribute-value-color : #A31515;
-    --bte_json-property-key-color : #ad01d0;
-    --bte_json-property-value-color : #A31515;
+    --bte_attribute-value-color: #A31515;
+    --bte_json-property-key-color: #ad01d0;
+    --bte_json-property-value-color: #A31515;
     --bte_text-editor-gutter-border-color: #28ae0c;
     --bte_text-editor-gutter-background-color: #F8F8EE;
     --bte_secondary-font-color: var(--bte_primary-font-color);
@@ -544,6 +546,8 @@
     --bte_diff-insertion-background-color: green;
     --bte_diff-deletion-background-color: blue;
     --bte_diff-modification-background-color: yellow;
+    --bte_semantic-diagnostic-error-background-color: rgb(214 48 60);
+    --bte_semantic-diagnostic-hint-background-color: #009aab;
     --bte_body-background-color: #1E1E1E;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #977400;
@@ -561,9 +565,9 @@
     --bte_css-property-value-color: #D69D85;
     --bte_css-identifier-color: #30a7e6;
     --bte_attribute-name-color: #b692e2;
-    --bte_attribute-value-color : #D69D85;
-    --bte_json-property-key-color : #b692e2;
-    --bte_json-property-value-color : #D69D85;
+    --bte_attribute-value-color: #D69D85;
+    --bte_json-property-key-color: #b692e2;
+    --bte_json-property-value-color: #D69D85;
     --bte_text-editor-gutter-border-color: #273840;
     --bte_text-editor-gutter-background-color: #1f2229;
     --bte_secondary-font-color: #d1d2ca;
@@ -621,6 +625,8 @@
     --bte_diff-insertion-background-color: green;
     --bte_diff-deletion-background-color: blue;
     --bte_diff-modification-background-color: yellow;
+    --bte_semantic-diagnostic-error-background-color: rgb(214 48 60);
+    --bte_semantic-diagnostic-hint-background-color: #009aab;
     --bte_body-background-color: #1E1E1E;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #977400;
@@ -698,6 +704,8 @@
     --bte_diff-insertion-background-color: green;
     --bte_diff-deletion-background-color: blue;
     --bte_diff-modification-background-color: yellow;
+    --bte_semantic-diagnostic-error-background-color: red;
+    --bte_semantic-diagnostic-hint-background-color: purple;
     --bte_body-background-color: #FCFCFC;
     --bte_text-editor-caret-row-border-color-no-focus-within-editor: var(--bte_text-editor-cursor-foreground-color);
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;
