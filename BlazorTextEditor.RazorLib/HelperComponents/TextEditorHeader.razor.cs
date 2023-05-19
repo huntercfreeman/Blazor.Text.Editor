@@ -231,7 +231,7 @@ public partial class TextEditorHeader : TextEditorView
             return;
 
         if (model.SemanticModel is not null)
-            model.SemanticModel.ManuallyRefreshSemanticModel(model);
+            model.SemanticModel.Parse(model);
 
         var watchWindowObjectWrap = new WatchWindowObjectWrap(
             model,
@@ -258,33 +258,7 @@ public partial class TextEditorHeader : TextEditorView
         DialogService.RegisterDialogRecord(dialogRecord);
     }
     
-    private void ShowSemanticModelDisplayDialogOnClick()
-    {
-        var textEditor = MutableReferenceToModel;
-        
-        if (textEditor is null)
-            return;
-        
-        var dialogRecord = new DialogRecord(
-            DialogKey.NewDialogKey(),
-            $"SemanticModel: {textEditor.ResourceUri}",
-            typeof(TextEditorSemanticModelDisplay),
-            new Dictionary<string, object?>
-            {
-                {
-                    nameof(TextEditorSemanticModelDisplay.TextEditorViewModelKey),
-                    TextEditorViewModelKey
-                }
-            },
-            null)
-        {
-            IsResizable = true
-        };
-        
-        DialogService.RegisterDialogRecord(dialogRecord);
-    }
-    
-    private async Task DoRefreshOnClick(MouseEventArgs arg)
+    private async Task DoRefreshOnClick()
     {
         var textEditor = MutableReferenceToModel;
         var textEditorViewModel = MutableReferenceToViewModel;

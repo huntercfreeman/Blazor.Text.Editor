@@ -12,7 +12,7 @@ public class SemanticModelDefault : ISemanticModel
         return null;
     }
 
-    public void ManuallyRefreshSemanticModel(
+    public void Parse(
         TextEditorModel model)
     {
     }
