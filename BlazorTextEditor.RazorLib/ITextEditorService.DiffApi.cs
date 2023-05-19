@@ -63,8 +63,9 @@ public partial interface ITextEditorService
                     diffKey));
         }
 
-        public TextEditorDiffResult? Calculate(TextEditorDiffKey textEditorDiffKey,
-        CancellationToken cancellationToken)
+        public TextEditorDiffResult? Calculate(
+            TextEditorDiffKey textEditorDiffKey,
+            CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
@@ -114,46 +115,46 @@ public partial interface ITextEditorService
                 diffResult.AfterLongestCommonSubsequenceTextSpans);
 
             return diffResult;
+        }
 
-            void ChangeFirstPresentationLayer(
-                TextEditorViewModelKey viewModelKey,
-                ImmutableList<TextEditorTextSpan> longestCommonSubsequenceTextSpans)
-            {
-                _dispatcher.Dispatch(
-                    new TextEditorViewModelsCollection.SetViewModelWithAction(
-                        viewModelKey,
-                        inViewModel =>
+        private void ChangeFirstPresentationLayer(
+            TextEditorViewModelKey viewModelKey,
+            ImmutableList<TextEditorTextSpan> longestCommonSubsequenceTextSpans)
+        {
+            _dispatcher.Dispatch(
+                new TextEditorViewModelsCollection.SetViewModelWithAction(
+                    viewModelKey,
+                    inViewModel =>
+                    {
+                        var outPresentationLayer = inViewModel.FirstPresentationLayer;
+
+                        var inPresentationModel = outPresentationLayer
+                            .FirstOrDefault(x =>
+                                x.TextEditorPresentationKey == DiffFacts.PresentationKey);
+
+                        if (inPresentationModel is null)
                         {
-                            var outPresentationLayer = inViewModel.FirstPresentationLayer;
+                            inPresentationModel = DiffFacts.EmptyPresentationModel;
 
-                            var inPresentationModel = outPresentationLayer
-                                .FirstOrDefault(x =>
-                                    x.TextEditorPresentationKey == DiffFacts.PresentationKey);
+                            outPresentationLayer = outPresentationLayer.Add(
+                                inPresentationModel);
+                        }
 
-                            if (inPresentationModel is null)
-                            {
-                                inPresentationModel = DiffFacts.EmptyPresentationModel;
+                        var outPresentationModel = inPresentationModel with
+                        {
+                            TextEditorTextSpans = longestCommonSubsequenceTextSpans
+                        };
 
-                                outPresentationLayer = outPresentationLayer.Add(
-                                    inPresentationModel);
-                            }
+                        outPresentationLayer = outPresentationLayer.Replace(
+                            inPresentationModel,
+                            outPresentationModel);
 
-                            var outPresentationModel = inPresentationModel with
-                            {
-                                TextEditorTextSpans = longestCommonSubsequenceTextSpans
-                            };
-
-                            outPresentationLayer = outPresentationLayer.Replace(
-                                inPresentationModel,
-                                outPresentationModel);
-
-                            return inViewModel with
-                            {
-                                FirstPresentationLayer = outPresentationLayer,
-                                RenderStateKey = RenderStateKey.NewRenderStateKey()
-                            };
-                        }));
-            }
+                        return inViewModel with
+                        {
+                            FirstPresentationLayer = outPresentationLayer,
+                            RenderStateKey = RenderStateKey.NewRenderStateKey()
+                        };
+                    }));
         }
     }
 }

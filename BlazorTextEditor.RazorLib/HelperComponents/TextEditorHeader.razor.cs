@@ -1,13 +1,17 @@
 ﻿using System.Collections.Immutable;
+using System.Reflection;
 using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Dialog;
+using BlazorCommon.RazorLib.Misc;
 using BlazorCommon.RazorLib.WatchWindow;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
+using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Semantics;
+using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -231,7 +235,7 @@ public partial class TextEditorHeader : TextEditorView
             return;
 
         if (model.SemanticModel is not null)
-            model.SemanticModel.ManuallyRefreshSemanticModel(model);
+            model.SemanticModel.Parse(model);
 
         var watchWindowObjectWrap = new WatchWindowObjectWrap(
             model,
@@ -256,35 +260,11 @@ public partial class TextEditorHeader : TextEditorView
         };
         
         DialogService.RegisterDialogRecord(dialogRecord);
+
+        ChangeLastPresentationLayer();
     }
     
-    private void ShowSemanticModelDisplayDialogOnClick()
-    {
-        var textEditor = MutableReferenceToModel;
-        
-        if (textEditor is null)
-            return;
-        
-        var dialogRecord = new DialogRecord(
-            DialogKey.NewDialogKey(),
-            $"SemanticModel: {textEditor.ResourceUri}",
-            typeof(TextEditorSemanticModelDisplay),
-            new Dictionary<string, object?>
-            {
-                {
-                    nameof(TextEditorSemanticModelDisplay.TextEditorViewModelKey),
-                    TextEditorViewModelKey
-                }
-            },
-            null)
-        {
-            IsResizable = true
-        };
-        
-        DialogService.RegisterDialogRecord(dialogRecord);
-    }
-    
-    private async Task DoRefreshOnClick(MouseEventArgs arg)
+    private async Task DoRefreshOnClick()
     {
         var textEditor = MutableReferenceToModel;
         var textEditorViewModel = MutableReferenceToViewModel;
@@ -345,5 +325,51 @@ public partial class TextEditorHeader : TextEditorView
         }
         
         return !textEditor.CanRedoEdit();
+    }
+
+    private void ChangeLastPresentationLayer()
+    {
+        var viewModel = MutableReferenceToViewModel;
+
+        if (viewModel is null)
+            return;
+
+        TextEditorService.ViewModel.With(
+            viewModel.ViewModelKey,
+            inViewModel =>
+            {
+                var outPresentationLayer = inViewModel.FirstPresentationLayer;
+
+                var inPresentationModel = outPresentationLayer
+                    .FirstOrDefault(x =>
+                        x.TextEditorPresentationKey == SemanticFacts.PresentationKey);
+
+                if (inPresentationModel is null)
+                {
+                    inPresentationModel = SemanticFacts.EmptyPresentationModel;
+
+                    outPresentationLayer = outPresentationLayer.Add(
+                        inPresentationModel);
+                }
+
+                var model = TextEditorService.ViewModel
+                    .FindBackingModelOrDefault(viewModel.ViewModelKey);
+
+                var outPresentationModel = inPresentationModel with
+                {
+                    TextEditorTextSpans = model?.SemanticModel?.TextEditorTextSpans 
+                        ?? ImmutableList<TextEditorTextSpan>.Empty
+                };
+
+                outPresentationLayer = outPresentationLayer.Replace(
+                    inPresentationModel,
+                    outPresentationModel);
+
+                return inViewModel with
+                {
+                    FirstPresentationLayer = outPresentationLayer,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey()
+                };
+            });
     }
 }

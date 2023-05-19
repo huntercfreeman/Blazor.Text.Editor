@@ -1,19 +1,17 @@
 ﻿using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Model;
+using System.Collections.Immutable;
 
 namespace BlazorTextEditor.RazorLib.Semantics;
 
 public interface ISemanticModel
 {
+    public ImmutableList<TextEditorTextSpan> TextEditorTextSpans { get; }
+
     public SymbolDefinition? GoToDefinition(
         TextEditorModel model,
         TextEditorTextSpan textSpan);
     
-    /// <summary>
-    /// Preferably the SemanticModel will update automatically.
-    /// Early in development though a lot of events are not set-up
-    /// and so this is a helpful method.
-    /// </summary>
-    public void ManuallyRefreshSemanticModel(
+    public void Parse(
         TextEditorModel model);
 }
