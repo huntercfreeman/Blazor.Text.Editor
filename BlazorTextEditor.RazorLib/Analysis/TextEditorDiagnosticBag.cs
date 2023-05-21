@@ -17,7 +17,7 @@ public class TextEditorDiagnosticBag : IEnumerable<TextEditorDiagnostic>
         return GetEnumerator();
     }
 
-    public void Report(DiagnosticLevel diagnosticLevel,
+    public void Report(TextEditorDiagnosticLevel diagnosticLevel,
         string message,
         TextEditorTextSpan textEditorTextSpan)
     {
@@ -31,7 +31,7 @@ public class TextEditorDiagnosticBag : IEnumerable<TextEditorDiagnostic>
     public void ReportEndOfFileUnexpected(TextEditorTextSpan textEditorTextSpan)
     {
         Report(
-            DiagnosticLevel.Error,
+            TextEditorDiagnosticLevel.Error,
             "'End of file' was unexpected.",
             textEditorTextSpan);
     }
@@ -41,7 +41,7 @@ public class TextEditorDiagnosticBag : IEnumerable<TextEditorDiagnostic>
         string unexpectedToken)
     {
         Report(
-            DiagnosticLevel.Error,
+            TextEditorDiagnosticLevel.Error,
             $"Unexpected token: '{unexpectedToken}'",
             textEditorTextSpan);
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using BlazorCommon.RazorLib.Keyboard;
 using BlazorTextEditor.RazorLib.Analysis;
 using BlazorTextEditor.RazorLib.Character;
@@ -7,6 +8,7 @@ using BlazorTextEditor.RazorLib.Decoration;
 using BlazorTextEditor.RazorLib.Editing;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
+using BlazorTextEditor.RazorLib.Semantics;
 using BlazorTextEditor.RazorLib.Store;
 using BlazorTextEditor.RazorLib.Store.Model;
 using Microsoft.AspNetCore.Components.Web;
@@ -380,7 +382,17 @@ public partial class TextEditorModel
 
     public async Task ApplySyntaxHighlightingAsync()
     {
-        var textEditorTextSpans = await Lexer.Lex(GetAllText());
+        var textEditorTextSpans = await Lexer.Lex(
+            GetAllText(),
+            RenderStateKey);
+
+        if (SemanticModel is not null)
+        {
+            SemanticModel.Parse(this);
+
+            textEditorTextSpans = textEditorTextSpans
+                .AddRange(SemanticModel.SymbolTextSpans);
+        }
 
         ApplyDecorationRange(textEditorTextSpans);
     }
@@ -631,7 +643,7 @@ public partial class TextEditorModel
         // TODO: Invoke an event to reapply the CSS classes?
     }
 
-    public void SetLexer(ILexer? lexer)
+    public void SetLexer(ITextEditorLexer? lexer)
     {
         Lexer = lexer ?? new TextEditorLexerDefault();
 

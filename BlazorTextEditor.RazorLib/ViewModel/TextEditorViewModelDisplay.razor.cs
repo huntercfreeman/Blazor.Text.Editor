@@ -13,8 +13,10 @@ using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Commands.Default;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.HelperComponents;
+using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Options;
+using BlazorTextEditor.RazorLib.Semantics;
 using BlazorTextEditor.RazorLib.Store.Model;
 using BlazorTextEditor.RazorLib.Store.Options;
 using BlazorTextEditor.RazorLib.Store.ViewModel;
@@ -838,6 +840,8 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
 
                 await textEditor.ApplySyntaxHighlightingAsync();
 
+                ChangeLastPresentationLayer();
+
                 // Tracking renders while working to fix a infinite render loop bug.
                 {
                     var renderTrackerEntry = new RenderTrackerEntry(
@@ -849,8 +853,6 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                             RenderTrackerDisplayName,
                             renderTrackerEntry));
                 }
-
-                await InvokeAsync(StateHasChanged);
             }
         }
     }
@@ -1039,6 +1041,52 @@ public partial class TextEditorViewModelDisplay : ComponentBase, IDisposable
                 ClientY = startTouchPoint.ClientY,
             });
         }
+    }
+
+    private void ChangeLastPresentationLayer()
+    {
+        var viewModel = GetViewModel();
+
+        if (viewModel is null)
+            return;
+
+        TextEditorService.ViewModel.With(
+            viewModel.ViewModelKey,
+            inViewModel =>
+            {
+                var outPresentationLayer = inViewModel.FirstPresentationLayer;
+
+                var inPresentationModel = outPresentationLayer
+                    .FirstOrDefault(x =>
+                        x.TextEditorPresentationKey == SemanticFacts.PresentationKey);
+
+                if (inPresentationModel is null)
+                {
+                    inPresentationModel = SemanticFacts.EmptyPresentationModel;
+
+                    outPresentationLayer = outPresentationLayer.Add(
+                        inPresentationModel);
+                }
+
+                var model = TextEditorService.ViewModel
+                    .FindBackingModelOrDefault(viewModel.ViewModelKey);
+
+                var outPresentationModel = inPresentationModel with
+                {
+                    TextEditorTextSpans = model?.SemanticModel?.DiagnosticTextSpans
+                        ?? ImmutableList<TextEditorTextSpan>.Empty
+                };
+
+                outPresentationLayer = outPresentationLayer.Replace(
+                    inPresentationModel,
+                    outPresentationModel);
+
+                return inViewModel with
+                {
+                    FirstPresentationLayer = outPresentationLayer,
+                    RenderStateKey = RenderStateKey.NewRenderStateKey()
+                };
+            });
     }
 
     public void Dispose()

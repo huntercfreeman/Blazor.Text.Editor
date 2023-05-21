@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -24,8 +25,9 @@ public class LexGenericTests
         
         var cSharpLexer = new TextEditorCSharpLexer();
 
-        var textEditorTextSpans = await cSharpLexer
-            .Lex(text);
+        var textEditorTextSpans = await cSharpLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)GenericDecorationKind.Function)

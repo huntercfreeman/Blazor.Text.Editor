@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.TypeScript.Facts;
@@ -6,7 +7,7 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.TypeScript.SyntaxActors;
 
-public class TextEditorTypeScriptLexer : ILexer
+public class TextEditorTypeScriptLexer : ITextEditorLexer
 {
     public static readonly GenericPreprocessorDefinition TypeScriptPreprocessorDefinition = new(
         "#",
@@ -35,8 +36,12 @@ public class TextEditorTypeScriptLexer : ILexer
     {
         _typeScriptSyntaxTree = new GenericSyntaxTree(TypeScriptLanguageDefinition);
     }
-    
-    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
+
+    public RenderStateKey ModelRenderStateKey { get; private set; } = RenderStateKey.Empty;
+
+    public Task<ImmutableArray<TextEditorTextSpan>> Lex(
+        string text,
+        RenderStateKey modelRenderStateKey)
     {
         var typeScriptSyntaxUnit = _typeScriptSyntaxTree
             .ParseText(text);

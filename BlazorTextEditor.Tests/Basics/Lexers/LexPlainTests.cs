@@ -1,3 +1,4 @@
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.Tests.TestDataFolder;
 
@@ -13,8 +14,9 @@ public class LexPlainTests
 
         var defaultLexer = new TextEditorLexerDefault();
 
-        var textEditorTextSpans = 
-            await defaultLexer.Lex(text);
+        var textEditorTextSpans = await defaultLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
 
         Assert.Empty(textEditorTextSpans);
     }

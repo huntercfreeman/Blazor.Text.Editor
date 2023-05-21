@@ -4,6 +4,7 @@ using BlazorTextEditor.RazorLib.Character;
 using BlazorTextEditor.RazorLib.Commands;
 using BlazorTextEditor.RazorLib.Cursor;
 using BlazorTextEditor.RazorLib.Editing;
+using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Store.Model;
 
@@ -209,6 +210,36 @@ public partial class TextEditorModel
                         _tabKeyPositions[i] += characterCountInserted;
                 }
             }
+
+            //// Reposition the Diagnostic Squigglies
+            /// // TODO: (2023-05-21 | 2:49 AM) Super tired and at this point am just getting nowhere. I tried this but it didn't work.
+            //{
+            //    var localSemanticModel = SemanticModel;
+
+            //    if (localSemanticModel is not null)
+            //    {
+            //        var diagnosticTextSpans = new List<TextEditorTextSpan>();
+
+            //        foreach (var diagnostic in localSemanticModel.DiagnosticTextSpans)
+            //        {
+            //            if (diagnostic.StartingIndexInclusive >= cursorPositionIndex)
+            //            {
+            //                diagnosticTextSpans.Add(diagnostic with
+            //                {
+            //                    StartingIndexInclusive = diagnostic.StartingIndexInclusive + characterCountInserted,
+            //                    EndingIndexExclusive = diagnostic.EndingIndexExclusive + characterCountInserted,
+            //                });
+            //            }
+            //            else
+            //            {
+            //                diagnosticTextSpans.Add(diagnostic);
+            //            }
+            //        }
+
+            //        localSemanticModel.DiagnosticTextSpans = diagnosticTextSpans
+            //            .ToImmutableList();
+            //    }
+            //}
         }
         
         // TODO: Fix tracking the MostCharactersOnASingleRowTuple this way is possibly inefficient - should instead only check the rows that changed
@@ -485,8 +516,38 @@ public partial class TextEditorModel
                 for (var i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
                     _tabKeyPositions[i] -= charactersRemovedCount;
             }
+
+            //// Reposition the Diagnostic Squigglies
+            /// // TODO: (2023-05-21 | 2:49 AM) Super tired and at this point am just getting nowhere. I tried this but it didn't work.
+            //{
+            //    var localSemanticModel = SemanticModel;
+
+            //    if (localSemanticModel is not null)
+            //    {
+            //        var diagnosticTextSpans = new List<TextEditorTextSpan>();
+
+            //        foreach (var diagnostic in localSemanticModel.DiagnosticTextSpans)
+            //        {
+            //            if (diagnostic.StartingIndexInclusive >= cursorPositionIndex)
+            //            {
+            //                diagnosticTextSpans.Add(diagnostic with
+            //                {
+            //                    StartingIndexInclusive = diagnostic.StartingIndexInclusive - charactersRemovedCount,
+            //                    EndingIndexExclusive = diagnostic.EndingIndexExclusive - charactersRemovedCount,
+            //                });
+            //            }
+            //            else
+            //            {
+            //                diagnosticTextSpans.Add(diagnostic);
+            //            }
+            //        }
+
+            //        localSemanticModel.DiagnosticTextSpans = diagnosticTextSpans
+            //            .ToImmutableList();
+            //    }
+            //}
         }
-        
+
         // TODO: Fix tracking the MostCharactersOnASingleRowTuple this way is possibly inefficient - should instead only check the rows that changed
         {
             (int rowIndex, int rowLength) localMostCharactersOnASingleRowTuple = (0, 0);

@@ -6,7 +6,8 @@ namespace BlazorTextEditor.RazorLib.Semantics;
 
 public interface ISemanticModel
 {
-    public ImmutableList<TextEditorTextSpan> TextEditorTextSpans { get; }
+    public ImmutableList<TextEditorTextSpan> DiagnosticTextSpans { get; set; }
+    public ImmutableList<TextEditorTextSpan> SymbolTextSpans { get; }
 
     public SymbolDefinition? GoToDefinition(
         TextEditorModel model,

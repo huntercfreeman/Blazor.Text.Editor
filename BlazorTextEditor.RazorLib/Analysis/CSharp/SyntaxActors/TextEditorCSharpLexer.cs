@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.Facts;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.SyntaxActors;
@@ -6,7 +7,7 @@ using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 
-public class TextEditorCSharpLexer : ILexer
+public class TextEditorCSharpLexer : ITextEditorLexer
 {
     public static readonly GenericPreprocessorDefinition CSharpPreprocessorDefinition = new(
         "#",
@@ -35,8 +36,12 @@ public class TextEditorCSharpLexer : ILexer
     {
         _cSharpSyntaxTree = new GenericSyntaxTree(CSharpLanguageDefinition); 
     }
-    
-    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
+
+    public RenderStateKey ModelRenderStateKey { get; private set; } = RenderStateKey.Empty;
+
+    public Task<ImmutableArray<TextEditorTextSpan>> Lex(
+        string text,
+        RenderStateKey modelRenderStateKey)
     {
         var cSharpSyntaxUnit = _cSharpSyntaxTree
             .ParseText(text);

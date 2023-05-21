@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Reflection;
 using BlazorCommon.RazorLib.Clipboard;
 using BlazorCommon.RazorLib.Dialog;
 using BlazorCommon.RazorLib.Misc;
@@ -11,7 +10,6 @@ using BlazorTextEditor.RazorLib.Lexing;
 using BlazorTextEditor.RazorLib.Model;
 using BlazorTextEditor.RazorLib.Row;
 using BlazorTextEditor.RazorLib.Semantics;
-using BlazorTextEditor.RazorLib.Store.ViewModel;
 using BlazorTextEditor.RazorLib.ViewModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -357,7 +355,7 @@ public partial class TextEditorHeader : TextEditorView
 
                 var outPresentationModel = inPresentationModel with
                 {
-                    TextEditorTextSpans = model?.SemanticModel?.TextEditorTextSpans 
+                    TextEditorTextSpans = model?.SemanticModel?.DiagnosticTextSpans 
                         ?? ImmutableList<TextEditorTextSpan>.Empty
                 };
 

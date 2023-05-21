@@ -47,7 +47,7 @@ public partial class TextEditorModel
     /// <summary>If there is a mixture of<br />-Carriage Return<br />-Linefeed<br />-CRLF<br />Then <see cref="OnlyRowEndingKind" /> will be null.<br /><br />If there are no line endingsthen <see cref="OnlyRowEndingKind" /> will be null.</summary>
     public RowEndingKind? OnlyRowEndingKind { get; private set; }
     public RowEndingKind UsingRowEndingKind { get; private set; }
-    public ILexer Lexer { get; private set; }
+    public ITextEditorLexer Lexer { get; private set; }
     public string ResourceUri { get; private set; }
     public DateTime ResourceLastWriteTime { get; private set; }
     /// <summary><see cref="FileExtension"/> is displayed as is within the<see cref="TextEditorFooter"/>.<br/><br/>The <see cref="TextEditorFooter"/> is only displayed if<see cref="TextEditorViewModelDisplay.IncludeFooterHelperComponent"/> is set to true.</summary>

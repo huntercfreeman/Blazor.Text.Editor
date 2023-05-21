@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.C.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -49,8 +50,9 @@ int main()
         
         var cLexer = new TextEditorCLexer();
 
-        var textEditorTextSpans = 
-            await cLexer.Lex(testDataHelloWorld);
+        var textEditorTextSpans = await cLexer.Lex(
+            testDataHelloWorld,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)GenericDecorationKind.CommentSingleLine)
@@ -89,8 +91,9 @@ int main()
         
         var cLexer = new TextEditorCLexer();
 
-        var textEditorTextSpans = 
-            await cLexer.Lex(testDataHelloWorld);
+        var textEditorTextSpans = await cLexer.Lex(
+            testDataHelloWorld,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)GenericDecorationKind.CommentMultiLine)
@@ -129,8 +132,9 @@ int main()
         
         var cLexer = new TextEditorCLexer();
 
-        var textEditorTextSpans = 
-            await cLexer.Lex(testDataHelloWorld);
+        var textEditorTextSpans = await cLexer.Lex(
+            testDataHelloWorld,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)GenericDecorationKind.Keyword)
@@ -168,8 +172,9 @@ int main()
         
         var cLexer = new TextEditorCLexer();
 
-        var textEditorTextSpans = 
-            await cLexer.Lex(testDataHelloWorld);
+        var textEditorTextSpans = await cLexer.Lex(
+            testDataHelloWorld,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)GenericDecorationKind.StringLiteral)
@@ -208,8 +213,9 @@ int main()
         
         var cLexer = new TextEditorCLexer();
 
-        var textEditorTextSpans = 
-            await cLexer.Lex(testDataHelloWorld);
+        var textEditorTextSpans = await cLexer.Lex(
+            testDataHelloWorld,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)GenericDecorationKind.Function)
@@ -248,8 +254,9 @@ int main()
         
         var cLexer = new TextEditorCLexer();
 
-        var textEditorTextSpans = 
-            await cLexer.Lex(testDataHelloWorld);
+        var textEditorTextSpans = await cLexer.Lex(
+            testDataHelloWorld,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)GenericDecorationKind.PreprocessorDirective)

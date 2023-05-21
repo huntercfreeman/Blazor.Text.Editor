@@ -7,7 +7,7 @@ public class TextEditorHtmlDiagnosticBag : TextEditorDiagnosticBag
     public void ReportTagNameMissing(TextEditorTextSpan textEditorTextSpan)
     {
         Report(
-            DiagnosticLevel.Error,
+            TextEditorDiagnosticLevel.Error,
             "Missing tag name.",
             textEditorTextSpan);
     }
@@ -18,7 +18,7 @@ public class TextEditorHtmlDiagnosticBag : TextEditorDiagnosticBag
         TextEditorTextSpan textEditorTextSpan)
     {
         Report(
-            DiagnosticLevel.Error,
+            TextEditorDiagnosticLevel.Error,
             $"Open tag: '{openTagName}' has an unmatched close tag: {closeTagName}.",
             textEditorTextSpan);
     }

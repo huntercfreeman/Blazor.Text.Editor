@@ -10,11 +10,11 @@ namespace BlazorTextEditor.RazorLib.Analysis;
 ///     The marker for an out of bounds read is
 ///     <see cref="ParserFacts.END_OF_FILE" />.
 ///     <br /><br />
-///     Provides common API that can be used when implementing an <see cref="ILexer" />
+///     Provides common API that can be used when implementing an <see cref="ITextEditorLexer" />
 ///     for the <see cref="TextEditorModel" />.
 ///     <br /><br />
 ///     Additionally one can write a parser that takes in a string in order to handle
-///     contextual lexing. The <see cref="ILexer" /> can then traverse the parsed result
+///     contextual lexing. The <see cref="ITextEditorLexer" /> can then traverse the parsed result
 ///     which might be that of a tree data structure.
 ///     <br /><br />
 ///     I am making up the word "contextual lexing" as I am not sure the actual terminology used.
