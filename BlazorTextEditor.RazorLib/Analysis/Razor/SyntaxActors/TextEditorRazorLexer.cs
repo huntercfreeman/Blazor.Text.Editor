@@ -1,13 +1,18 @@
 ﻿using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.Razor.Facts;
 using BlazorTextEditor.RazorLib.Lexing;
 
 namespace BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 
-public class TextEditorRazorLexer : ILexer
+public class TextEditorRazorLexer : ITextEditorLexer
 {
-    public Task<ImmutableArray<TextEditorTextSpan>> Lex(string text)
+    public RenderStateKey ModelRenderStateKey { get; private set; } = RenderStateKey.Empty;
+
+    public Task<ImmutableArray<TextEditorTextSpan>> Lex(
+        string text,
+        RenderStateKey modelRenderStateKey)
     {
         var htmlSyntaxUnit = HtmlSyntaxTree.ParseText(
             text,

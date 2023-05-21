@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -45,8 +46,9 @@ public class LexHtmlTests
         
         var htmlLexer = new TextEditorHtmlLexer();
 
-        var textEditorTextSpans = 
-            await htmlLexer.Lex(text);
+        var textEditorTextSpans = await htmlLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
 
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.TagName)
@@ -96,8 +98,9 @@ public class LexHtmlTests
         
         var htmlLexer = new TextEditorHtmlLexer();
 
-        var textEditorTextSpans = 
-            await htmlLexer.Lex(text);
+        var textEditorTextSpans = await htmlLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
 
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.AttributeName)
@@ -147,8 +150,9 @@ public class LexHtmlTests
         
         var htmlLexer = new TextEditorHtmlLexer();
 
-        var textEditorTextSpans = 
-            await htmlLexer.Lex(text);
+        var textEditorTextSpans = await htmlLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
 
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.AttributeValue)
@@ -175,8 +179,9 @@ public class LexHtmlTests
         
         var htmlLexer = new TextEditorHtmlLexer();
 
-        var textEditorTextSpans = 
-            await htmlLexer.Lex(text);
+        var textEditorTextSpans = await htmlLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
 
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.Comment)

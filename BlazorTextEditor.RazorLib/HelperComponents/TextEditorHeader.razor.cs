@@ -355,7 +355,7 @@ public partial class TextEditorHeader : TextEditorView
 
                 var outPresentationModel = inPresentationModel with
                 {
-                    TextEditorTextSpans = model?.SemanticModel?.TextEditorTextSpans 
+                    TextEditorTextSpans = model?.SemanticModel?.DiagnosticTextSpans 
                         ?? ImmutableList<TextEditorTextSpan>.Empty
                 };
 

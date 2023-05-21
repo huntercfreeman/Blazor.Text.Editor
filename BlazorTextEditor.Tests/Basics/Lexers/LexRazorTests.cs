@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.Html.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Razor.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -30,8 +31,9 @@ public class LexRazorTests
         
         var razorLexer = new TextEditorRazorLexer();
 
-        var textEditorTextSpans = 
-            await razorLexer.Lex(text);
+        var textEditorTextSpans = await razorLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
 
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.TagName)
@@ -62,8 +64,9 @@ public class LexRazorTests
         
         var razorLexer = new TextEditorRazorLexer();
 
-        var textEditorTextSpans = 
-            await razorLexer.Lex(text);
+        var textEditorTextSpans = await razorLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
 
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)HtmlDecorationKind.InjectedLanguageKeyword)

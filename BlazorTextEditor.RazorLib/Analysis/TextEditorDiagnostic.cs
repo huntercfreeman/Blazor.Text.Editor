@@ -3,6 +3,6 @@
 namespace BlazorTextEditor.RazorLib.Analysis;
 
 public record TextEditorDiagnostic(
-    DiagnosticLevel DiagnosticLevel,
+    TextEditorDiagnosticLevel DiagnosticLevel,
     string Message,
     TextEditorTextSpan TextEditorTextSpan);

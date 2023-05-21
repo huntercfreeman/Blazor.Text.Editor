@@ -34,7 +34,7 @@ public partial interface ITextEditorService
         public void HandleKeyboardEvent(TextEditorModelsCollection.KeyboardEventAction keyboardEventAction);
         public void InsertText(TextEditorModelsCollection.InsertTextAction insertTextAction);
         public void RedoEdit(TextEditorModelKey textEditorModelKey);
-        /// <summary>It is recommended to use the <see cref="RegisterTemplated" /> method as it will internally reference the <see cref="ILexer" /> and <see cref="IDecorationMapper" /> that correspond to the desired text editor.</summary>
+        /// <summary>It is recommended to use the <see cref="RegisterTemplated" /> method as it will internally reference the <see cref="ITextEditorLexer" /> and <see cref="IDecorationMapper" /> that correspond to the desired text editor.</summary>
         public void RegisterCustom(TextEditorModel model);
         /// <summary>As an example, for a C# Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.CSharp" />.<br /><br />For a Plain Text Editor one would pass in a <see cref="WellKnownModelKind" /> of <see cref="WellKnownModelKind.Plain" />.</summary>
         public void RegisterTemplated(TextEditorModelKey textEditorModelKey, WellKnownModelKind wellKnownModelKind, string resourceUri, DateTime resourceLastWriteTime, string fileExtension, string initialContent);
@@ -120,7 +120,7 @@ public partial interface ITextEditorService
             string fileExtension,
             string initialContent)
         {
-            ILexer? lexer = null;
+            ITextEditorLexer? lexer = null;
             IDecorationMapper? decorationMapper = null;
 
             switch (wellKnownModelKind)

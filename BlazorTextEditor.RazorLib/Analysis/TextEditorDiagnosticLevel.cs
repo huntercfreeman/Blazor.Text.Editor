@@ -1,6 +1,6 @@
 ﻿namespace BlazorTextEditor.RazorLib.Analysis;
 
-public enum DiagnosticLevel
+public enum TextEditorDiagnosticLevel
 {
     Hint,
     Suggestion,

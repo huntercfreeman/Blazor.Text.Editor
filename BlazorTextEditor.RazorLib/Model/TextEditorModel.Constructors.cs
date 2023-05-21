@@ -15,7 +15,7 @@ public partial class TextEditorModel
         DateTime resourceLastWriteTime,
         string fileExtension,
         string content,
-        ILexer? lexer,
+        ITextEditorLexer? lexer,
         IDecorationMapper? decorationMapper,
         ISemanticModel? semanticModel,
         ITextEditorKeymap? textEditorKeymap)
@@ -36,7 +36,7 @@ public partial class TextEditorModel
         DateTime resourceLastWriteTime,
         string fileExtension,
         string content,
-        ILexer? lexer,
+        ITextEditorLexer? lexer,
         IDecorationMapper? decorationMapper,
         ISemanticModel? semanticModel,
         ITextEditorKeymap? textEditorKeymap,

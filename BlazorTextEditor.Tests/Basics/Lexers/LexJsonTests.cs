@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.Json.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Json.SyntaxActors;
 using BlazorTextEditor.RazorLib.Lexing;
@@ -39,8 +40,9 @@ public class LexJsonTests
         
         var jsonLexer = new TextEditorJsonLexer();
 
-        var textEditorTextSpans = 
-            await jsonLexer.Lex(text);
+        var textEditorTextSpans = await jsonLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)JsonDecorationKind.PropertyKey)
@@ -68,8 +70,9 @@ public class LexJsonTests
         
         var jsonLexer = new TextEditorJsonLexer();
 
-        var textEditorTextSpans = 
-            await jsonLexer.Lex(text);
+        var textEditorTextSpans = await jsonLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)JsonDecorationKind.String)
@@ -96,8 +99,9 @@ public class LexJsonTests
         
         var jsonLexer = new TextEditorJsonLexer();
 
-        var textEditorTextSpans = 
-            await jsonLexer.Lex(text);
+        var textEditorTextSpans = await jsonLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)JsonDecorationKind.Keyword)
@@ -121,8 +125,9 @@ public class LexJsonTests
         
         var jsonLexer = new TextEditorJsonLexer();
 
-        var textEditorTextSpans = 
-            await jsonLexer.Lex(text);
+        var textEditorTextSpans = await jsonLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)JsonDecorationKind.Integer)
@@ -145,8 +150,9 @@ public class LexJsonTests
         
         var jsonLexer = new TextEditorJsonLexer();
 
-        var textEditorTextSpans = 
-            await jsonLexer.Lex(text);
+        var textEditorTextSpans = await jsonLexer.Lex(
+            text,
+            RenderStateKey.NewRenderStateKey());
         
         textEditorTextSpans = textEditorTextSpans
             .Where(x => x.DecorationByte == (byte)JsonDecorationKind.Number)

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text;
+using BlazorCommon.RazorLib.Misc;
 using BlazorTextEditor.RazorLib.Analysis.CSharp.SyntaxActors;
 using BlazorTextEditor.RazorLib.Analysis.GenericLexer.Decoration;
 using BlazorTextEditor.RazorLib.Analysis.Html;
@@ -30,7 +31,7 @@ public class RazorSyntaxTree
         if (WhitespaceFacts.ALL.Contains(stringWalker.CurrentCharacter))
         {
             textEditorHtmlDiagnosticBag.Report(
-                DiagnosticLevel.Error,
+                TextEditorDiagnosticLevel.Error,
                 "Whitespace immediately following the Razor transition character is unexpected.",
                 new TextEditorTextSpan(
                     stringWalker.PositionIndex,
@@ -865,7 +866,7 @@ public class RazorSyntaxTree
                 continue;
 
             textEditorHtmlDiagnosticBag.Report(
-                DiagnosticLevel.Error,
+                TextEditorDiagnosticLevel.Error,
                 $"A code block was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
                 new TextEditorTextSpan(
                     stringWalker.PositionIndex,
@@ -905,7 +906,7 @@ public class RazorSyntaxTree
                 continue;
 
             textEditorHtmlDiagnosticBag.Report(
-                DiagnosticLevel.Error,
+                TextEditorDiagnosticLevel.Error,
                 $"An explicit expression predicate was expected to follow the {RazorFacts.TRANSITION_SUBSTRING}{keywordText} razor keyword.",
                 new TextEditorTextSpan(
                     stringWalker.PositionIndex,
@@ -1154,7 +1155,8 @@ public class RazorSyntaxTree
         var lexer = new TextEditorCSharpLexer();
 
         var lexedInjectedLanguage = lexer.Lex(
-                cSharpText)
+                cSharpText,
+                RenderStateKey.NewRenderStateKey())
             .Result;
 
         foreach (var lexedTokenTextSpan in lexedInjectedLanguage)
