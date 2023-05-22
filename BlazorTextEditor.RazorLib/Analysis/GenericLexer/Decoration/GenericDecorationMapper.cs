@@ -12,6 +12,7 @@ public class GenericDecorationMapper : IDecorationMapper
         {
             GenericDecorationKind.None => string.Empty,
             GenericDecorationKind.Keyword => "bte_keyword",
+            GenericDecorationKind.KeywordControl => "bte_keyword-control",
             GenericDecorationKind.StringLiteral => "bte_string-literal",
             GenericDecorationKind.CommentSingleLine => "bte_comment",
             GenericDecorationKind.CommentMultiLine => "bte_comment",

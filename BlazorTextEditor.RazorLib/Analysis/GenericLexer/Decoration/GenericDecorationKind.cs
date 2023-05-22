@@ -4,6 +4,7 @@ public enum GenericDecorationKind
 {
     None,
     Keyword,
+    KeywordControl,
     CommentSingleLine,
     CommentMultiLine,
     Error,
