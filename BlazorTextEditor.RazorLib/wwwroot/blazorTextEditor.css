@@ -44,8 +44,16 @@
     color: var(--bte_string-literal-foreground-color);
 }
 
+.bte_string-literal-escape-character {
+    color: var(--bte_string-literal-escape-character-foreground-color);
+}
+
 .bte_keyword {
     color: var(--bte_keyword-foreground-color);
+}
+
+.bte_keyword-control {
+    color: var(--bte_keyword-control-foreground-color);
 }
 
 .bte_comment {
@@ -479,7 +487,9 @@
     --bte_type-foreground-color: #2B91AF;
     --bte_parameter-foreground-color: #751FA3;
     --bte_string-literal-foreground-color: #A31515;
+    --bte_string-literal-escape-character-foreground-color: #ffd68f;
     --bte_keyword-foreground-color: #0000FF;
+    --bte_keyword-control-foreground-color: rgb(249, 130, 190);
     --bte_comment-foreground-color: #007F00;
     --bte_tag-name-foreground-color: #0000FF;
     --bte_injected-language-fragment-color: #C800BE;
@@ -557,7 +567,9 @@
     --bte_type-foreground-color: #4EC9B0;
     --bte_parameter-foreground-color: #9CDCFE;
     --bte_string-literal-foreground-color: #D69D85;
+    --bte_string-literal-escape-character-foreground-color: #ffd68f;
     --bte_keyword-foreground-color: #569CD6;
+    --bte_keyword-control-foreground-color: rgb(249, 130, 190);
     --bte_comment-foreground-color: #57A64A;
     --bte_tag-name-foreground-color: #E8BF6A;
     --bte_injected-language-fragment-color: #d466ce;
@@ -617,8 +629,7 @@
         The colors are custom
         dark themed so the Text Editor has its own theme
     */
-    /* control keywords get color #f982be perhaps? */
-    --bte_primary-font-color: #D2D2D2;
+    --bte_primary-font-color: #d7d7d7;
     --bte_text-editor-cursor-foreground-color: #BBBBBB;
     --bte_text-selection-background-color: #1E557D;
     --bte_diff-longest-common-subsequence-background-color: #7e0077;
@@ -636,10 +647,12 @@
     --bte_type-foreground-color: #64B5E6;
     --bte_parameter-foreground-color: #B4A0DD;
     --bte_string-literal-foreground-color: #E06C75;
+    --bte_string-literal-escape-character-foreground-color: #ffd68f;
     --bte_keyword-foreground-color: #E09C6C;
+    --bte_keyword-control-foreground-color: rgb(249, 130, 190);
     --bte_comment-foreground-color: #96968C;
     --bte_tag-name-foreground-color: #E09C6C;
-    --bte_injected-language-fragment-color: #E06CC5;
+    --bte_injected-language-fragment-color: #dcd050;
     --bte_css-property-name-color: #C8C864;
     --bte_css-property-value-color: #E06C75;
     --bte_css-identifier-color: #E09C6C;
@@ -696,7 +709,6 @@
        The colors are custom
        light themed so the Text Editor has its own theme
    */
-    /* control keywords get color #ee37df perhaps? */
     --bte_primary-font-color: #0A0A0A;
     --bte_text-editor-cursor-foreground-color: #404040;
     --bte_text-selection-background-color: #ADD6FF;
@@ -711,14 +723,16 @@
     --bte_text-editor-caret-row-border-color-editor-focus-within: #28ae0c;
     --bte_newline-foreground-color: #007F00;
     --bte_newline-background-color: #faeee2;
-    --bte_method-foreground-color: #0CA500;
-    --bte_type-foreground-color: #2397D5;
-    --bte_parameter-foreground-color: #7400BC;
-    --bte_string-literal-foreground-color: #D250BE;
+    --bte_method-foreground-color: rgb(12, 160, 0);
+    --bte_type-foreground-color: rgb(25, 120, 240);
+    --bte_parameter-foreground-color: rgb(132, 0, 212);
+    --bte_string-literal-foreground-color: rgb(190, 0, 0);
+    --bte_string-literal-escape-character-foreground-color: rgb(183, 118, 251);
     --bte_keyword-foreground-color: #D26E00;
+    --bte_keyword-control-foreground-color: rgb(238, 55, 224);
     --bte_comment-foreground-color: #7E7C7C;
     --bte_tag-name-foreground-color: #D26E00;
-    --bte_injected-language-fragment-color: #1455EB;
+    --bte_injected-language-fragment-color: rgb(25, 80, 255);
     --bte_css-property-name-color: #2397D5;
     --bte_css-property-value-color: #D250BE;
     --bte_css-identifier-color: #D26E00;
